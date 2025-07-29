@@ -552,6 +552,7 @@
             border-radius: 30px;
             font-weight: 500;
             color: #166534;
+            margin-bottom: 20px;
         }
         
         .live-indicator {
@@ -746,6 +747,12 @@
                 <button class="logout-btn" id="logoutBtn">Logout</button>
             </div>
         </header>
+        
+        <!-- Live Update Indicator -->
+        <div class="live-update">
+            <div class="live-indicator"></div>
+            <span>Changes will be reflected across all devices in real-time</span>
+        </div>
         
         <!-- Dashboard Stats -->
         <div class="dashboard-stats">
@@ -1060,6 +1067,11 @@
                     if(confirm(`Are you sure you want to delete "${itemName}"?`)) {
                         menuItems.splice(index, 1);
                         localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
+                        
+                        // Update last menu update timestamp
+                        const lastUpdate = Date.now();
+                        localStorage.setItem('mirdhuna_last_menu_update', lastUpdate.toString());
+                        
                         loadMenuItems();
                         updateDashboardStats();
                         alert('Item deleted successfully!');
@@ -1113,6 +1125,11 @@
                     if(confirm(`Are you sure you want to delete slide: "${slideTitle}"?`)) {
                         slides.splice(index, 1);
                         localStorage.setItem('mirdhuna_slides', JSON.stringify(slides));
+                        
+                        // Update last slides update timestamp
+                        const lastUpdate = Date.now();
+                        localStorage.setItem('mirdhuna_last_slides_update', lastUpdate.toString());
+                        
                         loadSlides();
                         alert('Slide deleted successfully!');
                     }
@@ -1189,6 +1206,10 @@
                 // Save to localStorage
                 localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
                 
+                // Update last menu update timestamp
+                const lastUpdate = Date.now();
+                localStorage.setItem('mirdhuna_last_menu_update', lastUpdate.toString());
+                
                 // Reload menu items and update stats
                 loadMenuItems();
                 updateDashboardStats();
@@ -1225,6 +1246,10 @@
                 
                 // Save to localStorage
                 localStorage.setItem('mirdhuna_slides', JSON.stringify(slides));
+                
+                // Update last slides update timestamp
+                const lastUpdate = Date.now();
+                localStorage.setItem('mirdhuna_last_slides_update', lastUpdate.toString());
                 
                 // Reload slides
                 loadSlides();
@@ -1308,6 +1333,10 @@
                     // Update order status in localStorage
                     updateOrderStatus(orderId, newStatus);
                     updateDashboardStats();
+                    
+                    // Update last orders update timestamp
+                    const lastUpdate = Date.now();
+                    localStorage.setItem('mirdhuna_last_orders_update', lastUpdate.toString());
                     
                     alert(`Order ${orderId} status updated to: ${newStatus}`);
                 });
