@@ -588,6 +588,98 @@
             font-weight: bold;
         }
         
+        /* Order History */
+        .order-history {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            display: none;
+        }
+        
+        .order-history h2 {
+            margin-bottom: 15px;
+        }
+        
+        .order-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .order-items {
+            margin: 10px 0;
+            padding-left: 15px;
+        }
+        
+        .order-total {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .order-status {
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .status-progress {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+        
+        .status-completed {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        /* User Info */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        
+        .user-info i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             header {
@@ -620,6 +712,10 @@
             
             .menu-items {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            
+            .user-info {
+                justify-content: space-between;
             }
         }
         
@@ -746,6 +842,14 @@
                 right: 12px;
                 font-size: 1.2rem;
             }
+            
+            .order-history {
+                padding: 15px;
+            }
+            
+            .order-item {
+                padding: 12px;
+            }
         }
     </style>
 </head>
@@ -768,6 +872,13 @@
                 </a>
             </div>
         </header>
+        
+        <!-- User Info Section (shown when logged in) -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            <i class="fas fa-user"></i>
+            <span id="userMobile">Logged in as: </span>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
         
         <div class="hero">
             <div class="hero-content">
@@ -805,6 +916,14 @@
             </div>
         </div>
         
+        <!-- Order History Section -->
+        <div class="order-history" id="orderHistory">
+            <h2>Your Order History</h2>
+            <div id="orderHistoryList">
+                <!-- Order history will be populated here -->
+            </div>
+        </div>
+        
         <div class="menu-section">
             <h2>Our Menu</h2>
             <div class="menu-categories">
@@ -815,78 +934,8 @@
                 <button class="category-btn" data-category="shake">Shakes</button>
             </div>
             
-            <div class="menu-items">
-                <div class="menu-item" data-category="pizza">
-                    <div class="item-image" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');"></div>
-                    <div class="item-details">
-                        <div class="item-header">
-                            <div class="item-name">Pizza Margherita</div>
-                            <div class="item-price">₹250</div>
-                        </div>
-                        <p class="item-description">Classic pizza with tomato sauce and mozzarella</p>
-                        <button class="add-to-cart" data-item="Pizza Margherita" data-price="250">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <div class="menu-item" data-category="burger">
-                    <div class="item-image" style="background-image: url('https://images.unsplash.com/photo-1550353127-b0da3aeaa0ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');"></div>
-                    <div class="item-details">
-                        <div class="item-header">
-                            <div class="item-name">Burger Classic</div>
-                            <div class="item-price">₹180</div>
-                        </div>
-                        <p class="item-description">Beef patty with lettuce, tomato, and special sauce</p>
-                        <button class="add-to-cart" data-item="Burger Classic" data-price="180">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <div class="menu-item" data-category="sandwich">
-                    <div class="item-image" style="background-image: url('https://images.unsplash.com/photo-1481070414553-cd3db49a08bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');"></div>
-                    <div class="item-details">
-                        <div class="item-header">
-                            <div class="item-name">Club Sandwich</div>
-                            <div class="item-price">₹150</div>
-                        </div>
-                        <p class="item-description">Toasted sandwich with chicken, bacon, lettuce, and mayo</p>
-                        <button class="add-to-cart" data-item="Club Sandwich" data-price="150">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <div class="menu-item" data-category="shake">
-                    <div class="item-image" style="background-image: url('https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');"></div>
-                    <div class="item-details">
-                        <div class="item-header">
-                            <div class="item-name">Chocolate Shake</div>
-                            <div class="item-price">₹120</div>
-                        </div>
-                        <p class="item-description">Creamy chocolate milkshake with whipped cream</p>
-                        <button class="add-to-cart" data-item="Chocolate Shake" data-price="120">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <div class="menu-item" data-category="pizza">
-                    <div class="item-image" style="background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');"></div>
-                    <div class="item-details">
-                        <div class="item-header">
-                            <div class="item-name">Veggie Pizza</div>
-                            <div class="item-price">₹220</div>
-                        </div>
-                        <p class="item-description">Pizza with bell peppers, onions, olives, and mushrooms</p>
-                        <button class="add-to-cart" data-item="Veggie Pizza" data-price="220">Add to Cart</button>
-                    </div>
-                </div>
-                
-                <div class="menu-item" data-category="burger">
-                    <div class="item-image" style="background-image: url('https://images.unsplash.com/photo-1553979459-d2229ba7433b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');"></div>
-                    <div class="item-details">
-                        <div class="item-header">
-                            <div class="item-name">Chicken Burger</div>
-                            <div class="item-price">₹200</div>
-                        </div>
-                        <p class="item-description">Crispy chicken fillet with cheese and veggies</p>
-                        <button class="add-to-cart" data-item="Chicken Burger" data-price="200">Add to Cart</button>
-                    </div>
-                </div>
+            <div class="menu-items" id="menuItemsContainer">
+                <!-- Menu items will be loaded here -->
             </div>
         </div>
         
@@ -965,17 +1014,20 @@
         const checkoutCartTotalElement = document.getElementById('checkoutCartTotal');
         const placeOrderBtn = document.getElementById('placeOrderBtn');
         const categoryButtons = document.querySelectorAll('.category-btn');
-        const menuItems = document.querySelectorAll('.menu-item');
-        const addToCartButtons = document.querySelectorAll('.add-to-cart');
-        const slides = document.querySelector('.slides');
-        const indicators = document.querySelectorAll('.indicator');
+        const menuItemsContainer = document.getElementById('menuItemsContainer');
         const cartIndicator = document.getElementById('cartIndicator');
         const cartCount = document.getElementById('cartCount');
+        const userInfo = document.getElementById('userInfo');
+        const userMobile = document.getElementById('userMobile');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const orderHistory = document.getElementById('orderHistory');
+        const orderHistoryList = document.getElementById('orderHistoryList');
         
-        // Cart data
+        // State variables
         let cart = [];
         let total = 0;
         let userLoggedIn = false;
+        let currentUser = null;
         let currentSlide = 0;
         let userLocation = "";
         
@@ -1088,6 +1140,7 @@
         
         // Filter menu items by category
         function filterMenu(category) {
+            const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => {
                 if (category === 'all' || item.dataset.category === category) {
                     item.style.display = 'block';
@@ -1095,6 +1148,107 @@
                     item.style.display = 'none';
                 }
             });
+        }
+        
+        // Render menu items from localStorage
+        function renderMenuItems() {
+            // Get menu items from localStorage or use default items
+            const storedMenuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || getDefaultMenuItems();
+            
+            // Clear container
+            menuItemsContainer.innerHTML = '';
+            
+            // Render each item
+            storedMenuItems.forEach(item => {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'menu-item';
+                menuItem.dataset.category = item.category;
+                
+                // Use default image if none provided
+                const imageUrl = item.image || getDefaultImage(item.category);
+                
+                menuItem.innerHTML = `
+                    <div class="item-image" style="background-image: url('${imageUrl}');"></div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">₹${item.price}</div>
+                        </div>
+                        <p class="item-description">${item.description}</p>
+                        <button class="add-to-cart" data-item="${item.name}" data-price="${item.price}">Add to Cart</button>
+                    </div>
+                `;
+                
+                menuItemsContainer.appendChild(menuItem);
+            });
+            
+            // Add event listeners to new buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const itemName = this.dataset.item;
+                    const price = this.dataset.price;
+                    addToCart(itemName, price);
+                });
+            });
+        }
+        
+        // Get default menu items
+        function getDefaultMenuItems() {
+            return [
+                {
+                    name: "Pizza Margherita",
+                    price: 250,
+                    category: "pizza",
+                    description: "Classic pizza with tomato sauce and mozzarella",
+                    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                },
+                {
+                    name: "Burger Classic",
+                    price: 180,
+                    category: "burger",
+                    description: "Beef patty with lettuce, tomato, and special sauce",
+                    image: "https://images.unsplash.com/photo-1550353127-b0da3aeaa0ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                },
+                {
+                    name: "Club Sandwich",
+                    price: 150,
+                    category: "sandwich",
+                    description: "Toasted sandwich with chicken, bacon, lettuce, and mayo",
+                    image: "https://images.unsplash.com/photo-1481070414553-cd3db49a08bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                },
+                {
+                    name: "Chocolate Shake",
+                    price: 120,
+                    category: "shake",
+                    description: "Creamy chocolate milkshake with whipped cream",
+                    image: "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                },
+                {
+                    name: "Veggie Pizza",
+                    price: 220,
+                    category: "pizza",
+                    description: "Pizza with bell peppers, onions, olives, and mushrooms",
+                    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                },
+                {
+                    name: "Chicken Burger",
+                    price: 200,
+                    category: "burger",
+                    description: "Crispy chicken fillet with cheese and veggies",
+                    image: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                }
+            ];
+        }
+        
+        // Get default image based on category
+        function getDefaultImage(category) {
+            const images = {
+                pizza: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+                burger: "https://images.unsplash.com/photo-1550353127-b0da3aeaa0ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+                sandwich: "https://images.unsplash.com/photo-1481070414553-cd3db49a08bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+                shake: "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+            };
+            return images[category] || images.pizza;
         }
         
         // Show modal
@@ -1109,18 +1263,21 @@
         
         // Slide functionality
         function showSlide(index) {
+            const slides = document.querySelector('.slides');
             slides.style.transform = `translateX(-${index * 100}%)`;
+            const indicators = document.querySelectorAll('.indicator');
             indicators.forEach((indicator, i) => {
                 indicator.classList.toggle('active', i === index);
             });
         }
         
         function nextSlide() {
+            const indicators = document.querySelectorAll('.indicator');
             currentSlide = (currentSlide + 1) % indicators.length;
             showSlide(currentSlide);
         }
         
-        // Save order to localStorage (simulating admin panel integration)
+        // Save order to localStorage
         function saveOrder(mobile, location, items, total) {
             const order = {
                 id: 'ORD' + Date.now(),
@@ -1136,6 +1293,70 @@
             let orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
             orders.push(order);
             localStorage.setItem('mirdhuna_orders', JSON.stringify(orders));
+            
+            // Also save to user's order history
+            let userOrders = JSON.parse(localStorage.getItem(`user_orders_${mobile}`)) || [];
+            userOrders.push(order);
+            localStorage.setItem(`user_orders_${mobile}`, JSON.stringify(userOrders));
+            
+            return order.id;
+        }
+        
+        // Load user order history
+        function loadUserOrderHistory(mobile) {
+            const userOrders = JSON.parse(localStorage.getItem(`user_orders_${mobile}`)) || [];
+            orderHistoryList.innerHTML = '';
+            
+            if (userOrders.length === 0) {
+                orderHistoryList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No order history found</p>';
+                return;
+            }
+            
+            // Sort orders by timestamp (newest first)
+            userOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            userOrders.forEach(order => {
+                const orderDate = new Date(order.timestamp).toLocaleDateString();
+                const orderTime = new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                const orderElement = document.createElement('div');
+                orderElement.className = 'order-item';
+                orderElement.innerHTML = `
+                    <div class="order-header">
+                        <span>Order ID: ${order.id}</span>
+                        <span class="order-status status-${order.status.toLowerCase()}">${order.status}</span>
+                    </div>
+                    <div>Date: ${orderDate} at ${orderTime}</div>
+                    <div class="order-items">
+                        Items: ${order.items.map(item => item.name).join(', ')}
+                    </div>
+                    <div class="order-total">Total: ₹${order.total}</div>
+                `;
+                orderHistoryList.appendChild(orderElement);
+            });
+            
+            // Show order history section
+            orderHistory.style.display = 'block';
+        }
+        
+        // Check if user is already logged in
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('mirdhuna_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                userLoggedIn = true;
+                userMobile.textContent = `Logged in as: ${currentUser.mobile}`;
+                userInfo.style.display = 'flex';
+                
+                // Load user order history
+                loadUserOrderHistory(currentUser.mobile);
+                
+                // If cart has items, show checkout modal directly
+                if (cart.length > 0) {
+                    updateCart();
+                    showModal(checkoutModal);
+                }
+            }
         }
         
         // Event Listeners
@@ -1143,12 +1364,29 @@
             // Initialize cart
             updateCart();
             
+            // Render menu items
+            renderMenuItems();
+            
+            // Check login status
+            checkLoginStatus();
+            
             // Detect location on page load
             detectLocation();
             
             // Order Now button
             orderNowBtn.addEventListener('click', function() {
-                showModal(loginModal);
+                if (userLoggedIn) {
+                    // If already logged in, show checkout modal directly
+                    if (cart.length > 0) {
+                        updateCart();
+                        showModal(checkoutModal);
+                    } else {
+                        alert('Please add items to your cart first!');
+                    }
+                } else {
+                    // Show login modal
+                    showModal(loginModal);
+                }
             });
             
             // Cart indicator click
@@ -1158,7 +1396,14 @@
                     return;
                 }
                 
-                showModal(checkoutModal);
+                if (userLoggedIn) {
+                    // If already logged in, show checkout modal directly
+                    updateCart();
+                    showModal(checkoutModal);
+                } else {
+                    // Show login modal
+                    showModal(loginModal);
+                }
             });
             
             // Close modals
@@ -1187,20 +1432,39 @@
                 
                 if(mobile.length === 10 && /^\d+$/.test(mobile)) {
                     userLoggedIn = true;
+                    currentUser = { mobile: mobile, location: userLocation };
+                    
+                    // Save user to localStorage
+                    localStorage.setItem('mirdhuna_user', JSON.stringify(currentUser));
+                    
+                    // Update UI
+                    userMobile.textContent = `Logged in as: ${mobile}`;
+                    userInfo.style.display = 'flex';
+                    
+                    // Load user order history
+                    loadUserOrderHistory(mobile);
+                    
                     alert(`Login successful!\nMobile: ${mobile}\nLocation detected. You can now place orders.`);
                     hideModal(loginModal);
+                    
+                    // If cart has items, show checkout modal directly
+                    if (cart.length > 0) {
+                        updateCart();
+                        showModal(checkoutModal);
+                    }
                 } else {
                     alert('Please enter a valid 10-digit mobile number');
                 }
             });
             
-            // Add to cart buttons
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const itemName = this.dataset.item;
-                    const price = this.dataset.price;
-                    addToCart(itemName, price);
-                });
+            // Logout button
+            logoutBtn.addEventListener('click', function() {
+                userLoggedIn = false;
+                currentUser = null;
+                localStorage.removeItem('mirdhuna_user');
+                userInfo.style.display = 'none';
+                orderHistory.style.display = 'none';
+                alert('You have been logged out.');
             });
             
             // Category filtering
@@ -1230,20 +1494,22 @@
                     return;
                 }
                 
-                const mobile = document.getElementById('mobile').value || 'Not provided';
+                // Save order to localStorage
+                const orderId = saveOrder(currentUser.mobile, userLocation, cart, total);
                 
-                // Save order to localStorage (simulating admin panel integration)
-                saveOrder(mobile, userLocation, cart, total);
-                
-                alert(`Order placed successfully!\nOrder ID: ORD${Date.now()}\nTotal: ₹${total}\nThank you for ordering with MIRDHUNA!`);
+                alert(`Order placed successfully!\nOrder ID: ${orderId}\nTotal: ₹${total}\nThank you for ordering with MIRDHUNA!`);
                 
                 // Reset cart
                 cart = [];
                 updateCart();
                 hideModal(checkoutModal);
+                
+                // Reload order history
+                loadUserOrderHistory(currentUser.mobile);
             });
             
             // Slide indicators
+            const indicators = document.querySelectorAll('.indicator');
             indicators.forEach((indicator, index) => {
                 indicator.addEventListener('click', () => {
                     currentSlide = index;
