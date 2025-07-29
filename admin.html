@@ -15,21 +15,17 @@
         }
         
         :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --accent: #4cc9f0;
+            --primary: #FF6B00;
+            --secondary: #FFD166;
+            --accent: #06D6A0;
             --dark: #1A1A1A;
-            --light: #f8f9fa;
+            --light: #FFF9C4;
             --white: #FFFFFF;
             --shadow: 0 5px 15px rgba(0,0,0,0.1);
-            --success: #4ade80;
-            --warning: #facc15;
-            --danger: #f87171;
-            --info: #60a5fa;
         }
         
         body {
-            background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
+            background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%);
             color: var(--dark);
             min-height: 100vh;
             padding: 20px;
@@ -37,7 +33,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         
@@ -55,8 +51,7 @@
             font-size: 2.5rem;
             font-weight: 800;
             color: var(--primary);
-            text-shadow: 2px 2px 0 rgba(67, 97, 238, 0.2);
-            letter-spacing: 1px;
+            text-shadow: 3px 3px 0 rgba(255, 107, 0, 0.2);
         }
         
         .admin-info {
@@ -67,8 +62,8 @@
         }
         
         .logout-btn {
-            padding: 10px 25px;
-            background: var(--danger);
+            padding: 10px 20px;
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 30px;
@@ -76,96 +71,25 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(248, 113, 113, 0.3);
+            box-shadow: 0 3px 10px rgba(255, 107, 0, 0.3);
         }
         
         .logout-btn:hover {
-            background: #ef4444;
+            background: #e65100;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(248, 113, 113, 0.4);
-        }
-        
-        /* Dashboard Stats */
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-        
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-        }
-        
-        .stat-content {
-            flex: 1;
-        }
-        
-        .stat-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 1rem;
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .stat-card.orders .stat-icon {
-            background: rgba(67, 97, 238, 0.15);
-            color: var(--primary);
-        }
-        
-        .stat-card.users .stat-icon {
-            background: rgba(79, 55, 201, 0.15);
-            color: var(--secondary);
-        }
-        
-        .stat-card.revenue .stat-icon {
-            background: rgba(76, 201, 240, 0.15);
-            color: var(--accent);
-        }
-        
-        .stat-card.views .stat-icon {
-            background: rgba(96, 165, 250, 0.15);
-            color: var(--info);
         }
         
         /* Admin Content */
         .admin-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            gap: 25px;
             margin-bottom: 40px;
         }
         
         .panel {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 25px;
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
@@ -180,23 +104,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 3px solid var(--secondary);
         }
         
         .panel-title {
             color: var(--primary);
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
         .add-btn {
             padding: 10px 20px;
-            background: var(--success);
+            background: var(--accent);
             color: white;
             border: none;
             border-radius: 30px;
@@ -204,16 +125,12 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(74, 222, 128, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            box-shadow: 0 3px 10px rgba(6, 214, 160, 0.3);
         }
         
         .add-btn:hover {
-            background: #22c55e;
+            background: #05b88b;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(74, 222, 128, 0.4);
         }
         
         /* Table Styles */
@@ -221,60 +138,55 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            font-size: 0.95rem;
         }
         
         th, td {
-            padding: 15px;
+            padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #ddd;
         }
         
         th {
-            background-color: #f1f5f9;
+            background-color: #ffecb3;
             font-weight: 600;
             color: var(--primary);
         }
         
         tr:hover {
-            background-color: #f8fafc;
+            background-color: #fff3e0;
         }
         
         .action-btns {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
         }
         
         .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-            padding: 8px 15px;
+            padding: 6px 12px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
         
         .edit-btn {
-            background: var(--info);
+            background: #2196f3;
             color: white;
         }
         
         .edit-btn:hover {
-            background: #3b82f6;
+            background: #0b7dda;
         }
         
         .delete-btn {
-            background: var(--danger);
+            background: #f44336;
             color: white;
         }
         
         .delete-btn:hover {
-            background: #ef4444;
+            background: #d32f2f;
         }
         
         .export-btn {
@@ -283,112 +195,118 @@
         }
         
         .export-btn:hover {
-            background: #06b6d4;
+            background: #05b88b;
         }
         
         .view-btn {
-            background: var(--secondary);
+            background: #9c27b0;
             color: white;
         }
         
         .view-btn:hover {
-            background: #3730a3;
+            background: #7b1fa2;
         }
         
         .update-btn {
-            background: var(--success);
+            background: #4caf50;
             color: white;
         }
         
         .update-btn:hover {
-            background: #22c55e;
+            background: #388e3c;
+        }
+        
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            text-align: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: #ffecb3;
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 150px;
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
         }
         
         /* Form Styles */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-weight: 500;
             color: var(--dark);
         }
         
         .form-group input, .form-group textarea, .form-group select {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
         
         .form-actions {
             display: flex;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 10px;
+            margin-top: 20px;
         }
         
         .save-btn {
-            padding: 12px 25px;
-            background: var(--success);
+            padding: 12px 20px;
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 5px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            flex: 1;
-        }
-        
-        .save-btn:hover {
-            background: #22c55e;
-            transform: translateY(-2px);
+            font-weight: 500;
         }
         
         .cancel-btn {
-            padding: 12px 25px;
-            background: var(--danger);
+            padding: 12px 20px;
+            background: #f44336;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 5px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            flex: 1;
-        }
-        
-        .cancel-btn:hover {
-            background: #ef4444;
-            transform: translateY(-2px);
+            font-weight: 500;
         }
         
         /* Slides */
         .slide-container {
             position: relative;
-            margin-bottom: 25px;
-            border-radius: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
         }
         
         .slide-preview {
-            height: 180px;
+            height: 150px;
             background-size: cover;
             background-position: center;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            position: relative;
+            border-radius: 10px;
+            margin-bottom: 10px;
         }
         
         .slide-content {
@@ -398,8 +316,9 @@
             right: 0;
             background: rgba(0,0,0,0.7);
             color: white;
-            padding: 15px;
+            padding: 10px;
             text-align: center;
+            font-size: 0.9rem;
         }
         
         .slide-controls {
@@ -411,9 +330,9 @@
         /* Image Preview */
         .image-preview {
             width: 100%;
-            height: 150px;
+            height: 120px;
             border: 1px dashed #ccc;
-            border-radius: 10px;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -437,7 +356,7 @@
             text-align: center;
             padding: 30px;
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             margin-top: 30px;
             box-shadow: var(--shadow);
         }
@@ -497,14 +416,12 @@
         .modal-content {
             background: white;
             border-radius: 20px;
-            width: 95%;
-            max-width: 700px;
+            width: 90%;
+            max-width: 600px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative;
             animation: modalOpen 0.4s ease;
-            max-height: 90vh;
-            overflow-y: auto;
         }
         
         @keyframes modalOpen {
@@ -529,57 +446,18 @@
         .modal h2 {
             margin-top: 0;
             text-align: center;
-            font-size: 1.8rem;
-            color: var(--primary);
         }
         
         /* Status Select */
         .status-select {
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 6px 10px;
+            border-radius: 4px;
             border: 1px solid #ddd;
             background: white;
             font-weight: 500;
         }
         
-        /* Live Update Indicator */
-        .live-update {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #dcfce7;
-            padding: 10px 15px;
-            border-radius: 30px;
-            font-weight: 500;
-            color: #166534;
-            margin-bottom: 20px;
-        }
-        
-        .live-indicator {
-            width: 12px;
-            height: 12px;
-            background: #22c55e;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
         /* Responsive Design */
-        @media (max-width: 992px) {
-            .admin-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .dashboard-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -591,149 +469,13 @@
                 align-items: center;
             }
             
-            .dashboard-stats {
+            .admin-content {
                 grid-template-columns: 1fr;
             }
             
             .footer-content {
                 flex-direction: column;
                 text-align: center;
-            }
-            
-            table {
-                font-size: 0.85rem;
-            }
-            
-            th, td {
-                padding: 10px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            header {
-                padding: 10px 0;
-            }
-            
-            .logo {
-                font-size: 2rem;
-            }
-            
-            .logout-btn {
-                padding: 8px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .dashboard-stats {
-                gap: 15px;
-            }
-            
-            .stat-card {
-                padding: 20px;
-            }
-            
-            .stat-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
-            }
-            
-            .stat-value {
-                font-size: 1.8rem;
-            }
-            
-            .admin-content {
-                gap: 20px;
-            }
-            
-            .panel {
-                padding: 20px;
-            }
-            
-            .panel-header {
-                margin-bottom: 20px;
-                padding-bottom: 10px;
-            }
-            
-            .panel-title {
-                font-size: 1.4rem;
-            }
-            
-            .add-btn {
-                padding: 8px 16px;
-                font-size: 0.9rem;
-            }
-            
-            table {
-                font-size: 0.8rem;
-            }
-            
-            th, td {
-                padding: 8px;
-            }
-            
-            .form-group label {
-                font-size: 0.9rem;
-            }
-            
-            .form-group input, .form-group textarea, .form-group select {
-                padding: 10px;
-                font-size: 0.9rem;
-            }
-            
-            .form-actions {
-                gap: 10px;
-                margin-top: 20px;
-            }
-            
-            .save-btn, .cancel-btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .slide-preview {
-                height: 150px;
-            }
-            
-            .image-preview {
-                height: 120px;
-            }
-            
-            footer {
-                padding: 20px;
-                margin-top: 20px;
-            }
-            
-            .footer-logo {
-                font-size: 1.8rem;
-            }
-            
-            .footer-links {
-                gap: 15px;
-            }
-            
-            .copyright {
-                font-size: 0.9rem;
-                margin-top: 15px;
-                padding-top: 15px;
-            }
-            
-            .modal-content {
-                padding: 20px;
-                width: 90%;
-            }
-            
-            .modal h2 {
-                font-size: 1.5rem;
-            }
-            
-            .close-modal {
-                top: 15px;
-                right: 15px;
-                font-size: 1.3rem;
             }
         }
     </style>
@@ -748,63 +490,12 @@
             </div>
         </header>
         
-        <!-- Live Update Indicator -->
-        <div class="live-update">
-            <div class="live-indicator"></div>
-            <span>Changes will be reflected across all devices in real-time</span>
-        </div>
-        
-        <!-- Dashboard Stats -->
-        <div class="dashboard-stats">
-            <div class="stat-card orders">
-                <div class="stat-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value" id="totalOrders">0</div>
-                    <div class="stat-label">Total Orders</div>
-                </div>
-            </div>
-            
-            <div class="stat-card users">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value" id="totalUsers">0</div>
-                    <div class="stat-label">Active Users</div>
-                </div>
-            </div>
-            
-            <div class="stat-card revenue">
-                <div class="stat-icon">
-                    <i class="fas fa-rupee-sign"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value" id="totalRevenue">₹0</div>
-                    <div class="stat-label">Total Revenue</div>
-                </div>
-            </div>
-            
-            <div class="stat-card views">
-                <div class="stat-icon">
-                    <i class="fas fa-eye"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value" id="totalViews">0</div>
-                    <div class="stat-label">Page Views</div>
-                </div>
-            </div>
-        </div>
-        
         <div class="admin-content">
             <!-- Menu Management -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-utensils"></i> Menu Management</h2>
-                    <button class="add-btn" id="addMenuItemBtn">
-                        <i class="fas fa-plus"></i> Add Item
-                    </button>
+                    <h2 class="panel-title">Menu Management</h2>
+                    <button class="add-btn" id="addMenuItemBtn">Add Item</button>
                 </div>
                 <table id="menuTable">
                     <thead>
@@ -824,10 +515,8 @@
             <!-- Order Management -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-receipt"></i> Order Management</h2>
-                    <button class="export-btn" id="exportOrdersBtn">
-                        <i class="fas fa-file-export"></i> Export
-                    </button>
+                    <h2 class="panel-title">Order Management</h2>
+                    <button class="export-btn" id="exportOrdersBtn">Export</button>
                 </div>
                 <table id="ordersTable">
                     <thead>
@@ -848,10 +537,8 @@
             <!-- User Login History -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-user-clock"></i> User Login History</h2>
-                    <button class="export-btn" id="exportUsersBtn">
-                        <i class="fas fa-file-export"></i> Export
-                    </button>
+                    <h2 class="panel-title">User Login History</h2>
+                    <button class="export-btn" id="exportUsersBtn">Export</button>
                 </div>
                 <table id="usersTable">
                     <thead>
@@ -888,13 +575,47 @@
             <!-- Slides Management -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-images"></i> Slides Management</h2>
-                    <button class="add-btn" id="addSlideBtn">
-                        <i class="fas fa-plus"></i> Add Slide
-                    </button>
+                    <h2 class="panel-title">Slides Management</h2>
+                    <button class="add-btn" id="addSlideBtn">Add Slide</button>
                 </div>
-                <div id="slidesContainer">
-                    <!-- Slides will be populated here -->
+                <div class="slide-container">
+                    <div class="slide-preview" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
+                        <div class="slide-content">Delicious Pizza Specials</div>
+                    </div>
+                    <div class="slide-controls">
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                </div>
+                <div class="slide-container">
+                    <div class="slide-preview" style="background-image: url('https://images.unsplash.com/photo-1550353127-b0da3aeaa0ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
+                        <div class="slide-content">Burger Combo Offers</div>
+                    </div>
+                    <div class="slide-controls">
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Analytics</h2>
+                </div>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalViews">1,248</div>
+                        <div class="stat-label">Total Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="todayViews">127</div>
+                        <div class="stat-label">Today's Views</div>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="dateRange">Select Date Range:</label>
+                    <input type="date" id="dateRange">
                 </div>
             </div>
         </div>
@@ -962,12 +683,8 @@
             <h2 id="slideModalTitle">Add Slide</h2>
             <form id="slideForm">
                 <div class="form-group">
-                    <label for="slideTitle">Slide Title</label>
-                    <input type="text" id="slideTitle" placeholder="Slide Title" required>
-                </div>
-                <div class="form-group">
-                    <label for="slideDescription">Slide Description</label>
-                    <textarea id="slideDescription" rows="3" placeholder="Slide Description" required></textarea>
+                    <label for="slideContent">Slide Content</label>
+                    <textarea id="slideContent" rows="3" required></textarea>
                 </div>
                 <div class="form-group">
                     <label for="slideImage">Slide Image URL</label>
@@ -991,11 +708,8 @@
         const menuTableBody = document.getElementById('menuTableBody');
         const ordersTableBody = document.getElementById('ordersTableBody');
         const usersTable = document.getElementById('usersTable');
-        const slidesContainer = document.getElementById('slidesContainer');
-        const totalOrdersElement = document.getElementById('totalOrders');
-        const totalUsersElement = document.getElementById('totalUsers');
-        const totalRevenueElement = document.getElementById('totalRevenue');
         const totalViewsElement = document.getElementById('totalViews');
+        const todayViewsElement = document.getElementById('todayViews');
         
         // Modals
         const menuModal = document.getElementById('menuModal');
@@ -1009,18 +723,19 @@
         const menuModalTitle = document.getElementById('menuModalTitle');
         const slideModalTitle = document.getElementById('slideModalTitle');
         
+        // Image preview elements
+        const itemImageInput = document.getElementById('itemImage');
+        const itemImagePreview = document.getElementById('itemImagePreview');
+        const slideImageInput = document.getElementById('slideImage');
+        const slideImagePreview = document.getElementById('slideImagePreview');
+        
         // Admin functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Load all data
+            // Load menu items from localStorage
             loadMenuItems();
-            loadOrders();
-            loadSlides();
-            updateDashboardStats();
             
-            // Set up live updates
-            setInterval(() => {
-                updateDashboardStats();
-            }, 10000); // Update every 10 seconds
+            // Load orders from localStorage
+            loadOrders();
             
             // Logout button
             logoutBtn.addEventListener('click', function() {
@@ -1067,13 +782,7 @@
                     if(confirm(`Are you sure you want to delete "${itemName}"?`)) {
                         menuItems.splice(index, 1);
                         localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
-                        
-                        // Update last menu update timestamp
-                        const lastUpdate = Date.now();
-                        localStorage.setItem('mirdhuna_last_menu_update', lastUpdate.toString());
-                        
                         loadMenuItems();
-                        updateDashboardStats();
                         alert('Item deleted successfully!');
                     }
                 }
@@ -1099,42 +808,40 @@
             });
             
             // Edit slides
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('edit-btn') && e.target.closest('#slidesContainer')) {
-                    const index = e.target.dataset.index;
-                    const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
-                    const slide = slides[index];
-                    
-                    slideModalTitle.textContent = `Edit Slide: ${slide.title}`;
-                    document.getElementById('slideTitle').value = slide.title;
-                    document.getElementById('slideDescription').value = slide.description;
-                    document.getElementById('slideImage').value = slide.image;
-                    document.getElementById('editIndex').value = index;
-                    
+            document.querySelectorAll('.slide-container .edit-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const slideContainer = this.closest('.slide-container');
+                    const slideContent = slideContainer.querySelector('.slide-content').textContent;
+                    slideModalTitle.textContent = `Edit Slide: ${slideContent}`;
+                    // In a real implementation, this would populate the form with slide data
                     showModal(slideModal);
-                }
+                });
             });
             
             // Delete slides
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('delete-btn') && e.target.closest('#slidesContainer')) {
-                    const index = e.target.dataset.index;
-                    const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
-                    const slideTitle = slides[index].title;
-                    
-                    if(confirm(`Are you sure you want to delete slide: "${slideTitle}"?`)) {
-                        slides.splice(index, 1);
-                        localStorage.setItem('mirdhuna_slides', JSON.stringify(slides));
-                        
-                        // Update last slides update timestamp
-                        const lastUpdate = Date.now();
-                        localStorage.setItem('mirdhuna_last_slides_update', lastUpdate.toString());
-                        
-                        loadSlides();
+            document.querySelectorAll('.slide-container .delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const slideContainer = this.closest('.slide-container');
+                    const slideContent = slideContainer.querySelector('.slide-content').textContent;
+                    if(confirm(`Are you sure you want to delete slide: "${slideContent}"?`)) {
+                        slideContainer.remove();
                         alert('Slide deleted successfully!');
                     }
-                }
+                });
             });
+            
+            // Simulate analytics data update
+            function updateAnalytics() {
+                // In a real implementation, this would fetch data from a server
+                const totalViews = Math.floor(Math.random() * 2000) + 1000;
+                const todayViews = Math.floor(Math.random() * 200) + 50;
+                
+                totalViewsElement.textContent = totalViews.toLocaleString();
+                todayViewsElement.textContent = todayViews.toLocaleString();
+            }
+            
+            // Update analytics every 10 seconds for demo purposes
+            setInterval(updateAnalytics, 10000);
             
             // Modal functions
             function showModal(modal) {
@@ -1206,13 +913,8 @@
                 // Save to localStorage
                 localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
                 
-                // Update last menu update timestamp
-                const lastUpdate = Date.now();
-                localStorage.setItem('mirdhuna_last_menu_update', lastUpdate.toString());
-                
-                // Reload menu items and update stats
+                // Reload menu items
                 loadMenuItems();
-                updateDashboardStats();
                 
                 hideModal(menuModal);
             });
@@ -1220,39 +922,28 @@
             // Slide form submission
             slideForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const slideTitle = document.getElementById('slideTitle').value;
-                const slideDescription = document.getElementById('slideDescription').value;
+                const slideContent = document.getElementById('slideContent').value;
                 const slideImage = document.getElementById('slideImage').value;
-                const editIndex = document.getElementById('editIndex').value;
                 
-                // Get existing slides or initialize empty array
-                let slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
-                
-                const newSlide = {
-                    title: slideTitle,
-                    description: slideDescription,
-                    image: slideImage
-                };
-                
-                if (editIndex !== '') {
-                    // Update existing slide
-                    slides[editIndex] = newSlide;
-                    alert('Slide updated successfully!');
-                } else {
+                if (slideModalTitle.textContent.includes('Add')) {
                     // Add new slide
-                    slides.push(newSlide);
+                    const slideContainer = document.createElement('div');
+                    slideContainer.className = 'slide-container';
+                    slideContainer.innerHTML = `
+                        <div class="slide-preview" style="background-image: url('${slideImage}')">
+                            <div class="slide-content">${slideContent}</div>
+                        </div>
+                        <div class="slide-controls">
+                            <button class="edit-btn">Edit</button>
+                            <button class="delete-btn">Delete</button>
+                        </div>
+                    `;
+                    document.querySelector('.panel:nth-child(4) .panel-header').after(slideContainer);
                     alert('Slide added successfully!');
+                } else {
+                    // Update existing slide
+                    alert('Slide updated successfully!');
                 }
-                
-                // Save to localStorage
-                localStorage.setItem('mirdhuna_slides', JSON.stringify(slides));
-                
-                // Update last slides update timestamp
-                const lastUpdate = Date.now();
-                localStorage.setItem('mirdhuna_last_slides_update', lastUpdate.toString());
-                
-                // Reload slides
-                loadSlides();
                 
                 hideModal(slideModal);
             });
@@ -1277,12 +968,8 @@
                     <td>₹${item.price}</td>
                     <td>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</td>
                     <td class="action-btns">
-                        <button class="edit-btn" data-index="${index}">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="delete-btn" data-index="${index}">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
+                        <button class="edit-btn" data-index="${index}">Edit</button>
+                        <button class="delete-btn" data-index="${index}">Delete</button>
                     </td>
                 `;
                 menuTableBody.appendChild(row);
@@ -1315,9 +1002,7 @@
                         </select>
                     </td>
                     <td class="action-btns">
-                        <button class="update-btn" data-order-id="${order.id}">
-                            <i class="fas fa-sync"></i> Update
-                        </button>
+                        <button class="update-btn" data-order-id="${order.id}">Update</button>
                     </td>
                 `;
                 ordersTableBody.appendChild(row);
@@ -1332,7 +1017,6 @@
                     
                     // Update order status in localStorage
                     updateOrderStatus(orderId, newStatus);
-                    updateDashboardStats();
                     
                     // Update last orders update timestamp
                     const lastUpdate = Date.now();
@@ -1353,58 +1037,6 @@
                 return order;
             });
             localStorage.setItem('mirdhuna_orders', JSON.stringify(orders));
-        }
-        
-        // Load slides from localStorage
-        function loadSlides() {
-            const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
-            slidesContainer.innerHTML = '';
-            
-            if (slides.length === 0) {
-                slidesContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No slides found</p>';
-                return;
-            }
-            
-            slides.forEach((slide, index) => {
-                const slideContainer = document.createElement('div');
-                slideContainer.className = 'slide-container';
-                slideContainer.innerHTML = `
-                    <div class="slide-preview" style="background-image: url('${slide.image}')">
-                        <div class="slide-content">
-                            <h3>${slide.title}</h3>
-                            <p>${slide.description}</p>
-                        </div>
-                    </div>
-                    <div class="slide-controls">
-                        <button class="edit-btn" data-index="${index}">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="delete-btn" data-index="${index}">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                `;
-                slidesContainer.appendChild(slideContainer);
-            });
-        }
-        
-        // Update dashboard statistics
-        function updateDashboardStats() {
-            // Get orders
-            const orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
-            totalOrdersElement.textContent = orders.length;
-            
-            // Get users (simulate from orders)
-            const users = [...new Set(orders.map(order => order.mobile))];
-            totalUsersElement.textContent = users.length;
-            
-            // Calculate revenue
-            const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-            totalRevenueElement.textContent = `₹${totalRevenue.toLocaleString()}`;
-            
-            // Simulate page views
-            const views = Math.floor(Math.random() * 1000) + 500;
-            totalViewsElement.textContent = views.toLocaleString();
         }
     </script>
 </body>
