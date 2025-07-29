@@ -680,6 +680,56 @@
             background: #d32f2f;
         }
         
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Live Update Indicator */
+        .live-update-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4ade80;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .live-update-indicator .dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             header {
@@ -873,6 +923,12 @@
             </div>
         </header>
         
+        <!-- Live Update Indicator -->
+        <div class="live-update-indicator" id="liveUpdateIndicator">
+            <div class="dot"></div>
+            <span>Updating content...</span>
+        </div>
+        
         <!-- User Info Section (shown when logged in) -->
         <div class="user-info" id="userInfo" style="display: none;">
             <i class="fas fa-user"></i>
@@ -889,30 +945,11 @@
         </div>
         
         <div class="slides-container">
-            <div class="slides">
-                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
-                    <div class="slide-content">
-                        <h3>Delicious Pizza Specials</h3>
-                        <p>Get 20% off on all pizzas this week!</p>
-                    </div>
-                </div>
-                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1550353127-b0da3aeaa0ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
-                    <div class="slide-content">
-                        <h3>Burger Combo Offers</h3>
-                        <p>Buy 1 Get 1 Free on all burgers!</p>
-                    </div>
-                </div>
-                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
-                    <div class="slide-content">
-                        <h3>Fresh Smoothies & Shakes</h3>
-                        <p>Made with real fruits and natural ingredients</p>
-                    </div>
-                </div>
+            <div class="slides" id="slidesContainer">
+                <!-- Slides will be populated here -->
             </div>
-            <div class="slide-indicators">
-                <div class="indicator active"></div>
-                <div class="indicator"></div>
-                <div class="indicator"></div>
+            <div class="slide-indicators" id="slideIndicators">
+                <!-- Indicators will be populated here -->
             </div>
         </div>
         
@@ -926,12 +963,8 @@
         
         <div class="menu-section">
             <h2>Our Menu</h2>
-            <div class="menu-categories">
-                <button class="category-btn active" data-category="all">All Items</button>
-                <button class="category-btn" data-category="pizza">Pizza</button>
-                <button class="category-btn" data-category="burger">Burgers</button>
-                <button class="category-btn" data-category="sandwich">Sandwiches</button>
-                <button class="category-btn" data-category="shake">Shakes</button>
+            <div class="menu-categories" id="menuCategories">
+                <!-- Categories will be populated here -->
             </div>
             
             <div class="menu-items" id="menuItemsContainer">
@@ -1013,7 +1046,7 @@
         const checkoutCartItemsContainer = document.getElementById('checkoutCartItems');
         const checkoutCartTotalElement = document.getElementById('checkoutCartTotal');
         const placeOrderBtn = document.getElementById('placeOrderBtn');
-        const categoryButtons = document.querySelectorAll('.category-btn');
+        const menuCategories = document.getElementById('menuCategories');
         const menuItemsContainer = document.getElementById('menuItemsContainer');
         const cartIndicator = document.getElementById('cartIndicator');
         const cartCount = document.getElementById('cartCount');
@@ -1022,6 +1055,9 @@
         const logoutBtn = document.getElementById('logoutBtn');
         const orderHistory = document.getElementById('orderHistory');
         const orderHistoryList = document.getElementById('orderHistoryList');
+        const slidesContainer = document.getElementById('slidesContainer');
+        const slideIndicators = document.getElementById('slideIndicators');
+        const liveUpdateIndicator = document.getElementById('liveUpdateIndicator');
         
         // State variables
         let cart = [];
@@ -1030,6 +1066,10 @@
         let currentUser = null;
         let currentSlide = 0;
         let userLocation = "";
+        let liveUpdateInterval;
+        let lastMenuUpdate = 0;
+        let lastSlidesUpdate = 0;
+        let lastOrdersUpdate = 0;
         
         // Auto-detect location
         function detectLocation() {
@@ -1192,6 +1232,86 @@
             });
         }
         
+        // Render menu categories
+        function renderMenuCategories() {
+            // Get menu items to determine categories
+            const storedMenuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || getDefaultMenuItems();
+            const categories = [...new Set(storedMenuItems.map(item => item.category))];
+            
+            // Clear container
+            menuCategories.innerHTML = '';
+            
+            // Add "All Items" button
+            const allButton = document.createElement('button');
+            allButton.className = 'category-btn active';
+            allButton.dataset.category = 'all';
+            allButton.textContent = 'All Items';
+            menuCategories.appendChild(allButton);
+            
+            // Add category buttons
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.className = 'category-btn';
+                button.dataset.category = category;
+                button.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                menuCategories.appendChild(button);
+            });
+            
+            // Add event listeners
+            document.querySelectorAll('.category-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter menu items
+                    const category = this.dataset.category;
+                    filterMenu(category);
+                });
+            });
+        }
+        
+        // Render slides
+        function renderSlides() {
+            // Get slides from localStorage or use default slides
+            const storedSlides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || getDefaultSlides();
+            
+            // Clear containers
+            slidesContainer.innerHTML = '';
+            slideIndicators.innerHTML = '';
+            
+            // Render each slide
+            storedSlides.forEach((slide, index) => {
+                const slideElement = document.createElement('div');
+                slideElement.className = 'slide';
+                slideElement.style.backgroundImage = `url('${slide.image}')`;
+                
+                const slideContent = document.createElement('div');
+                slideContent.className = 'slide-content';
+                slideContent.innerHTML = `
+                    <h3>${slide.title}</h3>
+                    <p>${slide.description}</p>
+                `;
+                
+                slideElement.appendChild(slideContent);
+                slidesContainer.appendChild(slideElement);
+                
+                // Add indicator
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator';
+                if (index === 0) indicator.classList.add('active');
+                slideIndicators.appendChild(indicator);
+            });
+            
+            // Add event listeners to indicators
+            document.querySelectorAll('.indicator').forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    currentSlide = index;
+                    showSlide(currentSlide);
+                });
+            });
+        }
+        
         // Get default menu items
         function getDefaultMenuItems() {
             return [
@@ -1240,6 +1360,27 @@
             ];
         }
         
+        // Get default slides
+        function getDefaultSlides() {
+            return [
+                {
+                    title: "Delicious Pizza Specials",
+                    description: "Get 20% off on all pizzas this week!",
+                    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                },
+                {
+                    title: "Burger Combo Offers",
+                    description: "Buy 1 Get 1 Free on all burgers!",
+                    image: "https://images.unsplash.com/photo-1550353127-b0da3aeaa0ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                },
+                {
+                    title: "Fresh Smoothies & Shakes",
+                    description: "Made with real fruits and natural ingredients",
+                    image: "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                }
+            ];
+        }
+        
         // Get default image based on category
         function getDefaultImage(category) {
             const images = {
@@ -1251,26 +1392,16 @@
             return images[category] || images.pizza;
         }
         
-        // Show modal
-        function showModal(modal) {
-            modal.style.display = 'flex';
-        }
-        
-        // Hide modal
-        function hideModal(modal) {
-            modal.style.display = 'none';
-        }
-        
-        // Slide functionality
+        // Show slide
         function showSlide(index) {
-            const slides = document.querySelector('.slides');
-            slides.style.transform = `translateX(-${index * 100}%)`;
+            slidesContainer.style.transform = `translateX(-${index * 100}%)`;
             const indicators = document.querySelectorAll('.indicator');
             indicators.forEach((indicator, i) => {
                 indicator.classList.toggle('active', i === index);
             });
         }
         
+        // Next slide
         function nextSlide() {
             const indicators = document.querySelectorAll('.indicator');
             currentSlide = (currentSlide + 1) % indicators.length;
@@ -1298,6 +1429,10 @@
             let userOrders = JSON.parse(localStorage.getItem(`user_orders_${mobile}`)) || [];
             userOrders.push(order);
             localStorage.setItem(`user_orders_${mobile}`, JSON.stringify(userOrders));
+            
+            // Update last orders update timestamp
+            lastOrdersUpdate = Date.now();
+            localStorage.setItem('mirdhuna_last_orders_update', lastOrdersUpdate.toString());
             
             return order.id;
         }
@@ -1359,16 +1494,77 @@
             }
         }
         
+        // Show modal
+        function showModal(modal) {
+            modal.style.display = 'flex';
+        }
+        
+        // Hide modal
+        function hideModal(modal) {
+            modal.style.display = 'none';
+        }
+        
+        // Show live update indicator
+        function showLiveUpdateIndicator() {
+            liveUpdateIndicator.style.display = 'flex';
+            setTimeout(() => {
+                liveUpdateIndicator.style.display = 'none';
+            }, 2000);
+        }
+        
+        // Live update function
+        function checkForUpdates() {
+            // Check for menu updates
+            const storedMenuUpdate = localStorage.getItem('mirdhuna_last_menu_update');
+            if (storedMenuUpdate && parseInt(storedMenuUpdate) > lastMenuUpdate) {
+                lastMenuUpdate = parseInt(storedMenuUpdate);
+                renderMenuItems();
+                renderMenuCategories();
+                showLiveUpdateIndicator();
+            }
+            
+            // Check for slides updates
+            const storedSlidesUpdate = localStorage.getItem('mirdhuna_last_slides_update');
+            if (storedSlidesUpdate && parseInt(storedSlidesUpdate) > lastSlidesUpdate) {
+                lastSlidesUpdate = parseInt(storedSlidesUpdate);
+                renderSlides();
+                showLiveUpdateIndicator();
+            }
+            
+            // Check for orders updates (for logged in user)
+            if (userLoggedIn && currentUser) {
+                const storedOrdersUpdate = localStorage.getItem('mirdhuna_last_orders_update');
+                if (storedOrdersUpdate && parseInt(storedOrdersUpdate) > lastOrdersUpdate) {
+                    lastOrdersUpdate = parseInt(storedOrdersUpdate);
+                    loadUserOrderHistory(currentUser.mobile);
+                    showLiveUpdateIndicator();
+                }
+            }
+        }
+        
+        // Start live updates
+        function startLiveUpdates() {
+            // Set up interval to check for updates
+            liveUpdateInterval = setInterval(checkForUpdates, 3000); // Check every 3 seconds
+        }
+        
         // Event Listeners
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize cart
             updateCart();
             
-            // Render menu items
+            // Render menu items and categories
             renderMenuItems();
+            renderMenuCategories();
+            
+            // Render slides
+            renderSlides();
             
             // Check login status
             checkLoginStatus();
+            
+            // Start live updates
+            startLiveUpdates();
             
             // Detect location on page load
             detectLocation();
@@ -1467,19 +1663,6 @@
                 alert('You have been logged out.');
             });
             
-            // Category filtering
-            categoryButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Update active button
-                    categoryButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Filter menu items
-                    const category = this.dataset.category;
-                    filterMenu(category);
-                });
-            });
-            
             // Place order button
             placeOrderBtn.addEventListener('click', function() {
                 if (!userLoggedIn) {
@@ -1506,15 +1689,6 @@
                 
                 // Reload order history
                 loadUserOrderHistory(currentUser.mobile);
-            });
-            
-            // Slide indicators
-            const indicators = document.querySelectorAll('.indicator');
-            indicators.forEach((indicator, index) => {
-                indicator.addEventListener('click', () => {
-                    currentSlide = index;
-                    showSlide(currentSlide);
-                });
             });
             
             // Auto slide change
