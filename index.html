@@ -583,6 +583,46 @@
             box-shadow: 0 5px 15px rgba(6, 214, 160, 0.3);
         }
         
+        /* Cart Indicator */
+        .cart-indicator {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .cart-indicator:hover {
+            transform: scale(1.1);
+        }
+        
+        .cart-indicator .count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
         /* Responsive Design */
         @media (max-width: 992px) {
             .main-content {
@@ -634,6 +674,10 @@
             .menu-items {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
+            
+            .cart-section {
+                display: none;
+            }
         }
         
         @media (max-width: 480px) {
@@ -662,7 +706,7 @@
                 <a href="https://maps.app.goo.gl/kotovw4g7chuqy5J8" target="_blank" class="contact-item">
                     <i class="fas fa-map-marker-alt"></i> Location
                 </a>
-                <a href="tel:6303438082" class="contact-item">
+                <a href="tel:9835124772" class="contact-item">
                     <i class="fas fa-phone"></i> +91 9835124772
                 </a>
                 <a href="https://wa.me/9835124772" target="_blank" class="contact-item">
@@ -681,7 +725,7 @@
         
         <div class="slides-container">
             <div class="slides">
-                <div class="slide" style="background-image: url(' ');">
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
                     <div class="slide-content">
                         <h3>Delicious Pizza Specials</h3>
                         <p>Get 20% off on all pizzas this week!</p>
@@ -711,8 +755,11 @@
             <div class="cart-section">
                 <h2>Your Cart</h2>
                 <div id="cartItems">
-                    <div class="cart-item">
-                    
+                    <!-- Cart items will be populated here -->
+                </div>
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">₹0</span>
                 </div>
                 <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
             </div>
@@ -821,6 +868,12 @@
         </footer>
     </div>
     
+    <!-- Cart Indicator -->
+    <div class="cart-indicator" id="cartIndicator">
+        <i class="fas fa-shopping-cart"></i>
+        <div class="count" id="cartCount">0</div>
+    </div>
+    
     <!-- Login Modal -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
@@ -849,15 +902,11 @@
             <span class="close-modal" id="closeCheckoutModal">&times;</span>
             <h2>Order Summary</h2>
             <div id="checkoutCartItems">
-                <div class="cart-item">
-                    <span></span>
-                    <span>₹</span>
-                </div>
-                
+                <!-- Cart items will be populated here -->
             </div>
             <div class="cart-total">
                 <span>Total:</span>
-                <span>₹</span>
+                <span id="checkoutCartTotal">₹0</span>
             </div>
             <button class="place-order-btn" id="placeOrderBtn">Place Order</button>
         </div>
@@ -875,21 +924,23 @@
         const locationInfo = document.getElementById('locationInfo');
         const cartItemsContainer = document.getElementById('cartItems');
         const checkoutCartItemsContainer = document.getElementById('checkoutCartItems');
-        const cartTotalElement = document.querySelector('.cart-total span:last-child');
-        const checkoutCartTotalElement = document.querySelector('.checkout-modal .cart-total span:last-child');
+        const cartTotalElement = document.getElementById('cartTotal');
+        const checkoutCartTotalElement = document.getElementById('checkoutCartTotal');
         const placeOrderBtn = document.getElementById('placeOrderBtn');
         const categoryButtons = document.querySelectorAll('.category-btn');
         const menuItems = document.querySelectorAll('.menu-item');
         const addToCartButtons = document.querySelectorAll('.add-to-cart');
         const slides = document.querySelector('.slides');
         const indicators = document.querySelectorAll('.indicator');
+        const cartIndicator = document.getElementById('cartIndicator');
+        const cartCount = document.getElementById('cartCount');
         
         // Cart data
-        let cart = [
-            { name: "Pizza Margherita", price: 250 },
-            { name: "Burger Classic", price: 180 }
-        ];
-        
+        let cart = [];
+        let total = 0;
+        let userLoggedIn = false;
+        let currentSlide = 0;
+        let userLocation = "";
         
         // Auto-detect location
         function detectLocation() {
@@ -902,10 +953,11 @@
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
                         const googleMapsUrl = `https://maps.google.com/?q=${lat},${lng}`;
+                        userLocation = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
                         
                         locationInfo.innerHTML = `
                             <i class="fas fa-map-marker-alt"></i>
-                            <span>Located at: <a href="${googleMapsUrl}" target="_blank">${lat.toFixed(4)}, ${lng.toFixed(4)}</a></span>
+                            <span>Located at: <a href="${googleMapsUrl}" target="_blank">${userLocation}</a></span>
                         `;
                     },
                     function(error) {
@@ -915,10 +967,11 @@
                             const latitude = 17.3850;
                             const longitude = 78.4867;
                             const googleMapsUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
+                            userLocation = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
                             
                             locationInfo.innerHTML = `
                                 <i class="fas fa-map-marker-alt"></i>
-                                <span>Located at: <a href="${googleMapsUrl}" target="_blank">${latitude.toFixed(4)}, ${longitude.toFixed(4)}</a></span>
+                                <span>Located at: <a href="${googleMapsUrl}" target="_blank">${userLocation}</a></span>
                             `;
                         }, 1000);
                     },
@@ -934,10 +987,11 @@
                     const latitude = 17.3850;
                     const longitude = 78.4867;
                     const googleMapsUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
+                    userLocation = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
                     
                     locationInfo.innerHTML = `
                         <i class="fas fa-map-marker-alt"></i>
-                        <span>Located at: <a href="${googleMapsUrl}" target="_blank">${latitude.toFixed(4)}, ${longitude.toFixed(4)}</a></span>
+                        <span>Located at: <a href="${googleMapsUrl}" target="_blank">${userLocation}</a></span>
                     `;
                 }, 1000);
             }
@@ -972,31 +1026,39 @@
             total = 0;
             
             // Add items to cart display
-            cart.forEach(item => {
-                // Main cart display
-                const cartItem = document.createElement('div');
-                cartItem.className = 'cart-item';
-                cartItem.innerHTML = `
-                    <span>${item.name}</span>
-                    <span>₹${item.price}</span>
-                `;
-                cartItemsContainer.appendChild(cartItem);
-                
-                // Checkout modal display
-                const checkoutCartItem = document.createElement('div');
-                checkoutCartItem.className = 'cart-item';
-                checkoutCartItem.innerHTML = `
-                    <span>${item.name}</span>
-                    <span>₹${item.price}</span>
-                `;
-                checkoutCartItemsContainer.appendChild(checkoutCartItem);
-                
-                total += item.price;
-            });
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Your cart is empty</p>';
+                checkoutCartItemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Your cart is empty</p>';
+            } else {
+                cart.forEach(item => {
+                    // Main cart display
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item';
+                    cartItem.innerHTML = `
+                        <span>${item.name}</span>
+                        <span>₹${item.price}</span>
+                    `;
+                    cartItemsContainer.appendChild(cartItem);
+                    
+                    // Checkout modal display
+                    const checkoutCartItem = document.createElement('div');
+                    checkoutCartItem.className = 'cart-item';
+                    checkoutCartItem.innerHTML = `
+                        <span>${item.name}</span>
+                        <span>₹${item.price}</span>
+                    `;
+                    checkoutCartItemsContainer.appendChild(checkoutCartItem);
+                    
+                    total += item.price;
+                });
+            }
             
             // Update total display
             cartTotalElement.textContent = `₹${total}`;
             checkoutCartTotalElement.textContent = `₹${total}`;
+            
+            // Update cart count
+            cartCount.textContent = cart.length;
         }
         
         // Filter menu items by category
@@ -1033,8 +1095,29 @@
             showSlide(currentSlide);
         }
         
+        // Save order to localStorage (simulating admin panel integration)
+        function saveOrder(mobile, location, items, total) {
+            const order = {
+                id: 'ORD' + Date.now(),
+                mobile: mobile,
+                location: location,
+                items: items,
+                total: total,
+                status: 'Pending',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Get existing orders or initialize empty array
+            let orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
+            orders.push(order);
+            localStorage.setItem('mirdhuna_orders', JSON.stringify(orders));
+        }
+        
         // Event Listeners
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize cart
+            updateCart();
+            
             // Detect location on page load
             detectLocation();
             
@@ -1045,6 +1128,16 @@
             
             // Checkout button
             checkoutBtn.addEventListener('click', function() {
+                if (cart.length === 0) {
+                    alert('Your cart is empty! Please add items before checkout.');
+                    return;
+                }
+                
+                showModal(checkoutModal);
+            });
+            
+            // Cart indicator click (for mobile)
+            cartIndicator.addEventListener('click', function() {
                 if (cart.length === 0) {
                     alert('Your cart is empty! Please add items before checkout.');
                     return;
@@ -1079,7 +1172,7 @@
                 
                 if(mobile.length === 10 && /^\d+$/.test(mobile)) {
                     userLoggedIn = true;
-                    alert(`Login successful!\nMobile: ${mobile}\n You can now place orders.`);
+                    alert(`Login successful!\nMobile: ${mobile}\nLocation detected. You can now place orders.`);
                     hideModal(loginModal);
                 } else {
                     alert('Please enter a valid 10-digit mobile number');
@@ -1122,7 +1215,13 @@
                     return;
                 }
                 
-                alert(`Order placed successfully!\nTotal: ₹${total}\nThank you for ordering with MIRDHUNA!`);
+                const mobile = document.getElementById('mobile').value || 'Not provided';
+                
+                // Save order to localStorage (simulating admin panel integration)
+                saveOrder(mobile, userLocation, cart, total);
+                
+                alert(`Order placed successfully!\nOrder ID: ORD${Date.now()}\nTotal: ₹${total}\nThank you for ordering with MIRDHUNA!`);
+                
                 // Reset cart
                 cart = [];
                 updateCart();
@@ -1138,7 +1237,7 @@
             });
             
             // Auto slide change
-            setInterval(nextSlide, 3000);
+            setInterval(nextSlide, 5000);
         });
     </script>
 </body>
