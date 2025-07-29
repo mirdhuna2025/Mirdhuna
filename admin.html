@@ -161,7 +161,7 @@
             gap: 8px;
         }
         
-        .edit-btn, .delete-btn, .export-btn, .view-btn {
+        .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
             padding: 8px 15px;
             border: none;
             border-radius: 5px;
@@ -205,6 +205,15 @@
         
         .view-btn:hover {
             background: #7b1fa2;
+        }
+        
+        .update-btn {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .update-btn:hover {
+            background: #388e3c;
         }
         
         /* Stats */
@@ -469,6 +478,15 @@
             text-align: center;
         }
         
+        /* Status Select */
+        .status-select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: white;
+            font-weight: 500;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             header {
@@ -575,37 +593,8 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>#ORD001</td>
-                            <td>9876543210</td>
-                            <td>Pizza, Burger</td>
-                            <td><span style="color: #ff9800;">Pending</span></td>
-                            <td class="action-btns">
-                                <button class="view-btn" data-order="#ORD001">View</button>
-                                <button class="edit-btn" data-order="#ORD001">Update</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#ORD002</td>
-                            <td>8765432109</td>
-                            <td>Sandwich, Shake</td>
-                            <td><span style="color: #4caf50;">Completed</span></td>
-                            <td class="action-btns">
-                                <button class="view-btn" data-order="#ORD002">View</button>
-                                <button class="edit-btn" data-order="#ORD002">Update</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#ORD003</td>
-                            <td>7654321098</td>
-                            <td>Pizza, Shake</td>
-                            <td><span style="color: #2196f3;">In Progress</span></td>
-                            <td class="action-btns">
-                                <button class="view-btn" data-order="#ORD003">View</button>
-                                <button class="edit-btn" data-order="#ORD003">Update</button>
-                            </td>
-                        </tr>
+                    <tbody id="ordersTableBody">
+                        <!-- Orders will be populated here -->
                     </tbody>
                 </table>
             </div>
@@ -789,7 +778,7 @@
         const exportUsersBtn = document.getElementById('exportUsersBtn');
         const addSlideBtn = document.getElementById('addSlideBtn');
         const menuTable = document.getElementById('menuTable');
-        const ordersTable = document.getElementById('ordersTable');
+        const ordersTableBody = document.getElementById('ordersTableBody');
         const usersTable = document.getElementById('usersTable');
         const totalViewsElement = document.getElementById('totalViews');
         const todayViewsElement = document.getElementById('todayViews');
@@ -814,6 +803,9 @@
         
         // Admin functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Load orders from localStorage
+            loadOrders();
+            
             // Logout button
             logoutBtn.addEventListener('click', function() {
                 if(confirm('Are you sure you want to logout?')) {
@@ -893,28 +885,6 @@
                     if(confirm(`Are you sure you want to delete slide: "${slideContent}"?`)) {
                         slideContainer.remove();
                         alert('Slide deleted successfully!');
-                    }
-                });
-            });
-            
-            // View order details
-            document.querySelectorAll('#ordersTable .view-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = this.dataset.order;
-                    alert(`Order details for ${orderId} would be displayed here`);
-                });
-            });
-            
-            // Update order status
-            document.querySelectorAll('#ordersTable .edit-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = this.dataset.order;
-                    const row = this.closest('tr');
-                    const currentStatus = row.cells[3].textContent.trim();
-                    const newStatus = prompt(`Update status for order ${orderId} (Current: ${currentStatus})`, currentStatus);
-                    if (newStatus && newStatus !== currentStatus) {
-                        row.cells[3].innerHTML = `<span style="color: #ff9800;">${newStatus}</span>`;
-                        alert(`Order ${orderId} status updated to: ${newStatus}`);
                     }
                 });
             });
@@ -1053,6 +1023,65 @@
                 hideModal(slideModal);
             });
         });
+        
+        // Load orders from localStorage
+        function loadOrders() {
+            const orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
+            ordersTableBody.innerHTML = '';
+            
+            if (orders.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5" style="text-align: center; color: #999;">No orders found</td>';
+                ordersTableBody.appendChild(row);
+                return;
+            }
+            
+            orders.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.mobile}</td>
+                    <td>${order.items.map(item => item.name).join(', ')}</td>
+                    <td>
+                        <select class="status-select" data-order-id="${order.id}">
+                            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    </td>
+                    <td class="action-btns">
+                        <button class="update-btn" data-order-id="${order.id}">Update</button>
+                    </td>
+                `;
+                ordersTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to update buttons
+            document.querySelectorAll('.update-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.dataset.orderId;
+                    const selectElement = document.querySelector(`.status-select[data-order-id="${orderId}"]`);
+                    const newStatus = selectElement.value;
+                    
+                    // Update order status in localStorage
+                    updateOrderStatus(orderId, newStatus);
+                    
+                    alert(`Order ${orderId} status updated to: ${newStatus}`);
+                });
+            });
+        }
+        
+        // Update order status in localStorage
+        function updateOrderStatus(orderId, newStatus) {
+            let orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
+            orders = orders.map(order => {
+                if (order.id === orderId) {
+                    return { ...order, status: newStatus };
+                }
+                return order;
+            });
+            localStorage.setItem('mirdhuna_orders', JSON.stringify(orders));
+        }
     </script>
 </body>
 </html>
