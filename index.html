@@ -222,19 +222,8 @@
             margin-bottom: 40px;
         }
         
-        .cart-section {
-            flex: 1;
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            height: fit-content;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
         .menu-section {
-            flex: 2;
+            flex: 1;
             background: white;
             border-radius: 20px;
             padding: 25px;
@@ -247,48 +236,6 @@
             padding-bottom: 15px;
             border-bottom: 3px solid var(--secondary);
             font-size: 1.8rem;
-        }
-        
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px dashed #e0e0e0;
-        }
-        
-        .cart-item:last-child {
-            border-bottom: none;
-        }
-        
-        .cart-total {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 1.3rem;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px solid var(--secondary);
-        }
-        
-        .checkout-btn {
-            width: 100%;
-            padding: 16px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(6, 214, 160, 0.3);
-        }
-        
-        .checkout-btn:hover {
-            background: #05b88b;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(6, 214, 160, 0.5);
         }
         
         .menu-categories {
@@ -590,13 +537,13 @@
             right: 30px;
             background: var(--primary);
             color: white;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 2rem;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             cursor: pointer;
             z-index: 100;
@@ -674,10 +621,6 @@
             .menu-items {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
-            
-            .cart-section {
-                display: none;
-            }
         }
         
         @media (max-width: 480px) {
@@ -689,8 +632,10 @@
                 font-size: 1.8rem;
             }
             
-            .cart-section {
-                max-height: 300px;
+            .cart-indicator {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -752,18 +697,6 @@
         </div>
         
         <div class="main-content">
-            <div class="cart-section">
-                <h2>Your Cart</h2>
-                <div id="cartItems">
-                    <!-- Cart items will be populated here -->
-                </div>
-                <div class="cart-total">
-                    <span>Total:</span>
-                    <span id="cartTotal">₹0</span>
-                </div>
-                <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
-            </div>
-            
             <div class="menu-section">
                 <h2>Our Menu</h2>
                 <div class="menu-categories">
@@ -917,14 +850,11 @@
         const loginModal = document.getElementById('loginModal');
         const checkoutModal = document.getElementById('checkoutModal');
         const orderNowBtn = document.getElementById('orderNowBtn');
-        const checkoutBtn = document.getElementById('checkoutBtn');
         const closeLoginModal = document.getElementById('closeLoginModal');
         const closeCheckoutModal = document.getElementById('closeCheckoutModal');
         const loginForm = document.getElementById('loginForm');
         const locationInfo = document.getElementById('locationInfo');
-        const cartItemsContainer = document.getElementById('cartItems');
         const checkoutCartItemsContainer = document.getElementById('checkoutCartItems');
-        const cartTotalElement = document.getElementById('cartTotal');
         const checkoutCartTotalElement = document.getElementById('checkoutCartTotal');
         const placeOrderBtn = document.getElementById('placeOrderBtn');
         const categoryButtons = document.querySelectorAll('.category-btn');
@@ -1019,7 +949,6 @@
         // Update cart display
         function updateCart() {
             // Clear cart display
-            cartItemsContainer.innerHTML = '';
             checkoutCartItemsContainer.innerHTML = '';
             
             // Calculate total
@@ -1027,19 +956,9 @@
             
             // Add items to cart display
             if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Your cart is empty</p>';
                 checkoutCartItemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Your cart is empty</p>';
             } else {
                 cart.forEach(item => {
-                    // Main cart display
-                    const cartItem = document.createElement('div');
-                    cartItem.className = 'cart-item';
-                    cartItem.innerHTML = `
-                        <span>${item.name}</span>
-                        <span>₹${item.price}</span>
-                    `;
-                    cartItemsContainer.appendChild(cartItem);
-                    
                     // Checkout modal display
                     const checkoutCartItem = document.createElement('div');
                     checkoutCartItem.className = 'cart-item';
@@ -1054,7 +973,6 @@
             }
             
             // Update total display
-            cartTotalElement.textContent = `₹${total}`;
             checkoutCartTotalElement.textContent = `₹${total}`;
             
             // Update cart count
@@ -1126,17 +1044,7 @@
                 showModal(loginModal);
             });
             
-            // Checkout button
-            checkoutBtn.addEventListener('click', function() {
-                if (cart.length === 0) {
-                    alert('Your cart is empty! Please add items before checkout.');
-                    return;
-                }
-                
-                showModal(checkoutModal);
-            });
-            
-            // Cart indicator click (for mobile)
+            // Cart indicator click
             cartIndicator.addEventListener('click', function() {
                 if (cart.length === 0) {
                     alert('Your cart is empty! Please add items before checkout.');
