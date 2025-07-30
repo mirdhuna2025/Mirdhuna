@@ -1765,6 +1765,90 @@
                 });
             }, 5000); // Check every 5 seconds
         }
-    </script>
+    </script> <!-- ... (existing code above) ... -->
+                <div class="panel-header">
+                    <h2 class="panel-title"><i class="fas fa-receipt"></i> Order Management</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="export-btn" id="exportOrdersBtn">Export</button>
+                        <button class="export-btn" id="printOrdersBtn" style="background: #4caf50;">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                    </div>
+                </div>
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Mobile</th>
+                            <th>Items</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Orders will be populated here -->
+                    </tbody>
+                </table>
+<!-- ... (existing code below) ... -->
+
+<script>
+// ===== PRINT ORDERS BUTTON =====
+document.addEventListener("DOMContentLoaded", function() {
+    const printOrdersBtn = document.getElementById("printOrdersBtn");
+    if (printOrdersBtn) {
+        printOrdersBtn.addEventListener("click", function() {
+            // Clone the orders table
+            const ordersTable = document.getElementById("ordersTable");
+            if (!ordersTable) return;
+
+            // Create a new window for printing
+            const printWindow = window.open('', '', 'width=900,height=700');
+            // Optional: Add your company/admin panel branding
+            const style = `
+                <style>
+                    body { font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+                    h2 { color: #4361ee; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; }
+                    th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+                    th { background-color: #f1f5f9; font-weight: 600; color: #4361ee; }
+                    tr:hover { background-color: #f8fafc; }
+                </style>
+            `;
+
+            // Remove the Actions column from printout
+            const clonedTable = ordersTable.cloneNode(true);
+            // Remove the Actions header
+            if (clonedTable.tHead && clonedTable.tHead.rows[0].cells.length) {
+                clonedTable.tHead.rows[0].deleteCell(clonedTable.tHead.rows[0].cells.length - 1);
+            }
+            // Remove Actions cells in tbody
+            for (let row of clonedTable.tBodies[0].rows) {
+                row.deleteCell(row.cells.length - 1);
+            }
+
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print Orders - MIRDHUNA</title>
+                    ${style}
+                </head>
+                <body>
+                    <h2>Order List</h2>
+                    ${clonedTable.outerHTML}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            // Wait for content to load before printing
+            printWindow.onload = function() {
+                printWindow.print();
+                // Optional: close the window after printing
+                printWindow.close();
+            };
+        });
+    }
+});
+</script>
 </body>
 </html>
