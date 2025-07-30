@@ -3,123 +3,1715 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MIRDHUNA - Order Online</title>
-    <!-- ... other meta and style tags ... -->
-
-    <!-- Firebase SDK (v12, module form) -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-      import { getDatabase, ref, push, set, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
-
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
-        authDomain: "mirdhuna-4f652.firebaseapp.com",
-        databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
-        projectId: "mirdhuna-4f652",
-        storageBucket: "mirdhuna-4f652.appspot.com",
-        messagingSenderId: "184403369330",
-        appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
-        measurementId: "G-ZFWSGKE744"
-      };
-      const app = initializeApp(firebaseConfig);
-      const db = getDatabase(app);
-
-      // Make Firebase available globally for inline scripts
-      window.myFirebase = { db, ref, push, set, query, orderByChild, equalTo, get };
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRDHUNA - Online Food Ordering</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #FF6B00;
+            --secondary: #FFD166;
+            --accent: #06D6A0;
+            --dark: #1A1A1A;
+            --light: #FFF9C4;
+            --white: #FFFFFF;
+            --shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 15px;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 2px 2px 0 rgba(255, 107, 0, 0.2);
+            letter-spacing: 1px;
+        }
+        
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .contact-item:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        .contact-item i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 40px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 var(--secondary);
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--primary);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .cta-button:hover {
+            background: #e65100;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 0, 0.6);
+        }
+        
+        /* Slides Section */
+        .slides-container {
+            margin-bottom: 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            position: relative;
+            height: 200px;
+        }
+        
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 100%;
+        }
+        
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+        }
+        
+        .slide-content {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .slide-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .slide-content p {
+            font-size: 0.9rem;
+        }
+        
+        .slide-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+        }
+        
+        .indicator.active {
+            background: white;
+        }
+        
+        /* Menu Section */
+        .menu-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--secondary);
+            font-size: 1.8rem;
+        }
+        
+        .menu-categories {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: none;
+        }
+        
+        .menu-categories::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-btn {
+            padding: 12px 25px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .category-btn.active, .category-btn:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 5px 10px rgba(255, 107, 0, 0.3);
+        }
+        
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+        
+        .menu-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .item-image {
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .item-details {
+            padding: 20px;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .item-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+        
+        .item-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .item-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            min-height: 60px;
+        }
+        
+        .add-to-cart {
+            width: 100%;
+            padding: 12px;
+            background: var(--secondary);
+            color: var(--dark);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .add-to-cart:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            margin-top: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            animation: modalOpen 0.4s ease;
+        }
+        
+        @keyframes modalOpen {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: var(--primary);
+        }
+        
+        .modal h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
+        }
+        
+        .location-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .location-info i {
+            color: var(--primary);
+        }
+        
+        .login-btn {
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background: #e65100;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.3);
+        }
+        
+        .checkout-modal .cart-item {
+            padding: 10px 0;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        
+        .checkout-modal .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checkout-modal .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px solid var(--secondary);
+        }
+        
+        .place-order-btn {
+            padding: 15px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .place-order-btn:hover {
+            background: #05b88b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(6, 214, 160, 0.3);
+        }
+        
+        /* Cart Indicator */
+        .cart-indicator {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .cart-indicator:hover {
+            transform: scale(1.1);
+        }
+        
+        .cart-indicator .count {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        /* Order History */
+        .order-history {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            display: none;
+        }
+        
+        .order-history h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--secondary);
+            font-size: 1.8rem;
+        }
+        
+        .order-item {
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .order-items {
+            margin: 10px 0;
+            padding-left: 15px;
+        }
+        
+        .order-total {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .order-status {
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .status-progress {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+        
+        .status-completed {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        /* User Info */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        
+        .user-info i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+        
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Live Update Indicator */
+        .live-update-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4ade80;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .live-update-indicator .dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .contact-info {
+                align-items: center;
+                width: 100%;
+            }
+            
+            .hero {
+                padding: 30px 20px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .menu-items {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .user-info {
+                justify-content: space-between;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 10px 0;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            .hero {
+                padding: 25px 15px;
+                margin-bottom: 20px;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 0.95rem;
+            }
+            
+            .slides-container {
+                height: 180px;
+                margin-bottom: 20px;
+            }
+            
+            .menu-section {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+                margin-bottom: 15px;
+            }
+            
+            .menu-items {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 12px;
+            }
+            
+            .item-image {
+                height: 100px;
+            }
+            
+            .item-details {
+                padding: 12px;
+            }
+            
+            .item-header {
+                margin-bottom: 8px;
+            }
+            
+            .item-name, .item-price {
+                font-size: 0.9rem;
+            }
+            
+            .item-description {
+                font-size: 0.8rem;
+                margin-bottom: 12px;
+                min-height: 50px;
+            }
+            
+            .add-to-cart {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+            
+            footer {
+                padding: 15px;
+                margin-top: 15px;
+            }
+            
+            .footer-logo {
+                font-size: 1.3rem;
+            }
+            
+            .footer-links {
+                gap: 10px;
+            }
+            
+            .footer-links a {
+                font-size: 0.8rem;
+            }
+            
+            .copyright {
+                font-size: 0.7rem;
+                margin-top: 12px;
+                padding-top: 12px;
+            }
+            
+            .cart-indicator {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .cart-indicator .count {
+                width: 20px;
+                height: 20px;
+                font-size: 0.6rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+                width: 90%;
+            }
+            
+            .modal h2 {
+                font-size: 1.3rem;
+            }
+            
+            .close-modal {
+                top: 12px;
+                right: 12px;
+                font-size: 1.2rem;
+            }
+            
+            .order-history {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .order-item {
+                padding: 12px;
+            }
+            
+            .order-header {
+                margin-bottom: 8px;
+                font-size: 0.9rem;
+            }
+            
+            .order-items {
+                margin: 8px 0;
+                padding-left: 12px;
+                font-size: 0.85rem;
+            }
+            
+            .order-total {
+                font-size: 1rem;
+            }
+            
+            .order-status {
+                font-size: 0.7rem;
+                padding: 2px 6px;
+            }
+            
+            .user-info {
+                padding: 8px 12px;
+                margin-bottom: 15px;
+            }
+            
+            .user-info i {
+                font-size: 1rem;
+            }
+            
+            .logout-btn {
+                padding: 4px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .live-update-indicator {
+                top: 15px;
+                right: 15px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .live-update-indicator .dot {
+                width: 8px;
+                height: 8px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- ... your existing HTML UI code ... -->
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">MIRDHUNA</div>
+                <div class="tagline">Delicious Food Delivered</div>
+            </div>
+            <div class="contact-info">
+                <a href="https://maps.app.goo.gl/kotovw4g7chuqy5J8" target="_blank" class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i> Location
+                </a>
+                <a href="tel:9835124772" class="contact-item">
+                    <i class="fas fa-phone"></i> +91 9835124772
+                </a>
+                <a href="https://wa.me/9835124772" target="_blank" class="contact-item">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+        </header>
+        
+        <!-- User Info Section (shown when logged in) -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            <i class="fas fa-user"></i>
+            <span id="userMobile">Logged in as: </span>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+        
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Delicious Food at Your Doorstep</h1>
+                <p>Order your favorite pizza, burgers, sandwiches, and shakes online. Fast delivery, fresh ingredients, and amazing taste!</p>
+                <button class="cta-button" id="orderNowBtn">Order Now</button>
+            </div>
+        </div>
+        
+        <div class="slides-container">
+            <div class="slides" id="slidesContainer">
+                <!-- Slides will be populated here -->
+            </div>
+            <div class="slide-indicators" id="slideIndicators">
+                <!-- Indicators will be populated here -->
+            </div>
+        </div>
+        
+        <div class="menu-section">
+            <h2>Our Menu</h2>
+            <div class="menu-categories" id="menuCategories">
+                <!-- Categories will be populated here -->
+            </div>
+            
+            <div class="menu-items" id="menuItemsContainer">
+                <!-- Menu items will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Order History Section -->
+        <div class="order-history" id="orderHistory">
+            <h2>Your Order History</h2>
+            <div id="orderHistoryList">
+                <!-- Order history will be populated here -->
+            </div>
+        </div>
+        
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">MIRDHUNA</div>
+                <div class="footer-links">
+                    <a href="#">Home</a>
+                    <a href="#">Menu</a>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="admin.html">Admin</a>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 MIRDHUNA. All rights reserved.</p>
+                <p>Online Pizza, Burger, Sandwich & Shake Delivery</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Cart Indicator -->
+    <div class="cart-indicator" id="cartIndicator">
+        <i class="fas fa-shopping-cart"></i>
+        <div class="count" id="cartCount">0</div>
+    </div>
+    
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeLoginModal">&times;</span>
+            <h2>User Login</h2>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="tel" id="mobile" placeholder="Enter your 10-digit mobile number" required>
+                </div>
+                <div class="form-group">
+                    <label>Location (Auto-detected)</label>
+                    <div class="location-info" id="locationInfo">
+                        <i class="fas fa-location-arrow"></i>
+                        <span>Detecting your location...</span>
+                    </div>
+                </div>
+                <button type="submit" class="login-btn">Login & Place Order</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Checkout Modal -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content checkout-modal">
+            <span class="close-modal" id="closeCheckoutModal">&times;</span>
+            <h2>Order Summary</h2>
+            <div id="checkoutCartItems">
+                <!-- Cart items will be populated here -->
+            </div>
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="checkoutCartTotal">₹0</span>
+            </div>
+            <button class="place-order-btn" id="placeOrderBtn">Place Order</button>
+        </div>
+    </div>
+    
+    <!-- Live Update Indicator -->
+    <div class="live-update-indicator" id="liveUpdateIndicator">
+        <div class="dot"></div>
+        <span>Updating orders...</span>
+    </div>
 
     <script type="module">
-      // Assume: currentUser, userLocation, cart, total, userLoggedIn are defined elsewhere in your UI code
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, get, child } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
 
-      // Save order to Firebase
-      async function saveOrderToFirebase(mobile, location, items, total) {
-        const order = {
-          mobile,
-          location,
-          items,
-          total,
-          status: "Pending",
-          timestamp: new Date().toISOString()
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
+            authDomain: "mirdhuna-4f652.firebaseapp.com",
+            databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
+            projectId: "mirdhuna-4f652",
+            storageBucket: "mirdhuna-4f652.firebasestorage.app",
+            messagingSenderId: "184403369330",
+            appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
+            measurementId: "G-ZFWSGKE744"
         };
-        const { db, ref, push, set } = window.myFirebase;
-        const ordersRef = ref(db, "orders");
-        const newOrderRef = push(ordersRef);
-        await set(newOrderRef, order);
-        return newOrderRef.key;
-      }
 
-      // Load user order history from Firebase
-      async function loadUserOrderHistory(mobile) {
-        const { db, ref, query, orderByChild, equalTo, get } = window.myFirebase;
-        const ordersRef = ref(db, "orders");
-        // Query for orders where mobile == user's mobile
-        const q = query(ordersRef, orderByChild("mobile"), equalTo(mobile));
-        const snapshot = await get(q);
-        let userOrders = [];
-        if (snapshot.exists()) {
-          snapshot.forEach(childSnap => {
-            const o = childSnap.val();
-            o.id = childSnap.key;
-            userOrders.push(o);
-          });
-        }
-        // Sort by timestamp descending
-        userOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        // Render order history (replace with your UI logic)
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const loginModal = document.getElementById('loginModal');
+        const checkoutModal = document.getElementById('checkoutModal');
+        const orderNowBtn = document.getElementById('orderNowBtn');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const closeCheckoutModal = document.getElementById('closeCheckoutModal');
+        const loginForm = document.getElementById('loginForm');
+        const locationInfo = document.getElementById('locationInfo');
+        const checkoutCartItemsContainer = document.getElementById('checkoutCartItems');
+        const checkoutCartTotalElement = document.getElementById('checkoutCartTotal');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+        const menuCategories = document.getElementById('menuCategories');
+        const menuItemsContainer = document.getElementById('menuItemsContainer');
+        const cartIndicator = document.getElementById('cartIndicator');
+        const cartCount = document.getElementById('cartCount');
+        const userInfo = document.getElementById('userInfo');
+        const userMobile = document.getElementById('userMobile');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const orderHistory = document.getElementById('orderHistory');
         const orderHistoryList = document.getElementById('orderHistoryList');
-        orderHistoryList.innerHTML = '';
-        if (userOrders.length === 0) {
-          orderHistoryList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No order history found</p>';
-        } else {
-          userOrders.forEach(order => {
-            const orderDate = new Date(order.timestamp).toLocaleDateString();
-            const orderTime = new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const orderElement = document.createElement('div');
-            orderElement.className = 'order-item';
-            orderElement.innerHTML = `
-              <div class="order-header">
-                  <span>Order ID: ${order.id}</span>
-                  <span class="order-status status-${order.status.toLowerCase()}">${order.status}</span>
-              </div>
-              <div>Date: ${orderDate} at ${orderTime}</div>
-              <div class="order-items">
-                  Items: ${order.items.map(item => item.name).join(', ')}
-              </div>
-              <div class="order-total">Total: ₹${order.total}</div>
-            `;
-            orderHistoryList.appendChild(orderElement);
-          });
+        const slidesContainer = document.getElementById('slidesContainer');
+        const slideIndicators = document.getElementById('slideIndicators');
+        const liveUpdateIndicator = document.getElementById('liveUpdateIndicator');
+        
+        // State variables
+        let cart = [];
+        let total = 0;
+        let userLoggedIn = false;
+        let currentUser = null;
+        let currentSlide = 0;
+        let userLocation = "";
+        let lastOrdersUpdate = 0;
+        let liveUpdateInterval;
+        
+        // Auto-detect location
+        function detectLocation() {
+            locationInfo.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Detecting your location...</span>';
+            
+            // Use Geolocation API to get current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        const googleMapsUrl = `https://maps.google.com/?q=${lat},${lng}`;
+                        userLocation = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                        
+                        locationInfo.innerHTML = `
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Located at: <a href="${googleMapsUrl}" target="_blank">${userLocation}</a></span>
+                        `;
+                    },
+                    function(error) {
+                        console.error("Geolocation error:", error);
+                        // Fallback to simulated location
+                        setTimeout(() => {
+                            const latitude = 17.3850;
+                            const longitude = 78.4867;
+                            const googleMapsUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
+                            userLocation = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                            
+                            locationInfo.innerHTML = `
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Located at: <a href="${googleMapsUrl}" target="_blank">${userLocation}</a></span>
+                            `;
+                        }, 1000);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 300000
+                    }
+                );
+            } else {
+                // Fallback if geolocation is not supported
+                setTimeout(() => {
+                    const latitude = 17.3850;
+                    const longitude = 78.4867;
+                    const googleMapsUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
+                    userLocation = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                    
+                    locationInfo.innerHTML = `
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Located at: <a href="${googleMapsUrl}" target="_blank">${userLocation}</a></span>
+                    `;
+                }, 1000);
+            }
         }
-      }
-
-      // Place order button logic (replace your old handler)
-      placeOrderBtn.addEventListener('click', async function() {
-        if (!userLoggedIn) {
-          alert('Please login first to place an order.');
-          hideModal(checkoutModal);
-          showModal(loginModal);
-          return;
+        
+        // Add item to cart
+        function addToCart(itemName, price) {
+            cart.push({ name: itemName, price: parseInt(price) });
+            updateCart();
+            
+            // Visual feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Added!';
+            button.style.backgroundColor = '#4CAF50';
+            button.style.color = 'white';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = '';
+                button.style.color = '';
+            }, 1500);
         }
-        if (cart.length === 0) {
-          alert('Your cart is empty! Please add items before checkout.');
-          return;
+        
+        // Update cart display
+        function updateCart() {
+            // Clear cart display
+            checkoutCartItemsContainer.innerHTML = '';
+            
+            // Calculate total
+            total = 0;
+            
+            // Add items to cart display
+            if (cart.length === 0) {
+                checkoutCartItemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Your cart is empty</p>';
+            } else {
+                cart.forEach(item => {
+                    // Checkout modal display
+                    const checkoutCartItem = document.createElement('div');
+                    checkoutCartItem.className = 'cart-item';
+                    checkoutCartItem.innerHTML = `
+                        <span>${item.name}</span>
+                        <span>₹${item.price}</span>
+                    `;
+                    checkoutCartItemsContainer.appendChild(checkoutCartItem);
+                    
+                    total += item.price;
+                });
+            }
+            
+            // Update total display
+            checkoutCartTotalElement.textContent = `₹${total}`;
+            
+            // Update cart count
+            cartCount.textContent = cart.length;
         }
-        const orderId = await saveOrderToFirebase(currentUser.mobile, userLocation, cart, total);
-        alert(`Order placed successfully!\nOrder ID: ${orderId}\nTotal: ₹${total}\nThank you for ordering with MIRDHUNA!`);
-        cart = [];
-        updateCart();
-        hideModal(checkoutModal);
-        loadUserOrderHistory(currentUser.mobile);
-      });
-
-      // On login or page load, call:
-      // loadUserOrderHistory(currentUser.mobile);
-
+        
+        // Filter menu items by category
+        function filterMenu(category) {
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Render menu items from Firebase
+        function renderMenuItems() {
+            // Listen for menu items in Firebase
+            const menuRef = ref(database, 'menu');
+            onValue(menuRef, (snapshot) => {
+                const data = snapshot.val();
+                menuItemsContainer.innerHTML = '';
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const item = data[key];
+                        const menuItem = document.createElement('div');
+                        menuItem.className = 'menu-item';
+                        menuItem.dataset.category = item.category;
+                        
+                        menuItem.innerHTML = `
+                            <div class="item-image" style="background-image: url('${item.image}');"></div>
+                            <div class="item-details">
+                                <div class="item-header">
+                                    <div class="item-name">${item.name}</div>
+                                    <div class="item-price">₹${item.price}</div>
+                                </div>
+                                <p class="item-description">${item.description}</p>
+                                <button class="add-to-cart" data-item="${item.name}" data-price="${item.price}">Add to Cart</button>
+                            </div>
+                        `;
+                        
+                        menuItemsContainer.appendChild(menuItem);
+                    });
+                    
+                    // Add event listeners to new buttons
+                    document.querySelectorAll('.add-to-cart').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const itemName = this.dataset.item;
+                            const price = this.dataset.price;
+                            addToCart(itemName, price);
+                        });
+                    });
+                } else {
+                    menuItemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No menu items found</p>';
+                }
+            });
+        }
+        
+        // Render menu categories
+        function renderMenuCategories() {
+            // Get menu items to determine categories
+            const menuRef = ref(database, 'menu');
+            get(menuRef).then((snapshot) => {
+                const data = snapshot.val();
+                menuCategories.innerHTML = '';
+                
+                if (data) {
+                    const categories = [...new Set(Object.values(data).map(item => item.category))];
+                    
+                    // Add "All Items" button
+                    const allButton = document.createElement('button');
+                    allButton.className = 'category-btn active';
+                    allButton.dataset.category = 'all';
+                    allButton.textContent = 'All Items';
+                    menuCategories.appendChild(allButton);
+                    
+                    // Add category buttons
+                    categories.forEach(category => {
+                        const button = document.createElement('button');
+                        button.className = 'category-btn';
+                        button.dataset.category = category;
+                        button.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                        menuCategories.appendChild(button);
+                    });
+                    
+                    // Add event listeners
+                    document.querySelectorAll('.category-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            // Update active button
+                            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                            this.classList.add('active');
+                            
+                            // Filter menu items
+                            const category = this.dataset.category;
+                            filterMenu(category);
+                        });
+                    });
+                } else {
+                    menuCategories.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No categories found</p>';
+                }
+            });
+        }
+        
+        // Render slides
+        function renderSlides() {
+            // Listen for slides in Firebase
+            const slidesRef = ref(database, 'slides');
+            onValue(slidesRef, (snapshot) => {
+                const data = snapshot.val();
+                slidesContainer.innerHTML = '';
+                slideIndicators.innerHTML = '';
+                
+                if (data) {
+                    Object.keys(data).forEach((key, index) => {
+                        const slide = data[key];
+                        const slideElement = document.createElement('div');
+                        slideElement.className = 'slide';
+                        slideElement.style.backgroundImage = `url('${slide.image}')`;
+                        
+                        const slideContent = document.createElement('div');
+                        slideContent.className = 'slide-content';
+                        slideContent.innerHTML = `
+                            <h3>${slide.title}</h3>
+                            <p>${slide.description}</p>
+                        `;
+                        
+                        slideElement.appendChild(slideContent);
+                        slidesContainer.appendChild(slideElement);
+                        
+                        // Add indicator
+                        const indicator = document.createElement('div');
+                        indicator.className = 'indicator';
+                        if (index === 0) indicator.classList.add('active');
+                        slideIndicators.appendChild(indicator);
+                    });
+                    
+                    // Add event listeners to indicators
+                    document.querySelectorAll('.indicator').forEach((indicator, index) => {
+                        indicator.addEventListener('click', () => {
+                            currentSlide = index;
+                            showSlide(currentSlide);
+                        });
+                    });
+                } else {
+                    slidesContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No slides found</p>';
+                }
+            });
+        }
+        
+        // Show slide
+        function showSlide(index) {
+            slidesContainer.style.transform = `translateX(-${index * 100}%)`;
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === index);
+            });
+        }
+        
+        // Next slide
+        function nextSlide() {
+            const indicators = document.querySelectorAll('.indicator');
+            currentSlide = (currentSlide + 1) % indicators.length;
+            showSlide(currentSlide);
+        }
+        
+        // Save order to Firebase
+        function saveOrder(mobile, location, items, total) {
+            const ordersRef = ref(database, 'orders');
+            const newOrderRef = push(ordersRef);
+            
+            const order = {
+                id: newOrderRef.key,
+                mobile: mobile,
+                location: location,
+                items: items,
+                total: total,
+                status: 'Pending',
+                timestamp: new Date().toISOString()
+            };
+            
+            set(newOrderRef, order)
+                .then(() => {
+                    console.log('Order saved successfully!');
+                    // Update last orders update timestamp
+                    lastOrdersUpdate = Date.now();
+                })
+                .catch((error) => {
+                    console.error('Error saving order:', error);
+                });
+            
+            return newOrderRef.key;
+        }
+        
+        // Load user order history from Firebase
+        function loadUserOrderHistory(mobile) {
+            const ordersRef = ref(database, 'orders');
+            onValue(ordersRef, (snapshot) => {
+                const data = snapshot.val();
+                orderHistoryList.innerHTML = '';
+                
+                if (data) {
+                    const userOrders = Object.values(data).filter(order => order.mobile === mobile);
+                    
+                    if (userOrders.length === 0) {
+                        orderHistoryList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No order history found</p>';
+                        return;
+                    }
+                    
+                    // Sort orders by timestamp (newest first)
+                    userOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    
+                    userOrders.forEach(order => {
+                        const orderDate = new Date(order.timestamp).toLocaleDateString();
+                        const orderTime = new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        
+                        const orderElement = document.createElement('div');
+                        orderElement.className = 'order-item';
+                        orderElement.innerHTML = `
+                            <div class="order-header">
+                                <span>Order ID: ${order.id}</span>
+                                <span class="order-status status-${order.status.toLowerCase()}">${order.status}</span>
+                            </div>
+                            <div>Date: ${orderDate} at ${orderTime}</div>
+                            <div class="order-items">
+                                Items: ${order.items.map(item => item.name).join(', ')}
+                            </div>
+                            <div class="order-total">Total: ₹${order.total}</div>
+                        `;
+                        orderHistoryList.appendChild(orderElement);
+                    });
+                    
+                    // Show order history section
+                    orderHistory.style.display = 'block';
+                } else {
+                    orderHistoryList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No order history found</p>';
+                }
+            });
+        }
+        
+        // Check if user is already logged in
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('mirdhuna_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                userLoggedIn = true;
+                userMobile.textContent = `Logged in as: ${currentUser.mobile}`;
+                userInfo.style.display = 'flex';
+                
+                // Load user order history
+                loadUserOrderHistory(currentUser.mobile);
+                
+                // If cart has items, show checkout modal directly
+                if (cart.length > 0) {
+                    updateCart();
+                    showModal(checkoutModal);
+                }
+            }
+        }
+        
+        // Show modal
+        function showModal(modal) {
+            modal.style.display = 'flex';
+        }
+        
+        // Hide modal
+        function hideModal(modal) {
+            modal.style.display = 'none';
+        }
+        
+        // Live update function
+        function startLiveUpdates() {
+            // Clear any existing interval
+            if (liveUpdateInterval) {
+                clearInterval(liveUpdateInterval);
+            }
+            
+            // Set up interval to check for updates
+            liveUpdateInterval = setInterval(() => {
+                // Check for order updates in Firebase
+                const ordersRef = ref(database, 'orders');
+                get(ordersRef).then((snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const latestOrder = Object.values(data).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+                        if (latestOrder && new Date(latestOrder.timestamp).getTime() > lastOrdersUpdate) {
+                            lastOrdersUpdate = new Date(latestOrder.timestamp).getTime();
+                            
+                            // Show live update indicator
+                            liveUpdateIndicator.style.display = 'flex';
+                            setTimeout(() => {
+                                liveUpdateIndicator.style.display = 'none';
+                            }, 2000);
+                            
+                            // Reload user order history if logged in
+                            if (userLoggedIn && currentUser) {
+                                loadUserOrderHistory(currentUser.mobile);
+                            }
+                        }
+                    }
+                });
+            }, 3000); // Check every 3 seconds
+        }
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize cart
+            updateCart();
+            
+            // Render menu items and categories
+            renderMenuItems();
+            renderMenuCategories();
+            
+            // Render slides
+            renderSlides();
+            
+            // Check login status
+            checkLoginStatus();
+            
+            // Start live updates
+            startLiveUpdates();
+            
+            // Detect location on page load
+            detectLocation();
+            
+            // Order Now button
+            orderNowBtn.addEventListener('click', function() {
+                if (userLoggedIn) {
+                    // If already logged in, show checkout modal directly
+                    if (cart.length > 0) {
+                        updateCart();
+                        showModal(checkoutModal);
+                    } else {
+                        alert('Please add items to your cart first!');
+                    }
+                } else {
+                    // Show login modal
+                    showModal(loginModal);
+                }
+            });
+            
+            // Cart indicator click
+            cartIndicator.addEventListener('click', function() {
+                if (cart.length === 0) {
+                    alert('Your cart is empty! Please add items before checkout.');
+                    return;
+                }
+                
+                if (userLoggedIn) {
+                    // If already logged in, show checkout modal directly
+                    updateCart();
+                    showModal(checkoutModal);
+                } else {
+                    // Show login modal
+                    showModal(loginModal);
+                }
+            });
+            
+            // Close modals
+            closeLoginModal.addEventListener('click', function() {
+                hideModal(loginModal);
+            });
+            
+            closeCheckoutModal.addEventListener('click', function() {
+                hideModal(checkoutModal);
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === loginModal) {
+                    hideModal(loginModal);
+                }
+                if (event.target === checkoutModal) {
+                    hideModal(checkoutModal);
+                }
+            });
+            
+            // Login form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const mobile = document.getElementById('mobile').value;
+                
+                if(mobile.length === 10 && /^\d+$/.test(mobile)) {
+                    userLoggedIn = true;
+                    currentUser = { mobile: mobile, location: userLocation };
+                    
+                    // Save user to localStorage
+                    localStorage.setItem('mirdhuna_user', JSON.stringify(currentUser));
+                    
+                    // Update UI
+                    userMobile.textContent = `Logged in as: ${mobile}`;
+                    userInfo.style.display = 'flex';
+                    
+                    // Load user order history
+                    loadUserOrderHistory(mobile);
+                    
+                    alert(`Login successful!\nMobile: ${mobile}\nLocation detected. You can now place orders.`);
+                    hideModal(loginModal);
+                    
+                    // If cart has items, show checkout modal directly
+                    if (cart.length > 0) {
+                        updateCart();
+                        showModal(checkoutModal);
+                    }
+                } else {
+                    alert('Please enter a valid 10-digit mobile number');
+                }
+            });
+            
+            // Logout button
+            logoutBtn.addEventListener('click', function() {
+                userLoggedIn = false;
+                currentUser = null;
+                localStorage.removeItem('mirdhuna_user');
+                userInfo.style.display = 'none';
+                orderHistory.style.display = 'none';
+                alert('You have been logged out.');
+            });
+            
+            // Place order button
+            placeOrderBtn.addEventListener('click', function() {
+                if (!userLoggedIn) {
+                    alert('Please login first to place an order.');
+                    hideModal(checkoutModal);
+                    showModal(loginModal);
+                    return;
+                }
+                
+                if (cart.length === 0) {
+                    alert('Your cart is empty! Please add items before checkout.');
+                    return;
+                }
+                
+                // Save order to Firebase
+                const orderId = saveOrder(currentUser.mobile, userLocation, cart, total);
+                
+                alert(`Order placed successfully!\nOrder ID: ${orderId}\nTotal: ₹${total}\nThank you for ordering with MIRDHUNA!`);
+                
+                // Reset cart
+                cart = [];
+                updateCart();
+                hideModal(checkoutModal);
+                
+                // Reload order history
+                loadUserOrderHistory(currentUser.mobile);
+            });
+            
+            // Slide indicators
+            document.querySelectorAll('.indicator').forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    currentSlide = index;
+                    showSlide(currentSlide);
+                });
+            });
+            
+            // Auto slide change
+            setInterval(nextSlide, 5000);
+        });
     </script>
-    <!-- ... rest of your HTML ... -->
 </body>
 </html>
