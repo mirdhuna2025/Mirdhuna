@@ -72,7 +72,7 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+            box-shadow: 0 3px 10px rgba(67, 97, 238, 0.3);
         }
         
         .logout-btn:hover {
@@ -137,7 +137,7 @@
         }
         
         .stat-card.users .stat-icon {
-            background: rgba(63, 55, 201, 0.15);
+            background: rgba(79, 55, 201, 0.15);
             color: var(--secondary);
         }
         
@@ -178,12 +178,12 @@
             align-items: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 3px solid var(--secondary);
         }
         
         .panel-title {
             color: var(--primary);
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -200,7 +200,7 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(76, 201, 240, 0.3);
+            box-shadow: 0 3px 10px rgba(76, 201, 240, 0.3);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -242,10 +242,10 @@
             flex-wrap: wrap;
         }
         
-        .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn, .print-btn {
+        .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
             padding: 8px 15px;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
             font-size: 0.9rem;
             font-weight: 500;
@@ -300,15 +300,6 @@
             background: #388e3c;
         }
         
-        .print-btn {
-            background: #ff9800;
-            color: white;
-        }
-        
-        .print-btn:hover {
-            background: #f57c00;
-        }
-        
         /* Form Styles */
         .form-group {
             margin-bottom: 20px;
@@ -319,6 +310,7 @@
             margin-bottom: 8px;
             font-weight: 500;
             color: var(--dark);
+            font-size: 0.9rem;
         }
         
         .form-group input, .form-group textarea, .form-group select {
@@ -378,41 +370,6 @@
             box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
         }
         
-        /* Slides */
-        .slide-container {
-            position: relative;
-            margin-bottom: 25px;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .slide-preview {
-            height: 180px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            position: relative;
-        }
-        
-        .slide-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .slide-controls {
-            display: flex;
-            justify-content: space-between;
-            padding: 0 10px;
-        }
-        
         /* Image Preview */
         .image-preview {
             width: 100%;
@@ -435,6 +392,7 @@
         
         .image-preview .placeholder {
             color: #999;
+            font-size: 0.9rem;
         }
         
         /* Footer */
@@ -465,6 +423,7 @@
         .footer-links {
             display: flex;
             gap: 25px;
+            flex-wrap: wrap;
         }
         
         .footer-links a {
@@ -472,6 +431,7 @@
             color: var(--dark);
             font-weight: 500;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
         
         .footer-links a:hover {
@@ -483,6 +443,7 @@
             padding-top: 20px;
             border-top: 1px solid #e0e0e0;
             color: #666;
+            font-size: 0.8rem;
         }
         
         /* Modal Styles */
@@ -534,135 +495,81 @@
         .modal h2 {
             margin-top: 0;
             text-align: center;
+            font-size: 1.5rem;
         }
         
         /* Status Select */
         .status-select {
             padding: 8px 12px;
-            border-radius: 6px;
+            border-radius: 5px;
             border: 1px solid #ddd;
             background: white;
             font-weight: 500;
             font-size: 0.9rem;
         }
         
-        /* Login Form */
-        .login-form {
+        /* Date Range */
+        .date-range {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            gap: 15px;
+            margin-top: 20px;
         }
         
-        .login-btn {
-            padding: 15px;
-            background: var(--primary);
+        .date-range .form-group {
+            flex: 1;
+        }
+        
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f44336;
             color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-        
-        .login-btn:hover {
-            background: #3730a3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-        
-        /* Print Receipt */
-        .print-receipt {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            justify-content: center;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
             align-items: center;
-        }
-        
-        .receipt-content {
-            background: white;
-            padding: 30px;
-            width: 300px;
-            font-family: monospace;
-            font-size: 14px;
-        }
-        
-        .receipt-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .receipt-header h2 {
-            margin: 0;
-            font-size: 24px;
-        }
-        
-        .receipt-header p {
-            margin: 5px 0;
-            font-size: 12px;
-        }
-        
-        .receipt-divider {
-            border-top: 1px dashed #000;
-            margin: 15px 0;
-        }
-        
-        .receipt-items {
-            margin: 15px 0;
-        }
-        
-        .receipt-item {
-            display: flex;
-            justify-content: space-between;
-            margin: 8px 0;
-        }
-        
-        .receipt-total {
-            display: flex;
-            justify-content: space-between;
+            justify-content: center;
+            font-size: 0.7rem;
             font-weight: bold;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px dashed #000;
+            animation: pulse 1.5s infinite;
         }
         
-        .receipt-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
         
-        .print-btn-receipt {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background: var(--primary);
+        /* Live Update Indicator */
+        .live-update-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4ade80;
             color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            margin-top: 20px;
-            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .live-update-indicator .dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
         }
         
         /* Responsive Design */
-        @media (max-width: 992px) {
-            .admin-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .dashboard-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -672,10 +579,9 @@
             
             .admin-info {
                 align-items: center;
-                width: 100%;
             }
             
-            .dashboard-stats {
+            .admin-content {
                 grid-template-columns: 1fr;
             }
             
@@ -689,16 +595,16 @@
             }
             
             th, td {
-                padding: 10px;
+                padding: 12px;
             }
             
             .action-btns {
-                gap: 4px;
+                gap: 6px;
             }
             
-            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn, .print-btn {
-                padding: 5px 8px;
-                font-size: 0.7rem;
+            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
             }
         }
         
@@ -720,32 +626,7 @@
                 font-size: 0.9rem;
             }
             
-            .dashboard-stats {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .stat-card {
-                padding: 20px;
-            }
-            
-            .stat-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
-            }
-            
-            .stat-value {
-                font-size: 1.8rem;
-                margin-bottom: 5px;
-            }
-            
-            .stat-label {
-                font-size: 0.9rem;
-            }
-            
             .admin-content {
-                grid-template-columns: 1fr;
                 gap: 20px;
             }
             
@@ -755,11 +636,11 @@
             
             .panel-header {
                 margin-bottom: 20px;
-                padding-bottom: 10px;
+                padding-bottom: 12px;
             }
             
             .panel-title {
-                font-size: 1.4rem;
+                font-size: 1.3rem;
             }
             
             .add-btn {
@@ -772,20 +653,16 @@
             }
             
             th, td {
-                padding: 8px;
+                padding: 10px;
             }
             
             .action-btns {
-                gap: 4px;
+                gap: 5px;
             }
             
-            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn, .print-btn {
-                padding: 5px 8px;
-                font-size: 0.7rem;
-            }
-            
-            .form-group {
-                margin-bottom: 15px;
+            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
+                padding: 5px 10px;
+                font-size: 0.75rem;
             }
             
             .form-group label {
@@ -793,31 +670,18 @@
             }
             
             .form-group input, .form-group textarea, .form-group select {
-                padding: 10px;
-                font-size: 0.9rem;
+                padding: 10px 12px;
+                font-size: 0.85rem;
             }
             
             .form-actions {
-                gap: 10px;
-                margin-top: 20px;
+                gap: 12px;
+                margin-top: 25px;
             }
             
             .save-btn, .cancel-btn {
                 padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .slide-preview {
-                height: 150px;
-            }
-            
-            .slide-content {
-                padding: 12px;
-                font-size: 0.9rem;
-            }
-            
-            .slide-controls {
-                padding: 0 8px;
+                font-size: 0.85rem;
             }
             
             .image-preview {
@@ -831,11 +695,6 @@
             footer {
                 padding: 20px;
                 margin-top: 20px;
-            }
-            
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
             }
             
             .footer-logo {
@@ -858,7 +717,7 @@
             
             .modal-content {
                 padding: 20px;
-                width: 90%;
+                width: 95%;
             }
             
             .modal h2 {
@@ -876,9 +735,34 @@
                 font-size: 0.85rem;
             }
             
-            .login-btn {
-                padding: 12px;
-                font-size: 1rem;
+            .date-range {
+                gap: 10px;
+                margin-top: 15px;
+            }
+            
+            .date-range .form-group {
+                margin-bottom: 15px;
+            }
+            
+            .date-range .form-group label {
+                font-size: 0.85rem;
+            }
+            
+            .date-range .form-group input {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .live-update-indicator {
+                top: 15px;
+                right: 15px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .live-update-indicator .dot {
+                width: 8px;
+                height: 8px;
             }
         }
     </style>
@@ -892,6 +776,12 @@
                 <button class="logout-btn" id="logoutBtn">Logout</button>
             </div>
         </header>
+        
+        <!-- Live Update Indicator -->
+        <div class="live-update-indicator" id="liveUpdateIndicator">
+            <div class="dot"></div>
+            <span>Updating orders...</span>
+        </div>
         
         <div class="dashboard-stats">
             <div class="stat-card orders">
@@ -963,9 +853,7 @@
             <div class="panel">
                 <div class="panel-header">
                     <h2 class="panel-title"><i class="fas fa-receipt"></i> Order Management</h2>
-                    <button class="export-btn" id="exportOrdersBtn">
-                        <i class="fas fa-file-export"></i> Export
-                    </button>
+                    <button class="export-btn" id="exportOrdersBtn">Export</button>
                 </div>
                 <table id="ordersTable">
                     <thead>
@@ -987,9 +875,7 @@
             <div class="panel">
                 <div class="panel-header">
                     <h2 class="panel-title"><i class="fas fa-user-clock"></i> User Login History</h2>
-                    <button class="export-btn" id="exportUsersBtn">
-                        <i class="fas fa-file-export"></i> Export
-                    </button>
+                    <button class="export-btn" id="exportUsersBtn">Export</button>
                 </div>
                 <table id="usersTable">
                     <thead>
@@ -998,27 +884,11 @@
                             <th>Location</th>
                             <th>Orders</th>
                             <th>Last Login</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>9876543210</td>
-                            <td><a href="https://maps.google.com/?q=17.3850,78.4867" target="_blank">17.3850, 78.4867</a></td>
-                            <td>5</td>
-                            <td>2023-07-15</td>
-                        </tr>
-                        <tr>
-                            <td>8765432109</td>
-                            <td><a href="https://maps.google.com/?q=12.9716,77.5946" target="_blank">12.9716, 77.5946</a></td>
-                            <td>3</td>
-                            <td>2023-07-14</td>
-                        </tr>
-                        <tr>
-                            <td>7654321098</td>
-                            <td><a href="https://maps.google.com/?q=19.0760,72.8777" target="_blank">19.0760, 72.8777</a></td>
-                            <td>7</td>
-                            <td>2023-07-13</td>
-                        </tr>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be populated here -->
                     </tbody>
                 </table>
             </div>
@@ -1027,9 +897,7 @@
             <div class="panel">
                 <div class="panel-header">
                     <h2 class="panel-title"><i class="fas fa-images"></i> Slides Management</h2>
-                    <button class="add-btn" id="addSlideBtn">
-                        <i class="fas fa-plus"></i> Add Slide
-                    </button>
+                    <button class="add-btn" id="addSlideBtn">Add Slide</button>
                 </div>
                 <div id="slidesContainer">
                     <!-- Slides will be populated here -->
@@ -1043,18 +911,25 @@
                 </div>
                 <div class="stats">
                     <div class="stat-card">
-                        <div class="stat-value" id="analyticsTotalViews">1,248</div>
+                        <div class="stat-value" id="analyticsTotalViews">0</div>
                         <div class="stat-label">Total Views</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="analyticsTodayViews">127</div>
+                        <div class="stat-value" id="analyticsTodayViews">0</div>
                         <div class="stat-label">Today's Views</div>
                     </div>
                 </div>
-                <div class="form-group" style="margin-top: 30px;">
-                    <label for="dateRange">Select Date Range:</label>
-                    <input type="date" id="dateRange">
+                <div class="date-range">
+                    <div class="form-group">
+                        <label for="fromDate">From Date</label>
+                        <input type="date" id="fromDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="toDate">To Date</label>
+                        <input type="date" id="toDate">
+                    </div>
                 </div>
+                <button class="save-btn" id="applyDateRangeBtn" style="margin-top: 15px; width: 100%;">Apply Date Range</button>
             </div>
         </div>
         
@@ -1147,72 +1022,6 @@
             </form>
         </div>
     </div>
-    
-    <!-- Login Modal -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <span class="close-modal" id="closeLoginModal">&times;</span>
-            <h2>Admin Login</h2>
-            <form class="login-form" id="loginForm">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter password" required>
-                </div>
-                <button type="submit" class="login-btn">Login</button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Print Receipt Modal -->
-    <div class="print-receipt" id="printReceipt">
-        <div class="receipt-content">
-            <div class="receipt-header">
-                <h2>MIRDHUNA</h2>
-                <p>Delicious Food Delivered</p>
-                <p>Order Receipt</p>
-            </div>
-            <div class="receipt-divider"></div>
-            <div class="receipt-details">
-                <div class="receipt-item">
-                    <span>Order ID:</span>
-                    <span id="receiptOrderId">#ORD001</span>
-                </div>
-                <div class="receipt-item">
-                    <span>Date:</span>
-                    <span id="receiptDate">2023-07-15</span>
-                </div>
-                <div class="receipt-item">
-                    <span>Time:</span>
-                    <span id="receiptTime">12:45 PM</span>
-                </div>
-                <div class="receipt-item">
-                    <span>Customer:</span>
-                    <span id="receiptCustomer">9876543210</span>
-                </div>
-                <div class="receipt-item">
-                    <span>Location:</span>
-                    <span id="receiptLocation">17.3850, 78.4867</span>
-                </div>
-            </div>
-            <div class="receipt-divider"></div>
-            <div class="receipt-items" id="receiptItems">
-                <!-- Items will be populated here -->
-            </div>
-            <div class="receipt-total">
-                <span>Total:</span>
-                <span id="receiptTotal">₹0</span>
-            </div>
-            <div class="receipt-footer">
-                <p>Thank you for ordering with MIRDHUNA!</p>
-                <p>Online Pizza, Burger, Sandwich & Shake Delivery</p>
-            </div>
-            <button class="print-btn-receipt" id="printReceiptBtn">Print Receipt</button>
-        </div>
-    </div>
 
     <script type="module">
         // Import Firebase modules
@@ -1247,68 +1056,53 @@
         const addSlideBtn = document.getElementById('addSlideBtn');
         const menuTableBody = document.getElementById('menuTableBody');
         const ordersTableBody = document.getElementById('ordersTableBody');
-        const usersTable = document.getElementById('usersTable');
+        const usersTableBody = document.getElementById('usersTableBody');
         const totalOrdersElement = document.getElementById('totalOrders');
         const totalUsersElement = document.getElementById('totalUsers');
         const totalRevenueElement = document.getElementById('totalRevenue');
         const totalViewsElement = document.getElementById('totalViews');
         const analyticsTotalViewsElement = document.getElementById('analyticsTotalViews');
         const analyticsTodayViewsElement = document.getElementById('analyticsTodayViews');
+        const slidesContainer = document.getElementById('slidesContainer');
+        const fromDateInput = document.getElementById('fromDate');
+        const toDateInput = document.getElementById('toDate');
+        const applyDateRangeBtn = document.getElementById('applyDateRangeBtn');
+        const liveUpdateIndicator = document.getElementById('liveUpdateIndicator');
         
         // Modals
         const menuModal = document.getElementById('menuModal');
         const slideModal = document.getElementById('slideModal');
-        const loginModal = document.getElementById('loginModal');
-        const printReceipt = document.getElementById('printReceipt');
         const closeMenuModal = document.getElementById('closeMenuModal');
         const closeSlideModal = document.getElementById('closeSlideModal');
-        const closeLoginModal = document.getElementById('closeLoginModal');
         const cancelMenuBtn = document.getElementById('cancelMenuBtn');
         const cancelSlideBtn = document.getElementById('cancelSlideBtn');
         const menuForm = document.getElementById('menuForm');
         const slideForm = document.getElementById('slideForm');
-        const loginForm = document.getElementById('loginForm');
         const menuModalTitle = document.getElementById('menuModalTitle');
         const slideModalTitle = document.getElementById('slideModalTitle');
-        const printReceiptBtn = document.getElementById('printReceiptBtn');
         
-        // Image previews
+        // Image preview elements
         const itemImageInput = document.getElementById('itemImage');
         const itemImagePreview = document.getElementById('itemImagePreview');
         const slideImageInput = document.getElementById('slideImage');
         const slideImagePreview = document.getElementById('slideImagePreview');
         
-        // Receipt elements
-        const receiptOrderId = document.getElementById('receiptOrderId');
-        const receiptDate = document.getElementById('receiptDate');
-        const receiptTime = document.getElementById('receiptTime');
-        const receiptCustomer = document.getElementById('receiptCustomer');
-        const receiptLocation = document.getElementById('receiptLocation');
-        const receiptItems = document.getElementById('receiptItems');
-        const receiptTotal = document.getElementById('receiptTotal');
-        
         // State variables
-        let adminLoggedIn = false;
         let lastOrdersUpdate = 0;
         let liveUpdateInterval;
         
         // Admin functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if admin is already logged in
-            const savedAdmin = localStorage.getItem('mirdhuna_admin');
-            if (savedAdmin) {
-                adminLoggedIn = true;
-                document.body.classList.remove('login-required');
-            } else {
-                // Show login modal
-                showModal(loginModal);
-            }
+            // Check admin login status
+            checkAdminLogin();
             
             // Load all data
             loadMenuItems();
             loadOrders();
+            loadUsers();
             loadSlides();
             updateDashboardStats();
+            updateAnalytics();
             
             // Set up live updates
             startLiveUpdates();
@@ -1316,9 +1110,8 @@
             // Logout button
             logoutBtn.addEventListener('click', function() {
                 if(confirm('Are you sure you want to logout?')) {
-                    adminLoggedIn = false;
                     localStorage.removeItem('mirdhuna_admin');
-                    showModal(loginModal);
+                    window.location.href = 'index.html';
                 }
             });
             
@@ -1335,36 +1128,52 @@
             // Edit menu items
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('edit-btn') && e.target.closest('#menuTable')) {
-                    const index = e.target.dataset.index;
-                    const menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
-                    const item = menuItems[index];
-                    
-                    menuModalTitle.textContent = `Edit Menu Item: ${item.name}`;
-                    document.getElementById('itemName').value = item.name;
-                    document.getElementById('itemPrice').value = item.price;
-                    document.getElementById('itemCategory').value = item.category;
-                    document.getElementById('itemDescription').value = item.description;
-                    document.getElementById('itemImage').value = item.image || '';
-                    document.getElementById('editIndex').value = index;
-                    
-                    showModal(menuModal);
+                    const key = e.target.dataset.key;
+                    const menuItemsRef = ref(database, `menu/${key}`);
+                    get(menuItemsRef).then((snapshot) => {
+                        const item = snapshot.val();
+                        menuModalTitle.textContent = `Edit Menu Item: ${item.name}`;
+                        document.getElementById('itemName').value = item.name;
+                        document.getElementById('itemPrice').value = item.price;
+                        document.getElementById('itemCategory').value = item.category;
+                        document.getElementById('itemDescription').value = item.description;
+                        document.getElementById('editIndex').value = key;
+                        
+                        if (item.image) {
+                            itemImagePreview.src = item.image;
+                            itemImagePreview.style.display = 'block';
+                            itemImagePreview.nextElementSibling.style.display = 'none';
+                        } else {
+                            itemImagePreview.style.display = 'none';
+                            itemImagePreview.nextElementSibling.style.display = 'block';
+                        }
+                        
+                        showModal(menuModal);
+                    });
                 }
             });
             
             // Delete menu items
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('delete-btn') && e.target.closest('#menuTable')) {
-                    const index = e.target.dataset.index;
-                    const menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
-                    const itemName = menuItems[index].name;
-                    
-                    if(confirm(`Are you sure you want to delete "${itemName}"?`)) {
-                        menuItems.splice(index, 1);
-                        localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
-                        loadMenuItems();
-                        updateDashboardStats();
-                        alert('Item deleted successfully!');
-                    }
+                    const key = e.target.dataset.key;
+                    const menuItemsRef = ref(database, `menu/${key}`);
+                    get(menuItemsRef).then((snapshot) => {
+                        const item = snapshot.val();
+                        if(confirm(`Are you sure you want to delete "${item.name}"?`)) {
+                            const itemRef = ref(database, `menu/${key}`);
+                            remove(itemRef)
+                                .then(() => {
+                                    alert('Item deleted successfully!');
+                                    loadMenuItems();
+                                    updateDashboardStats();
+                                })
+                                .catch((error) => {
+                                    console.error('Error deleting item:', error);
+                                    alert('Error deleting item. Please try again.');
+                                });
+                        }
+                    });
                 }
             });
             
@@ -1392,139 +1201,62 @@
             // Edit slides
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('edit-btn') && e.target.closest('#slidesContainer')) {
-                    const index = e.target.dataset.index;
-                    const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
-                    const slide = slides[index];
-                    
-                    slideModalTitle.textContent = `Edit Slide: ${slide.title}`;
-                    document.getElementById('slideTitle').value = slide.title;
-                    document.getElementById('slideDescription').value = slide.description;
-                    document.getElementById('slideImage').value = slide.image || '';
-                    document.getElementById('editIndex').value = index;
-                    
-                    showModal(slideModal);
+                    const key = e.target.dataset.key;
+                    const slidesRef = ref(database, `slides/${key}`);
+                    get(slidesRef).then((snapshot) => {
+                        const slide = snapshot.val();
+                        slideModalTitle.textContent = `Edit Slide: ${slide.title}`;
+                        document.getElementById('slideTitle').value = slide.title;
+                        document.getElementById('slideDescription').value = slide.description;
+                        document.getElementById('editIndex').value = key;
+                        
+                        if (slide.image) {
+                            slideImagePreview.src = slide.image;
+                            slideImagePreview.style.display = 'block';
+                            slideImagePreview.nextElementSibling.style.display = 'none';
+                        } else {
+                            slideImagePreview.style.display = 'none';
+                            slideImagePreview.nextElementSibling.style.display = 'block';
+                        }
+                        
+                        showModal(slideModal);
+                    });
                 }
             });
             
             // Delete slides
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('delete-btn') && e.target.closest('#slidesContainer')) {
-                    const index = e.target.dataset.index;
-                    const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
-                    const slideTitle = slides[index].title;
-                    
-                    if(confirm(`Are you sure you want to delete slide: "${slideTitle}"?`)) {
-                        slides.splice(index, 1);
-                        localStorage.setItem('mirdhuna_slides', JSON.stringify(slides));
-                        loadSlides();
-                        alert('Slide deleted successfully!');
-                    }
+                    const key = e.target.dataset.key;
+                    const slidesRef = ref(database, `slides/${key}`);
+                    get(slidesRef).then((snapshot) => {
+                        const slide = snapshot.val();
+                        if(confirm(`Are you sure you want to delete slide: "${slide.title}"?`)) {
+                            const slideRef = ref(database, `slides/${key}`);
+                            remove(slideRef)
+                                .then(() => {
+                                    alert('Slide deleted successfully!');
+                                    loadSlides();
+                                })
+                                .catch((error) => {
+                                    console.error('Error deleting slide:', error);
+                                    alert('Error deleting slide. Please try again.');
+                                });
+                        }
+                    });
                 }
             });
             
-            // Print receipt
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('print-btn')) {
-                    const orderId = e.target.dataset.orderId;
-                    const orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
-                    const order = orders.find(o => o.id === orderId);
-                    
-                    if (order) {
-                        // Populate receipt
-                        receiptOrderId.textContent = order.id;
-                        const orderDate = new Date(order.timestamp);
-                        receiptDate.textContent = orderDate.toLocaleDateString();
-                        receiptTime.textContent = orderDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        receiptCustomer.textContent = order.mobile;
-                        receiptLocation.textContent = order.location;
-                        
-                        // Clear existing items
-                        receiptItems.innerHTML = '';
-                        
-                        // Add items to receipt
-                        order.items.forEach(item => {
-                            const receiptItem = document.createElement('div');
-                            receiptItem.className = 'receipt-item';
-                            receiptItem.innerHTML = `
-                                <span>${item.name}</span>
-                                <span>₹${item.price}</span>
-                            `;
-                            receiptItems.appendChild(receiptItem);
-                        });
-                        
-                        receiptTotal.textContent = `₹${order.total}`;
-                        
-                        // Show receipt modal
-                        printReceipt.style.display = 'flex';
-                    }
-                }
-            });
-            
-            // Print receipt button
-            printReceiptBtn.addEventListener('click', function() {
-                window.print();
-            });
-            
-            // Login form submission
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
+            // Apply date range
+            applyDateRangeBtn.addEventListener('click', function() {
+                const fromDate = fromDateInput.value;
+                const toDate = toDateInput.value;
                 
-                // Check credentials (admin/Sanu.0000)
-                if(username === 'admin' && password === 'Sanu.0000') {
-                    adminLoggedIn = true;
-                    localStorage.setItem('mirdhuna_admin', 'true');
-                    hideModal(loginModal);
-                    alert('Login successful! Welcome to MIRDHUNA Admin Panel.');
+                if (fromDate && toDate) {
+                    updateAnalytics(fromDate, toDate);
+                    alert(`Analytics updated for date range: ${fromDate} to ${toDate}`);
                 } else {
-                    alert('Invalid username or password. Please try again.');
-                }
-            });
-            
-            // Modal functions
-            function showModal(modal) {
-                modal.style.display = 'flex';
-            }
-            
-            function hideModal(modal) {
-                modal.style.display = 'none';
-            }
-            
-            // Close modals
-            closeMenuModal.addEventListener('click', function() {
-                hideModal(menuModal);
-            });
-            
-            closeSlideModal.addEventListener('click', function() {
-                hideModal(slideModal);
-            });
-            
-            closeLoginModal.addEventListener('click', function() {
-                hideModal(loginModal);
-            });
-            
-            cancelMenuBtn.addEventListener('click', function() {
-                hideModal(menuModal);
-            });
-            
-            cancelSlideBtn.addEventListener('click', function() {
-                hideModal(slideModal);
-            });
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target === menuModal) {
-                    hideModal(menuModal);
-                }
-                if (event.target === slideModal) {
-                    hideModal(slideModal);
-                }
-                if (event.target === loginModal) {
-                    hideModal(loginModal);
-                }
-                if (event.target === printReceipt) {
-                    printReceipt.style.display = 'none';
+                    alert('Please select both From and To dates');
                 }
             });
             
@@ -1535,38 +1267,27 @@
                 const itemPrice = document.getElementById('itemPrice').value;
                 const itemCategory = document.getElementById('itemCategory').value;
                 const itemDescription = document.getElementById('itemDescription').value;
-                const itemImage = document.getElementById('itemImage').value;
                 const editIndex = document.getElementById('editIndex').value;
                 
-                // Get existing menu items or initialize empty array
-                let menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
-                
-                const newItem = {
-                    name: itemName,
-                    price: parseInt(itemPrice),
-                    category: itemCategory,
-                    description: itemDescription,
-                    image: itemImage
-                };
-                
-                if (editIndex !== '') {
-                    // Update existing item
-                    menuItems[editIndex] = newItem;
-                    alert('Menu item updated successfully!');
+                // Handle image upload
+                const file = itemImageInput.files[0];
+                if (file) {
+                    // Upload image to Firebase Storage
+                    const storageReference = storageRef(storage, `menu-items/${Date.now()}_${file.name}`);
+                    uploadBytes(storageReference, file).then((snapshot) => {
+                        return getDownloadURL(snapshot.ref);
+                    }).then((downloadURL) => {
+                        // Save menu item with image URL
+                        saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, downloadURL, editIndex);
+                    }).catch((error) => {
+                        console.error('Error uploading image:', error);
+                        alert('Error uploading image. Saving item without image.');
+                        saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, '', editIndex);
+                    });
                 } else {
-                    // Add new item
-                    menuItems.push(newItem);
-                    alert('Menu item added successfully!');
+                    // Save menu item without image
+                    saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, '', editIndex);
                 }
-                
-                // Save to localStorage
-                localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
-                
-                // Reload menu items
-                loadMenuItems();
-                updateDashboardStats();
-                
-                hideModal(menuModal);
             });
             
             // Slide form submission
@@ -1574,35 +1295,27 @@
                 e.preventDefault();
                 const slideTitle = document.getElementById('slideTitle').value;
                 const slideDescription = document.getElementById('slideDescription').value;
-                const slideImage = document.getElementById('slideImage').value;
                 const editIndex = document.getElementById('editIndex').value;
                 
-                // Get existing slides or initialize empty array
-                let slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
-                
-                const newSlide = {
-                    title: slideTitle,
-                    description: slideDescription,
-                    image: slideImage
-                };
-                
-                if (editIndex !== '') {
-                    // Update existing slide
-                    slides[editIndex] = newSlide;
-                    alert('Slide updated successfully!');
+                // Handle image upload
+                const file = slideImageInput.files[0];
+                if (file) {
+                    // Upload image to Firebase Storage
+                    const storageReference = storageRef(storage, `slides/${Date.now()}_${file.name}`);
+                    uploadBytes(storageReference, file).then((snapshot) => {
+                        return getDownloadURL(snapshot.ref);
+                    }).then((downloadURL) => {
+                        // Save slide with image URL
+                        saveSlide(slideTitle, slideDescription, downloadURL, editIndex);
+                    }).catch((error) => {
+                        console.error('Error uploading image:', error);
+                        alert('Error uploading image. Saving slide without image.');
+                        saveSlide(slideTitle, slideDescription, '', editIndex);
+                    });
                 } else {
-                    // Add new slide
-                    slides.push(newSlide);
-                    alert('Slide added successfully!');
+                    // Save slide without image
+                    saveSlide(slideTitle, slideDescription, '', editIndex);
                 }
-                
-                // Save to localStorage
-                localStorage.setItem('mirdhuna_slides', JSON.stringify(slides));
-                
-                // Reload slides
-                loadSlides();
-                
-                hideModal(slideModal);
             });
             
             // Image preview for menu items
@@ -1632,175 +1345,392 @@
                     reader.readAsDataURL(file);
                 }
             });
+            
+            // Modal functions
+            function showModal(modal) {
+                modal.style.display = 'flex';
+            }
+            
+            function hideModal(modal) {
+                modal.style.display = 'none';
+            }
+            
+            // Close modals
+            closeMenuModal.addEventListener('click', function() {
+                hideModal(menuModal);
+            });
+            
+            closeSlideModal.addEventListener('click', function() {
+                hideModal(slideModal);
+            });
+            
+            cancelMenuBtn.addEventListener('click', function() {
+                hideModal(menuModal);
+            });
+            
+            cancelSlideBtn.addEventListener('click', function() {
+                hideModal(slideModal);
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === menuModal) {
+                    hideModal(menuModal);
+                }
+                if (event.target === slideModal) {
+                    hideModal(slideModal);
+                }
+            });
         });
         
-        // Load menu items from localStorage
+        // Check admin login status
+        function checkAdminLogin() {
+            const savedAdmin = localStorage.getItem('mirdhuna_admin');
+            if (!savedAdmin) {
+                // Redirect to login page
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Save menu item to Firebase
+        function saveMenuItem(name, price, category, description, imageURL, editIndex) {
+            const newItem = {
+                name: name,
+                price: parseInt(price),
+                category: category,
+                description: description,
+                image: imageURL
+            };
+            
+            if (editIndex) {
+                // Update existing item
+                const itemRef = ref(database, `menu/${editIndex}`);
+                update(itemRef, newItem)
+                    .then(() => {
+                        alert('Menu item updated successfully!');
+                        loadMenuItems();
+                        updateDashboardStats();
+                        hideModal(menuModal);
+                    })
+                    .catch((error) => {
+                        console.error('Error updating item:', error);
+                        alert('Error updating item. Please try again.');
+                    });
+            } else {
+                // Add new item
+                const menuRef = ref(database, 'menu');
+                const newMenuRef = push(menuRef);
+                set(newMenuRef, newItem)
+                    .then(() => {
+                        alert('Menu item added successfully!');
+                        loadMenuItems();
+                        updateDashboardStats();
+                        hideModal(menuModal);
+                    })
+                    .catch((error) => {
+                        console.error('Error adding item:', error);
+                        alert('Error adding item. Please try again.');
+                    });
+            }
+        }
+        
+        // Save slide to Firebase
+        function saveSlide(title, description, imageURL, editIndex) {
+            const newSlide = {
+                title: title,
+                description: description,
+                image: imageURL
+            };
+            
+            if (editIndex) {
+                // Update existing slide
+                const slideRef = ref(database, `slides/${editIndex}`);
+                update(slideRef, newSlide)
+                    .then(() => {
+                        alert('Slide updated successfully!');
+                        loadSlides();
+                        hideModal(slideModal);
+                    })
+                    .catch((error) => {
+                        console.error('Error updating slide:', error);
+                        alert('Error updating slide. Please try again.');
+                    });
+            } else {
+                // Add new slide
+                const slidesRef = ref(database, 'slides');
+                const newSlideRef = push(slidesRef);
+                set(newSlideRef, newSlide)
+                    .then(() => {
+                        alert('Slide added successfully!');
+                        loadSlides();
+                        hideModal(slideModal);
+                    })
+                    .catch((error) => {
+                        console.error('Error adding slide:', error);
+                        alert('Error adding slide. Please try again.');
+                    });
+            }
+        }
+        
+        // Load menu items from Firebase
         function loadMenuItems() {
-            const menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
-            menuTableBody.innerHTML = '';
-            
-            if (menuItems.length === 0) {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="4" style="text-align: center; color: #999;">No menu items found</td>';
-                menuTableBody.appendChild(row);
-                return;
-            }
-            
-            menuItems.forEach((item, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.name}</td>
-                    <td>₹${item.price}</td>
-                    <td>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</td>
-                    <td class="action-btns">
-                        <button class="edit-btn" data-index="${index}">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="delete-btn" data-index="${index}">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </td>
-                `;
-                menuTableBody.appendChild(row);
-            });
-        }
-        
-        // Load orders from localStorage
-        function loadOrders() {
-            const orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
-            ordersTableBody.innerHTML = '';
-            
-            if (orders.length === 0) {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="5" style="text-align: center; color: #999;">No orders found</td>';
-                ordersTableBody.appendChild(row);
-                return;
-            }
-            
-            orders.forEach(order => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${order.id}</td>
-                    <td>${order.mobile}</td>
-                    <td>${order.items.map(item => item.name).join(', ')}</td>
-                    <td>
-                        <select class="status-select" data-order-id="${order.id}">
-                            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                            <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                            <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                        </select>
-                    </td>
-                    <td class="action-btns">
-                        <button class="update-btn" data-order-id="${order.id}">
-                            <i class="fas fa-sync"></i> Update
-                        </button>
-                        <button class="print-btn" data-order-id="${order.id}">
-                            <i class="fas fa-print"></i> Print
-                        </button>
-                    </td>
-                `;
-                ordersTableBody.appendChild(row);
-            });
-            
-            // Add event listeners to update buttons
-            document.querySelectorAll('.update-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = this.dataset.orderId;
-                    const selectElement = document.querySelector(`.status-select[data-order-id="${orderId}"]`);
-                    const newStatus = selectElement.value;
-                    
-                    // Update order status in localStorage
-                    updateOrderStatus(orderId, newStatus);
-                    
-                    alert(`Order ${orderId} status updated to: ${newStatus}`);
-                });
-            });
-        }
-        
-        // Update order status in localStorage
-        function updateOrderStatus(orderId, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
-            orders = orders.map(order => {
-                if (order.id === orderId) {
-                    return { ...order, status: newStatus };
+            const menuRef = ref(database, 'menu');
+            onValue(menuRef, (snapshot) => {
+                const data = snapshot.val();
+                menuTableBody.innerHTML = '';
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const item = data[key];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.name}</td>
+                            <td>₹${item.price}</td>
+                            <td>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</td>
+                            <td class="action-btns">
+                                <button class="edit-btn" data-key="${key}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" data-key="${key}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        `;
+                        menuTableBody.appendChild(row);
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="4" style="text-align: center; color: #999;">No menu items found</td>';
+                    menuTableBody.appendChild(row);
                 }
-                return order;
             });
-            localStorage.setItem('mirdhuna_orders', JSON.stringify(orders));
-            
-            // Update last orders update timestamp
-            const lastUpdate = Date.now();
-            localStorage.setItem('mirdhuna_last_orders_update', lastUpdate.toString());
-            
-            // Reload orders
-            loadOrders();
         }
         
-        // Load slides from localStorage
+        // Load orders from Firebase
+        function loadOrders() {
+            const ordersRef = ref(database, 'orders');
+            onValue(ordersRef, (snapshot) => {
+                const data = snapshot.val();
+                ordersTableBody.innerHTML = '';
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const order = data[key];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${order.id}</td>
+                            <td>${order.mobile}</td>
+                            <td>${order.items.map(item => item.name).join(', ')}</td>
+                            <td>
+                                <select class="status-select" data-key="${key}">
+                                    <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                    <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </td>
+                            <td class="action-btns">
+                                <button class="update-btn" data-key="${key}">
+                                    <i class="fas fa-sync"></i> Update
+                                </button>
+                                <button class="delete-btn" data-key="${key}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        `;
+                        ordersTableBody.appendChild(row);
+                    });
+                    
+                    // Add event listeners to update buttons
+                    document.querySelectorAll('.update-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const key = this.dataset.key;
+                            const selectElement = document.querySelector(`.status-select[data-key="${key}"]`);
+                            const newStatus = selectElement.value;
+                            
+                            // Update order status in Firebase
+                            const orderRef = ref(database, `orders/${key}/status`);
+                            set(orderRef, newStatus)
+                                .then(() => {
+                                    alert(`Order status updated to: ${newStatus}`);
+                                    updateDashboardStats();
+                                })
+                                .catch((error) => {
+                                    console.error('Error updating order status:', error);
+                                    alert('Error updating order status. Please try again.');
+                                });
+                        });
+                    });
+                    
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const key = this.dataset.key;
+                            if(confirm('Are you sure you want to delete this order?')) {
+                                const orderRef = ref(database, `orders/${key}`);
+                                remove(orderRef)
+                                    .then(() => {
+                                        alert('Order deleted successfully!');
+                                        loadOrders();
+                                        updateDashboardStats();
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error deleting order:', error);
+                                        alert('Error deleting order. Please try again.');
+                                    });
+                            }
+                        });
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="5" style="text-align: center; color: #999;">No orders found</td>';
+                    ordersTableBody.appendChild(row);
+                }
+            });
+        }
+        
+        // Load users from Firebase
+        function loadUsers() {
+            const usersRef = ref(database, 'users');
+            onValue(usersRef, (snapshot) => {
+                const data = snapshot.val();
+                usersTableBody.innerHTML = '';
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const user = data[key];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.mobile}</td>
+                            <td><a href="https://maps.google.com/?q=${user.location}" target="_blank">${user.location}</a></td>
+                            <td>${user.orders || 0}</td>
+                            <td>${new Date(user.lastLogin).toLocaleDateString()}</td>
+                            <td class="action-btns">
+                                <button class="delete-btn" data-key="${key}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        `;
+                        usersTableBody.appendChild(row);
+                    });
+                    
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const key = this.dataset.key;
+                            if(confirm('Are you sure you want to delete this user?')) {
+                                const userRef = ref(database, `users/${key}`);
+                                remove(userRef)
+                                    .then(() => {
+                                        alert('User deleted successfully!');
+                                        loadUsers();
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error deleting user:', error);
+                                        alert('Error deleting user. Please try again.');
+                                    });
+                            }
+                        });
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="5" style="text-align: center; color: #999;">No users found</td>';
+                    usersTableBody.appendChild(row);
+                }
+            });
+        }
+        
+        // Load slides from Firebase
         function loadSlides() {
-            const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
-            const slidesContainer = document.getElementById('slidesContainer');
-            slidesContainer.innerHTML = '';
-            
-            if (slides.length === 0) {
-                slidesContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No slides found</p>';
-                return;
-            }
-            
-            slides.forEach((slide, index) => {
-                const slideContainer = document.createElement('div');
-                slideContainer.className = 'slide-container';
-                slideContainer.innerHTML = `
-                    <div class="slide-preview" style="background-image: url('${slide.image}')">
-                        <div class="slide-content">${slide.title}</div>
-                    </div>
-                    <div class="slide-controls">
-                        <button class="edit-btn" data-index="${index}">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="delete-btn" data-index="${index}">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                `;
-                slidesContainer.appendChild(slideContainer);
+            const slidesRef = ref(database, 'slides');
+            onValue(slidesRef, (snapshot) => {
+                const data = snapshot.val();
+                slidesContainer.innerHTML = '';
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const slide = data[key];
+                        const slideContainer = document.createElement('div');
+                        slideContainer.className = 'slide-container';
+                        slideContainer.innerHTML = `
+                            <div class="slide-preview" style="background-image: url('${slide.image}')">
+                                <div class="slide-content">${slide.title}</div>
+                            </div>
+                            <div class="slide-controls">
+                                <button class="edit-btn" data-key="${key}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" data-key="${key}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        `;
+                        slidesContainer.appendChild(slideContainer);
+                    });
+                } else {
+                    slidesContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No slides found</p>';
+                }
             });
         }
         
         // Update dashboard statistics
         function updateDashboardStats() {
             // Get orders
-            const orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
-            totalOrdersElement.textContent = orders.length;
+            const ordersRef = ref(database, 'orders');
+            get(ordersRef).then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const orders = Object.values(data);
+                    totalOrdersElement.textContent = orders.length;
+                    
+                    // Calculate total revenue
+                    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+                    totalRevenueElement.textContent = `₹${totalRevenue.toLocaleString()}`;
+                    
+                    // Get unique users
+                    const users = [...new Set(orders.map(order => order.mobile))];
+                    totalUsersElement.textContent = users.length;
+                } else {
+                    totalOrdersElement.textContent = '0';
+                    totalUsersElement.textContent = '0';
+                    totalRevenueElement.textContent = '₹0';
+                }
+            }).catch((error) => {
+                console.error('Error fetching orders:', error);
+            });
             
-            // Get users (simulate from orders)
-            const users = [...new Set(orders.map(order => order.mobile))];
-            totalUsersElement.textContent = users.length;
-            
-            // Calculate revenue
-            const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-            totalRevenueElement.textContent = `₹${totalRevenue.toLocaleString()}`;
-            
-            // Simulate page views
-            const views = Math.floor(Math.random() * 1000) + 500;
-            totalViewsElement.textContent = views.toLocaleString();
-            analyticsTotalViewsElement.textContent = views.toLocaleString();
-            analyticsTodayViewsElement.textContent = Math.floor(views / 10).toLocaleString();
+            // Get page views
+            const viewsRef = ref(database, 'analytics/views');
+            get(viewsRef).then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    totalViewsElement.textContent = data.total || 0;
+                    analyticsTotalViewsElement.textContent = data.total || 0;
+                    analyticsTodayViewsElement.textContent = data.today || 0;
+                } else {
+                    totalViewsElement.textContent = '0';
+                    analyticsTotalViewsElement.textContent = '0';
+                    analyticsTodayViewsElement.textContent = '0';
+                }
+            }).catch((error) => {
+                console.error('Error fetching views:', error);
+            });
         }
         
-        // Check for order updates across devices
-        function checkForOrderUpdates() {
-            const storedLastUpdate = localStorage.getItem('mirdhuna_last_orders_update');
-            if (storedLastUpdate && parseInt(storedLastUpdate) > lastOrdersUpdate) {
-                lastOrdersUpdate = parseInt(storedLastUpdate);
-                
-                // Reload orders
-                loadOrders();
-                updateDashboardStats();
-                
-                // Show notification
-                alert('New order received! Check order management for details.');
-            }
+        // Update analytics
+        function updateAnalytics(fromDate = null, toDate = null) {
+            const analyticsRef = ref(database, 'analytics/views');
+            get(analyticsRef).then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    analyticsTotalViewsElement.textContent = data.total || 0;
+                    analyticsTodayViewsElement.textContent = data.today || 0;
+                } else {
+                    analyticsTotalViewsElement.textContent = '0';
+                    analyticsTodayViewsElement.textContent = '0';
+                }
+            }).catch((error) => {
+                console.error('Error fetching analytics:', error);
+            });
         }
         
         // Start live updates
@@ -1811,7 +1741,29 @@
             }
             
             // Set up interval to check for updates
-            liveUpdateInterval = setInterval(checkForOrderUpdates, 3000); // Check every 3 seconds
+            liveUpdateInterval = setInterval(() => {
+                // Check for order updates
+                const ordersRef = ref(database, 'orders');
+                get(ordersRef).then((snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const latestOrder = Object.values(data).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+                        if (latestOrder && new Date(latestOrder.timestamp).getTime() > lastOrdersUpdate) {
+                            lastOrdersUpdate = new Date(latestOrder.timestamp).getTime();
+                            
+                            // Show live update indicator
+                            liveUpdateIndicator.style.display = 'flex';
+                            setTimeout(() => {
+                                liveUpdateIndicator.style.display = 'none';
+                            }, 2000);
+                            
+                            // Reload orders and stats
+                            loadOrders();
+                            updateDashboardStats();
+                        }
+                    }
+                });
+            }, 5000); // Check every 5 seconds
         }
     </script>
 </body>
