@@ -15,9 +15,9 @@
         }
         
         :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --accent: #4cc9f0;
+            --primary: #FF6B00;
+            --secondary: #FFD166;
+            --accent: #06D6A0;
             --dark: #1A1A1A;
             --light: #FFF9C4;
             --white: #FFFFFF;
@@ -25,7 +25,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
+            background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%);
             color: var(--dark);
             min-height: 100vh;
             padding: 20px;
@@ -51,8 +51,7 @@
             font-size: 2.5rem;
             font-weight: 800;
             color: var(--primary);
-            text-shadow: 3px 3px 0 rgba(67, 97, 238, 0.2);
-            letter-spacing: 1px;
+            text-shadow: 3px 3px 0 rgba(255, 107, 0, 0.2);
         }
         
         .admin-info {
@@ -63,7 +62,7 @@
         }
         
         .logout-btn {
-            padding: 10px 25px;
+            padding: 10px 20px;
             background: var(--primary);
             color: white;
             border: none;
@@ -72,90 +71,19 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(67, 97, 238, 0.3);
+            box-shadow: 0 3px 10px rgba(255, 107, 0, 0.3);
         }
         
         .logout-btn:hover {
-            background: #3730a3;
+            background: #e65100;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
-        }
-        
-        /* Dashboard Stats */
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-        
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-        }
-        
-        .stat-content {
-            flex: 1;
-        }
-        
-        .stat-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 1rem;
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .stat-card.orders .stat-icon {
-            background: rgba(67, 97, 238, 0.15);
-            color: var(--primary);
-        }
-        
-        .stat-card.users .stat-icon {
-            background: rgba(79, 55, 201, 0.15);
-            color: var(--secondary);
-        }
-        
-        .stat-card.revenue .stat-icon {
-            background: rgba(76, 201, 240, 0.15);
-            color: var(--accent);
-        }
-        
-        .stat-card.views .stat-icon {
-            background: rgba(96, 165, 250, 0.15);
-            color: #60a5fa;
         }
         
         /* Admin Content */
         .admin-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            gap: 25px;
             margin-bottom: 40px;
         }
         
@@ -176,7 +104,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 3px solid var(--secondary);
         }
@@ -185,9 +113,6 @@
             color: var(--primary);
             font-size: 1.5rem;
             font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
         .add-btn {
@@ -200,16 +125,13 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(76, 201, 240, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            box-shadow: 0 3px 10px rgba(6, 214, 160, 0.3);
         }
         
         .add-btn:hover {
-            background: #06b6d4;
+            background: #05b88b;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(76, 201, 240, 0.4);
+            box-shadow: 0 6px 15px rgba(6, 214, 160, 0.5);
         }
         
         /* Table Styles */
@@ -217,23 +139,23 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         
         th, td {
-            padding: 15px;
+            padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
         
         th {
-            background-color: #f1f5f9;
+            background-color: #fff3e0;
             font-weight: 600;
             color: var(--primary);
         }
         
         tr:hover {
-            background-color: #f8fafc;
+            background-color: #fff8e1;
         }
         
         .action-btns {
@@ -243,16 +165,13 @@
         }
         
         .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-            padding: 8px 15px;
+            padding: 6px 12px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
         
         .edit-btn {
@@ -279,7 +198,7 @@
         }
         
         .export-btn:hover {
-            background: #06b6d4;
+            background: #05b88b;
         }
         
         .view-btn {
@@ -298,6 +217,43 @@
         
         .update-btn:hover {
             background: #388e3c;
+        }
+        
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            text-align: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 150px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
         }
         
         /* Form Styles */
@@ -325,13 +281,13 @@
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
         }
         
         .form-actions {
             display: flex;
             gap: 15px;
-            margin-top: 30px;
+            margin-top: 25px;
         }
         
         .save-btn {
@@ -347,9 +303,9 @@
         }
         
         .save-btn:hover {
-            background: #06b6d4;
+            background: #05b88b;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.3);
+            box-shadow: 0 5px 15px rgba(6, 214, 160, 0.3);
         }
         
         .cancel-btn {
@@ -370,10 +326,46 @@
             box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
         }
         
+        /* Slides */
+        .slide-container {
+            position: relative;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .slide-preview {
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .slide-controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+        
         /* Image Preview */
         .image-preview {
             width: 100%;
-            height: 150px;
+            height: 120px;
             border: 1px dashed #ccc;
             border-radius: 10px;
             display: flex;
@@ -463,7 +455,7 @@
         .modal-content {
             background: white;
             border-radius: 20px;
-            width: 90%;
+            width: 95%;
             max-width: 600px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -500,73 +492,12 @@
         
         /* Status Select */
         .status-select {
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 6px 10px;
+            border-radius: 4px;
             border: 1px solid #ddd;
             background: white;
             font-weight: 500;
-            font-size: 0.9rem;
-        }
-        
-        /* Date Range */
-        .date-range {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .date-range .form-group {
-            flex: 1;
-        }
-        
-        /* Notification Badge */
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #f44336;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: bold;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        /* Live Update Indicator */
-        .live-update-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #4ade80;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 30px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .live-update-indicator .dot {
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
+            font-size: 0.85rem;
         }
         
         /* Responsive Design */
@@ -595,7 +526,7 @@
             }
             
             th, td {
-                padding: 12px;
+                padding: 10px;
             }
             
             .action-btns {
@@ -603,7 +534,104 @@
             }
             
             .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-                padding: 6px 12px;
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .stat-card {
+                padding: 15px;
+                min-width: 130px;
+            }
+            
+            .stat-value {
+                font-size: 1.8rem;
+                margin: 8px 0;
+            }
+            
+            .stat-label {
+                font-size: 0.85rem;
+            }
+            
+            .form-group label {
+                font-size: 0.85rem;
+            }
+            
+            .form-group input, .form-group textarea, .form-group select {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .form-actions {
+                gap: 12px;
+                margin-top: 20px;
+            }
+            
+            .save-btn, .cancel-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .slide-preview {
+                height: 120px;
+            }
+            
+            .slide-content {
+                padding: 12px;
+                font-size: 0.85rem;
+            }
+            
+            .slide-controls {
+                padding: 0 8px;
+            }
+            
+            .image-preview {
+                height: 100px;
+            }
+            
+            .image-preview .placeholder {
+                font-size: 0.8rem;
+            }
+            
+            footer {
+                padding: 25px;
+                margin-top: 25px;
+            }
+            
+            .footer-logo {
+                font-size: 1.8rem;
+            }
+            
+            .footer-links {
+                gap: 20px;
+            }
+            
+            .footer-links a {
+                font-size: 0.85rem;
+            }
+            
+            .copyright {
+                font-size: 0.75rem;
+                margin-top: 15px;
+                padding-top: 15px;
+            }
+            
+            .modal-content {
+                padding: 25px;
+                width: 90%;
+            }
+            
+            .modal h2 {
+                font-size: 1.3rem;
+            }
+            
+            .close-modal {
+                top: 15px;
+                right: 15px;
+                font-size: 1.3rem;
+            }
+            
+            .status-select {
+                padding: 5px 8px;
                 font-size: 0.8rem;
             }
         }
@@ -622,7 +650,7 @@
             }
             
             .logout-btn {
-                padding: 8px 20px;
+                padding: 8px 16px;
                 font-size: 0.9rem;
             }
             
@@ -635,7 +663,7 @@
             }
             
             .panel-header {
-                margin-bottom: 20px;
+                margin-bottom: 15px;
                 padding-bottom: 12px;
             }
             
@@ -653,7 +681,7 @@
             }
             
             th, td {
-                padding: 10px;
+                padding: 8px;
             }
             
             .action-btns {
@@ -661,35 +689,62 @@
             }
             
             .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-                padding: 5px 10px;
+                padding: 4px 8px;
                 font-size: 0.75rem;
             }
             
+            .stat-card {
+                padding: 12px;
+                min-width: 110px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+                margin: 6px 0;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            
             .form-group label {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
             
             .form-group input, .form-group textarea, .form-group select {
-                padding: 10px 12px;
+                padding: 8px;
                 font-size: 0.85rem;
             }
             
             .form-actions {
-                gap: 12px;
-                margin-top: 25px;
+                gap: 10px;
+                margin-top: 15px;
             }
             
             .save-btn, .cancel-btn {
-                padding: 10px 20px;
+                padding: 8px 16px;
                 font-size: 0.85rem;
             }
             
+            .slide-preview {
+                height: 100px;
+            }
+            
+            .slide-content {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+            
+            .slide-controls {
+                padding: 0 6px;
+            }
+            
             .image-preview {
-                height: 120px;
+                height: 80px;
             }
             
             .image-preview .placeholder {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
             
             footer {
@@ -698,7 +753,7 @@
             }
             
             .footer-logo {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
             }
             
             .footer-links {
@@ -711,58 +766,28 @@
             
             .copyright {
                 font-size: 0.7rem;
-                margin-top: 15px;
-                padding-top: 15px;
+                margin-top: 12px;
+                padding-top: 12px;
             }
             
             .modal-content {
                 padding: 20px;
-                width: 95%;
+                width: 85%;
             }
             
             .modal h2 {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
             
             .close-modal {
-                top: 15px;
-                right: 15px;
-                font-size: 1.3rem;
+                top: 12px;
+                right: 12px;
+                font-size: 1.2rem;
             }
             
             .status-select {
-                padding: 6px 10px;
-                font-size: 0.85rem;
-            }
-            
-            .date-range {
-                gap: 10px;
-                margin-top: 15px;
-            }
-            
-            .date-range .form-group {
-                margin-bottom: 15px;
-            }
-            
-            .date-range .form-group label {
-                font-size: 0.85rem;
-            }
-            
-            .date-range .form-group input {
-                padding: 10px 12px;
-                font-size: 0.85rem;
-            }
-            
-            .live-update-indicator {
-                top: 15px;
-                right: 15px;
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .live-update-indicator .dot {
-                width: 8px;
-                height: 8px;
+                padding: 4px 6px;
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -777,62 +802,12 @@
             </div>
         </header>
         
-        <!-- Live Update Indicator -->
-        <div class="live-update-indicator" id="liveUpdateIndicator">
-            <div class="dot"></div>
-            <span>Updating orders...</span>
-        </div>
-        
-        <div class="dashboard-stats">
-            <div class="stat-card orders">
-                <div class="stat-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value" id="totalOrders">0</div>
-                    <div class="stat-label">Total Orders</div>
-                </div>
-            </div>
-            
-            <div class="stat-card users">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value" id="totalUsers">0</div>
-                    <div class="stat-label">Active Users</div>
-                </div>
-            </div>
-            
-            <div class="stat-card revenue">
-                <div class="stat-icon">
-                    <i class="fas fa-rupee-sign"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value" id="totalRevenue">₹0</div>
-                    <div class="stat-label">Total Revenue</div>
-                </div>
-            </div>
-            
-            <div class="stat-card views">
-                <div class="stat-icon">
-                    <i class="fas fa-eye"></i>
-                </div>
-                <div class="stat-content">
-                    <div class="stat-value" id="totalViews">0</div>
-                    <div class="stat-label">Page Views</div>
-                </div>
-            </div>
-        </div>
-        
         <div class="admin-content">
             <!-- Menu Management -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-utensils"></i> Menu Management</h2>
-                    <button class="add-btn" id="addMenuItemBtn">
-                        <i class="fas fa-plus"></i> Add Item
-                    </button>
+                    <h2 class="panel-title">Menu Management</h2>
+                    <button class="add-btn" id="addMenuItemBtn">Add Item</button>
                 </div>
                 <table id="menuTable">
                     <thead>
@@ -852,7 +827,7 @@
             <!-- Order Management -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-receipt"></i> Order Management</h2>
+                    <h2 class="panel-title">Order Management</h2>
                     <button class="export-btn" id="exportOrdersBtn">Export</button>
                 </div>
                 <table id="ordersTable">
@@ -874,7 +849,7 @@
             <!-- User Login History -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-user-clock"></i> User Login History</h2>
+                    <h2 class="panel-title">User Login History</h2>
                     <button class="export-btn" id="exportUsersBtn">Export</button>
                 </div>
                 <table id="usersTable">
@@ -884,11 +859,27 @@
                             <th>Location</th>
                             <th>Orders</th>
                             <th>Last Login</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="usersTableBody">
-                        <!-- Users will be populated here -->
+                    <tbody>
+                        <tr>
+                            <td>9876543210</td>
+                            <td><a href="https://maps.google.com/?q=17.3850,78.4867" target="_blank">17.3850, 78.4867</a></td>
+                            <td>5</td>
+                            <td>2023-07-15</td>
+                        </tr>
+                        <tr>
+                            <td>8765432109</td>
+                            <td><a href="https://maps.google.com/?q=12.9716,77.5946" target="_blank">12.9716, 77.5946</a></td>
+                            <td>3</td>
+                            <td>2023-07-14</td>
+                        </tr>
+                        <tr>
+                            <td>7654321098</td>
+                            <td><a href="https://maps.google.com/?q=19.0760,72.8777" target="_blank">19.0760, 72.8777</a></td>
+                            <td>7</td>
+                            <td>2023-07-13</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -896,7 +887,7 @@
             <!-- Slides Management -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-images"></i> Slides Management</h2>
+                    <h2 class="panel-title">Slides Management</h2>
                     <button class="add-btn" id="addSlideBtn">Add Slide</button>
                 </div>
                 <div id="slidesContainer">
@@ -907,29 +898,22 @@
             <!-- Analytics -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-chart-line"></i> Analytics</h2>
+                    <h2 class="panel-title">Analytics</h2>
                 </div>
                 <div class="stats">
                     <div class="stat-card">
-                        <div class="stat-value" id="analyticsTotalViews">0</div>
+                        <div class="stat-value" id="totalViews">1,248</div>
                         <div class="stat-label">Total Views</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="analyticsTodayViews">0</div>
+                        <div class="stat-value" id="todayViews">127</div>
                         <div class="stat-label">Today's Views</div>
                     </div>
                 </div>
-                <div class="date-range">
-                    <div class="form-group">
-                        <label for="fromDate">From Date</label>
-                        <input type="date" id="fromDate">
-                    </div>
-                    <div class="form-group">
-                        <label for="toDate">To Date</label>
-                        <input type="date" id="toDate">
-                    </div>
+                <div class="form-group" style="margin-top: 30px;">
+                    <label for="dateRange">Select Date Range:</label>
+                    <input type="date" id="dateRange">
                 </div>
-                <button class="save-btn" id="applyDateRangeBtn" style="margin-top: 15px; width: 100%;">Apply Date Range</button>
             </div>
         </div>
         
@@ -1009,7 +993,7 @@
                 </div>
                 <div class="form-group">
                     <label for="slideImage">Slide Image</label>
-                    <input type="file" id="slideImage" accept="image/*">
+                    <input type="file" id="slideImage" accept="image/*" required>
                     <div class="image-preview">
                         <span class="placeholder">Image preview will appear here</span>
                         <img id="slideImagePreview" src="" alt="Preview">
@@ -1056,18 +1040,9 @@
         const addSlideBtn = document.getElementById('addSlideBtn');
         const menuTableBody = document.getElementById('menuTableBody');
         const ordersTableBody = document.getElementById('ordersTableBody');
-        const usersTableBody = document.getElementById('usersTableBody');
-        const totalOrdersElement = document.getElementById('totalOrders');
-        const totalUsersElement = document.getElementById('totalUsers');
-        const totalRevenueElement = document.getElementById('totalRevenue');
+        const usersTable = document.getElementById('usersTable');
         const totalViewsElement = document.getElementById('totalViews');
-        const analyticsTotalViewsElement = document.getElementById('analyticsTotalViews');
-        const analyticsTodayViewsElement = document.getElementById('analyticsTodayViews');
-        const slidesContainer = document.getElementById('slidesContainer');
-        const fromDateInput = document.getElementById('fromDate');
-        const toDateInput = document.getElementById('toDate');
-        const applyDateRangeBtn = document.getElementById('applyDateRangeBtn');
-        const liveUpdateIndicator = document.getElementById('liveUpdateIndicator');
+        const todayViewsElement = document.getElementById('todayViews');
         
         // Modals
         const menuModal = document.getElementById('menuModal');
@@ -1086,31 +1061,26 @@
         const itemImagePreview = document.getElementById('itemImagePreview');
         const slideImageInput = document.getElementById('slideImage');
         const slideImagePreview = document.getElementById('slideImagePreview');
-        
-        // State variables
-        let lastOrdersUpdate = 0;
-        let liveUpdateInterval;
+        const slidesContainer = document.getElementById('slidesContainer');
         
         // Admin functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Check admin login status
-            checkAdminLogin();
-            
-            // Load all data
+            // Load menu items from Firebase
             loadMenuItems();
-            loadOrders();
-            loadUsers();
-            loadSlides();
-            updateDashboardStats();
-            updateAnalytics();
             
-            // Set up live updates
-            startLiveUpdates();
+            // Load orders from Firebase
+            loadOrders();
+            
+            // Load slides from Firebase
+            loadSlides();
+            
+            // Update analytics
+            updateAnalytics();
             
             // Logout button
             logoutBtn.addEventListener('click', function() {
                 if(confirm('Are you sure you want to logout?')) {
-                    localStorage.removeItem('mirdhuna_admin');
+                    alert('Logged out successfully!');
                     window.location.href = 'index.html';
                 }
             });
@@ -1136,7 +1106,7 @@
                         document.getElementById('itemName').value = item.name;
                         document.getElementById('itemPrice').value = item.price;
                         document.getElementById('itemCategory').value = item.category;
-                        document.getElementById('itemDescription').value = item.description;
+                        document.getElementById('itemDescription').value = item.description || '';
                         document.getElementById('editIndex').value = key;
                         
                         if (item.image) {
@@ -1166,7 +1136,7 @@
                                 .then(() => {
                                     alert('Item deleted successfully!');
                                     loadMenuItems();
-                                    updateDashboardStats();
+                                    updateAnalytics();
                                 })
                                 .catch((error) => {
                                     console.error('Error deleting item:', error);
@@ -1237,6 +1207,7 @@
                                 .then(() => {
                                     alert('Slide deleted successfully!');
                                     loadSlides();
+                                    updateAnalytics();
                                 })
                                 .catch((error) => {
                                     console.error('Error deleting slide:', error);
@@ -1244,105 +1215,6 @@
                                 });
                         }
                     });
-                }
-            });
-            
-            // Apply date range
-            applyDateRangeBtn.addEventListener('click', function() {
-                const fromDate = fromDateInput.value;
-                const toDate = toDateInput.value;
-                
-                if (fromDate && toDate) {
-                    updateAnalytics(fromDate, toDate);
-                    alert(`Analytics updated for date range: ${fromDate} to ${toDate}`);
-                } else {
-                    alert('Please select both From and To dates');
-                }
-            });
-            
-            // Menu form submission
-            menuForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const itemName = document.getElementById('itemName').value;
-                const itemPrice = document.getElementById('itemPrice').value;
-                const itemCategory = document.getElementById('itemCategory').value;
-                const itemDescription = document.getElementById('itemDescription').value;
-                const editIndex = document.getElementById('editIndex').value;
-                
-                // Handle image upload
-                const file = itemImageInput.files[0];
-                if (file) {
-                    // Upload image to Firebase Storage
-                    const storageReference = storageRef(storage, `menu-items/${Date.now()}_${file.name}`);
-                    uploadBytes(storageReference, file).then((snapshot) => {
-                        return getDownloadURL(snapshot.ref);
-                    }).then((downloadURL) => {
-                        // Save menu item with image URL
-                        saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, downloadURL, editIndex);
-                    }).catch((error) => {
-                        console.error('Error uploading image:', error);
-                        alert('Error uploading image. Saving item without image.');
-                        saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, '', editIndex);
-                    });
-                } else {
-                    // Save menu item without image
-                    saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, '', editIndex);
-                }
-            });
-            
-            // Slide form submission
-            slideForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const slideTitle = document.getElementById('slideTitle').value;
-                const slideDescription = document.getElementById('slideDescription').value;
-                const editIndex = document.getElementById('editIndex').value;
-                
-                // Handle image upload
-                const file = slideImageInput.files[0];
-                if (file) {
-                    // Upload image to Firebase Storage
-                    const storageReference = storageRef(storage, `slides/${Date.now()}_${file.name}`);
-                    uploadBytes(storageReference, file).then((snapshot) => {
-                        return getDownloadURL(snapshot.ref);
-                    }).then((downloadURL) => {
-                        // Save slide with image URL
-                        saveSlide(slideTitle, slideDescription, downloadURL, editIndex);
-                    }).catch((error) => {
-                        console.error('Error uploading image:', error);
-                        alert('Error uploading image. Saving slide without image.');
-                        saveSlide(slideTitle, slideDescription, '', editIndex);
-                    });
-                } else {
-                    // Save slide without image
-                    saveSlide(slideTitle, slideDescription, '', editIndex);
-                }
-            });
-            
-            // Image preview for menu items
-            itemImageInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        itemImagePreview.src = e.target.result;
-                        itemImagePreview.style.display = 'block';
-                        itemImagePreview.nextElementSibling.style.display = 'none';
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-            
-            // Image preview for slides
-            slideImageInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        slideImagePreview.src = e.target.result;
-                        slideImagePreview.style.display = 'block';
-                        slideImagePreview.nextElementSibling.style.display = 'none';
-                    }
-                    reader.readAsDataURL(file);
                 }
             });
             
@@ -1381,24 +1253,101 @@
                     hideModal(slideModal);
                 }
             });
+            
+            // Image preview for menu items
+            itemImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        itemImagePreview.src = e.target.result;
+                        itemImagePreview.style.display = 'block';
+                        itemImagePreview.nextElementSibling.style.display = 'none';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Image preview for slides
+            slideImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        slideImagePreview.src = e.target.result;
+                        slideImagePreview.style.display = 'block';
+                        slideImagePreview.nextElementSibling.style.display = 'none';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Menu form submission
+            menuForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemName = document.getElementById('itemName').value;
+                const itemPrice = document.getElementById('itemPrice').value;
+                const itemCategory = document.getElementById('itemCategory').value;
+                const itemDescription = document.getElementById('itemDescription').value;
+                const editIndex = document.getElementById('editIndex').value;
+                const file = itemImageInput.files[0];
+                
+                // Handle image upload
+                if (file) {
+                    // Upload image to Firebase Storage
+                    const storageReference = storageRef(storage, `menu-items/${Date.now()}_${file.name}`);
+                    uploadBytes(storageReference, file).then((snapshot) => {
+                        return getDownloadURL(snapshot.ref);
+                    }).then((downloadURL) => {
+                        // Save menu item with image URL
+                        saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, downloadURL, editIndex);
+                    }).catch((error) => {
+                        console.error('Error uploading image:', error);
+                        alert('Error uploading image. Saving item without image.');
+                        saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, '', editIndex);
+                    });
+                } else {
+                    // Save menu item without image
+                    saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, '', editIndex);
+                }
+            });
+            
+            // Slide form submission
+            slideForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const slideTitle = document.getElementById('slideTitle').value;
+                const slideDescription = document.getElementById('slideDescription').value;
+                const editIndex = document.getElementById('editIndex').value;
+                const file = slideImageInput.files[0];
+                
+                // Handle image upload
+                if (file) {
+                    // Upload image to Firebase Storage
+                    const storageReference = storageRef(storage, `slides/${Date.now()}_${file.name}`);
+                    uploadBytes(storageReference, file).then((snapshot) => {
+                        return getDownloadURL(snapshot.ref);
+                    }).then((downloadURL) => {
+                        // Save slide with image URL
+                        saveSlide(slideTitle, slideDescription, downloadURL, editIndex);
+                    }).catch((error) => {
+                        console.error('Error uploading image:', error);
+                        alert('Error uploading image. Saving slide without image.');
+                        saveSlide(slideTitle, slideDescription, '', editIndex);
+                    });
+                } else {
+                    // Save slide without image
+                    saveSlide(slideTitle, slideDescription, '', editIndex);
+                }
+            });
         });
         
-        // Check admin login status
-        function checkAdminLogin() {
-            const savedAdmin = localStorage.getItem('mirdhuna_admin');
-            if (!savedAdmin) {
-                // Redirect to login page
-                window.location.href = 'index.html';
-            }
-        }
-        
         // Save menu item to Firebase
-        function saveMenuItem(name, price, category, description, imageURL, editIndex) {
+        function saveMenuItem(itemName, itemPrice, itemCategory, itemDescription, imageURL, editIndex) {
             const newItem = {
-                name: name,
-                price: parseInt(price),
-                category: category,
-                description: description,
+                name: itemName,
+                price: parseInt(itemPrice),
+                category: itemCategory,
+                description: itemDescription,
                 image: imageURL
             };
             
@@ -1409,7 +1358,7 @@
                     .then(() => {
                         alert('Menu item updated successfully!');
                         loadMenuItems();
-                        updateDashboardStats();
+                        updateAnalytics();
                         hideModal(menuModal);
                     })
                     .catch((error) => {
@@ -1424,7 +1373,7 @@
                     .then(() => {
                         alert('Menu item added successfully!');
                         loadMenuItems();
-                        updateDashboardStats();
+                        updateAnalytics();
                         hideModal(menuModal);
                     })
                     .catch((error) => {
@@ -1435,10 +1384,10 @@
         }
         
         // Save slide to Firebase
-        function saveSlide(title, description, imageURL, editIndex) {
+        function saveSlide(slideTitle, slideDescription, imageURL, editIndex) {
             const newSlide = {
-                title: title,
-                description: description,
+                title: slideTitle,
+                description: slideDescription,
                 image: imageURL
             };
             
@@ -1449,6 +1398,7 @@
                     .then(() => {
                         alert('Slide updated successfully!');
                         loadSlides();
+                        updateAnalytics();
                         hideModal(slideModal);
                     })
                     .catch((error) => {
@@ -1463,6 +1413,7 @@
                     .then(() => {
                         alert('Slide added successfully!');
                         loadSlides();
+                        updateAnalytics();
                         hideModal(slideModal);
                     })
                     .catch((error) => {
@@ -1488,12 +1439,8 @@
                             <td>₹${item.price}</td>
                             <td>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</td>
                             <td class="action-btns">
-                                <button class="edit-btn" data-key="${key}">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button class="delete-btn" data-key="${key}">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
+                                <button class="edit-btn" data-key="${key}">Edit</button>
+                                <button class="delete-btn" data-key="${key}">Delete</button>
                             </td>
                         `;
                         menuTableBody.appendChild(row);
@@ -1529,12 +1476,7 @@
                                 </select>
                             </td>
                             <td class="action-btns">
-                                <button class="update-btn" data-key="${key}">
-                                    <i class="fas fa-sync"></i> Update
-                                </button>
-                                <button class="delete-btn" data-key="${key}">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
+                                <button class="update-btn" data-key="${key}">Update</button>
                             </td>
                         `;
                         ordersTableBody.appendChild(row);
@@ -1548,36 +1490,9 @@
                             const newStatus = selectElement.value;
                             
                             // Update order status in Firebase
-                            const orderRef = ref(database, `orders/${key}/status`);
-                            set(orderRef, newStatus)
-                                .then(() => {
-                                    alert(`Order status updated to: ${newStatus}`);
-                                    updateDashboardStats();
-                                })
-                                .catch((error) => {
-                                    console.error('Error updating order status:', error);
-                                    alert('Error updating order status. Please try again.');
-                                });
-                        });
-                    });
-                    
-                    // Add event listeners to delete buttons
-                    document.querySelectorAll('.delete-btn').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const key = this.dataset.key;
-                            if(confirm('Are you sure you want to delete this order?')) {
-                                const orderRef = ref(database, `orders/${key}`);
-                                remove(orderRef)
-                                    .then(() => {
-                                        alert('Order deleted successfully!');
-                                        loadOrders();
-                                        updateDashboardStats();
-                                    })
-                                    .catch((error) => {
-                                        console.error('Error deleting order:', error);
-                                        alert('Error deleting order. Please try again.');
-                                    });
-                            }
+                            updateOrderStatus(key, newStatus);
+                            
+                            alert(`Order status updated to: ${newStatus}`);
                         });
                     });
                 } else {
@@ -1588,55 +1503,19 @@
             });
         }
         
-        // Load users from Firebase
-        function loadUsers() {
-            const usersRef = ref(database, 'users');
-            onValue(usersRef, (snapshot) => {
-                const data = snapshot.val();
-                usersTableBody.innerHTML = '';
-                
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        const user = data[key];
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${user.mobile}</td>
-                            <td><a href="https://maps.google.com/?q=${user.location}" target="_blank">${user.location}</a></td>
-                            <td>${user.orders || 0}</td>
-                            <td>${new Date(user.lastLogin).toLocaleDateString()}</td>
-                            <td class="action-btns">
-                                <button class="delete-btn" data-key="${key}">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </td>
-                        `;
-                        usersTableBody.appendChild(row);
-                    });
-                    
-                    // Add event listeners to delete buttons
-                    document.querySelectorAll('.delete-btn').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const key = this.dataset.key;
-                            if(confirm('Are you sure you want to delete this user?')) {
-                                const userRef = ref(database, `users/${key}`);
-                                remove(userRef)
-                                    .then(() => {
-                                        alert('User deleted successfully!');
-                                        loadUsers();
-                                    })
-                                    .catch((error) => {
-                                        console.error('Error deleting user:', error);
-                                        alert('Error deleting user. Please try again.');
-                                    });
-                            }
-                        });
-                    });
-                } else {
-                    const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="5" style="text-align: center; color: #999;">No users found</td>';
-                    usersTableBody.appendChild(row);
-                }
-            });
+        // Update order status in Firebase
+        function updateOrderStatus(key, newStatus) {
+            const orderRef = ref(database, `orders/${key}/status`);
+            set(orderRef, newStatus)
+                .then(() => {
+                    console.log(`Order ${key} status updated to: ${newStatus}`);
+                    loadOrders();
+                    updateAnalytics();
+                })
+                .catch((error) => {
+                    console.error('Error updating order status:', error);
+                    alert('Error updating order status. Please try again.');
+                });
         }
         
         // Load slides from Firebase
@@ -1656,12 +1535,8 @@
                                 <div class="slide-content">${slide.title}</div>
                             </div>
                             <div class="slide-controls">
-                                <button class="edit-btn" data-key="${key}">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button class="delete-btn" data-key="${key}">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
+                                <button class="edit-btn" data-key="${key}">Edit</button>
+                                <button class="delete-btn" data-key="${key}">Delete</button>
                             </div>
                         `;
                         slidesContainer.appendChild(slideContainer);
@@ -1672,183 +1547,15 @@
             });
         }
         
-        // Update dashboard statistics
-        function updateDashboardStats() {
-            // Get orders
-            const ordersRef = ref(database, 'orders');
-            get(ordersRef).then((snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    const orders = Object.values(data);
-                    totalOrdersElement.textContent = orders.length;
-                    
-                    // Calculate total revenue
-                    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-                    totalRevenueElement.textContent = `₹${totalRevenue.toLocaleString()}`;
-                    
-                    // Get unique users
-                    const users = [...new Set(orders.map(order => order.mobile))];
-                    totalUsersElement.textContent = users.length;
-                } else {
-                    totalOrdersElement.textContent = '0';
-                    totalUsersElement.textContent = '0';
-                    totalRevenueElement.textContent = '₹0';
-                }
-            }).catch((error) => {
-                console.error('Error fetching orders:', error);
-            });
-            
-            // Get page views
-            const viewsRef = ref(database, 'analytics/views');
-            get(viewsRef).then((snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    totalViewsElement.textContent = data.total || 0;
-                    analyticsTotalViewsElement.textContent = data.total || 0;
-                    analyticsTodayViewsElement.textContent = data.today || 0;
-                } else {
-                    totalViewsElement.textContent = '0';
-                    analyticsTotalViewsElement.textContent = '0';
-                    analyticsTodayViewsElement.textContent = '0';
-                }
-            }).catch((error) => {
-                console.error('Error fetching views:', error);
-            });
-        }
-        
         // Update analytics
-        function updateAnalytics(fromDate = null, toDate = null) {
-            const analyticsRef = ref(database, 'analytics/views');
-            get(analyticsRef).then((snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    analyticsTotalViewsElement.textContent = data.total || 0;
-                    analyticsTodayViewsElement.textContent = data.today || 0;
-                } else {
-                    analyticsTotalViewsElement.textContent = '0';
-                    analyticsTodayViewsElement.textContent = '0';
-                }
-            }).catch((error) => {
-                console.error('Error fetching analytics:', error);
-            });
-        }
-        
-        // Start live updates
-        function startLiveUpdates() {
-            // Clear any existing interval
-            if (liveUpdateInterval) {
-                clearInterval(liveUpdateInterval);
-            }
+        function updateAnalytics() {
+            // In a real implementation, this would fetch data from Firebase
+            const totalViews = Math.floor(Math.random() * 2000) + 1000;
+            const todayViews = Math.floor(Math.random() * 200) + 50;
             
-            // Set up interval to check for updates
-            liveUpdateInterval = setInterval(() => {
-                // Check for order updates
-                const ordersRef = ref(database, 'orders');
-                get(ordersRef).then((snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        const latestOrder = Object.values(data).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
-                        if (latestOrder && new Date(latestOrder.timestamp).getTime() > lastOrdersUpdate) {
-                            lastOrdersUpdate = new Date(latestOrder.timestamp).getTime();
-                            
-                            // Show live update indicator
-                            liveUpdateIndicator.style.display = 'flex';
-                            setTimeout(() => {
-                                liveUpdateIndicator.style.display = 'none';
-                            }, 2000);
-                            
-                            // Reload orders and stats
-                            loadOrders();
-                            updateDashboardStats();
-                        }
-                    }
-                });
-            }, 5000); // Check every 5 seconds
+            totalViewsElement.textContent = totalViews.toLocaleString();
+            todayViewsElement.textContent = todayViews.toLocaleString();
         }
-    </script> <!-- ... (existing code above) ... -->
-                <div class="panel-header">
-                    <h2 class="panel-title"><i class="fas fa-receipt"></i> Order Management</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="export-btn" id="exportOrdersBtn">Export</button>
-                        <button class="export-btn" id="printOrdersBtn" style="background: #4caf50;">
-                            <i class="fas fa-print"></i> Print
-                        </button>
-                    </div>
-                </div>
-                <table id="ordersTable">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Mobile</th>
-                            <th>Items</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ordersTableBody">
-                        <!-- Orders will be populated here -->
-                    </tbody>
-                </table>
-<!-- ... (existing code below) ... -->
-
-<script>
-// ===== PRINT ORDERS BUTTON =====
-document.addEventListener("DOMContentLoaded", function() {
-    const printOrdersBtn = document.getElementById("printOrdersBtn");
-    if (printOrdersBtn) {
-        printOrdersBtn.addEventListener("click", function() {
-            // Clone the orders table
-            const ordersTable = document.getElementById("ordersTable");
-            if (!ordersTable) return;
-
-            // Create a new window for printing
-            const printWindow = window.open('', '', 'width=900,height=700');
-            // Optional: Add your company/admin panel branding
-            const style = `
-                <style>
-                    body { font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-                    h2 { color: #4361ee; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; }
-                    th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-                    th { background-color: #f1f5f9; font-weight: 600; color: #4361ee; }
-                    tr:hover { background-color: #f8fafc; }
-                </style>
-            `;
-
-            // Remove the Actions column from printout
-            const clonedTable = ordersTable.cloneNode(true);
-            // Remove the Actions header
-            if (clonedTable.tHead && clonedTable.tHead.rows[0].cells.length) {
-                clonedTable.tHead.rows[0].deleteCell(clonedTable.tHead.rows[0].cells.length - 1);
-            }
-            // Remove Actions cells in tbody
-            for (let row of clonedTable.tBodies[0].rows) {
-                row.deleteCell(row.cells.length - 1);
-            }
-
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Print Orders - MIRDHUNA</title>
-                    ${style}
-                </head>
-                <body>
-                    <h2>Order List</h2>
-                    ${clonedTable.outerHTML}
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.focus();
-            // Wait for content to load before printing
-            printWindow.onload = function() {
-                printWindow.print();
-                // Optional: close the window after printing
-                printWindow.close();
-            };
-        });
-    }
-});
-</script>
+    </script>
 </body>
 </html>
