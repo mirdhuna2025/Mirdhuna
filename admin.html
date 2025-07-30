@@ -19,7 +19,7 @@
             --secondary: #3f37c9;
             --accent: #4cc9f0;
             --dark: #1A1A1A;
-            --light: #f8f9fa;
+            --light: #FFF9C4;
             --white: #FFFFFF;
             --shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
@@ -51,7 +51,7 @@
             font-size: 2.5rem;
             font-weight: 800;
             color: var(--primary);
-            text-shadow: 2px 2px 0 rgba(67, 97, 238, 0.2);
+            text-shadow: 3px 3px 0 rgba(67, 97, 238, 0.2);
             letter-spacing: 1px;
         }
         
@@ -64,7 +64,7 @@
         
         .logout-btn {
             padding: 10px 25px;
-            background: var(--danger);
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 30px;
@@ -72,13 +72,13 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(248, 113, 113, 0.3);
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
         }
         
         .logout-btn:hover {
-            background: #ef4444;
+            background: #3730a3;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(248, 113, 113, 0.4);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
         }
         
         /* Dashboard Stats */
@@ -137,7 +137,7 @@
         }
         
         .stat-card.users .stat-icon {
-            background: rgba(79, 55, 201, 0.15);
+            background: rgba(63, 55, 201, 0.15);
             color: var(--secondary);
         }
         
@@ -148,7 +148,7 @@
         
         .stat-card.views .stat-icon {
             background: rgba(96, 165, 250, 0.15);
-            color: var(--info);
+            color: #60a5fa;
         }
         
         /* Admin Content */
@@ -192,7 +192,7 @@
         
         .add-btn {
             padding: 10px 20px;
-            background: var(--success);
+            background: var(--accent);
             color: white;
             border: none;
             border-radius: 30px;
@@ -200,16 +200,16 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(74, 222, 128, 0.3);
+            box-shadow: 0 4px 10px rgba(76, 201, 240, 0.3);
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
         .add-btn:hover {
-            background: #22c55e;
+            background: #06b6d4;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(74, 222, 128, 0.4);
+            box-shadow: 0 6px 15px rgba(76, 201, 240, 0.4);
         }
         
         /* Table Styles */
@@ -242,7 +242,7 @@
             flex-wrap: wrap;
         }
         
-        .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
+        .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn, .print-btn {
             padding: 8px 15px;
             border: none;
             border-radius: 6px;
@@ -256,21 +256,21 @@
         }
         
         .edit-btn {
-            background: var(--info);
+            background: #2196f3;
             color: white;
         }
         
         .edit-btn:hover {
-            background: #3b82f6;
+            background: #0b7dda;
         }
         
         .delete-btn {
-            background: var(--danger);
+            background: #f44336;
             color: white;
         }
         
         .delete-btn:hover {
-            background: #ef4444;
+            background: #d32f2f;
         }
         
         .export-btn {
@@ -283,21 +283,30 @@
         }
         
         .view-btn {
-            background: var(--secondary);
+            background: #9c27b0;
             color: white;
         }
         
         .view-btn:hover {
-            background: #3730a3;
+            background: #7b1fa2;
         }
         
         .update-btn {
-            background: var(--success);
+            background: #4caf50;
             color: white;
         }
         
         .update-btn:hover {
-            background: #22c55e;
+            background: #388e3c;
+        }
+        
+        .print-btn {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .print-btn:hover {
+            background: #f57c00;
         }
         
         /* Form Styles */
@@ -310,7 +319,6 @@
             margin-bottom: 8px;
             font-weight: 500;
             color: var(--dark);
-            font-size: 0.9rem;
         }
         
         .form-group input, .form-group textarea, .form-group select {
@@ -336,7 +344,7 @@
         
         .save-btn {
             padding: 12px 25px;
-            background: var(--success);
+            background: var(--accent);
             color: white;
             border: none;
             border-radius: 10px;
@@ -344,18 +352,17 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            flex: 1;
         }
         
         .save-btn:hover {
-            background: #22c55e;
+            background: #06b6d4;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(74, 222, 128, 0.3);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.3);
         }
         
         .cancel-btn {
             padding: 12px 25px;
-            background: var(--danger);
+            background: #f44336;
             color: white;
             border: none;
             border-radius: 10px;
@@ -363,13 +370,12 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            flex: 1;
         }
         
         .cancel-btn:hover {
-            background: #ef4444;
+            background: #d32f2f;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(248, 113, 113, 0.3);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
         }
         
         /* Slides */
@@ -381,13 +387,13 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        .slide {
+        .slide-preview {
             height: 180px;
             background-size: cover;
             background-position: center;
             border-radius: 15px;
-            display: flex;
-            align-items: flex-end;
+            margin-bottom: 15px;
+            position: relative;
         }
         
         .slide-content {
@@ -429,7 +435,6 @@
         
         .image-preview .placeholder {
             color: #999;
-            font-size: 0.9rem;
         }
         
         /* Footer */
@@ -467,7 +472,6 @@
             color: var(--dark);
             font-weight: 500;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
         }
         
         .footer-links a:hover {
@@ -479,7 +483,6 @@
             padding-top: 20px;
             border-top: 1px solid #e0e0e0;
             color: #666;
-            font-size: 0.8rem;
         }
         
         /* Modal Styles */
@@ -531,8 +534,6 @@
         .modal h2 {
             margin-top: 0;
             text-align: center;
-            font-size: 1.8rem;
-            color: var(--primary);
         }
         
         /* Status Select */
@@ -545,31 +546,110 @@
             font-size: 0.9rem;
         }
         
-        /* Live Update Indicator */
-        .live-update {
+        /* Login Form */
+        .login-form {
             display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .login-btn {
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            background: #3730a3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        /* Print Receipt */
+        .print-receipt {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
-            background: #dcfce7;
-            padding: 10px 15px;
-            border-radius: 30px;
-            font-weight: 500;
-            color: #166534;
+        }
+        
+        .receipt-content {
+            background: white;
+            padding: 30px;
+            width: 300px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .receipt-header {
+            text-align: center;
             margin-bottom: 20px;
         }
         
-        .live-indicator {
-            width: 12px;
-            height: 12px;
-            background: #22c55e;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
+        .receipt-header h2 {
+            margin: 0;
+            font-size: 24px;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
+        .receipt-header p {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        
+        .receipt-divider {
+            border-top: 1px dashed #000;
+            margin: 15px 0;
+        }
+        
+        .receipt-items {
+            margin: 15px 0;
+        }
+        
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+        
+        .receipt-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #000;
+        }
+        
+        .receipt-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        
+        .print-btn-receipt {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
         }
         
         /* Responsive Design */
@@ -592,6 +672,7 @@
             
             .admin-info {
                 align-items: center;
+                width: 100%;
             }
             
             .dashboard-stats {
@@ -615,8 +696,8 @@
                 gap: 4px;
             }
             
-            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-                padding: 5px 10px;
+            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn, .print-btn {
+                padding: 5px 8px;
                 font-size: 0.7rem;
             }
         }
@@ -640,6 +721,7 @@
             }
             
             .dashboard-stats {
+                grid-template-columns: 1fr;
                 gap: 15px;
             }
             
@@ -655,7 +737,7 @@
             
             .stat-value {
                 font-size: 1.8rem;
-                margin: 8px 0;
+                margin-bottom: 5px;
             }
             
             .stat-label {
@@ -663,6 +745,7 @@
             }
             
             .admin-content {
+                grid-template-columns: 1fr;
                 gap: 20px;
             }
             
@@ -693,12 +776,16 @@
             }
             
             .action-btns {
-                gap: 3px;
+                gap: 4px;
             }
             
-            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-                padding: 4px 8px;
-                font-size: 0.65rem;
+            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn, .print-btn {
+                padding: 5px 8px;
+                font-size: 0.7rem;
+            }
+            
+            .form-group {
+                margin-bottom: 15px;
             }
             
             .form-group label {
@@ -707,7 +794,7 @@
             
             .form-group input, .form-group textarea, .form-group select {
                 padding: 10px;
-                font-size: 0.85rem;
+                font-size: 0.9rem;
             }
             
             .form-actions {
@@ -717,16 +804,16 @@
             
             .save-btn, .cancel-btn {
                 padding: 10px 20px;
-                font-size: 0.85rem;
+                font-size: 0.9rem;
             }
             
-            .slide {
+            .slide-preview {
                 height: 150px;
             }
             
             .slide-content {
                 padding: 12px;
-                font-size: 0.85rem;
+                font-size: 0.9rem;
             }
             
             .slide-controls {
@@ -775,7 +862,7 @@
             }
             
             .modal h2 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
             }
             
             .close-modal {
@@ -789,14 +876,9 @@
                 font-size: 0.85rem;
             }
             
-            .live-update {
-                padding: 8px 12px;
-                font-size: 0.85rem;
-            }
-            
-            .live-indicator {
-                width: 10px;
-                height: 10px;
+            .login-btn {
+                padding: 12px;
+                font-size: 1rem;
             }
         }
     </style>
@@ -810,12 +892,6 @@
                 <button class="logout-btn" id="logoutBtn">Logout</button>
             </div>
         </header>
-        
-        <!-- Live Update Indicator -->
-        <div class="live-update" id="liveUpdateIndicator" style="display: none;">
-            <div class="live-indicator"></div>
-            <span>Updating orders...</span>
-        </div>
         
         <div class="dashboard-stats">
             <div class="stat-card orders">
@@ -1027,8 +1103,12 @@
                     <textarea id="itemDescription" rows="3"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="itemImage">Item Image URL</label>
-                    <input type="url" id="itemImage" placeholder="https://example.com/image.jpg">
+                    <label for="itemImage">Item Image</label>
+                    <input type="file" id="itemImage" accept="image/*">
+                    <div class="image-preview">
+                        <span class="placeholder">Image preview will appear here</span>
+                        <img id="itemImagePreview" src="" alt="Preview">
+                    </div>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="save-btn">Save Item</button>
@@ -1046,15 +1126,19 @@
             <form id="slideForm">
                 <div class="form-group">
                     <label for="slideTitle">Slide Title</label>
-                    <input type="text" id="slideTitle" placeholder="Slide Title" required>
+                    <input type="text" id="slideTitle" required>
                 </div>
                 <div class="form-group">
                     <label for="slideDescription">Slide Description</label>
-                    <textarea id="slideDescription" rows="3" placeholder="Slide Description" required></textarea>
+                    <textarea id="slideDescription" rows="3" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="slideImage">Slide Image URL</label>
-                    <input type="url" id="slideImage" placeholder="https://example.com/image.jpg" required>
+                    <label for="slideImage">Slide Image</label>
+                    <input type="file" id="slideImage" accept="image/*">
+                    <div class="image-preview">
+                        <span class="placeholder">Image preview will appear here</span>
+                        <img id="slideImagePreview" src="" alt="Preview">
+                    </div>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="save-btn">Save Slide</button>
@@ -1063,11 +1147,78 @@
             </form>
         </div>
     </div>
+    
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeLoginModal">&times;</span>
+            <h2>Admin Login</h2>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Print Receipt Modal -->
+    <div class="print-receipt" id="printReceipt">
+        <div class="receipt-content">
+            <div class="receipt-header">
+                <h2>MIRDHUNA</h2>
+                <p>Delicious Food Delivered</p>
+                <p>Order Receipt</p>
+            </div>
+            <div class="receipt-divider"></div>
+            <div class="receipt-details">
+                <div class="receipt-item">
+                    <span>Order ID:</span>
+                    <span id="receiptOrderId">#ORD001</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Date:</span>
+                    <span id="receiptDate">2023-07-15</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Time:</span>
+                    <span id="receiptTime">12:45 PM</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Customer:</span>
+                    <span id="receiptCustomer">9876543210</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Location:</span>
+                    <span id="receiptLocation">17.3850, 78.4867</span>
+                </div>
+            </div>
+            <div class="receipt-divider"></div>
+            <div class="receipt-items" id="receiptItems">
+                <!-- Items will be populated here -->
+            </div>
+            <div class="receipt-total">
+                <span>Total:</span>
+                <span id="receiptTotal">₹0</span>
+            </div>
+            <div class="receipt-footer">
+                <p>Thank you for ordering with MIRDHUNA!</p>
+                <p>Online Pizza, Burger, Sandwich & Shake Delivery</p>
+            </div>
+            <button class="print-btn-receipt" id="printReceiptBtn">Print Receipt</button>
+        </div>
+    </div>
 
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
         import { getDatabase, ref, set, push, onValue, get, child, update, remove } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
 
         // Firebase configuration
@@ -1086,6 +1237,7 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const database = getDatabase(app);
+        const storage = getStorage(app);
 
         // DOM Elements
         const logoutBtn = document.getElementById('logoutBtn');
@@ -1102,29 +1254,56 @@
         const totalViewsElement = document.getElementById('totalViews');
         const analyticsTotalViewsElement = document.getElementById('analyticsTotalViews');
         const analyticsTodayViewsElement = document.getElementById('analyticsTodayViews');
-        const slidesContainer = document.getElementById('slidesContainer');
         
         // Modals
         const menuModal = document.getElementById('menuModal');
         const slideModal = document.getElementById('slideModal');
+        const loginModal = document.getElementById('loginModal');
+        const printReceipt = document.getElementById('printReceipt');
         const closeMenuModal = document.getElementById('closeMenuModal');
         const closeSlideModal = document.getElementById('closeSlideModal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
         const cancelMenuBtn = document.getElementById('cancelMenuBtn');
         const cancelSlideBtn = document.getElementById('cancelSlideBtn');
         const menuForm = document.getElementById('menuForm');
         const slideForm = document.getElementById('slideForm');
+        const loginForm = document.getElementById('loginForm');
         const menuModalTitle = document.getElementById('menuModalTitle');
         const slideModalTitle = document.getElementById('slideModalTitle');
+        const printReceiptBtn = document.getElementById('printReceiptBtn');
         
-        // Live update indicator
-        const liveUpdateIndicator = document.getElementById('liveUpdateIndicator');
+        // Image previews
+        const itemImageInput = document.getElementById('itemImage');
+        const itemImagePreview = document.getElementById('itemImagePreview');
+        const slideImageInput = document.getElementById('slideImage');
+        const slideImagePreview = document.getElementById('slideImagePreview');
+        
+        // Receipt elements
+        const receiptOrderId = document.getElementById('receiptOrderId');
+        const receiptDate = document.getElementById('receiptDate');
+        const receiptTime = document.getElementById('receiptTime');
+        const receiptCustomer = document.getElementById('receiptCustomer');
+        const receiptLocation = document.getElementById('receiptLocation');
+        const receiptItems = document.getElementById('receiptItems');
+        const receiptTotal = document.getElementById('receiptTotal');
         
         // State variables
+        let adminLoggedIn = false;
         let lastOrdersUpdate = 0;
         let liveUpdateInterval;
         
         // Admin functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if admin is already logged in
+            const savedAdmin = localStorage.getItem('mirdhuna_admin');
+            if (savedAdmin) {
+                adminLoggedIn = true;
+                document.body.classList.remove('login-required');
+            } else {
+                // Show login modal
+                showModal(loginModal);
+            }
+            
             // Load all data
             loadMenuItems();
             loadOrders();
@@ -1137,8 +1316,9 @@
             // Logout button
             logoutBtn.addEventListener('click', function() {
                 if(confirm('Are you sure you want to logout?')) {
-                    alert('Logged out successfully!');
-                    window.location.href = 'index.html';
+                    adminLoggedIn = false;
+                    localStorage.removeItem('mirdhuna_admin');
+                    showModal(loginModal);
                 }
             });
             
@@ -1147,46 +1327,43 @@
                 menuModalTitle.textContent = 'Add Menu Item';
                 menuForm.reset();
                 document.getElementById('editIndex').value = '';
+                itemImagePreview.style.display = 'none';
+                itemImagePreview.nextElementSibling.style.display = 'block';
                 showModal(menuModal);
             });
             
             // Edit menu items
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('edit-btn') && e.target.closest('#menuTable')) {
-                    const key = e.target.dataset.key;
+                    const index = e.target.dataset.index;
                     const menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
-                    const item = menuItems.find(i => i.key === key);
+                    const item = menuItems[index];
                     
-                    if (item) {
-                        menuModalTitle.textContent = `Edit Menu Item: ${item.name}`;
-                        document.getElementById('itemName').value = item.name;
-                        document.getElementById('itemPrice').value = item.price;
-                        document.getElementById('itemCategory').value = item.category;
-                        document.getElementById('itemDescription').value = item.description;
-                        document.getElementById('itemImage').value = item.image || '';
-                        document.getElementById('editIndex').value = key;
-                        
-                        showModal(menuModal);
-                    }
+                    menuModalTitle.textContent = `Edit Menu Item: ${item.name}`;
+                    document.getElementById('itemName').value = item.name;
+                    document.getElementById('itemPrice').value = item.price;
+                    document.getElementById('itemCategory').value = item.category;
+                    document.getElementById('itemDescription').value = item.description;
+                    document.getElementById('itemImage').value = item.image || '';
+                    document.getElementById('editIndex').value = index;
+                    
+                    showModal(menuModal);
                 }
             });
             
             // Delete menu items
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('delete-btn') && e.target.closest('#menuTable')) {
-                    const key = e.target.dataset.key;
-                    if(confirm('Are you sure you want to delete this item?')) {
-                        // Remove from Firebase
-                        const itemRef = ref(database, `menu/${key}`);
-                        remove(itemRef)
-                            .then(() => {
-                                alert('Item deleted successfully!');
-                                loadMenuItems();
-                            })
-                            .catch((error) => {
-                                console.error('Error deleting item:', error);
-                                alert('Error deleting item. Please try again.');
-                            });
+                    const index = e.target.dataset.index;
+                    const menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
+                    const itemName = menuItems[index].name;
+                    
+                    if(confirm(`Are you sure you want to delete "${itemName}"?`)) {
+                        menuItems.splice(index, 1);
+                        localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
+                        loadMenuItems();
+                        updateDashboardStats();
+                        alert('Item deleted successfully!');
                     }
                 }
             });
@@ -1207,139 +1384,112 @@
             addSlideBtn.addEventListener('click', function() {
                 slideModalTitle.textContent = 'Add Slide';
                 slideForm.reset();
+                slideImagePreview.style.display = 'none';
+                slideImagePreview.nextElementSibling.style.display = 'block';
                 showModal(slideModal);
             });
             
             // Edit slides
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('edit-btn') && e.target.closest('#slidesContainer')) {
-                    const key = e.target.dataset.key;
+                    const index = e.target.dataset.index;
                     const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
-                    const slide = slides.find(s => s.key === key);
+                    const slide = slides[index];
                     
-                    if (slide) {
-                        slideModalTitle.textContent = `Edit Slide: ${slide.title}`;
-                        document.getElementById('slideTitle').value = slide.title;
-                        document.getElementById('slideDescription').value = slide.description;
-                        document.getElementById('slideImage').value = slide.image;
-                        document.getElementById('editIndex').value = key;
-                        
-                        showModal(slideModal);
-                    }
+                    slideModalTitle.textContent = `Edit Slide: ${slide.title}`;
+                    document.getElementById('slideTitle').value = slide.title;
+                    document.getElementById('slideDescription').value = slide.description;
+                    document.getElementById('slideImage').value = slide.image || '';
+                    document.getElementById('editIndex').value = index;
+                    
+                    showModal(slideModal);
                 }
             });
             
             // Delete slides
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('delete-btn') && e.target.closest('#slidesContainer')) {
-                    const key = e.target.dataset.key;
-                    if(confirm('Are you sure you want to delete this slide?')) {
-                        // Remove from Firebase
-                        const slideRef = ref(database, `slides/${key}`);
-                        remove(slideRef)
-                            .then(() => {
-                                alert('Slide deleted successfully!');
-                                loadSlides();
-                            })
-                            .catch((error) => {
-                                console.error('Error deleting slide:', error);
-                                alert('Error deleting slide. Please try again.');
-                            });
+                    const index = e.target.dataset.index;
+                    const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
+                    const slideTitle = slides[index].title;
+                    
+                    if(confirm(`Are you sure you want to delete slide: "${slideTitle}"?`)) {
+                        slides.splice(index, 1);
+                        localStorage.setItem('mirdhuna_slides', JSON.stringify(slides));
+                        loadSlides();
+                        alert('Slide deleted successfully!');
                     }
                 }
             });
             
-            // Menu form submission
-            menuForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const itemName = document.getElementById('itemName').value;
-                const itemPrice = document.getElementById('itemPrice').value;
-                const itemCategory = document.getElementById('itemCategory').value;
-                const itemDescription = document.getElementById('itemDescription').value;
-                const itemImage = document.getElementById('itemImage').value;
-                const editIndex = document.getElementById('editIndex').value;
-                
-                const newItem = {
-                    name: itemName,
-                    price: parseInt(itemPrice),
-                    category: itemCategory,
-                    description: itemDescription,
-                    image: itemImage
-                };
-                
-                if (editIndex) {
-                    // Update existing item in Firebase
-                    const itemRef = ref(database, `menu/${editIndex}`);
-                    update(itemRef, newItem)
-                        .then(() => {
-                            alert('Menu item updated successfully!');
-                            loadMenuItems();
-                            hideModal(menuModal);
-                        })
-                        .catch((error) => {
-                            console.error('Error updating item:', error);
-                            alert('Error updating item. Please try again.');
+            // Print receipt
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('print-btn')) {
+                    const orderId = e.target.dataset.orderId;
+                    const orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
+                    const order = orders.find(o => o.id === orderId);
+                    
+                    if (order) {
+                        // Populate receipt
+                        receiptOrderId.textContent = order.id;
+                        const orderDate = new Date(order.timestamp);
+                        receiptDate.textContent = orderDate.toLocaleDateString();
+                        receiptTime.textContent = orderDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        receiptCustomer.textContent = order.mobile;
+                        receiptLocation.textContent = order.location;
+                        
+                        // Clear existing items
+                        receiptItems.innerHTML = '';
+                        
+                        // Add items to receipt
+                        order.items.forEach(item => {
+                            const receiptItem = document.createElement('div');
+                            receiptItem.className = 'receipt-item';
+                            receiptItem.innerHTML = `
+                                <span>${item.name}</span>
+                                <span>₹${item.price}</span>
+                            `;
+                            receiptItems.appendChild(receiptItem);
                         });
-                } else {
-                    // Add new item to Firebase
-                    const menuRef = ref(database, 'menu');
-                    const newMenuRef = push(menuRef);
-                    set(newMenuRef, newItem)
-                        .then(() => {
-                            alert('Menu item added successfully!');
-                            loadMenuItems();
-                            hideModal(menuModal);
-                        })
-                        .catch((error) => {
-                            console.error('Error adding item:', error);
-                            alert('Error adding item. Please try again.');
-                        });
+                        
+                        receiptTotal.textContent = `₹${order.total}`;
+                        
+                        // Show receipt modal
+                        printReceipt.style.display = 'flex';
+                    }
                 }
             });
             
-            // Slide form submission
-            slideForm.addEventListener('submit', function(e) {
+            // Print receipt button
+            printReceiptBtn.addEventListener('click', function() {
+                window.print();
+            });
+            
+            // Login form submission
+            loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const slideTitle = document.getElementById('slideTitle').value;
-                const slideDescription = document.getElementById('slideDescription').value;
-                const slideImage = document.getElementById('slideImage').value;
-                const editIndex = document.getElementById('editIndex').value;
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
                 
-                const newSlide = {
-                    title: slideTitle,
-                    description: slideDescription,
-                    image: slideImage
-                };
-                
-                if (editIndex) {
-                    // Update existing slide in Firebase
-                    const slideRef = ref(database, `slides/${editIndex}`);
-                    update(slideRef, newSlide)
-                        .then(() => {
-                            alert('Slide updated successfully!');
-                            loadSlides();
-                            hideModal(slideModal);
-                        })
-                        .catch((error) => {
-                            console.error('Error updating slide:', error);
-                            alert('Error updating slide. Please try again.');
-                        });
+                // Check credentials (admin/Sanu.0000)
+                if(username === 'admin' && password === 'Sanu.0000') {
+                    adminLoggedIn = true;
+                    localStorage.setItem('mirdhuna_admin', 'true');
+                    hideModal(loginModal);
+                    alert('Login successful! Welcome to MIRDHUNA Admin Panel.');
                 } else {
-                    // Add new slide to Firebase
-                    const slidesRef = ref(database, 'slides');
-                    const newSlideRef = push(slidesRef);
-                    set(newSlideRef, newSlide)
-                        .then(() => {
-                            alert('Slide added successfully!');
-                            loadSlides();
-                            hideModal(slideModal);
-                        })
-                        .catch((error) => {
-                            console.error('Error adding slide:', error);
-                            alert('Error adding slide. Please try again.');
-                        });
+                    alert('Invalid username or password. Please try again.');
                 }
             });
+            
+            // Modal functions
+            function showModal(modal) {
+                modal.style.display = 'flex';
+            }
+            
+            function hideModal(modal) {
+                modal.style.display = 'none';
+            }
             
             // Close modals
             closeMenuModal.addEventListener('click', function() {
@@ -1348,6 +1498,10 @@
             
             closeSlideModal.addEventListener('click', function() {
                 hideModal(slideModal);
+            });
+            
+            closeLoginModal.addEventListener('click', function() {
+                hideModal(loginModal);
             });
             
             cancelMenuBtn.addEventListener('click', function() {
@@ -1366,172 +1520,287 @@
                 if (event.target === slideModal) {
                     hideModal(slideModal);
                 }
+                if (event.target === loginModal) {
+                    hideModal(loginModal);
+                }
+                if (event.target === printReceipt) {
+                    printReceipt.style.display = 'none';
+                }
+            });
+            
+            // Menu form submission
+            menuForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemName = document.getElementById('itemName').value;
+                const itemPrice = document.getElementById('itemPrice').value;
+                const itemCategory = document.getElementById('itemCategory').value;
+                const itemDescription = document.getElementById('itemDescription').value;
+                const itemImage = document.getElementById('itemImage').value;
+                const editIndex = document.getElementById('editIndex').value;
+                
+                // Get existing menu items or initialize empty array
+                let menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
+                
+                const newItem = {
+                    name: itemName,
+                    price: parseInt(itemPrice),
+                    category: itemCategory,
+                    description: itemDescription,
+                    image: itemImage
+                };
+                
+                if (editIndex !== '') {
+                    // Update existing item
+                    menuItems[editIndex] = newItem;
+                    alert('Menu item updated successfully!');
+                } else {
+                    // Add new item
+                    menuItems.push(newItem);
+                    alert('Menu item added successfully!');
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
+                
+                // Reload menu items
+                loadMenuItems();
+                updateDashboardStats();
+                
+                hideModal(menuModal);
+            });
+            
+            // Slide form submission
+            slideForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const slideTitle = document.getElementById('slideTitle').value;
+                const slideDescription = document.getElementById('slideDescription').value;
+                const slideImage = document.getElementById('slideImage').value;
+                const editIndex = document.getElementById('editIndex').value;
+                
+                // Get existing slides or initialize empty array
+                let slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
+                
+                const newSlide = {
+                    title: slideTitle,
+                    description: slideDescription,
+                    image: slideImage
+                };
+                
+                if (editIndex !== '') {
+                    // Update existing slide
+                    slides[editIndex] = newSlide;
+                    alert('Slide updated successfully!');
+                } else {
+                    // Add new slide
+                    slides.push(newSlide);
+                    alert('Slide added successfully!');
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('mirdhuna_slides', JSON.stringify(slides));
+                
+                // Reload slides
+                loadSlides();
+                
+                hideModal(slideModal);
+            });
+            
+            // Image preview for menu items
+            itemImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        itemImagePreview.src = e.target.result;
+                        itemImagePreview.style.display = 'block';
+                        itemImagePreview.nextElementSibling.style.display = 'none';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Image preview for slides
+            slideImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        slideImagePreview.src = e.target.result;
+                        slideImagePreview.style.display = 'block';
+                        slideImagePreview.nextElementSibling.style.display = 'none';
+                    }
+                    reader.readAsDataURL(file);
+                }
             });
         });
         
-        // Load menu items from Firebase
+        // Load menu items from localStorage
         function loadMenuItems() {
-            const menuRef = ref(database, 'menu');
-            onValue(menuRef, (snapshot) => {
-                const data = snapshot.val();
-                menuTableBody.innerHTML = '';
-                
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        const item = data[key];
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${item.name}</td>
-                            <td>₹${item.price}</td>
-                            <td>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</td>
-                            <td class="action-btns">
-                                <button class="edit-btn" data-key="${key}">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button class="delete-btn" data-key="${key}">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </td>
-                        `;
-                        menuTableBody.appendChild(row);
-                    });
-                } else {
-                    const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="4" style="text-align: center; color: #999;">No menu items found</td>';
-                    menuTableBody.appendChild(row);
-                }
+            const menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
+            menuTableBody.innerHTML = '';
+            
+            if (menuItems.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="4" style="text-align: center; color: #999;">No menu items found</td>';
+                menuTableBody.appendChild(row);
+                return;
+            }
+            
+            menuItems.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>₹${item.price}</td>
+                    <td>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</td>
+                    <td class="action-btns">
+                        <button class="edit-btn" data-index="${index}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="delete-btn" data-index="${index}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                menuTableBody.appendChild(row);
             });
         }
         
-        // Load orders from Firebase
+        // Load orders from localStorage
         function loadOrders() {
-            const ordersRef = ref(database, 'orders');
-            onValue(ordersRef, (snapshot) => {
-                const data = snapshot.val();
-                ordersTableBody.innerHTML = '';
-                
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        const order = data[key];
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${order.id}</td>
-                            <td>${order.mobile}</td>
-                            <td>${order.items.map(item => item.name).join(', ')}</td>
-                            <td>
-                                <select class="status-select" data-key="${key}">
-                                    <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                    <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                                    <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                                </select>
-                            </td>
-                            <td class="action-btns">
-                                <button class="update-btn" data-key="${key}">
-                                    <i class="fas fa-sync"></i> Update
-                                </button>
-                            </td>
-                        `;
-                        ordersTableBody.appendChild(row);
-                    });
+            const orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
+            ordersTableBody.innerHTML = '';
+            
+            if (orders.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5" style="text-align: center; color: #999;">No orders found</td>';
+                ordersTableBody.appendChild(row);
+                return;
+            }
+            
+            orders.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.mobile}</td>
+                    <td>${order.items.map(item => item.name).join(', ')}</td>
+                    <td>
+                        <select class="status-select" data-order-id="${order.id}">
+                            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    </td>
+                    <td class="action-btns">
+                        <button class="update-btn" data-order-id="${order.id}">
+                            <i class="fas fa-sync"></i> Update
+                        </button>
+                        <button class="print-btn" data-order-id="${order.id}">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                    </td>
+                `;
+                ordersTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to update buttons
+            document.querySelectorAll('.update-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.dataset.orderId;
+                    const selectElement = document.querySelector(`.status-select[data-order-id="${orderId}"]`);
+                    const newStatus = selectElement.value;
                     
-                    // Add event listeners to update buttons
-                    document.querySelectorAll('.update-btn').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const key = this.dataset.key;
-                            const selectElement = document.querySelector(`.status-select[data-key="${key}"]`);
-                            const newStatus = selectElement.value;
-                            
-                            // Update order status in Firebase
-                            const orderRef = ref(database, `orders/${key}/status`);
-                            set(orderRef, newStatus)
-                                .then(() => {
-                                    alert(`Order status updated to: ${newStatus}`);
-                                    updateDashboardStats();
-                                })
-                                .catch((error) => {
-                                    console.error('Error updating order status:', error);
-                                    alert('Error updating order status. Please try again.');
-                                });
-                        });
-                    });
-                } else {
-                    const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="5" style="text-align: center; color: #999;">No orders found</td>';
-                    ordersTableBody.appendChild(row);
-                }
-                
-                // Update dashboard stats
-                updateDashboardStats();
+                    // Update order status in localStorage
+                    updateOrderStatus(orderId, newStatus);
+                    
+                    alert(`Order ${orderId} status updated to: ${newStatus}`);
+                });
             });
         }
         
-        // Load slides from Firebase
-        function loadSlides() {
-            const slidesRef = ref(database, 'slides');
-            onValue(slidesRef, (snapshot) => {
-                const data = snapshot.val();
-                slidesContainer.innerHTML = '';
-                
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        const slide = data[key];
-                        const slideContainer = document.createElement('div');
-                        slideContainer.className = 'slide-container';
-                        slideContainer.innerHTML = `
-                            <div class="slide" style="background-image: url('${slide.image}')">
-                                <div class="slide-content">${slide.title}</div>
-                            </div>
-                            <div class="slide-controls">
-                                <button class="edit-btn" data-key="${key}">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button class="delete-btn" data-key="${key}">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </div>
-                        `;
-                        slidesContainer.appendChild(slideContainer);
-                    });
-                } else {
-                    slidesContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No slides found</p>';
+        // Update order status in localStorage
+        function updateOrderStatus(orderId, newStatus) {
+            let orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
+            orders = orders.map(order => {
+                if (order.id === orderId) {
+                    return { ...order, status: newStatus };
                 }
+                return order;
+            });
+            localStorage.setItem('mirdhuna_orders', JSON.stringify(orders));
+            
+            // Update last orders update timestamp
+            const lastUpdate = Date.now();
+            localStorage.setItem('mirdhuna_last_orders_update', lastUpdate.toString());
+            
+            // Reload orders
+            loadOrders();
+        }
+        
+        // Load slides from localStorage
+        function loadSlides() {
+            const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
+            const slidesContainer = document.getElementById('slidesContainer');
+            slidesContainer.innerHTML = '';
+            
+            if (slides.length === 0) {
+                slidesContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No slides found</p>';
+                return;
+            }
+            
+            slides.forEach((slide, index) => {
+                const slideContainer = document.createElement('div');
+                slideContainer.className = 'slide-container';
+                slideContainer.innerHTML = `
+                    <div class="slide-preview" style="background-image: url('${slide.image}')">
+                        <div class="slide-content">${slide.title}</div>
+                    </div>
+                    <div class="slide-controls">
+                        <button class="edit-btn" data-index="${index}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="delete-btn" data-index="${index}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+                slidesContainer.appendChild(slideContainer);
             });
         }
         
         // Update dashboard statistics
         function updateDashboardStats() {
-            // Get orders from Firebase
-            const ordersRef = ref(database, 'orders');
-            get(ordersRef).then((snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    const orders = Object.values(data);
-                    totalOrdersElement.textContent = orders.length;
-                    analyticsTotalViewsElement.textContent = orders.length;
-                    
-                    // Calculate total revenue
-                    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-                    totalRevenueElement.textContent = `₹${totalRevenue.toLocaleString()}`;
-                    
-                    // Get unique users
-                    const users = [...new Set(orders.map(order => order.mobile))];
-                    totalUsersElement.textContent = users.length;
-                    
-                    // Simulate page views
-                    const views = Math.floor(Math.random() * 1000) + 500;
-                    totalViewsElement.textContent = views.toLocaleString();
-                    analyticsTodayViewsElement.textContent = views.toLocaleString();
-                } else {
-                    totalOrdersElement.textContent = '0';
-                    totalUsersElement.textContent = '0';
-                    totalRevenueElement.textContent = '₹0';
-                    totalViewsElement.textContent = '0';
-                    analyticsTotalViewsElement.textContent = '0';
-                    analyticsTodayViewsElement.textContent = '0';
-                }
-            }).catch((error) => {
-                console.error('Error fetching orders:', error);
-            });
+            // Get orders
+            const orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
+            totalOrdersElement.textContent = orders.length;
+            
+            // Get users (simulate from orders)
+            const users = [...new Set(orders.map(order => order.mobile))];
+            totalUsersElement.textContent = users.length;
+            
+            // Calculate revenue
+            const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+            totalRevenueElement.textContent = `₹${totalRevenue.toLocaleString()}`;
+            
+            // Simulate page views
+            const views = Math.floor(Math.random() * 1000) + 500;
+            totalViewsElement.textContent = views.toLocaleString();
+            analyticsTotalViewsElement.textContent = views.toLocaleString();
+            analyticsTodayViewsElement.textContent = Math.floor(views / 10).toLocaleString();
+        }
+        
+        // Check for order updates across devices
+        function checkForOrderUpdates() {
+            const storedLastUpdate = localStorage.getItem('mirdhuna_last_orders_update');
+            if (storedLastUpdate && parseInt(storedLastUpdate) > lastOrdersUpdate) {
+                lastOrdersUpdate = parseInt(storedLastUpdate);
+                
+                // Reload orders
+                loadOrders();
+                updateDashboardStats();
+                
+                // Show notification
+                alert('New order received! Check order management for details.');
+            }
         }
         
         // Start live updates
@@ -1542,39 +1811,7 @@
             }
             
             // Set up interval to check for updates
-            liveUpdateInterval = setInterval(() => {
-                // Check for order updates
-                const ordersRef = ref(database, 'orders');
-                get(ordersRef).then((snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        const latestOrder = Object.values(data).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
-                        if (latestOrder && new Date(latestOrder.timestamp).getTime() > lastOrdersUpdate) {
-                            lastOrdersUpdate = new Date(latestOrder.timestamp).getTime();
-                            
-                            // Show live update indicator
-                            liveUpdateIndicator.style.display = 'flex';
-                            setTimeout(() => {
-                                liveUpdateIndicator.style.display = 'none';
-                            }, 2000);
-                            
-                            // Reload orders and stats
-                            loadOrders();
-                            updateDashboardStats();
-                        }
-                    }
-                });
-            }, 5000); // Check every 5 seconds
-        }
-        
-        // Show modal
-        function showModal(modal) {
-            modal.style.display = 'flex';
-        }
-        
-        // Hide modal
-        function hideModal(modal) {
-            modal.style.display = 'none';
+            liveUpdateInterval = setInterval(checkForOrderUpdates, 3000); // Check every 3 seconds
         }
     </script>
 </body>
