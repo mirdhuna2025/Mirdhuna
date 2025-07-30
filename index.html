@@ -417,7 +417,7 @@
         .modal-content {
             background: white;
             border-radius: 20px;
-            width: 90%;
+            width: 95%;
             max-width: 500px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -507,7 +507,6 @@
             font-weight: 600;
             cursor: pointer;
             margin-top: 10px;
-            transition: all 0.3s ease;
         }
         
         .login-btn:hover {
@@ -545,14 +544,15 @@
             font-weight: 600;
             cursor: pointer;
             margin-top: 25px;
-            transition: all 0.3s ease;
             width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(6, 214, 160, 0.3);
         }
         
         .place-order-btn:hover {
             background: #05b88b;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(6, 214, 160, 0.3);
+            box-shadow: 0 8px 20px rgba(6, 214, 160, 0.5);
         }
         
         /* Cart Indicator */
@@ -562,8 +562,8 @@
             right: 30px;
             background: var(--primary);
             color: white;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -710,9 +710,9 @@
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
         
         /* Live Update Indicator */
@@ -794,7 +794,7 @@
             }
             
             .hero {
-                padding: 25px 15px;
+                padding: 25px 10px;
                 margin-bottom: 20px;
             }
             
@@ -822,12 +822,12 @@
             }
             
             .menu-items {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                grid-template-columns: repeat(2, 1fr);
                 gap: 12px;
             }
             
             .item-image {
-                height: 100px;
+                height: 120px;
             }
             
             .item-details {
@@ -907,7 +907,6 @@
             
             .order-history {
                 padding: 15px;
-                margin-bottom: 20px;
             }
             
             .order-item {
@@ -979,8 +978,20 @@
                 <a href="https://wa.me/9835124772" target="_blank" class="contact-item">
                     <i class="fab fa-whatsapp"></i> WhatsApp
                 </a>
+                <a href="https://www.facebook.com/profile.php?id=61557985779261" target="_blank" class="contact-item">
+                    <i class="fab fa-facebook"></i> Facebook
+                </a>
+                <a href="https://www.instagram.com/mirdhuna/" target="_blank" class="contact-item">
+                    <i class="fab fa-instagram"></i> Instagram
+                </a>
             </div>
         </header>
+        
+        <!-- Live Update Indicator -->
+        <div class="live-update-indicator" id="liveUpdateIndicator">
+            <div class="dot"></div>
+            <span>Updating orders...</span>
+        </div>
         
         <!-- User Info Section (shown when logged in) -->
         <div class="user-info" id="userInfo" style="display: none;">
@@ -1006,6 +1017,14 @@
             </div>
         </div>
         
+        <!-- Order History Section -->
+        <div class="order-history" id="orderHistory">
+            <h2>Your Order History</h2>
+            <div id="orderHistoryList">
+                <!-- Order history will be populated here -->
+            </div>
+        </div>
+        
         <div class="menu-section">
             <h2>Our Menu</h2>
             <div class="menu-categories" id="menuCategories">
@@ -1014,14 +1033,6 @@
             
             <div class="menu-items" id="menuItemsContainer">
                 <!-- Menu items will be loaded here -->
-            </div>
-        </div>
-        
-        <!-- Order History Section -->
-        <div class="order-history" id="orderHistory">
-            <h2>Your Order History</h2>
-            <div id="orderHistoryList">
-                <!-- Order history will be populated here -->
             </div>
         </div>
         
@@ -1086,17 +1097,12 @@
             <button class="place-order-btn" id="placeOrderBtn">Place Order</button>
         </div>
     </div>
-    
-    <!-- Live Update Indicator -->
-    <div class="live-update-indicator" id="liveUpdateIndicator">
-        <div class="dot"></div>
-        <span>Updating orders...</span>
-    </div>
 
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, get, child } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, get, child, update, remove } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
 
         // Firebase configuration
@@ -1115,6 +1121,7 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const database = getDatabase(app);
+        const storage = getStorage(app);
 
         // DOM Elements
         const loginModal = document.getElementById('loginModal');
@@ -1127,7 +1134,7 @@
         const checkoutCartItemsContainer = document.getElementById('checkoutCartItems');
         const checkoutCartTotalElement = document.getElementById('checkoutCartTotal');
         const placeOrderBtn = document.getElementById('placeOrderBtn');
-        const menuCategories = document.getElementById('menuCategories');
+        const categoryButtons = document.querySelectorAll('.category-btn');
         const menuItemsContainer = document.getElementById('menuItemsContainer');
         const cartIndicator = document.getElementById('cartIndicator');
         const cartCount = document.getElementById('cartCount');
@@ -1138,6 +1145,7 @@
         const orderHistoryList = document.getElementById('orderHistoryList');
         const slidesContainer = document.getElementById('slidesContainer');
         const slideIndicators = document.getElementById('slideIndicators');
+        const menuCategories = document.getElementById('menuCategories');
         const liveUpdateIndicator = document.getElementById('liveUpdateIndicator');
         
         // State variables
@@ -1271,7 +1279,6 @@
         
         // Render menu items from Firebase
         function renderMenuItems() {
-            // Listen for menu items in Firebase
             const menuRef = ref(database, 'menu');
             onValue(menuRef, (snapshot) => {
                 const data = snapshot.val();
@@ -1284,8 +1291,11 @@
                         menuItem.className = 'menu-item';
                         menuItem.dataset.category = item.category;
                         
+                        // Use default image if none provided
+                        const imageUrl = item.image || getDefaultImage(item.category);
+                        
                         menuItem.innerHTML = `
-                            <div class="item-image" style="background-image: url('${item.image}');"></div>
+                            <div class="item-image" style="background-image: url('${imageUrl}');"></div>
                             <div class="item-details">
                                 <div class="item-header">
                                     <div class="item-name">${item.name}</div>
@@ -1313,9 +1323,19 @@
             });
         }
         
-        // Render menu categories
+        // Get default image based on category
+        function getDefaultImage(category) {
+            const images = {
+                pizza: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+                burger: "https://images.unsplash.com/photo-1550353127-b0da3aeaa0ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+                sandwich: "https://images.unsplash.com/photo-1481070414553-cd3db49a08bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+                shake: "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+            };
+            return images[category] || images.pizza;
+        }
+        
+        // Render menu categories from Firebase
         function renderMenuCategories() {
-            // Get menu items to determine categories
             const menuRef = ref(database, 'menu');
             get(menuRef).then((snapshot) => {
                 const data = snapshot.val();
@@ -1358,9 +1378,8 @@
             });
         }
         
-        // Render slides
+        // Render slides from Firebase
         function renderSlides() {
-            // Listen for slides in Firebase
             const slidesRef = ref(database, 'slides');
             onValue(slidesRef, (snapshot) => {
                 const data = snapshot.val();
@@ -1426,13 +1445,14 @@
             const newOrderRef = push(ordersRef);
             
             const order = {
-                id: newOrderRef.key,
+                id: 'ORD' + Date.now(),
                 mobile: mobile,
                 location: location,
                 items: items,
                 total: total,
                 status: 'Pending',
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                itemCount: items.length
             };
             
             set(newOrderRef, order)
@@ -1440,12 +1460,13 @@
                     console.log('Order saved successfully!');
                     // Update last orders update timestamp
                     lastOrdersUpdate = Date.now();
+                    localStorage.setItem('mirdhuna_last_orders_update', lastOrdersUpdate.toString());
                 })
                 .catch((error) => {
                     console.error('Error saving order:', error);
                 });
             
-            return newOrderRef.key;
+            return order.id;
         }
         
         // Load user order history from Firebase
@@ -1524,7 +1545,26 @@
             modal.style.display = 'none';
         }
         
-        // Live update function
+        // Check for order updates across devices
+        function checkForOrderUpdates() {
+            const storedLastUpdate = localStorage.getItem('mirdhuna_last_orders_update');
+            if (storedLastUpdate && parseInt(storedLastUpdate) > lastOrdersUpdate) {
+                lastOrdersUpdate = parseInt(storedLastUpdate);
+                
+                // Show live update indicator
+                liveUpdateIndicator.style.display = 'flex';
+                setTimeout(() => {
+                    liveUpdateIndicator.style.display = 'none';
+                }, 2000);
+                
+                // Reload user order history if logged in
+                if (userLoggedIn && currentUser) {
+                    loadUserOrderHistory(currentUser.mobile);
+                }
+            }
+        }
+        
+        // Start live updates
         function startLiveUpdates() {
             // Clear any existing interval
             if (liveUpdateInterval) {
@@ -1532,30 +1572,7 @@
             }
             
             // Set up interval to check for updates
-            liveUpdateInterval = setInterval(() => {
-                // Check for order updates in Firebase
-                const ordersRef = ref(database, 'orders');
-                get(ordersRef).then((snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        const latestOrder = Object.values(data).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
-                        if (latestOrder && new Date(latestOrder.timestamp).getTime() > lastOrdersUpdate) {
-                            lastOrdersUpdate = new Date(latestOrder.timestamp).getTime();
-                            
-                            // Show live update indicator
-                            liveUpdateIndicator.style.display = 'flex';
-                            setTimeout(() => {
-                                liveUpdateIndicator.style.display = 'none';
-                            }, 2000);
-                            
-                            // Reload user order history if logged in
-                            if (userLoggedIn && currentUser) {
-                                loadUserOrderHistory(currentUser.mobile);
-                            }
-                        }
-                    }
-                });
-            }, 3000); // Check every 3 seconds
+            liveUpdateInterval = setInterval(checkForOrderUpdates, 3000); // Check every 3 seconds
         }
         
         // Event Listeners
@@ -1663,16 +1680,6 @@
                 }
             });
             
-            // Logout button
-            logoutBtn.addEventListener('click', function() {
-                userLoggedIn = false;
-                currentUser = null;
-                localStorage.removeItem('mirdhuna_user');
-                userInfo.style.display = 'none';
-                orderHistory.style.display = 'none';
-                alert('You have been logged out.');
-            });
-            
             // Place order button
             placeOrderBtn.addEventListener('click', function() {
                 if (!userLoggedIn) {
@@ -1711,6 +1718,16 @@
             
             // Auto slide change
             setInterval(nextSlide, 5000);
+            
+            // Logout button
+            logoutBtn.addEventListener('click', function() {
+                userLoggedIn = false;
+                currentUser = null;
+                localStorage.removeItem('mirdhuna_user');
+                userInfo.style.display = 'none';
+                orderHistory.style.display = 'none';
+                alert('You have been logged out.');
+            });
         });
     </script>
 </body>
