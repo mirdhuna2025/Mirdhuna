@@ -15,17 +15,17 @@
         }
         
         :root {
-            --primary: #FF6B00;
-            --secondary: #FFD166;
-            --accent: #06D6A0;
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
             --dark: #1A1A1A;
-            --light: #FFF9C4;
+            --light: #f8f9fa;
             --white: #FFFFFF;
             --shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         body {
-            background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%);
+            background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
             color: var(--dark);
             min-height: 100vh;
             padding: 20px;
@@ -51,7 +51,8 @@
             font-size: 2.5rem;
             font-weight: 800;
             color: var(--primary);
-            text-shadow: 3px 3px 0 rgba(255, 107, 0, 0.2);
+            text-shadow: 2px 2px 0 rgba(67, 97, 238, 0.2);
+            letter-spacing: 1px;
         }
         
         .admin-info {
@@ -62,8 +63,8 @@
         }
         
         .logout-btn {
-            padding: 10px 20px;
-            background: var(--primary);
+            padding: 10px 25px;
+            background: var(--danger);
             color: white;
             border: none;
             border-radius: 30px;
@@ -71,25 +72,96 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(255, 107, 0, 0.3);
+            box-shadow: 0 4px 10px rgba(248, 113, 113, 0.3);
         }
         
         .logout-btn:hover {
-            background: #e65100;
+            background: #ef4444;
             transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(248, 113, 113, 0.4);
+        }
+        
+        /* Dashboard Stats */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .stat-card.orders .stat-icon {
+            background: rgba(67, 97, 238, 0.15);
+            color: var(--primary);
+        }
+        
+        .stat-card.users .stat-icon {
+            background: rgba(79, 55, 201, 0.15);
+            color: var(--secondary);
+        }
+        
+        .stat-card.revenue .stat-icon {
+            background: rgba(76, 201, 240, 0.15);
+            color: var(--accent);
+        }
+        
+        .stat-card.views .stat-icon {
+            background: rgba(96, 165, 250, 0.15);
+            color: var(--info);
         }
         
         /* Admin Content */
         .admin-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            gap: 30px;
             margin-bottom: 40px;
         }
         
         .panel {
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 25px;
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
@@ -104,20 +176,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 3px solid var(--secondary);
+            border-bottom: 2px solid #e0e0e0;
         }
         
         .panel-title {
             color: var(--primary);
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .add-btn {
             padding: 10px 20px;
-            background: var(--accent);
+            background: var(--success);
             color: white;
             border: none;
             border-radius: 30px;
@@ -125,12 +200,16 @@
             font-weight: 600;
             font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(6, 214, 160, 0.3);
+            box-shadow: 0 4px 10px rgba(74, 222, 128, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .add-btn:hover {
-            background: #05b88b;
+            background: #22c55e;
             transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(74, 222, 128, 0.4);
         }
         
         /* Table Styles */
@@ -138,55 +217,60 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            font-size: 0.95rem;
         }
         
         th, td {
-            padding: 12px 15px;
+            padding: 15px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #eee;
         }
         
         th {
-            background-color: #ffecb3;
+            background-color: #f1f5f9;
             font-weight: 600;
             color: var(--primary);
         }
         
         tr:hover {
-            background-color: #fff3e0;
+            background-color: #f8fafc;
         }
         
         .action-btns {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
         
         .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-            padding: 6px 12px;
+            padding: 8px 15px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .edit-btn {
-            background: #2196f3;
+            background: var(--info);
             color: white;
         }
         
         .edit-btn:hover {
-            background: #0b7dda;
+            background: #3b82f6;
         }
         
         .delete-btn {
-            background: #f44336;
+            background: var(--danger);
             color: white;
         }
         
         .delete-btn:hover {
-            background: #d32f2f;
+            background: #ef4444;
         }
         
         .export-btn {
@@ -195,118 +279,115 @@
         }
         
         .export-btn:hover {
-            background: #05b88b;
+            background: #06b6d4;
         }
         
         .view-btn {
-            background: #9c27b0;
+            background: var(--secondary);
             color: white;
         }
         
         .view-btn:hover {
-            background: #7b1fa2;
+            background: #3730a3;
         }
         
         .update-btn {
-            background: #4caf50;
+            background: var(--success);
             color: white;
         }
         
         .update-btn:hover {
-            background: #388e3c;
-        }
-        
-        /* Stats */
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-            text-align: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        .stat-card {
-            background: #ffecb3;
-            padding: 20px;
-            border-radius: 10px;
-            min-width: 150px;
-            box-shadow: var(--shadow);
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 10px 0;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            color: #666;
+            background: #22c55e;
         }
         
         /* Form Styles */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: 500;
             color: var(--dark);
+            font-size: 0.9rem;
         }
         
         .form-group input, .form-group textarea, .form-group select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
             font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
         
         .form-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 15px;
+            margin-top: 30px;
         }
         
         .save-btn {
-            padding: 12px 20px;
-            background: var(--accent);
+            padding: 12px 25px;
+            background: var(--success);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .save-btn:hover {
+            background: #22c55e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 222, 128, 0.3);
         }
         
         .cancel-btn {
-            padding: 12px 20px;
-            background: #f44336;
+            padding: 12px 25px;
+            background: var(--danger);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .cancel-btn:hover {
+            background: #ef4444;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(248, 113, 113, 0.3);
         }
         
         /* Slides */
         .slide-container {
             position: relative;
-            margin-bottom: 20px;
-            border-radius: 10px;
+            margin-bottom: 25px;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: var(--shadow);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        .slide-preview {
-            height: 150px;
+        .slide {
+            height: 180px;
             background-size: cover;
             background-position: center;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            border-radius: 15px;
+            display: flex;
+            align-items: flex-end;
         }
         
         .slide-content {
@@ -316,9 +397,8 @@
             right: 0;
             background: rgba(0,0,0,0.7);
             color: white;
-            padding: 10px;
+            padding: 15px;
             text-align: center;
-            font-size: 0.9rem;
         }
         
         .slide-controls {
@@ -330,9 +410,9 @@
         /* Image Preview */
         .image-preview {
             width: 100%;
-            height: 120px;
+            height: 150px;
             border: 1px dashed #ccc;
-            border-radius: 5px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -349,6 +429,7 @@
         
         .image-preview .placeholder {
             color: #999;
+            font-size: 0.9rem;
         }
         
         /* Footer */
@@ -356,7 +437,7 @@
             text-align: center;
             padding: 30px;
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             margin-top: 30px;
             box-shadow: var(--shadow);
         }
@@ -386,6 +467,7 @@
             color: var(--dark);
             font-weight: 500;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
         
         .footer-links a:hover {
@@ -397,6 +479,7 @@
             padding-top: 20px;
             border-top: 1px solid #e0e0e0;
             color: #666;
+            font-size: 0.8rem;
         }
         
         /* Modal Styles */
@@ -422,6 +505,8 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative;
             animation: modalOpen 0.4s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         @keyframes modalOpen {
@@ -446,18 +531,58 @@
         .modal h2 {
             margin-top: 0;
             text-align: center;
+            font-size: 1.8rem;
+            color: var(--primary);
         }
         
         /* Status Select */
         .status-select {
-            padding: 6px 10px;
-            border-radius: 4px;
+            padding: 8px 12px;
+            border-radius: 6px;
             border: 1px solid #ddd;
             background: white;
             font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        /* Live Update Indicator */
+        .live-update {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #dcfce7;
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-weight: 500;
+            color: #166534;
+            margin-bottom: 20px;
+        }
+        
+        .live-indicator {
+            width: 12px;
+            height: 12px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
         
         /* Responsive Design */
+        @media (max-width: 992px) {
+            .admin-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -469,13 +594,209 @@
                 align-items: center;
             }
             
-            .admin-content {
+            .dashboard-stats {
                 grid-template-columns: 1fr;
             }
             
             .footer-content {
                 flex-direction: column;
                 text-align: center;
+            }
+            
+            table {
+                font-size: 0.85rem;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+            
+            .action-btns {
+                gap: 4px;
+            }
+            
+            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
+                padding: 5px 10px;
+                font-size: 0.7rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 10px 0;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .logout-btn {
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .dashboard-stats {
+                gap: 15px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .stat-value {
+                font-size: 1.8rem;
+                margin: 8px 0;
+            }
+            
+            .stat-label {
+                font-size: 0.9rem;
+            }
+            
+            .admin-content {
+                gap: 20px;
+            }
+            
+            .panel {
+                padding: 20px;
+            }
+            
+            .panel-header {
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+            }
+            
+            .panel-title {
+                font-size: 1.4rem;
+            }
+            
+            .add-btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+            
+            .action-btns {
+                gap: 3px;
+            }
+            
+            .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
+                padding: 4px 8px;
+                font-size: 0.65rem;
+            }
+            
+            .form-group label {
+                font-size: 0.85rem;
+            }
+            
+            .form-group input, .form-group textarea, .form-group select {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+            
+            .form-actions {
+                gap: 10px;
+                margin-top: 20px;
+            }
+            
+            .save-btn, .cancel-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+            
+            .slide {
+                height: 150px;
+            }
+            
+            .slide-content {
+                padding: 12px;
+                font-size: 0.85rem;
+            }
+            
+            .slide-controls {
+                padding: 0 8px;
+            }
+            
+            .image-preview {
+                height: 120px;
+            }
+            
+            .image-preview .placeholder {
+                font-size: 0.8rem;
+            }
+            
+            footer {
+                padding: 20px;
+                margin-top: 20px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-logo {
+                font-size: 1.8rem;
+            }
+            
+            .footer-links {
+                gap: 15px;
+            }
+            
+            .footer-links a {
+                font-size: 0.8rem;
+            }
+            
+            .copyright {
+                font-size: 0.7rem;
+                margin-top: 15px;
+                padding-top: 15px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+                width: 90%;
+            }
+            
+            .modal h2 {
+                font-size: 1.5rem;
+            }
+            
+            .close-modal {
+                top: 15px;
+                right: 15px;
+                font-size: 1.3rem;
+            }
+            
+            .status-select {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .live-update {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .live-indicator {
+                width: 10px;
+                height: 10px;
             }
         }
     </style>
@@ -490,12 +811,62 @@
             </div>
         </header>
         
+        <!-- Live Update Indicator -->
+        <div class="live-update" id="liveUpdateIndicator" style="display: none;">
+            <div class="live-indicator"></div>
+            <span>Updating orders...</span>
+        </div>
+        
+        <div class="dashboard-stats">
+            <div class="stat-card orders">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalOrders">0</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+            </div>
+            
+            <div class="stat-card users">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+            </div>
+            
+            <div class="stat-card revenue">
+                <div class="stat-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalRevenue">₹0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            </div>
+            
+            <div class="stat-card views">
+                <div class="stat-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="totalViews">0</div>
+                    <div class="stat-label">Page Views</div>
+                </div>
+            </div>
+        </div>
+        
         <div class="admin-content">
             <!-- Menu Management -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">Menu Management</h2>
-                    <button class="add-btn" id="addMenuItemBtn">Add Item</button>
+                    <h2 class="panel-title"><i class="fas fa-utensils"></i> Menu Management</h2>
+                    <button class="add-btn" id="addMenuItemBtn">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
                 </div>
                 <table id="menuTable">
                     <thead>
@@ -515,8 +886,10 @@
             <!-- Order Management -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">Order Management</h2>
-                    <button class="export-btn" id="exportOrdersBtn">Export</button>
+                    <h2 class="panel-title"><i class="fas fa-receipt"></i> Order Management</h2>
+                    <button class="export-btn" id="exportOrdersBtn">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
                 </div>
                 <table id="ordersTable">
                     <thead>
@@ -537,8 +910,10 @@
             <!-- User Login History -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">User Login History</h2>
-                    <button class="export-btn" id="exportUsersBtn">Export</button>
+                    <h2 class="panel-title"><i class="fas fa-user-clock"></i> User Login History</h2>
+                    <button class="export-btn" id="exportUsersBtn">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
                 </div>
                 <table id="usersTable">
                     <thead>
@@ -575,45 +950,32 @@
             <!-- Slides Management -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">Slides Management</h2>
-                    <button class="add-btn" id="addSlideBtn">Add Slide</button>
+                    <h2 class="panel-title"><i class="fas fa-images"></i> Slides Management</h2>
+                    <button class="add-btn" id="addSlideBtn">
+                        <i class="fas fa-plus"></i> Add Slide
+                    </button>
                 </div>
-                <div class="slide-container">
-                    <div class="slide-preview" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
-                        <div class="slide-content">Delicious Pizza Specials</div>
-                    </div>
-                    <div class="slide-controls">
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
-                </div>
-                <div class="slide-container">
-                    <div class="slide-preview" style="background-image: url('https://images.unsplash.com/photo-1550353127-b0da3aeaa0ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
-                        <div class="slide-content">Burger Combo Offers</div>
-                    </div>
-                    <div class="slide-controls">
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
+                <div id="slidesContainer">
+                    <!-- Slides will be populated here -->
                 </div>
             </div>
             
             <!-- Analytics -->
             <div class="panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">Analytics</h2>
+                    <h2 class="panel-title"><i class="fas fa-chart-line"></i> Analytics</h2>
                 </div>
                 <div class="stats">
                     <div class="stat-card">
-                        <div class="stat-value" id="totalViews">1,248</div>
+                        <div class="stat-value" id="analyticsTotalViews">1,248</div>
                         <div class="stat-label">Total Views</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" id="todayViews">127</div>
+                        <div class="stat-value" id="analyticsTodayViews">127</div>
                         <div class="stat-label">Today's Views</div>
                     </div>
                 </div>
-                <div class="form-group" style="margin-top: 20px;">
+                <div class="form-group" style="margin-top: 30px;">
                     <label for="dateRange">Select Date Range:</label>
                     <input type="date" id="dateRange">
                 </div>
@@ -683,8 +1045,12 @@
             <h2 id="slideModalTitle">Add Slide</h2>
             <form id="slideForm">
                 <div class="form-group">
-                    <label for="slideContent">Slide Content</label>
-                    <textarea id="slideContent" rows="3" required></textarea>
+                    <label for="slideTitle">Slide Title</label>
+                    <input type="text" id="slideTitle" placeholder="Slide Title" required>
+                </div>
+                <div class="form-group">
+                    <label for="slideDescription">Slide Description</label>
+                    <textarea id="slideDescription" rows="3" placeholder="Slide Description" required></textarea>
                 </div>
                 <div class="form-group">
                     <label for="slideImage">Slide Image URL</label>
@@ -698,7 +1064,29 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, get, child, update, remove } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
+            authDomain: "mirdhuna-4f652.firebaseapp.com",
+            databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
+            projectId: "mirdhuna-4f652",
+            storageBucket: "mirdhuna-4f652.firebasestorage.app",
+            messagingSenderId: "184403369330",
+            appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
+            measurementId: "G-ZFWSGKE744"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+
         // DOM Elements
         const logoutBtn = document.getElementById('logoutBtn');
         const addMenuItemBtn = document.getElementById('addMenuItemBtn');
@@ -708,8 +1096,13 @@
         const menuTableBody = document.getElementById('menuTableBody');
         const ordersTableBody = document.getElementById('ordersTableBody');
         const usersTable = document.getElementById('usersTable');
+        const totalOrdersElement = document.getElementById('totalOrders');
+        const totalUsersElement = document.getElementById('totalUsers');
+        const totalRevenueElement = document.getElementById('totalRevenue');
         const totalViewsElement = document.getElementById('totalViews');
-        const todayViewsElement = document.getElementById('todayViews');
+        const analyticsTotalViewsElement = document.getElementById('analyticsTotalViews');
+        const analyticsTodayViewsElement = document.getElementById('analyticsTodayViews');
+        const slidesContainer = document.getElementById('slidesContainer');
         
         // Modals
         const menuModal = document.getElementById('menuModal');
@@ -723,19 +1116,23 @@
         const menuModalTitle = document.getElementById('menuModalTitle');
         const slideModalTitle = document.getElementById('slideModalTitle');
         
-        // Image preview elements
-        const itemImageInput = document.getElementById('itemImage');
-        const itemImagePreview = document.getElementById('itemImagePreview');
-        const slideImageInput = document.getElementById('slideImage');
-        const slideImagePreview = document.getElementById('slideImagePreview');
+        // Live update indicator
+        const liveUpdateIndicator = document.getElementById('liveUpdateIndicator');
+        
+        // State variables
+        let lastOrdersUpdate = 0;
+        let liveUpdateInterval;
         
         // Admin functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Load menu items from localStorage
+            // Load all data
             loadMenuItems();
-            
-            // Load orders from localStorage
             loadOrders();
+            loadSlides();
+            updateDashboardStats();
+            
+            // Set up live updates
+            startLiveUpdates();
             
             // Logout button
             logoutBtn.addEventListener('click', function() {
@@ -756,34 +1153,40 @@
             // Edit menu items
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('edit-btn') && e.target.closest('#menuTable')) {
-                    const index = e.target.dataset.index;
+                    const key = e.target.dataset.key;
                     const menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
-                    const item = menuItems[index];
+                    const item = menuItems.find(i => i.key === key);
                     
-                    menuModalTitle.textContent = `Edit Menu Item: ${item.name}`;
-                    document.getElementById('itemName').value = item.name;
-                    document.getElementById('itemPrice').value = item.price;
-                    document.getElementById('itemCategory').value = item.category;
-                    document.getElementById('itemDescription').value = item.description;
-                    document.getElementById('itemImage').value = item.image || '';
-                    document.getElementById('editIndex').value = index;
-                    
-                    showModal(menuModal);
+                    if (item) {
+                        menuModalTitle.textContent = `Edit Menu Item: ${item.name}`;
+                        document.getElementById('itemName').value = item.name;
+                        document.getElementById('itemPrice').value = item.price;
+                        document.getElementById('itemCategory').value = item.category;
+                        document.getElementById('itemDescription').value = item.description;
+                        document.getElementById('itemImage').value = item.image || '';
+                        document.getElementById('editIndex').value = key;
+                        
+                        showModal(menuModal);
+                    }
                 }
             });
             
             // Delete menu items
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('delete-btn') && e.target.closest('#menuTable')) {
-                    const index = e.target.dataset.index;
-                    const menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
-                    const itemName = menuItems[index].name;
-                    
-                    if(confirm(`Are you sure you want to delete "${itemName}"?`)) {
-                        menuItems.splice(index, 1);
-                        localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
-                        loadMenuItems();
-                        alert('Item deleted successfully!');
+                    const key = e.target.dataset.key;
+                    if(confirm('Are you sure you want to delete this item?')) {
+                        // Remove from Firebase
+                        const itemRef = ref(database, `menu/${key}`);
+                        remove(itemRef)
+                            .then(() => {
+                                alert('Item deleted successfully!');
+                                loadMenuItems();
+                            })
+                            .catch((error) => {
+                                console.error('Error deleting item:', error);
+                                alert('Error deleting item. Please try again.');
+                            });
                     }
                 }
             });
@@ -808,49 +1211,135 @@
             });
             
             // Edit slides
-            document.querySelectorAll('.slide-container .edit-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const slideContainer = this.closest('.slide-container');
-                    const slideContent = slideContainer.querySelector('.slide-content').textContent;
-                    slideModalTitle.textContent = `Edit Slide: ${slideContent}`;
-                    // In a real implementation, this would populate the form with slide data
-                    showModal(slideModal);
-                });
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('edit-btn') && e.target.closest('#slidesContainer')) {
+                    const key = e.target.dataset.key;
+                    const slides = JSON.parse(localStorage.getItem('mirdhuna_slides')) || [];
+                    const slide = slides.find(s => s.key === key);
+                    
+                    if (slide) {
+                        slideModalTitle.textContent = `Edit Slide: ${slide.title}`;
+                        document.getElementById('slideTitle').value = slide.title;
+                        document.getElementById('slideDescription').value = slide.description;
+                        document.getElementById('slideImage').value = slide.image;
+                        document.getElementById('editIndex').value = key;
+                        
+                        showModal(slideModal);
+                    }
+                }
             });
             
             // Delete slides
-            document.querySelectorAll('.slide-container .delete-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const slideContainer = this.closest('.slide-container');
-                    const slideContent = slideContainer.querySelector('.slide-content').textContent;
-                    if(confirm(`Are you sure you want to delete slide: "${slideContent}"?`)) {
-                        slideContainer.remove();
-                        alert('Slide deleted successfully!');
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-btn') && e.target.closest('#slidesContainer')) {
+                    const key = e.target.dataset.key;
+                    if(confirm('Are you sure you want to delete this slide?')) {
+                        // Remove from Firebase
+                        const slideRef = ref(database, `slides/${key}`);
+                        remove(slideRef)
+                            .then(() => {
+                                alert('Slide deleted successfully!');
+                                loadSlides();
+                            })
+                            .catch((error) => {
+                                console.error('Error deleting slide:', error);
+                                alert('Error deleting slide. Please try again.');
+                            });
                     }
-                });
+                }
             });
             
-            // Simulate analytics data update
-            function updateAnalytics() {
-                // In a real implementation, this would fetch data from a server
-                const totalViews = Math.floor(Math.random() * 2000) + 1000;
-                const todayViews = Math.floor(Math.random() * 200) + 50;
+            // Menu form submission
+            menuForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const itemName = document.getElementById('itemName').value;
+                const itemPrice = document.getElementById('itemPrice').value;
+                const itemCategory = document.getElementById('itemCategory').value;
+                const itemDescription = document.getElementById('itemDescription').value;
+                const itemImage = document.getElementById('itemImage').value;
+                const editIndex = document.getElementById('editIndex').value;
                 
-                totalViewsElement.textContent = totalViews.toLocaleString();
-                todayViewsElement.textContent = todayViews.toLocaleString();
-            }
+                const newItem = {
+                    name: itemName,
+                    price: parseInt(itemPrice),
+                    category: itemCategory,
+                    description: itemDescription,
+                    image: itemImage
+                };
+                
+                if (editIndex) {
+                    // Update existing item in Firebase
+                    const itemRef = ref(database, `menu/${editIndex}`);
+                    update(itemRef, newItem)
+                        .then(() => {
+                            alert('Menu item updated successfully!');
+                            loadMenuItems();
+                            hideModal(menuModal);
+                        })
+                        .catch((error) => {
+                            console.error('Error updating item:', error);
+                            alert('Error updating item. Please try again.');
+                        });
+                } else {
+                    // Add new item to Firebase
+                    const menuRef = ref(database, 'menu');
+                    const newMenuRef = push(menuRef);
+                    set(newMenuRef, newItem)
+                        .then(() => {
+                            alert('Menu item added successfully!');
+                            loadMenuItems();
+                            hideModal(menuModal);
+                        })
+                        .catch((error) => {
+                            console.error('Error adding item:', error);
+                            alert('Error adding item. Please try again.');
+                        });
+                }
+            });
             
-            // Update analytics every 10 seconds for demo purposes
-            setInterval(updateAnalytics, 10000);
-            
-            // Modal functions
-            function showModal(modal) {
-                modal.style.display = 'flex';
-            }
-            
-            function hideModal(modal) {
-                modal.style.display = 'none';
-            }
+            // Slide form submission
+            slideForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const slideTitle = document.getElementById('slideTitle').value;
+                const slideDescription = document.getElementById('slideDescription').value;
+                const slideImage = document.getElementById('slideImage').value;
+                const editIndex = document.getElementById('editIndex').value;
+                
+                const newSlide = {
+                    title: slideTitle,
+                    description: slideDescription,
+                    image: slideImage
+                };
+                
+                if (editIndex) {
+                    // Update existing slide in Firebase
+                    const slideRef = ref(database, `slides/${editIndex}`);
+                    update(slideRef, newSlide)
+                        .then(() => {
+                            alert('Slide updated successfully!');
+                            loadSlides();
+                            hideModal(slideModal);
+                        })
+                        .catch((error) => {
+                            console.error('Error updating slide:', error);
+                            alert('Error updating slide. Please try again.');
+                        });
+                } else {
+                    // Add new slide to Firebase
+                    const slidesRef = ref(database, 'slides');
+                    const newSlideRef = push(slidesRef);
+                    set(newSlideRef, newSlide)
+                        .then(() => {
+                            alert('Slide added successfully!');
+                            loadSlides();
+                            hideModal(slideModal);
+                        })
+                        .catch((error) => {
+                            console.error('Error adding slide:', error);
+                            alert('Error adding slide. Please try again.');
+                        });
+                }
+            });
             
             // Close modals
             closeMenuModal.addEventListener('click', function() {
@@ -878,165 +1367,214 @@
                     hideModal(slideModal);
                 }
             });
-            
-            // Menu form submission
-            menuForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const itemName = document.getElementById('itemName').value;
-                const itemPrice = document.getElementById('itemPrice').value;
-                const itemCategory = document.getElementById('itemCategory').value;
-                const itemDescription = document.getElementById('itemDescription').value;
-                const itemImage = document.getElementById('itemImage').value;
-                const editIndex = document.getElementById('editIndex').value;
-                
-                // Get existing menu items or initialize empty array
-                let menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
-                
-                const newItem = {
-                    name: itemName,
-                    price: parseInt(itemPrice),
-                    category: itemCategory,
-                    description: itemDescription,
-                    image: itemImage
-                };
-                
-                if (editIndex !== '') {
-                    // Update existing item
-                    menuItems[editIndex] = newItem;
-                    alert('Menu item updated successfully!');
-                } else {
-                    // Add new item
-                    menuItems.push(newItem);
-                    alert('Menu item added successfully!');
-                }
-                
-                // Save to localStorage
-                localStorage.setItem('mirdhuna_menu', JSON.stringify(menuItems));
-                
-                // Reload menu items
-                loadMenuItems();
-                
-                hideModal(menuModal);
-            });
-            
-            // Slide form submission
-            slideForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const slideContent = document.getElementById('slideContent').value;
-                const slideImage = document.getElementById('slideImage').value;
-                
-                if (slideModalTitle.textContent.includes('Add')) {
-                    // Add new slide
-                    const slideContainer = document.createElement('div');
-                    slideContainer.className = 'slide-container';
-                    slideContainer.innerHTML = `
-                        <div class="slide-preview" style="background-image: url('${slideImage}')">
-                            <div class="slide-content">${slideContent}</div>
-                        </div>
-                        <div class="slide-controls">
-                            <button class="edit-btn">Edit</button>
-                            <button class="delete-btn">Delete</button>
-                        </div>
-                    `;
-                    document.querySelector('.panel:nth-child(4) .panel-header').after(slideContainer);
-                    alert('Slide added successfully!');
-                } else {
-                    // Update existing slide
-                    alert('Slide updated successfully!');
-                }
-                
-                hideModal(slideModal);
-            });
         });
         
-        // Load menu items from localStorage
+        // Load menu items from Firebase
         function loadMenuItems() {
-            const menuItems = JSON.parse(localStorage.getItem('mirdhuna_menu')) || [];
-            menuTableBody.innerHTML = '';
-            
-            if (menuItems.length === 0) {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="4" style="text-align: center; color: #999;">No menu items found</td>';
-                menuTableBody.appendChild(row);
-                return;
-            }
-            
-            menuItems.forEach((item, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.name}</td>
-                    <td>₹${item.price}</td>
-                    <td>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</td>
-                    <td class="action-btns">
-                        <button class="edit-btn" data-index="${index}">Edit</button>
-                        <button class="delete-btn" data-index="${index}">Delete</button>
-                    </td>
-                `;
-                menuTableBody.appendChild(row);
-            });
-        }
-        
-        // Load orders from localStorage
-        function loadOrders() {
-            const orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
-            ordersTableBody.innerHTML = '';
-            
-            if (orders.length === 0) {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="5" style="text-align: center; color: #999;">No orders found</td>';
-                ordersTableBody.appendChild(row);
-                return;
-            }
-            
-            orders.forEach(order => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${order.id}</td>
-                    <td>${order.mobile}</td>
-                    <td>${order.items.map(item => item.name).join(', ')}</td>
-                    <td>
-                        <select class="status-select" data-order-id="${order.id}">
-                            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                            <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                            <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                        </select>
-                    </td>
-                    <td class="action-btns">
-                        <button class="update-btn" data-order-id="${order.id}">Update</button>
-                    </td>
-                `;
-                ordersTableBody.appendChild(row);
-            });
-            
-            // Add event listeners to update buttons
-            document.querySelectorAll('.update-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = this.dataset.orderId;
-                    const selectElement = document.querySelector(`.status-select[data-order-id="${orderId}"]`);
-                    const newStatus = selectElement.value;
-                    
-                    // Update order status in localStorage
-                    updateOrderStatus(orderId, newStatus);
-                    
-                    // Update last orders update timestamp
-                    const lastUpdate = Date.now();
-                    localStorage.setItem('mirdhuna_last_orders_update', lastUpdate.toString());
-                    
-                    alert(`Order ${orderId} status updated to: ${newStatus}`);
-                });
-            });
-        }
-        
-        // Update order status in localStorage
-        function updateOrderStatus(orderId, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('mirdhuna_orders')) || [];
-            orders = orders.map(order => {
-                if (order.id === orderId) {
-                    return { ...order, status: newStatus };
+            const menuRef = ref(database, 'menu');
+            onValue(menuRef, (snapshot) => {
+                const data = snapshot.val();
+                menuTableBody.innerHTML = '';
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const item = data[key];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.name}</td>
+                            <td>₹${item.price}</td>
+                            <td>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</td>
+                            <td class="action-btns">
+                                <button class="edit-btn" data-key="${key}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" data-key="${key}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        `;
+                        menuTableBody.appendChild(row);
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="4" style="text-align: center; color: #999;">No menu items found</td>';
+                    menuTableBody.appendChild(row);
                 }
-                return order;
             });
-            localStorage.setItem('mirdhuna_orders', JSON.stringify(orders));
+        }
+        
+        // Load orders from Firebase
+        function loadOrders() {
+            const ordersRef = ref(database, 'orders');
+            onValue(ordersRef, (snapshot) => {
+                const data = snapshot.val();
+                ordersTableBody.innerHTML = '';
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const order = data[key];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${order.id}</td>
+                            <td>${order.mobile}</td>
+                            <td>${order.items.map(item => item.name).join(', ')}</td>
+                            <td>
+                                <select class="status-select" data-key="${key}">
+                                    <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                    <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </td>
+                            <td class="action-btns">
+                                <button class="update-btn" data-key="${key}">
+                                    <i class="fas fa-sync"></i> Update
+                                </button>
+                            </td>
+                        `;
+                        ordersTableBody.appendChild(row);
+                    });
+                    
+                    // Add event listeners to update buttons
+                    document.querySelectorAll('.update-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const key = this.dataset.key;
+                            const selectElement = document.querySelector(`.status-select[data-key="${key}"]`);
+                            const newStatus = selectElement.value;
+                            
+                            // Update order status in Firebase
+                            const orderRef = ref(database, `orders/${key}/status`);
+                            set(orderRef, newStatus)
+                                .then(() => {
+                                    alert(`Order status updated to: ${newStatus}`);
+                                    updateDashboardStats();
+                                })
+                                .catch((error) => {
+                                    console.error('Error updating order status:', error);
+                                    alert('Error updating order status. Please try again.');
+                                });
+                        });
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="5" style="text-align: center; color: #999;">No orders found</td>';
+                    ordersTableBody.appendChild(row);
+                }
+                
+                // Update dashboard stats
+                updateDashboardStats();
+            });
+        }
+        
+        // Load slides from Firebase
+        function loadSlides() {
+            const slidesRef = ref(database, 'slides');
+            onValue(slidesRef, (snapshot) => {
+                const data = snapshot.val();
+                slidesContainer.innerHTML = '';
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const slide = data[key];
+                        const slideContainer = document.createElement('div');
+                        slideContainer.className = 'slide-container';
+                        slideContainer.innerHTML = `
+                            <div class="slide" style="background-image: url('${slide.image}')">
+                                <div class="slide-content">${slide.title}</div>
+                            </div>
+                            <div class="slide-controls">
+                                <button class="edit-btn" data-key="${key}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" data-key="${key}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        `;
+                        slidesContainer.appendChild(slideContainer);
+                    });
+                } else {
+                    slidesContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No slides found</p>';
+                }
+            });
+        }
+        
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            // Get orders from Firebase
+            const ordersRef = ref(database, 'orders');
+            get(ordersRef).then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const orders = Object.values(data);
+                    totalOrdersElement.textContent = orders.length;
+                    analyticsTotalViewsElement.textContent = orders.length;
+                    
+                    // Calculate total revenue
+                    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+                    totalRevenueElement.textContent = `₹${totalRevenue.toLocaleString()}`;
+                    
+                    // Get unique users
+                    const users = [...new Set(orders.map(order => order.mobile))];
+                    totalUsersElement.textContent = users.length;
+                    
+                    // Simulate page views
+                    const views = Math.floor(Math.random() * 1000) + 500;
+                    totalViewsElement.textContent = views.toLocaleString();
+                    analyticsTodayViewsElement.textContent = views.toLocaleString();
+                } else {
+                    totalOrdersElement.textContent = '0';
+                    totalUsersElement.textContent = '0';
+                    totalRevenueElement.textContent = '₹0';
+                    totalViewsElement.textContent = '0';
+                    analyticsTotalViewsElement.textContent = '0';
+                    analyticsTodayViewsElement.textContent = '0';
+                }
+            }).catch((error) => {
+                console.error('Error fetching orders:', error);
+            });
+        }
+        
+        // Start live updates
+        function startLiveUpdates() {
+            // Clear any existing interval
+            if (liveUpdateInterval) {
+                clearInterval(liveUpdateInterval);
+            }
+            
+            // Set up interval to check for updates
+            liveUpdateInterval = setInterval(() => {
+                // Check for order updates
+                const ordersRef = ref(database, 'orders');
+                get(ordersRef).then((snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const latestOrder = Object.values(data).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+                        if (latestOrder && new Date(latestOrder.timestamp).getTime() > lastOrdersUpdate) {
+                            lastOrdersUpdate = new Date(latestOrder.timestamp).getTime();
+                            
+                            // Show live update indicator
+                            liveUpdateIndicator.style.display = 'flex';
+                            setTimeout(() => {
+                                liveUpdateIndicator.style.display = 'none';
+                            }, 2000);
+                            
+                            // Reload orders and stats
+                            loadOrders();
+                            updateDashboardStats();
+                        }
+                    }
+                });
+            }, 5000); // Check every 5 seconds
+        }
+        
+        // Show modal
+        function showModal(modal) {
+            modal.style.display = 'flex';
+        }
+        
+        // Hide modal
+        function hideModal(modal) {
+            modal.style.display = 'none';
         }
     </script>
 </body>
