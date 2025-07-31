@@ -728,7 +728,8 @@
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove, update, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
         
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -745,6 +746,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+        const storage = getStorage(app);
         
         // DOM Elements
         const loginContainer = document.getElementById('loginContainer');
@@ -1160,8 +1162,8 @@
             }
         }
         
-        // Save Slide
-        function saveSlide() {
+        // Save Slide with Firebase Storage
+        async function saveSlide() {
             const title = document.getElementById('slideTitle').value;
             const description = document.getElementById('slideDescription').value;
             const fileInput = document.getElementById('slideFileInput');
@@ -1171,34 +1173,64 @@
                 return;
             }
             
+            if (!fileInput.files[0]) {
+                showSyncStatus('Please select an image', false);
+                return;
+            }
+            
             showSyncStatus('Saving slide...', true);
             
-            // In a real implementation, you would upload the image to Firebase Storage
-            // For this demo, we'll use a placeholder image
-            const slideData = {
-                title: title,
-                description: description,
-                image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-                timestamp: new Date().toISOString()
-            };
-            
-            const newSlideRef = push(ref(database, 'slides'));
-            set(newSlideRef, slideData)
-                .then(() => {
-                    showSyncStatus('Slide saved successfully!', true);
-                    // Reset form
-                    document.getElementById('slideTitle').value = '';
-                    document.getElementById('slideDescription').value = '';
-                    document.getElementById('slideFileInput').value = '';
-                    document.getElementById('slideUploadArea').innerHTML = `
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Click or drag image here to upload</p>
-                        <p class="text-muted">Recommended size: 1200x600px</p>
-                    `;
-                })
-                .catch((error) => {
-                    showSyncStatus('Error saving slide: ' + error.message, false);
-                });
+            try {
+                // Upload image to Firebase Storage
+                const file = fileInput.files[0];
+                const storageReference = storageRef(storage, `slides/${file.name}`);
+                const uploadTask = uploadBytesResumable(storageReference, file);
+                
+                // Listen for state changes, errors, and completion
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Progress updates could go here
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                    }, 
+                    (error) => {
+                        // Handle unsuccessful uploads
+                        showSyncStatus('Error uploading image: ' + error.message, false);
+                    }, 
+                    () => {
+                        // Handle successful uploads on complete
+                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                            // Save slide metadata to Realtime Database
+                            const slideData = {
+                                title: title,
+                                description: description,
+                                image: downloadURL,
+                                timestamp: new Date().toISOString()
+                            };
+                            
+                            const newSlideRef = push(ref(database, 'slides'));
+                            set(newSlideRef, slideData)
+                                .then(() => {
+                                    showSyncStatus('Slide saved successfully!', true);
+                                    // Reset form
+                                    document.getElementById('slideTitle').value = '';
+                                    document.getElementById('slideDescription').value = '';
+                                    document.getElementById('slideFileInput').value = '';
+                                    document.getElementById('slideUploadArea').innerHTML = `
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Click or drag image here to upload</p>
+                                        <p class="text-muted">Recommended size: 1200x600px</p>
+                                    `;
+                                })
+                                .catch((error) => {
+                                    showSyncStatus('Error saving slide metadata: ' + error.message, false);
+                                });
+                        });
+                    }
+                );
+            } catch (error) {
+                showSyncStatus('Error saving slide: ' + error.message, false);
+            }
         }
         
         // Save Menu Item
