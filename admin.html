@@ -248,6 +248,21 @@
             border-radius: 5px;
         }
         
+        .firebaseui-container {
+            box-shadow: none !important;
+            border-radius: 15px !important;
+            overflow: hidden;
+        }
+        
+        .firebaseui-card-content {
+            padding: 20px !important;
+        }
+        
+        .firebaseui-form-actions .mdl-button {
+            background: var(--primary) !important;
+            color: white !important;
+        }
+        
         @media (max-width: 992px) {
             .sidebar {
                 width: 70px;
@@ -275,18 +290,12 @@
         <div class="login-card">
             <div class="login-header">
                 <h3><i class="fas fa-lock"></i> Admin Login</h3>
-                <p>Please enter your credentials to access the admin panel</p>
+                <p>Please sign in with your Google Account</p>
             </div>
             <div class="login-body">
-                <div class="mb-3">
-                    <label for="adminPassword" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="adminPassword" placeholder="Enter admin password">
-                </div>
-                <div class="d-grid">
-                    <button class="btn btn-primary" id="loginBtn">Login</button>
-                </div>
+                <div id="firebaseui-auth-container"></div>
                 <div class="login-error" id="loginError">
-                    <i class="fas fa-exclamation-circle"></i> Invalid password. Please try again.
+                    <i class="fas fa-exclamation-circle"></i> Authentication failed. Please try again.
                 </div>
             </div>
         </div>
@@ -650,44 +659,71 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css" />
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
-        // Admin password
-        const ADMIN_PASSWORD = "Sanu.0000";
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
+            authDomain: "mirdhuna-4f652.firebaseapp.com",
+            databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
+            projectId: "mirdhuna-4f652",
+            storageBucket: "mirdhuna-4f652.firebasestorage.app",
+            messagingSenderId: "184403369330",
+            appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
+            measurementId: "G-ZFWSGKE744"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // FirebaseUI configuration
+        const uiConfig = {
+            signInSuccessUrl: '#',
+            signInOptions: [
+                firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                firebase.auth.EmailAuthProvider.PROVIDER_ID
+            ],
+            tosUrl: '<your-tos-url>',
+            privacyPolicyUrl: '<your-privacy-policy-url>'
+        };
+
+        // Initialize the FirebaseUI Widget using Firebase
+        const ui = new firebaseui.auth.AuthUI(firebase.auth());
         
         // DOM Elements
         const loginContainer = document.getElementById('loginContainer');
         const adminContainer = document.getElementById('adminContainer');
-        const adminPassword = document.getElementById('adminPassword');
-        const loginBtn = document.getElementById('loginBtn');
-        const loginError = document.getElementById('loginError');
         const logoutBtn = document.getElementById('logoutBtn');
         const navLinks = document.querySelectorAll('.nav-link');
         const contentSections = document.querySelectorAll('.content-section');
         
-        // Check if already logged in
-        document.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('adminLoggedIn') === 'true') {
+        // Check authentication state
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in
                 showAdminPanel();
             } else {
+                // User is signed out
                 showLoginPanel();
             }
-            
-            // Add event listener for Enter key in password field
-            adminPassword.addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    performLogin();
-                }
-            });
         });
         
         // Show login panel
         function showLoginPanel() {
             loginContainer.style.display = 'flex';
             adminContainer.style.display = 'none';
-            adminPassword.value = '';
-            loginError.style.display = 'none';
+            
+            // Show FirebaseUI auth container
+            ui.start('#firebaseui-auth-container', uiConfig);
         }
         
         // Show admin panel
@@ -697,24 +733,15 @@
             initializeAdminPanel();
         }
         
-        // Perform login
-        function performLogin() {
-            if (adminPassword.value === ADMIN_PASSWORD) {
-                loginError.style.display = 'none';
-                localStorage.setItem('adminLoggedIn', 'true');
-                showAdminPanel();
-            } else {
-                loginError.style.display = 'block';
-            }
-        }
-        
-        // Login functionality
-        loginBtn.addEventListener('click', performLogin);
-        
         // Logout functionality
         logoutBtn.addEventListener('click', function() {
-            localStorage.removeItem('adminLoggedIn');
-            showLoginPanel();
+            firebase.auth().signOut().then(() => {
+                // Sign-out successful
+                showLoginPanel();
+            }).catch((error) => {
+                // An error happened
+                console.error('Logout error:', error);
+            });
         });
         
         // Navigation
@@ -1141,11 +1168,11 @@
             const ordersCtx = document.getElementById('ordersChart').getContext('2d');
             const ordersChart = new Chart(ordersCtx, {
                 type: 'line',
-                 {
+                data: {
                     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
                         label: 'Orders',
-                         [12, 19, 15, 17, 22, 28, 24],
+                        data: [12, 19, 15, 17, 22, 28, 24],
                         borderColor: '#ff6b6b',
                         backgroundColor: 'rgba(255, 107, 107, 0.1)',
                         tension: 0.3,
@@ -1161,11 +1188,11 @@
             const revenueCtx = document.getElementById('revenueChart').getContext('2d');
             const revenueChart = new Chart(revenueCtx, {
                 type: 'bar',
-                 {
+                data: {
                     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
                         label: 'Revenue (₹)',
-                         [3200, 4500, 3800, 4200, 5100, 6200, 5800],
+                        data: [3200, 4500, 3800, 4200, 5100, 6200, 5800],
                         backgroundColor: '#4ecdc4'
                     }]
                 },
@@ -1222,4 +1249,4 @@
         }
     </script>
 </body>
-                                                    </html>
+</html>
