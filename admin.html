@@ -20,6 +20,8 @@
         body {
             background-color: #f0f2f5;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
         }
         
         .admin-container {
@@ -67,6 +69,7 @@
             position: fixed;
             overflow-y: auto;
             transition: all 0.3s;
+            z-index: 1000;
         }
         
         .sidebar .nav-link {
@@ -239,6 +242,10 @@
             display: none;
             color: var(--danger);
             margin-top: 10px;
+            text-align: center;
+            padding: 10px;
+            background: rgba(235, 59, 90, 0.1);
+            border-radius: 5px;
         }
         
         @media (max-width: 992px) {
@@ -660,31 +667,54 @@
         const contentSections = document.querySelectorAll('.content-section');
         
         // Check if already logged in
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('adminLoggedIn') === 'true') {
+                showAdminPanel();
+            } else {
+                showLoginPanel();
+            }
+            
+            // Add event listener for Enter key in password field
+            adminPassword.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    performLogin();
+                }
+            });
+        });
+        
+        // Show login panel
+        function showLoginPanel() {
+            loginContainer.style.display = 'flex';
+            adminContainer.style.display = 'none';
+            adminPassword.value = '';
+            loginError.style.display = 'none';
+        }
+        
+        // Show admin panel
+        function showAdminPanel() {
             loginContainer.style.display = 'none';
             adminContainer.style.display = 'block';
             initializeAdminPanel();
         }
         
-        // Login functionality
-        loginBtn.addEventListener('click', function() {
+        // Perform login
+        function performLogin() {
             if (adminPassword.value === ADMIN_PASSWORD) {
                 loginError.style.display = 'none';
                 localStorage.setItem('adminLoggedIn', 'true');
-                loginContainer.style.display = 'none';
-                adminContainer.style.display = 'block';
-                initializeAdminPanel();
+                showAdminPanel();
             } else {
                 loginError.style.display = 'block';
             }
-        });
+        }
+        
+        // Login functionality
+        loginBtn.addEventListener('click', performLogin);
         
         // Logout functionality
         logoutBtn.addEventListener('click', function() {
             localStorage.removeItem('adminLoggedIn');
-            adminContainer.style.display = 'none';
-            loginContainer.style.display = 'flex';
-            adminPassword.value = '';
+            showLoginPanel();
         });
         
         // Navigation
@@ -1190,12 +1220,6 @@
                 }
             });
         }
-        
-        // Simulate Firebase data loading
-        document.addEventListener('DOMContentLoaded', function() {
-            // This would normally connect to Firebase
-            console.log("Admin panel initialized. Firebase connection ready.");
-        });
     </script>
 </body>
-</html>
+                                                    </html>
