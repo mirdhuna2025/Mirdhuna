@@ -37,7 +37,6 @@
             margin: 0 auto;
         }
         
-        /* Header Styles */
         header {
             display: flex;
             justify-content: space-between;
@@ -79,7 +78,6 @@
             transform: translateY(-2px);
         }
         
-        /* Admin Content */
         .admin-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -89,7 +87,7 @@
         
         .panel {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 25px;
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
@@ -131,19 +129,16 @@
         .add-btn:hover {
             background: #05b88b;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(6, 214, 160, 0.5);
         }
         
-        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            font-size: 0.9rem;
         }
         
         th, td {
-            padding: 12px 15px;
+            padding: 15px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
@@ -161,13 +156,12 @@
         .action-btns {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
         }
         
         .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-            padding: 6px 12px;
+            padding: 8px 15px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
             font-size: 0.9rem;
             font-weight: 500;
@@ -219,7 +213,6 @@
             background: #388e3c;
         }
         
-        /* Stats */
         .stats {
             display: flex;
             justify-content: space-around;
@@ -231,7 +224,7 @@
         
         .stat-card {
             background: #fff3e0;
-            padding: 20px;
+            padding: 25px;
             border-radius: 15px;
             min-width: 150px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
@@ -244,19 +237,18 @@
         }
         
         .stat-value {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 800;
             color: var(--primary);
             margin: 10px 0;
         }
         
         .stat-label {
-            font-size: 0.9rem;
-            color: #666;
+            font-size: 1rem;
+            color: var(--dark);
             font-weight: 500;
         }
         
-        /* Form Styles */
         .form-group {
             margin-bottom: 20px;
         }
@@ -326,7 +318,6 @@
             box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
         }
         
-        /* Slides */
         .slide-container {
             position: relative;
             margin-bottom: 25px;
@@ -335,7 +326,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        .slide-preview {
+        .slide {
             height: 150px;
             background-size: cover;
             background-position: center;
@@ -353,7 +344,6 @@
             color: white;
             padding: 15px;
             text-align: center;
-            font-size: 0.9rem;
         }
         
         .slide-controls {
@@ -362,7 +352,6 @@
             padding: 0 10px;
         }
         
-        /* Image Preview */
         .image-preview {
             width: 100%;
             height: 120px;
@@ -387,12 +376,11 @@
             font-size: 0.9rem;
         }
         
-        /* Footer */
         footer {
             text-align: center;
             padding: 30px;
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             margin-top: 30px;
             box-shadow: var(--shadow);
         }
@@ -438,7 +426,6 @@
             font-size: 0.8rem;
         }
         
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -490,17 +477,6 @@
             font-size: 1.5rem;
         }
         
-        /* Status Select */
-        .status-select {
-            padding: 6px 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            background: white;
-            font-weight: 500;
-            font-size: 0.85rem;
-        }
-        
-        /* Responsive Design */
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -526,30 +502,30 @@
             }
             
             th, td {
-                padding: 10px;
+                padding: 12px;
             }
             
             .action-btns {
-                gap: 6px;
+                gap: 4px;
             }
             
             .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-                padding: 5px 10px;
+                padding: 6px 12px;
                 font-size: 0.8rem;
             }
             
             .stat-card {
-                padding: 15px;
+                padding: 20px;
                 min-width: 130px;
             }
             
             .stat-value {
-                font-size: 1.8rem;
+                font-size: 2rem;
                 margin: 8px 0;
             }
             
             .stat-label {
-                font-size: 0.85rem;
+                font-size: 0.9rem;
             }
             
             .form-group label {
@@ -557,12 +533,12 @@
             }
             
             .form-group input, .form-group textarea, .form-group select {
-                padding: 10px;
+                padding: 10px 12px;
                 font-size: 0.9rem;
             }
             
             .form-actions {
-                gap: 12px;
+                gap: 10px;
                 margin-top: 20px;
             }
             
@@ -571,13 +547,13 @@
                 font-size: 0.9rem;
             }
             
-            .slide-preview {
+            .slide {
                 height: 120px;
             }
             
             .slide-content {
                 padding: 12px;
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
             
             .slide-controls {
@@ -606,7 +582,7 @@
             }
             
             .footer-links a {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
             
             .copyright {
@@ -628,11 +604,6 @@
                 top: 15px;
                 right: 15px;
                 font-size: 1.3rem;
-            }
-            
-            .status-select {
-                padding: 5px 8px;
-                font-size: 0.8rem;
             }
         }
         
@@ -677,34 +648,34 @@
             }
             
             table {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
             
             th, td {
-                padding: 8px;
+                padding: 10px;
             }
             
             .action-btns {
-                gap: 5px;
+                gap: 3px;
             }
             
             .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-                padding: 4px 8px;
+                padding: 5px 10px;
                 font-size: 0.75rem;
             }
             
             .stat-card {
-                padding: 12px;
+                padding: 15px;
                 min-width: 110px;
             }
             
             .stat-value {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
                 margin: 6px 0;
             }
             
             .stat-label {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
             
             .form-group label {
@@ -712,12 +683,12 @@
             }
             
             .form-group input, .form-group textarea, .form-group select {
-                padding: 8px;
+                padding: 8px 10px;
                 font-size: 0.85rem;
             }
             
             .form-actions {
-                gap: 10px;
+                gap: 8px;
                 margin-top: 15px;
             }
             
@@ -726,13 +697,13 @@
                 font-size: 0.85rem;
             }
             
-            .slide-preview {
+            .slide {
                 height: 100px;
             }
             
             .slide-content {
                 padding: 10px;
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
             
             .slide-controls {
@@ -744,7 +715,7 @@
             }
             
             .image-preview .placeholder {
-                font-size: 0.75rem;
+                font-size: 0.7rem;
             }
             
             footer {
@@ -761,7 +732,7 @@
             }
             
             .footer-links a {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
             
             .copyright {
@@ -783,11 +754,6 @@
                 top: 12px;
                 right: 12px;
                 font-size: 1.2rem;
-            }
-            
-            .status-select {
-                padding: 4px 6px;
-                font-size: 0.75rem;
             }
         }
     </style>
@@ -1061,7 +1027,10 @@
         const itemImagePreview = document.getElementById('itemImagePreview');
         const slideImageInput = document.getElementById('slideImage');
         const slideImagePreview = document.getElementById('slideImagePreview');
-        const slidesContainer = document.getElementById('slidesContainer');
+        
+        // State variables
+        let lastOrdersUpdate = 0;
+        let liveUpdateInterval;
         
         // Admin functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -1076,6 +1045,9 @@
             
             // Update analytics
             updateAnalytics();
+            
+            // Start live updates
+            startLiveUpdates();
             
             // Logout button
             logoutBtn.addEventListener('click', function() {
@@ -1102,6 +1074,7 @@
                     const menuItemsRef = ref(database, `menu/${key}`);
                     get(menuItemsRef).then((snapshot) => {
                         const item = snapshot.val();
+                        
                         menuModalTitle.textContent = `Edit Menu Item: ${item.name}`;
                         document.getElementById('itemName').value = item.name;
                         document.getElementById('itemPrice').value = item.price;
@@ -1175,6 +1148,7 @@
                     const slidesRef = ref(database, `slides/${key}`);
                     get(slidesRef).then((snapshot) => {
                         const slide = snapshot.val();
+                        
                         slideModalTitle.textContent = `Edit Slide: ${slide.title}`;
                         document.getElementById('slideTitle').value = slide.title;
                         document.getElementById('slideDescription').value = slide.description;
@@ -1215,42 +1189,6 @@
                                 });
                         }
                     });
-                }
-            });
-            
-            // Modal functions
-            function showModal(modal) {
-                modal.style.display = 'flex';
-            }
-            
-            function hideModal(modal) {
-                modal.style.display = 'none';
-            }
-            
-            // Close modals
-            closeMenuModal.addEventListener('click', function() {
-                hideModal(menuModal);
-            });
-            
-            closeSlideModal.addEventListener('click', function() {
-                hideModal(slideModal);
-            });
-            
-            cancelMenuBtn.addEventListener('click', function() {
-                hideModal(menuModal);
-            });
-            
-            cancelSlideBtn.addEventListener('click', function() {
-                hideModal(slideModal);
-            });
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target === menuModal) {
-                    hideModal(menuModal);
-                }
-                if (event.target === slideModal) {
-                    hideModal(slideModal);
                 }
             });
             
@@ -1337,6 +1275,42 @@
                 } else {
                     // Save slide without image
                     saveSlide(slideTitle, slideDescription, '', editIndex);
+                }
+            });
+            
+            // Modal functions
+            function showModal(modal) {
+                modal.style.display = 'flex';
+            }
+            
+            function hideModal(modal) {
+                modal.style.display = 'none';
+            }
+            
+            // Close modals
+            closeMenuModal.addEventListener('click', function() {
+                hideModal(menuModal);
+            });
+            
+            closeSlideModal.addEventListener('click', function() {
+                hideModal(slideModal);
+            });
+            
+            cancelMenuBtn.addEventListener('click', function() {
+                hideModal(menuModal);
+            });
+            
+            cancelSlideBtn.addEventListener('click', function() {
+                hideModal(slideModal);
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === menuModal) {
+                    hideModal(menuModal);
+                }
+                if (event.target === slideModal) {
+                    hideModal(slideModal);
                 }
             });
         });
@@ -1523,6 +1497,7 @@
             const slidesRef = ref(database, 'slides');
             onValue(slidesRef, (snapshot) => {
                 const data = snapshot.val();
+                const slidesContainer = document.getElementById('slidesContainer');
                 slidesContainer.innerHTML = '';
                 
                 if (data) {
@@ -1531,7 +1506,7 @@
                         const slideContainer = document.createElement('div');
                         slideContainer.className = 'slide-container';
                         slideContainer.innerHTML = `
-                            <div class="slide-preview" style="background-image: url('${slide.image}')">
+                            <div class="slide" style="background-image: url('${slide.image}')">
                                 <div class="slide-content">${slide.title}</div>
                             </div>
                             <div class="slide-controls">
@@ -1555,6 +1530,36 @@
             
             totalViewsElement.textContent = totalViews.toLocaleString();
             todayViewsElement.textContent = todayViews.toLocaleString();
+        }
+        
+        // Start live updates
+        function startLiveUpdates() {
+            // Clear any existing interval
+            if (liveUpdateInterval) {
+                clearInterval(liveUpdateInterval);
+            }
+            
+            // Set up interval to check for updates
+            liveUpdateInterval = setInterval(() => {
+                // Check for order updates
+                const ordersRef = ref(database, 'orders');
+                get(ordersRef).then((snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const latestOrder = Object.values(data).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+                        if (latestOrder && new Date(latestOrder.timestamp).getTime() > lastOrdersUpdate) {
+                            lastOrdersUpdate = new Date(latestOrder.timestamp).getTime();
+                            
+                            // Reload orders
+                            loadOrders();
+                            updateAnalytics();
+                            
+                            // Show notification
+                            alert('New order received! Check order management for details.');
+                        }
+                    }
+                });
+            }, 5000); // Check every 5 seconds
         }
     </script>
 </body>
