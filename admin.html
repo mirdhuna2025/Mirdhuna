@@ -37,6 +37,7 @@
             margin: 0 auto;
         }
         
+        /* Header Styles */
         header {
             display: flex;
             justify-content: space-between;
@@ -78,6 +79,7 @@
             transform: translateY(-2px);
         }
         
+        /* Admin Content */
         .admin-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -129,16 +131,19 @@
         .add-btn:hover {
             background: #05b88b;
             transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(6, 214, 160, 0.5);
         }
         
+        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            font-size: 0.9rem;
         }
         
         th, td {
-            padding: 15px;
+            padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
@@ -156,10 +161,11 @@
         .action-btns {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
         
         .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-            padding: 8px 15px;
+            padding: 6px 12px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -213,6 +219,7 @@
             background: #388e3c;
         }
         
+        /* Stats */
         .stats {
             display: flex;
             justify-content: space-around;
@@ -249,6 +256,7 @@
             font-weight: 500;
         }
         
+        /* Form Styles */
         .form-group {
             margin-bottom: 20px;
         }
@@ -318,6 +326,7 @@
             box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
         }
         
+        /* Slides */
         .slide-container {
             position: relative;
             margin-bottom: 25px;
@@ -327,34 +336,33 @@
         }
         
         .slide {
-            height: 150px;
+            height: 180px;
             background-size: cover;
             background-position: center;
             border-radius: 15px;
-            margin-bottom: 15px;
-            position: relative;
+            display: flex;
+            align-items: flex-end;
         }
         
         .slide-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
             background: rgba(0,0,0,0.7);
             color: white;
             padding: 15px;
+            width: 100%;
             text-align: center;
+            font-size: 1rem;
         }
         
         .slide-controls {
             display: flex;
             justify-content: space-between;
-            padding: 0 10px;
+            padding: 10px;
         }
         
+        /* Image Preview */
         .image-preview {
             width: 100%;
-            height: 120px;
+            height: 150px;
             border: 1px dashed #ccc;
             border-radius: 10px;
             display: flex;
@@ -376,6 +384,7 @@
             font-size: 0.9rem;
         }
         
+        /* Footer */
         footer {
             text-align: center;
             padding: 30px;
@@ -426,6 +435,7 @@
             font-size: 0.8rem;
         }
         
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -474,9 +484,52 @@
         .modal h2 {
             margin-top: 0;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
         }
         
+        /* Status Select */
+        .status-select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        /* Live Update Indicator */
+        .live-update-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4ade80;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .live-update-indicator .dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Responsive Design */
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -502,15 +555,15 @@
             }
             
             th, td {
-                padding: 12px;
+                padding: 10px;
             }
             
             .action-btns {
-                gap: 4px;
+                gap: 6px;
             }
             
             .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-                padding: 6px 12px;
+                padding: 5px 10px;
                 font-size: 0.8rem;
             }
             
@@ -533,12 +586,12 @@
             }
             
             .form-group input, .form-group textarea, .form-group select {
-                padding: 10px 12px;
+                padding: 10px;
                 font-size: 0.9rem;
             }
             
             .form-actions {
-                gap: 10px;
+                gap: 12px;
                 margin-top: 20px;
             }
             
@@ -548,20 +601,20 @@
             }
             
             .slide {
-                height: 120px;
+                height: 150px;
             }
             
             .slide-content {
                 padding: 12px;
-                font-size: 0.8rem;
+                font-size: 0.9rem;
             }
             
             .slide-controls {
-                padding: 0 8px;
+                padding: 8px;
             }
             
             .image-preview {
-                height: 100px;
+                height: 120px;
             }
             
             .image-preview .placeholder {
@@ -582,7 +635,7 @@
             }
             
             .footer-links a {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
             
             .copyright {
@@ -597,13 +650,30 @@
             }
             
             .modal h2 {
-                font-size: 1.3rem;
+                font-size: 1.5rem;
             }
             
             .close-modal {
                 top: 15px;
                 right: 15px;
                 font-size: 1.3rem;
+            }
+            
+            .status-select {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .live-update-indicator {
+                top: 15px;
+                right: 15px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .live-update-indicator .dot {
+                width: 8px;
+                height: 8px;
             }
         }
         
@@ -648,19 +718,19 @@
             }
             
             table {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
             }
             
             th, td {
-                padding: 10px;
+                padding: 8px;
             }
             
             .action-btns {
-                gap: 3px;
+                gap: 5px;
             }
             
             .edit-btn, .delete-btn, .export-btn, .view-btn, .update-btn {
-                padding: 5px 10px;
+                padding: 4px 8px;
                 font-size: 0.75rem;
             }
             
@@ -683,12 +753,12 @@
             }
             
             .form-group input, .form-group textarea, .form-group select {
-                padding: 8px 10px;
+                padding: 8px;
                 font-size: 0.85rem;
             }
             
             .form-actions {
-                gap: 8px;
+                gap: 10px;
                 margin-top: 15px;
             }
             
@@ -698,24 +768,24 @@
             }
             
             .slide {
-                height: 100px;
+                height: 120px;
             }
             
             .slide-content {
                 padding: 10px;
-                font-size: 0.75rem;
+                font-size: 0.85rem;
             }
             
             .slide-controls {
-                padding: 0 6px;
+                padding: 6px;
             }
             
             .image-preview {
-                height: 80px;
+                height: 100px;
             }
             
             .image-preview .placeholder {
-                font-size: 0.7rem;
+                font-size: 0.75rem;
             }
             
             footer {
@@ -732,7 +802,7 @@
             }
             
             .footer-links a {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
             }
             
             .copyright {
@@ -747,13 +817,30 @@
             }
             
             .modal h2 {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
             
             .close-modal {
                 top: 12px;
                 right: 12px;
                 font-size: 1.2rem;
+            }
+            
+            .status-select {
+                padding: 5px 8px;
+                font-size: 0.8rem;
+            }
+            
+            .live-update-indicator {
+                top: 12px;
+                right: 12px;
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .live-update-indicator .dot {
+                width: 6px;
+                height: 6px;
             }
         }
     </style>
@@ -1028,25 +1115,22 @@
         const slideImageInput = document.getElementById('slideImage');
         const slideImagePreview = document.getElementById('slideImagePreview');
         
+        // Live update indicator
+        const liveUpdateIndicator = document.getElementById('liveUpdateIndicator');
+        
         // State variables
         let lastOrdersUpdate = 0;
         let liveUpdateInterval;
         
         // Admin functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Load menu items from Firebase
+            // Load all data
             loadMenuItems();
-            
-            // Load orders from Firebase
             loadOrders();
-            
-            // Load slides from Firebase
             loadSlides();
+            updateDashboardStats();
             
-            // Update analytics
-            updateAnalytics();
-            
-            // Start live updates
+            // Set up live updates
             startLiveUpdates();
             
             // Logout button
@@ -1109,7 +1193,7 @@
                                 .then(() => {
                                     alert('Item deleted successfully!');
                                     loadMenuItems();
-                                    updateAnalytics();
+                                    updateDashboardStats();
                                 })
                                 .catch((error) => {
                                     console.error('Error deleting item:', error);
@@ -1181,7 +1265,7 @@
                                 .then(() => {
                                     alert('Slide deleted successfully!');
                                     loadSlides();
-                                    updateAnalytics();
+                                    updateDashboardStats();
                                 })
                                 .catch((error) => {
                                     console.error('Error deleting slide:', error);
@@ -1189,34 +1273,6 @@
                                 });
                         }
                     });
-                }
-            });
-            
-            // Image preview for menu items
-            itemImageInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        itemImagePreview.src = e.target.result;
-                        itemImagePreview.style.display = 'block';
-                        itemImagePreview.nextElementSibling.style.display = 'none';
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-            
-            // Image preview for slides
-            slideImageInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        slideImagePreview.src = e.target.result;
-                        slideImagePreview.style.display = 'block';
-                        slideImagePreview.nextElementSibling.style.display = 'none';
-                    }
-                    reader.readAsDataURL(file);
                 }
             });
             
@@ -1278,6 +1334,34 @@
                 }
             });
             
+            // Image preview for menu items
+            itemImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        itemImagePreview.src = e.target.result;
+                        itemImagePreview.style.display = 'block';
+                        itemImagePreview.nextElementSibling.style.display = 'none';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Image preview for slides
+            slideImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        slideImagePreview.src = e.target.result;
+                        slideImagePreview.style.display = 'block';
+                        slideImagePreview.nextElementSibling.style.display = 'none';
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+            
             // Modal functions
             function showModal(modal) {
                 modal.style.display = 'flex';
@@ -1332,7 +1416,7 @@
                     .then(() => {
                         alert('Menu item updated successfully!');
                         loadMenuItems();
-                        updateAnalytics();
+                        updateDashboardStats();
                         hideModal(menuModal);
                     })
                     .catch((error) => {
@@ -1347,7 +1431,7 @@
                     .then(() => {
                         alert('Menu item added successfully!');
                         loadMenuItems();
-                        updateAnalytics();
+                        updateDashboardStats();
                         hideModal(menuModal);
                     })
                     .catch((error) => {
@@ -1372,7 +1456,7 @@
                     .then(() => {
                         alert('Slide updated successfully!');
                         loadSlides();
-                        updateAnalytics();
+                        updateDashboardStats();
                         hideModal(slideModal);
                     })
                     .catch((error) => {
@@ -1387,7 +1471,7 @@
                     .then(() => {
                         alert('Slide added successfully!');
                         loadSlides();
-                        updateAnalytics();
+                        updateDashboardStats();
                         hideModal(slideModal);
                     })
                     .catch((error) => {
@@ -1413,8 +1497,12 @@
                             <td>₹${item.price}</td>
                             <td>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</td>
                             <td class="action-btns">
-                                <button class="edit-btn" data-key="${key}">Edit</button>
-                                <button class="delete-btn" data-key="${key}">Delete</button>
+                                <button class="edit-btn" data-key="${key}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" data-key="${key}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
                             </td>
                         `;
                         menuTableBody.appendChild(row);
@@ -1450,7 +1538,9 @@
                                 </select>
                             </td>
                             <td class="action-btns">
-                                <button class="update-btn" data-key="${key}">Update</button>
+                                <button class="update-btn" data-key="${key}">
+                                    <i class="fas fa-sync"></i> Update
+                                </button>
                             </td>
                         `;
                         ordersTableBody.appendChild(row);
@@ -1484,7 +1574,7 @@
                 .then(() => {
                     console.log(`Order ${key} status updated to: ${newStatus}`);
                     loadOrders();
-                    updateAnalytics();
+                    updateDashboardStats();
                 })
                 .catch((error) => {
                     console.error('Error updating order status:', error);
@@ -1510,8 +1600,12 @@
                                 <div class="slide-content">${slide.title}</div>
                             </div>
                             <div class="slide-controls">
-                                <button class="edit-btn" data-key="${key}">Edit</button>
-                                <button class="delete-btn" data-key="${key}">Delete</button>
+                                <button class="edit-btn" data-key="${key}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" data-key="${key}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
                             </div>
                         `;
                         slidesContainer.appendChild(slideContainer);
@@ -1522,14 +1616,36 @@
             });
         }
         
-        // Update analytics
-        function updateAnalytics() {
-            // In a real implementation, this would fetch data from Firebase
-            const totalViews = Math.floor(Math.random() * 2000) + 1000;
-            const todayViews = Math.floor(Math.random() * 200) + 50;
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            // Get orders
+            const ordersRef = ref(database, 'orders');
+            get(ordersRef).then((snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const orders = Object.values(data);
+                    totalOrdersElement.textContent = orders.length;
+                    
+                    // Calculate total revenue
+                    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+                    totalRevenueElement.textContent = `₹${totalRevenue.toLocaleString()}`;
+                    
+                    // Get unique users
+                    const users = [...new Set(orders.map(order => order.mobile))];
+                    totalUsersElement.textContent = users.length;
+                } else {
+                    totalOrdersElement.textContent = '0';
+                    totalUsersElement.textContent = '0';
+                    totalRevenueElement.textContent = '₹0';
+                }
+            }).catch((error) => {
+                console.error('Error fetching orders:', error);
+            });
             
-            totalViewsElement.textContent = totalViews.toLocaleString();
-            todayViewsElement.textContent = todayViews.toLocaleString();
+            // Simulate page views
+            const views = Math.floor(Math.random() * 1000) + 500;
+            totalViewsElement.textContent = views.toLocaleString();
+            todayViewsElement.textContent = Math.floor(views / 10).toLocaleString();
         }
         
         // Start live updates
@@ -1550,12 +1666,15 @@
                         if (latestOrder && new Date(latestOrder.timestamp).getTime() > lastOrdersUpdate) {
                             lastOrdersUpdate = new Date(latestOrder.timestamp).getTime();
                             
-                            // Reload orders
-                            loadOrders();
-                            updateAnalytics();
+                            // Show live update indicator
+                            liveUpdateIndicator.style.display = 'flex';
+                            setTimeout(() => {
+                                liveUpdateIndicator.style.display = 'none';
+                            }, 2000);
                             
-                            // Show notification
-                            alert('New order received! Check order management for details.');
+                            // Reload orders and stats
+                            loadOrders();
+                            updateDashboardStats();
                         }
                     }
                 });
