@@ -288,32 +288,23 @@
         <div class="login-card">
             <div class="login-header">
                 <h3><i class="fas fa-lock"></i> MIRDHUNA Admin Panel</h3>
-                <p>Sign in with your admin credentials</p>
+                <p>Enter password to access admin panel</p>
             </div>
             <div class="login-body">
                 <div class="mb-3">
-                    <label for="adminEmail" class="form-label">Email Address</label>
-                    <input type="email" class="form-control" id="adminEmail" placeholder="Enter your email">
-                </div>
-                <div class="mb-3 password-container">
                     <label for="adminPassword" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="adminPassword" placeholder="Enter your password">
-                    <span class="password-toggle" id="togglePassword">
-                        <i class="fas fa-eye"></i>
-                    </span>
-                </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMe">
-                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                    <div class="password-container">
+                        <input type="password" class="form-control" id="adminPassword" placeholder="Enter password">
+                        <span class="password-toggle" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
                 </div>
                 <div class="d-grid">
-                    <button class="btn btn-primary" id="loginBtn">Sign In</button>
-                </div>
-                <div class="text-center mt-3">
-                    <a href="#" id="forgotPassword">Forgot Password?</a>
+                    <button class="btn btn-primary" id="loginBtn">Login</button>
                 </div>
                 <div class="login-error" id="loginError">
-                    <i class="fas fa-exclamation-circle"></i> <span id="errorMessage">Invalid credentials. Please try again.</span>
+                    <i class="fas fa-exclamation-circle"></i> Invalid password. Please try again.
                 </div>
             </div>
         </div>
@@ -677,43 +668,22 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-        
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
-            authDomain: "mirdhuna-4f652.firebaseapp.com",
-            databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
-            projectId: "mirdhuna-4f652",
-            storageBucket: "mirdhuna-4f652.firebasestorage.app",
-            messagingSenderId: "184403369330",
-            appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
-            measurementId: "G-ZFWSGKE744"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Admin password
+        const ADMIN_PASSWORD = "Sanu.0000";
         
         // DOM Elements
         const loginContainer = document.getElementById('loginContainer');
         const adminContainer = document.getElementById('adminContainer');
-        const adminEmail = document.getElementById('adminEmail');
         const adminPassword = document.getElementById('adminPassword');
         const loginBtn = document.getElementById('loginBtn');
         const loginError = document.getElementById('loginError');
-        const errorMessage = document.getElementById('errorMessage');
         const logoutBtn = document.getElementById('logoutBtn');
         const navLinks = document.querySelectorAll('.nav-link');
         const contentSections = document.querySelectorAll('.content-section');
         const togglePassword = document.getElementById('togglePassword');
-        const forgotPassword = document.getElementById('forgotPassword');
         
         // Password visibility toggle
         togglePassword.addEventListener('click', function() {
@@ -722,15 +692,20 @@
             this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
         });
         
-        // Check authentication state
-        onAuthStateChanged(auth, user => {
-            if (user) {
-                // User is signed in
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('adminLoggedIn') === 'true') {
                 showAdminPanel();
             } else {
-                // User is signed out
                 showLoginPanel();
             }
+            
+            // Add event listener for Enter key in password field
+            adminPassword.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    performLogin();
+                }
+            });
         });
         
         // Show login panel
@@ -750,65 +725,22 @@
         
         // Perform login
         function performLogin() {
-            const email = adminEmail.value;
-            const password = adminPassword.value;
-            
-            if (!email || !password) {
-                errorMessage.textContent = 'Please enter both email and password';
+            if (adminPassword.value === ADMIN_PASSWORD) {
+                loginError.style.display = 'none';
+                localStorage.setItem('adminLoggedIn', 'true');
+                showAdminPanel();
+            } else {
                 loginError.style.display = 'block';
-                return;
             }
-            
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Signed in
-                    const user = userCredential.user;
-                    loginError.style.display = 'none';
-                    showAdminPanel();
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessageText = error.message;
-                    
-                    if (errorCode === 'auth/wrong-password') {
-                        errorMessage.textContent = 'Incorrect password. Please try again.';
-                    } else if (errorCode === 'auth/user-not-found') {
-                        errorMessage.textContent = 'No account found with this email.';
-                    } else if (errorCode === 'auth/invalid-email') {
-                        errorMessage.textContent = 'Please enter a valid email address.';
-                    } else {
-                        errorMessage.textContent = 'Login failed. Please try again.';
-                    }
-                    
-                    loginError.style.display = 'block';
-                });
         }
         
         // Login functionality
         loginBtn.addEventListener('click', performLogin);
         
-        // Allow Enter key to submit login form
-        adminPassword.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                performLogin();
-            }
-        });
-        
-        // Forgot password functionality
-        forgotPassword.addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Password reset functionality would be implemented here.\nIn a real application, this would send a password reset email.');
-        });
-        
         // Logout functionality
         logoutBtn.addEventListener('click', function() {
-            signOut(auth).then(() => {
-                // Sign-out successful
-                showLoginPanel();
-            }).catch((error) => {
-                // An error happened
-                console.error('Logout error:', error);
-            });
+            localStorage.removeItem('adminLoggedIn');
+            showLoginPanel();
         });
         
         // Navigation
@@ -1315,8 +1247,5 @@
             });
         }
     </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
