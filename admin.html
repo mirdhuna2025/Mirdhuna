@@ -248,19 +248,17 @@
             border-radius: 5px;
         }
         
-        .firebaseui-container {
-            box-shadow: none !important;
-            border-radius: 15px !important;
-            overflow: hidden;
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
         }
         
-        .firebaseui-card-content {
-            padding: 20px !important;
-        }
-        
-        .firebaseui-form-actions .mdl-button {
-            background: var(--primary) !important;
-            color: white !important;
+        .password-container {
+            position: relative;
         }
         
         @media (max-width: 992px) {
@@ -289,13 +287,33 @@
     <div class="login-container" id="loginContainer">
         <div class="login-card">
             <div class="login-header">
-                <h3><i class="fas fa-lock"></i> Admin Login</h3>
-                <p>Please sign in with your Google Account</p>
+                <h3><i class="fas fa-lock"></i> MIRDHUNA Admin Panel</h3>
+                <p>Sign in with your admin credentials</p>
             </div>
             <div class="login-body">
-                <div id="firebaseui-auth-container"></div>
+                <div class="mb-3">
+                    <label for="adminEmail" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="adminEmail" placeholder="Enter your email">
+                </div>
+                <div class="mb-3 password-container">
+                    <label for="adminPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="adminPassword" placeholder="Enter your password">
+                    <span class="password-toggle" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-primary" id="loginBtn">Sign In</button>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="#" id="forgotPassword">Forgot Password?</a>
+                </div>
                 <div class="login-error" id="loginError">
-                    <i class="fas fa-exclamation-circle"></i> Authentication failed. Please try again.
+                    <i class="fas fa-exclamation-circle"></i> <span id="errorMessage">Invalid credentials. Please try again.</span>
                 </div>
             </div>
         </div>
@@ -660,17 +678,13 @@
     </div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
-    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css" />
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script>
-        // Firebase configuration
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        
+        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
             authDomain: "mirdhuna-4f652.firebaseapp.com",
@@ -683,31 +697,33 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        
-        // FirebaseUI configuration
-        const uiConfig = {
-            signInSuccessUrl: '#',
-            signInOptions: [
-                firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                firebase.auth.EmailAuthProvider.PROVIDER_ID
-            ],
-            tosUrl: '<your-tos-url>',
-            privacyPolicyUrl: '<your-privacy-policy-url>'
-        };
-
-        // Initialize the FirebaseUI Widget using Firebase
-        const ui = new firebaseui.auth.AuthUI(firebase.auth());
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
         
         // DOM Elements
         const loginContainer = document.getElementById('loginContainer');
         const adminContainer = document.getElementById('adminContainer');
+        const adminEmail = document.getElementById('adminEmail');
+        const adminPassword = document.getElementById('adminPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const errorMessage = document.getElementById('errorMessage');
         const logoutBtn = document.getElementById('logoutBtn');
         const navLinks = document.querySelectorAll('.nav-link');
         const contentSections = document.querySelectorAll('.content-section');
+        const togglePassword = document.getElementById('togglePassword');
+        const forgotPassword = document.getElementById('forgotPassword');
+        
+        // Password visibility toggle
+        togglePassword.addEventListener('click', function() {
+            const type = adminPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            adminPassword.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
         
         // Check authentication state
-        firebase.auth().onAuthStateChanged(user => {
+        onAuthStateChanged(auth, user => {
             if (user) {
                 // User is signed in
                 showAdminPanel();
@@ -721,9 +737,8 @@
         function showLoginPanel() {
             loginContainer.style.display = 'flex';
             adminContainer.style.display = 'none';
-            
-            // Show FirebaseUI auth container
-            ui.start('#firebaseui-auth-container', uiConfig);
+            adminPassword.value = '';
+            loginError.style.display = 'none';
         }
         
         // Show admin panel
@@ -733,9 +748,61 @@
             initializeAdminPanel();
         }
         
+        // Perform login
+        function performLogin() {
+            const email = adminEmail.value;
+            const password = adminPassword.value;
+            
+            if (!email || !password) {
+                errorMessage.textContent = 'Please enter both email and password';
+                loginError.style.display = 'block';
+                return;
+            }
+            
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    loginError.style.display = 'none';
+                    showAdminPanel();
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessageText = error.message;
+                    
+                    if (errorCode === 'auth/wrong-password') {
+                        errorMessage.textContent = 'Incorrect password. Please try again.';
+                    } else if (errorCode === 'auth/user-not-found') {
+                        errorMessage.textContent = 'No account found with this email.';
+                    } else if (errorCode === 'auth/invalid-email') {
+                        errorMessage.textContent = 'Please enter a valid email address.';
+                    } else {
+                        errorMessage.textContent = 'Login failed. Please try again.';
+                    }
+                    
+                    loginError.style.display = 'block';
+                });
+        }
+        
+        // Login functionality
+        loginBtn.addEventListener('click', performLogin);
+        
+        // Allow Enter key to submit login form
+        adminPassword.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                performLogin();
+            }
+        });
+        
+        // Forgot password functionality
+        forgotPassword.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Password reset functionality would be implemented here.\nIn a real application, this would send a password reset email.');
+        });
+        
         // Logout functionality
         logoutBtn.addEventListener('click', function() {
-            firebase.auth().signOut().then(() => {
+            signOut(auth).then(() => {
                 // Sign-out successful
                 showLoginPanel();
             }).catch((error) => {
@@ -1248,5 +1315,8 @@
             });
         }
     </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
