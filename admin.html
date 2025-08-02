@@ -740,7 +740,7 @@
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
         import { getDatabase, ref, onValue, set, push, remove, update } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
         // Import Firebase Storage
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+        import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -1079,8 +1079,54 @@
                 });
             }
 
+            // NEW: Generic function to upload a file to Firebase Storage
+            async function uploadFile(file, storagePath) {
+                if (!file) {
+                    throw new Error("No file provided for upload.");
+                }
 
-            // Slides Data (Fixed Image Upload)
+                try {
+                    console.log(`Starting upload for file: ${file.name} to path: ${storagePath}`);
+                    
+                    // Create a reference to the file location in Storage
+                    const storageReference = storageRef(storage, storagePath);
+                    
+                    // Use uploadBytesResumable for better error handling and progress
+                    const uploadTask = uploadBytesResumable(storageReference, file);
+
+                    // Wait for the upload to complete
+                    await new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed',
+                            (snapshot) => {
+                                // Optional: Handle upload progress
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                console.log(`Upload is ${progress}% done`);
+                            },
+                            (error) => {
+                                // Handle unsuccessful uploads
+                                console.error('Upload failed:', error);
+                                reject(error);
+                            },
+                            () => {
+                                // Handle successful uploads on complete
+                                console.log('Upload complete!');
+                                resolve();
+                            }
+                        );
+                    });
+
+                    // Get the public download URL
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                    console.log('File available at:', downloadURL);
+                    return downloadURL;
+
+                } catch (error) {
+                    console.error('Error in uploadFile function:', error);
+                    throw error; // Re-throw to be caught by the calling function
+                }
+            }
+
+            // Slides Data (Using new upload function)
             function loadSlidesData() {
                 console.log("Loading Slides data...");
                 const slidesRef = ref(database, 'slides');
@@ -1110,12 +1156,11 @@
                 });
 
                 // --- Upload slide to Firebase Storage ---
-                // Ensure the button exists before adding the listener
                 const uploadSlideBtn = document.getElementById('uploadSlideBtn');
                 if (uploadSlideBtn) {
                     console.log("Setting up Upload Slide button listener.");
                     uploadSlideBtn.addEventListener('click', async function(event) {
-                        event.preventDefault(); // Prevent any default form submission
+                        event.preventDefault();
                         console.log("Upload Slide button clicked.");
                         const fileInput = document.getElementById('slideImage');
                         const file = fileInput?.files[0];
@@ -1126,26 +1171,18 @@
                         }
 
                         try {
-                            // Create a reference to the file location in Storage
+                            // Generate a unique file name
                             const fileName = `${Date.now()}_${file.name}`;
-                            const storageReference = storageRef(storage, `slides/${fileName}`);
-                            console.log(`Preparing to upload slide: ${fileName}`);
+                            const storagePath = `slides/${fileName}`;
 
-                            // Upload the file
-                            console.log("Starting file upload to Firebase Storage...");
-                            const snapshot = await uploadBytes(storageReference, file);
-                            console.log('Slide uploaded to Storage successfully:', snapshot);
-
-                            // Get the public download URL
-                            console.log("Getting download URL...");
-                            const downloadURL = await getDownloadURL(snapshot.ref);
-                            console.log('Slide File available at:', downloadURL);
+                            // Use the new uploadFile function
+                            const downloadURL = await uploadFile(file, storagePath);
 
                             // Save the URL and metadata to the Realtime Database
                             console.log("Saving slide data to Realtime Database...");
                             const newSlideRef = push(ref(database, 'slides'));
                             await set(newSlideRef, {
-                                url: downloadURL, // Store the permanent URL
+                                url: downloadURL,
                                 name: file.name,
                                 timestamp: new Date().toISOString()
                             });
@@ -1161,15 +1198,15 @@
 
                         } catch (error) {
                             console.error('Error in slide upload process:', error);
-                            alert('Error uploading slide: ' + error.message);
+                            alert(`Error uploading slide: ${error.message}`);
                         }
                     });
                 } else {
-                    console.error("CRITICAL ERROR: Upload Slide button (id='uploadSlideBtn') not found in DOM. Upload functionality will not work.");
+                    console.error("CRITICAL ERROR: Upload Slide button (id='uploadSlideBtn') not found in DOM.");
                 }
             }
 
-            // Menu Data (Fixed Image Upload and Edit)
+            // Menu Data (Using new upload function and Edit)
             function loadMenuData() {
                 console.log("Loading Menu data...");
                 const menuRef = ref(database, 'menu');
@@ -1202,8 +1239,7 @@
                     }
                 });
 
-                // --- Add/Update menu item with image upload to Firebase Storage ---
-                // Ensure the button exists before adding the listener
+                // --- Add/Update menu item with new upload function ---
                 const addItemBtn = document.getElementById('addItemBtn');
                 const itemNameInput = document.getElementById('itemName');
                 const itemPriceInput = document.getElementById('itemPrice');
@@ -1214,7 +1250,7 @@
                 if (addItemBtn) {
                     console.log("Setting up Add Item button listener.");
                     addItemBtn.addEventListener('click', async function(event) {
-                        event.preventDefault(); // Prevent any default form submission
+                        event.preventDefault();
                         console.log("Add/Update Item button clicked.");
 
                         const name = itemNameInput?.value.trim();
@@ -1230,35 +1266,22 @@
                         let imageUrl = '';
                         let imageChanged = false;
 
-                        // If we are editing and a new file is selected, upload it
+                        // If a new file is selected, upload it
                         if (file) {
                             imageChanged = true;
                             try {
-                                // Create a reference to the file location in Storage
+                                // Generate a unique file name
                                 const fileName = `${Date.now()}_${file.name}`;
-                                const storageReference = storageRef(storage, `menu_items/${fileName}`);
-                                console.log(`Preparing to upload menu item image: ${fileName}`);
-
-                                // Upload the file
-                                console.log("Starting file upload to Firebase Storage...");
-                                const snapshot = await uploadBytes(storageReference, file);
-                                console.log('Menu item image uploaded to Storage successfully:', snapshot);
-
-                                // Get the public download URL
-                                console.log("Getting download URL...");
-                                imageUrl = await getDownloadURL(snapshot.ref);
-                                console.log('Menu item File available at:', imageUrl);
+                                const storagePath = `menu_items/${fileName}`;
+                                
+                                // Use the new uploadFile function
+                                imageUrl = await uploadFile(file, storagePath);
 
                             } catch (error) {
                                 console.error('Error in menu item image upload process:', error);
-                                alert('Error uploading image: ' + error.message);
+                                alert(`Error uploading image: ${error.message}`);
                                 return; // Stop if image upload fails
                             }
-                        } else if (editItemId && !file) {
-                            // If editing and no new file, keep the existing image
-                            // We'll get the existing image URL from the database when we fetch the item data
-                            // This is handled in the editMenuItem function
-                            imageChanged = false;
                         }
 
                         try {
@@ -1279,7 +1302,6 @@
                                 if (imageChanged && imageUrl) {
                                     updateData.image = imageUrl;
                                 }
-                                // If image wasn't changed or no file was selected, don't update the image field
 
                                 await update(itemRef, updateData);
                                 console.log('Menu item updated successfully.');
@@ -1313,11 +1335,11 @@
 
                         } catch (error) {
                             console.error('Error in menu item save process:', error);
-                            alert(`Error ${editItemId ? 'updating' : 'adding'} menu item: ` + error.message);
+                            alert(`Error ${editItemId ? 'updating' : 'adding'} menu item: ${error.message}`);
                         }
                     });
                 } else {
-                     console.error("CRITICAL ERROR: Add Item button (id='addItemBtn') not found in DOM. Add item functionality will not work.");
+                     console.error("CRITICAL ERROR: Add Item button (id='addItemBtn') not found in DOM.");
                 }
             }
 
@@ -1339,8 +1361,8 @@
 
                         if (itemNameInput) itemNameInput.value = item.name;
                         if (itemPriceInput) itemPriceInput.value = item.price;
-                        if (editItemIdInput) editItemIdInput.value = itemId; // Store the ID we are editing
-                        if (addEditButtonText) addEditButtonText.textContent = 'Update Item'; // Change button text
+                        if (editItemIdInput) editItemIdInput.value = itemId;
+                        if (addEditButtonText) addEditButtonText.textContent = 'Update Item';
 
                         // Show the current image in the preview
                         if (item.image && itemPreview) {
