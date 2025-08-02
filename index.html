@@ -1730,5 +1730,51 @@
             });
         });
     </script>
+    <!-- Add this inside the <head> or at the end of <body> in your MAIN website's index.html -->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getDatabase, ref, update, increment } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+    // Your web app's Firebase configuration (SAME as admin panel)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
+        authDomain: "mirdhuna-4f652.firebaseapp.com",
+        databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
+        projectId: "mirdhuna-4f652",
+        storageBucket: "mirdhuna-4f652.firebasestorage.app",
+        messagingSenderId: "184403369330",
+        appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
+        measurementId: "G-ZFWSGKE744"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app); // Get database instance
+
+    // Function to log a page view
+    async function logPageView() {
+        try {
+            const today = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD
+
+            // Prepare the updates
+            const updates = {};
+            updates[`analytics/pageViews/${today}`] = increment(1);
+            updates['analytics/totalViews'] = increment(1);
+
+            // Send the updates to the database
+            await update(ref(database), updates);
+            console.log("Analytics updated for", today);
+        } catch (error) {
+            console.error("Error updating analytics:", error);
+            // Optionally, send error to a logging service
+        }
+    }
+
+    // Call this function when the page loads
+    window.addEventListener('DOMContentLoaded', logPageView);
+
+</script>
+<!-- End of analytics tracking code -->
 </body>
 </html>
