@@ -394,6 +394,16 @@
             pointer-events: none;
         }
 
+        /* Upload Previews */
+        .upload-preview {
+            max-width: 200px;
+            max-height: 150px;
+            margin-top: 10px;
+            display: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -606,11 +616,12 @@
                             <div class="form-group">
                                 <label for="slideImage">Upload Slide Image</label>
                                 <input type="file" id="slideImage" class="form-control" accept="image/*">
+                                <img id="slidePreview" class="upload-preview" alt="Slide Preview">
                             </div>
                             <button class="btn btn-submit" id="uploadSlideBtn">
                                 <i class="fas fa-upload"></i> Upload Slide
                             </button>
-                            
+
                             <div class="table-container" style="margin-top: 30px;">
                                 <table>
                                     <thead>
@@ -647,11 +658,12 @@
                             <div class="form-group">
                                 <label for="itemImage">Item Image</label>
                                 <input type="file" id="itemImage" class="form-control" accept="image/*">
+                                <img id="itemPreview" class="upload-preview" alt="Item Preview">
                             </div>
                             <button class="btn btn-submit" id="addItemBtn">
                                 <i class="fas fa-plus"></i> Add Item
                             </button>
-                            
+
                             <div class="table-container" style="margin-top: 30px;">
                                 <table>
                                     <thead>
@@ -698,13 +710,16 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="card">
                                 <div class="card-header">
                                     <h2>View Statistics</h2>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="viewsChart" height="100"></canvas>
+                                    <p>Note: Chart implementation requires additional libraries like Chart.js. This section shows data structure.</p>
+                                    <div id="analyticsDataDisplay">
+                                        <!-- Data will be displayed here -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -719,6 +734,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
         import { getDatabase, ref, onValue, set, push, remove, update } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+        // Import Firebase Storage
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -736,6 +753,8 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const database = getDatabase(app);
+        // Initialize Firebase Storage
+        const storage = getStorage(app);
 
         // Authentication
         const correctPassword = "Sanu.0000";
@@ -774,21 +793,52 @@
         navLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                
+
                 // Remove active class from all links and sections
                 navLinks.forEach(l => l.classList.remove('active'));
                 sections.forEach(s => s.style.display = 'none');
-                
+
                 // Add active class to clicked link
                 this.classList.add('active');
-                
+
                 // Show corresponding section
                 const target = this.getAttribute('data-target');
                 document.getElementById(target).style.display = 'block';
-                
+
                 // Load data for the section
                 loadDataForSection(target);
             });
+        });
+
+        // Add preview functionality for images
+        document.getElementById('slideImage').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('slidePreview');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        document.getElementById('itemImage').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('itemPreview');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
         });
 
         // Load data for each section
@@ -824,22 +874,22 @@
                 if (orders) {
                     const orderCount = Object.keys(orders).length;
                     document.getElementById('totalOrders').textContent = orderCount;
-                    
+
                     // Calculate total revenue
                     let totalRevenue = 0;
                     Object.values(orders).forEach(order => {
                         totalRevenue += order.amount || 0;
                     });
                     document.getElementById('totalRevenue').textContent = `₹${totalRevenue}`;
-                    
+
                     // Populate recent orders
                     const recentOrdersTable = document.getElementById('recentOrdersTable');
                     recentOrdersTable.innerHTML = '';
-                    
+
                     // Get last 5 orders
                     const orderEntries = Object.entries(orders);
                     const recentOrders = orderEntries.slice(-5);
-                    
+
                     recentOrders.forEach(([id, order]) => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -851,20 +901,26 @@
                         `;
                         recentOrdersTable.appendChild(row);
                     });
+                } else {
+                     document.getElementById('totalOrders').textContent = '0';
+                     document.getElementById('totalRevenue').textContent = '₹0';
+                     document.getElementById('recentOrdersTable').innerHTML = '<tr><td colspan="5">No orders found</td></tr>';
                 }
             });
-            
+
             // Load today's views
             const analyticsRef = ref(database, 'analytics');
             onValue(analyticsRef, (snapshot) => {
-                const analytics = snapshot.val();
-                if (analytics) {
-                    const today = new Date().toISOString().split('T')[0];
-                    const todayViews = analytics.pageViews?.[today] || 0;
-                    document.getElementById('todayViews').textContent = todayViews;
+                const analyticsData = snapshot.val();
+                const today = new Date().toISOString().split('T')[0];
+                let todayViews = 0;
+
+                if (analyticsData && analyticsData.pageViews && analyticsData.pageViews[today] !== undefined) {
+                    todayViews = analyticsData.pageViews[today];
                 }
+                document.getElementById('todayViews').textContent = todayViews;
             });
-            
+
             // Load total users
             const usersRef = ref(database, 'users');
             onValue(usersRef, (snapshot) => {
@@ -872,6 +928,8 @@
                 if (users) {
                     const userCount = Object.keys(users).length;
                     document.getElementById('totalUsers').textContent = userCount;
+                } else {
+                    document.getElementById('totalUsers').textContent = '0';
                 }
             });
         }
@@ -883,7 +941,7 @@
                 const orders = snapshot.val();
                 const ordersTable = document.getElementById('ordersTable');
                 ordersTable.innerHTML = '';
-                
+
                 if (orders) {
                     Object.entries(orders).forEach(([id, order]) => {
                         const row = document.createElement('tr');
@@ -892,7 +950,7 @@
                         if (order.items) {
                             itemsList = Object.values(order.items).map(item => item.name).join(', ');
                         }
-                        
+
                         row.innerHTML = `
                             <td>${id}</td>
                             <td>${new Date(order.timestamp).toLocaleString()}</td>
@@ -918,7 +976,7 @@
                         `;
                         ordersTable.appendChild(row);
                     });
-                    
+
                     // Add event listeners for status changes
                     document.querySelectorAll('.status-select').forEach(select => {
                         select.addEventListener('change', function() {
@@ -929,6 +987,8 @@
                             });
                         });
                     });
+                } else {
+                    ordersTable.innerHTML = '<tr><td colspan="8">No orders found</td></tr>';
                 }
             });
         }
@@ -940,7 +1000,7 @@
                 const users = snapshot.val();
                 const userLoginTable = document.getElementById('userLoginTable');
                 userLoginTable.innerHTML = '';
-                
+
                 if (users) {
                     Object.entries(users).forEach(([userId, userData]) => {
                         if (userData.loginHistory) {
@@ -956,23 +1016,29 @@
                             });
                         }
                     });
+                     if (userLoginTable.innerHTML === '') {
+                         userLoginTable.innerHTML = '<tr><td colspan="4">No user login history found</td></tr>';
+                     }
+                } else {
+                    userLoginTable.innerHTML = '<tr><td colspan="4">No users found</td></tr>';
                 }
             });
         }
 
-        // Slides Data
+        // Slides Data (Fixed Image Upload)
         function loadSlidesData() {
             const slidesRef = ref(database, 'slides');
             onValue(slidesRef, (snapshot) => {
                 const slides = snapshot.val();
                 const slidesTable = document.getElementById('slidesTable');
                 slidesTable.innerHTML = '';
-                
+
                 if (slides) {
                     Object.entries(slides).forEach(([id, slide]) => {
                         const row = document.createElement('tr');
+                        // Use the stored URL from Storage
                         row.innerHTML = `
-                            <td><img src="${slide.url}" alt="Slide" style="width: 100px; height: 60px; object-fit: cover;"></td>
+                            <td><img src="${slide.url}" alt="Slide" style="width: 100px; height: 60px; object-fit: cover;" onerror="this.onerror=null; this.src='https://via.placeholder.com/100x60?text=Image+Not+Found';"></td>
                             <td>${new Date(slide.timestamp).toLocaleDateString()}</td>
                             <td>
                                 <button class="btn btn-delete" onclick="deleteSlide('${id}')">
@@ -982,42 +1048,70 @@
                         `;
                         slidesTable.appendChild(row);
                     });
+                } else {
+                     slidesTable.innerHTML = '<tr><td colspan="3">No slides found</td></tr>';
                 }
             });
-            
-            // Upload slide
-            document.getElementById('uploadSlideBtn').addEventListener('click', function() {
+
+            // Upload slide to Firebase Storage
+            document.getElementById('uploadSlideBtn').addEventListener('click', async function() {
                 const fileInput = document.getElementById('slideImage');
                 const file = fileInput.files[0];
-                
-                if (file) {
-                    // In a real app, you would upload to Firebase Storage
-                    // For this example, we'll just create a placeholder entry
+
+                if (!file) {
+                    alert('Please select an image file.');
+                    return;
+                }
+
+                try {
+                    // Create a reference to the file location in Storage
+                    const fileName = `${Date.now()}_${file.name}`;
+                    const storageReference = storageRef(storage, `slides/${fileName}`);
+
+                    // Upload the file
+                    const snapshot = await uploadBytes(storageReference, file);
+                    console.log('Slide uploaded to Storage:', snapshot);
+
+                    // Get the public download URL
+                    const downloadURL = await getDownloadURL(snapshot.ref);
+                    console.log('File available at:', downloadURL);
+
+                    // Save the URL and metadata to the Realtime Database
                     const newSlideRef = push(ref(database, 'slides'));
-                    set(newSlideRef, {
-                        url: URL.createObjectURL(file),
+                    await set(newSlideRef, {
+                        url: downloadURL, // Store the permanent URL
+                        name: file.name,
                         timestamp: new Date().toISOString()
-                    }).then(() => {
-                        fileInput.value = '';
-                        alert('Slide uploaded successfully!');
                     });
+
+                    // Reset form
+                    fileInput.value = '';
+                    document.getElementById('slidePreview').style.display = 'none';
+                    alert('Slide uploaded successfully!');
+                    // Reload data to show new slide
+                    loadSlidesData();
+
+                } catch (error) {
+                    console.error('Error uploading slide:', error);
+                    alert('Error uploading slide: ' + error.message);
                 }
             });
         }
 
-        // Menu Data
+        // Menu Data (Fixed Image Upload)
         function loadMenuData() {
             const menuRef = ref(database, 'menu');
             onValue(menuRef, (snapshot) => {
                 const menu = snapshot.val();
                 const menuTable = document.getElementById('menuTable');
                 menuTable.innerHTML = '';
-                
+
                 if (menu) {
                     Object.entries(menu).forEach(([id, item]) => {
                         const row = document.createElement('tr');
+                        // Use the stored URL from Storage
                         row.innerHTML = `
-                            <td><img src="${item.image || 'https://via.placeholder.com/60'}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover;"></td>
+                            <td><img src="${item.image || 'https://via.placeholder.com/60?text=No+Image'}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=Image+Not+Found';"></td>
                             <td>${item.name}</td>
                             <td>₹${item.price}</td>
                             <td>
@@ -1031,41 +1125,111 @@
                         `;
                         menuTable.appendChild(row);
                     });
+                } else {
+                    menuTable.innerHTML = '<tr><td colspan="4">No menu items found</td></tr>';
                 }
             });
-            
-            // Add menu item
-            document.getElementById('addItemBtn').addEventListener('click', function() {
-                const name = document.getElementById('itemName').value;
-                const price = document.getElementById('itemPrice').value;
-                
-                if (name && price) {
+
+            // Add menu item with image upload to Firebase Storage
+            document.getElementById('addItemBtn').addEventListener('click', async function() {
+                const name = document.getElementById('itemName').value.trim();
+                const price = document.getElementById('itemPrice').value.trim();
+                const fileInput = document.getElementById('itemImage');
+                const file = fileInput.files[0];
+
+                if (!name || !price) {
+                    alert('Please enter item name and price.');
+                    return;
+                }
+
+                if (!file) {
+                    alert('Please select an image file.');
+                    return;
+                }
+
+                try {
+                    // Create a reference to the file location in Storage
+                    const fileName = `${Date.now()}_${file.name}`;
+                    const storageReference = storageRef(storage, `menu_items/${fileName}`);
+
+                    // Upload the file
+                    const snapshot = await uploadBytes(storageReference, file);
+                    console.log('Menu item image uploaded to Storage:', snapshot);
+
+                    // Get the public download URL
+                    const downloadURL = await getDownloadURL(snapshot.ref);
+                    console.log('File available at:', downloadURL);
+
+                    // Save the item data (including the image URL) to the Realtime Database
                     const newItemRef = push(ref(database, 'menu'));
-                    set(newItemRef, {
+                    await set(newItemRef, {
                         name: name,
                         price: parseFloat(price),
+                        image: downloadURL, // Store the permanent URL
                         timestamp: new Date().toISOString()
-                    }).then(() => {
-                        document.getElementById('itemName').value = '';
-                        document.getElementById('itemPrice').value = '';
-                        alert('Item added successfully!');
                     });
+
+                    // Reset form
+                    document.getElementById('itemName').value = '';
+                    document.getElementById('itemPrice').value = '';
+                    fileInput.value = '';
+                    document.getElementById('itemPreview').style.display = 'none';
+                    alert('Menu item added successfully!');
+                    // Reload data to show new item
+                    loadMenuData();
+
+                } catch (error) {
+                    console.error('Error adding menu item:', error);
+                    alert('Error adding menu item: ' + error.message);
                 }
             });
         }
 
-        // Analytics Data
+        // Analytics Data (Fixed Reading Logic)
         function loadAnalyticsData() {
             const analyticsRef = ref(database, 'analytics');
             onValue(analyticsRef, (snapshot) => {
-                const analytics = snapshot.val();
-                if (analytics) {
-                    const today = new Date().toISOString().split('T')[0];
-                    const todayViews = analytics.pageViews?.[today] || 0;
-                    const totalViews = analytics.totalViews || 0;
-                    
-                    document.getElementById('todayViewsAnalytics').textContent = todayViews;
-                    document.getElementById('totalViewsAnalytics').textContent = totalViews;
+                // Get the raw data object
+                const analyticsData = snapshot.val();
+
+                // Get references to the HTML elements to update
+                const todayViewsElement = document.getElementById('todayViewsAnalytics');
+                const totalViewsElement = document.getElementById('totalViewsAnalytics');
+                const dataDisplayElement = document.getElementById('analyticsDataDisplay'); // For detailed view
+
+                // Get today's date string (YYYY-MM-DD)
+                const today = new Date().toISOString().split('T')[0];
+
+                // Check if data exists
+                if (analyticsData) {
+                    // Try to get today's views, default to 0 if not found
+                    const todayViews = (analyticsData.pageViews && analyticsData.pageViews[today]) ? analyticsData.pageViews[today] : 0;
+
+                    // Try to get total views, default to 0 if not found
+                    const totalViews = analyticsData.totalViews || 0;
+
+                    // Update the HTML elements
+                    todayViewsElement.textContent = todayViews;
+                    totalViewsElement.textContent = totalViews;
+
+                    // Display detailed data structure for debugging/viewing
+                    if (analyticsData.pageViews) {
+                        let pageViewsHtml = '<h3>Page Views by Date:</h3><ul>';
+                        for (const [date, count] of Object.entries(analyticsData.pageViews)) {
+                            pageViewsHtml += `<li>${date}: ${count} views</li>`;
+                        }
+                        pageViewsHtml += '</ul>';
+                        dataDisplayElement.innerHTML = pageViewsHtml;
+                    } else {
+                        dataDisplayElement.innerHTML = '<p>No page view data available yet.</p>';
+                    }
+
+                } else {
+                    // Handle case where 'analytics' node doesn't exist at all
+                    console.log("Analytics data not found in database.");
+                    todayViewsElement.textContent = '0';
+                    totalViewsElement.textContent = '0';
+                    dataDisplayElement.innerHTML = '<p>No analytics data found. Ensure your main website is sending analytics data.</p>';
                 }
             });
         }
@@ -1098,38 +1262,49 @@
                     </body>
                 </html>
             `);
-            
+
             // Fetch order details and populate the print window
             const orderRef = ref(database, `orders/${orderId}`);
             onValue(orderRef, (snapshot) => {
                 const order = snapshot.val();
                 if (order) {
                     const orderDetails = printWindow.document.getElementById('orderDetails');
+                    let itemsHtml = '';
+                    if (order.items) {
+                        itemsHtml = `
+                            <h2>Items</h2>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${Object.values(order.items || {}).map(item => `
+                                        <tr>
+                                            <td>${item.name}</td>
+                                            <td>${item.quantity}</td>
+                                            <td>₹${item.price * item.quantity}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                    } else {
+                        itemsHtml = '<p>No items found for this order.</p>';
+                    }
+
                     orderDetails.innerHTML = `
                         <p><strong>Date:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
                         <p><strong>Total Amount:</strong> ₹${order.amount}</p>
                         <p><strong>Status:</strong> ${order.status || 'Pending'}</p>
-                        <h2>Items</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${Object.values(order.items || {}).map(item => `
-                                    <tr>
-                                        <td>${item.name}</td>
-                                        <td>${item.quantity}</td>
-                                        <td>₹${item.price * item.quantity}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
+                        ${itemsHtml}
                     `;
                     printWindow.print();
+                } else {
+                    printWindow.document.body.innerHTML = '<p>Order not found.</p>';
                 }
             }, { onlyOnce: true });
         };
@@ -1139,6 +1314,10 @@
                 remove(ref(database, `orders/${orderId}`))
                     .then(() => {
                         alert('Order deleted successfully!');
+                        // Reload data
+                        if (document.getElementById('orders').style.display !== 'none') {
+                            loadOrdersData();
+                        }
                     })
                     .catch((error) => {
                         console.error('Error deleting order:', error);
@@ -1152,6 +1331,10 @@
                 remove(ref(database, `slides/${slideId}`))
                     .then(() => {
                         alert('Slide deleted successfully!');
+                        // Reload data
+                        if (document.getElementById('slides').style.display !== 'none') {
+                            loadSlidesData();
+                        }
                     })
                     .catch((error) => {
                         console.error('Error deleting slide:', error);
@@ -1165,6 +1348,10 @@
                 remove(ref(database, `menu/${itemId}`))
                     .then(() => {
                         alert('Menu item deleted successfully!');
+                        // Reload data
+                        if (document.getElementById('menu').style.display !== 'none') {
+                            loadMenuData();
+                        }
                     })
                     .catch((error) => {
                         console.error('Error deleting menu item:', error);
