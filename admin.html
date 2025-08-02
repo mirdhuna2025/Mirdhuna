@@ -229,6 +229,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            margin: 2px;
         }
 
         .btn i {
@@ -1142,30 +1143,36 @@
                     return;
                 }
 
-                if (!file) {
-                    alert('Please select an image file.');
-                    return;
+                let imageUrl = ''; // Initialize image URL
+
+                if (file) {
+                    try {
+                        // Create a reference to the file location in Storage
+                        const fileName = `${Date.now()}_${file.name}`;
+                        const storageReference = storageRef(storage, `menu_items/${fileName}`);
+
+                        // Upload the file
+                        const snapshot = await uploadBytes(storageReference, file);
+                        console.log('Menu item image uploaded to Storage:', snapshot);
+
+                        // Get the public download URL
+                        imageUrl = await getDownloadURL(snapshot.ref);
+                        console.log('File available at:', imageUrl);
+
+                    } catch (error) {
+                        console.error('Error uploading menu item image:', error);
+                        alert('Error uploading image: ' + error.message);
+                        return; // Stop if image upload fails
+                    }
                 }
 
                 try {
-                    // Create a reference to the file location in Storage
-                    const fileName = `${Date.now()}_${file.name}`;
-                    const storageReference = storageRef(storage, `menu_items/${fileName}`);
-
-                    // Upload the file
-                    const snapshot = await uploadBytes(storageReference, file);
-                    console.log('Menu item image uploaded to Storage:', snapshot);
-
-                    // Get the public download URL
-                    const downloadURL = await getDownloadURL(snapshot.ref);
-                    console.log('File available at:', downloadURL);
-
                     // Save the item data (including the image URL) to the Realtime Database
                     const newItemRef = push(ref(database, 'menu'));
                     await set(newItemRef, {
                         name: name,
                         price: parseFloat(price),
-                        image: downloadURL, // Store the permanent URL
+                        image: imageUrl, // Store the permanent URL (can be empty string if no file)
                         timestamp: new Date().toISOString()
                     });
 
@@ -1369,4 +1376,4 @@
         loadDashboardData();
     </script>
 </body>
-</html>
+    </html>
