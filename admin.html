@@ -589,6 +589,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-container">
+                                <!-- Updated table header to include Location -->
                                 <table>
                                     <thead>
                                         <tr>
@@ -596,6 +597,7 @@
                                             <th>Login Time</th>
                                             <th>IP Address</th>
                                             <th>Device</th>
+                                            <th>Location</th> <!-- Added Location column header -->
                                         </tr>
                                     </thead>
                                     <tbody id="userLoginTable">
@@ -1019,38 +1021,62 @@
                 });
             }
 
-            // User Login Data
+            // User Login Data (Updated to handle Location)
             function loadUserLoginData() {
                 console.log("Loading User Login data...");
+                // Assuming user login history is stored under /users/$userId/loginHistory
                 const usersRef = ref(database, 'users');
                 onValue(usersRef, (snapshot) => {
                     const users = snapshot.val();
                     const userLoginTable = document.getElementById('userLoginTable');
-                    userLoginTable.innerHTML = '';
+                    userLoginTable.innerHTML = ''; // Clear existing data
 
                     if (users) {
+                        let hasLoginData = false;
                         Object.entries(users).forEach(([userId, userData]) => {
-                            if (userData?.loginHistory) {
-                                Object.values(userData.loginHistory).forEach(login => {
+                            // Check if loginHistory exists for this user
+                            if (userData && userData.loginHistory) {
+                                hasLoginData = true;
+                                Object.entries(userData.loginHistory).forEach(([loginId, loginDetails]) => {
                                     const row = document.createElement('tr');
+                                    // Format timestamp if it exists
+                                    let formattedTime = 'N/A';
+                                    if (loginDetails.timestamp) {
+                                        try {
+                                            formattedTime = new Date(loginDetails.timestamp).toLocaleString();
+                                        } catch (e) {
+                                            console.warn(`Could not format timestamp for user ${userId}, login ${loginId}:`, loginDetails.timestamp);
+                                            formattedTime = loginDetails.timestamp.toString(); // Fallback to raw string
+                                        }
+                                    }
+
+                                    // Create table row with Location column
                                     row.innerHTML = `
                                         <td>${userId}</td>
-                                        <td>${new Date(login.timestamp).toLocaleString()}</td>
-                                        <td>${login.ip || 'N/A'}</td>
-                                        <td>${login.device || 'N/A'}</td>
+                                        <td>${formattedTime}</td>
+                                        <td>${loginDetails.ip || 'N/A'}</td>
+                                        <td>${loginDetails.device || 'N/A'}</td>
+                                        <td>${loginDetails.location || 'N/A'}</td> <!-- Added Location column -->
                                     `;
                                     userLoginTable.appendChild(row);
                                 });
                             }
                         });
-                         if (userLoginTable.innerHTML === '') {
-                             userLoginTable.innerHTML = '<tr><td colspan="4">No user login history found</td></tr>';
-                         }
+                        if (!hasLoginData) {
+                             userLoginTable.innerHTML = '<tr><td colspan="5">No user login history found</td></tr>';
+                        }
                     } else {
-                        userLoginTable.innerHTML = '<tr><td colspan="4">No users found</td></tr>';
+                        userLoginTable.innerHTML = '<tr><td colspan="5">No users found</td></tr>';
+                    }
+                }, (error) => {
+                    console.error("Error loading user login data:", error);
+                    const userLoginTable = document.getElementById('userLoginTable');
+                    if (userLoginTable) {
+                        userLoginTable.innerHTML = `<tr><td colspan="5">Error loading data: ${error.message}</td></tr>`;
                     }
                 });
             }
+
 
             // Slides Data (Fixed Image Upload)
             function loadSlidesData() {
@@ -1185,7 +1211,7 @@
                         const nameInput = document.getElementById('itemName');
                         const priceInput = document.getElementById('itemPrice');
                         const fileInput = document.getElementById('itemImage');
-                        
+
                         const name = nameInput?.value.trim();
                         const price = priceInput?.value.trim();
                         const file = fileInput?.files[0];
@@ -1451,4 +1477,4 @@
         console.log("Script module loaded. Waiting for DOMContentLoaded...");
     </script>
 </body>
-</html>
+    </html>
