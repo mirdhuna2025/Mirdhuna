@@ -757,11 +757,11 @@
         const database = getDatabase(app);
         // Initialize Firebase Storage
         const storage = getStorage(app);
-        console.log("Firebase initialized.");
+        console.log("Firebase initialized successfully.");
 
         // --- DOMContentLoaded Event Listener ---
         document.addEventListener('DOMContentLoaded', function () {
-            console.log("DOM fully loaded and parsed.");
+            console.log("DOM fully loaded and parsed. Setting up Admin Panel...");
 
             // Authentication Elements
             const correctPassword = "Sanu.0000";
@@ -782,7 +782,7 @@
             loginBtn.addEventListener('click', function() {
                 console.log("Login button clicked.");
                 if (adminPassword.value === correctPassword) {
-                    console.log("Password correct.");
+                    console.log("Password correct. Logging in...");
                     loginContainer.style.display = 'none';
                     mainContainer.classList.remove('blur-content');
                     localStorage.setItem('adminLoggedIn', 'true');
@@ -824,34 +824,34 @@
             });
 
             // Add preview functionality for images
-            document.getElementById('slideImage').addEventListener('change', function(event) {
+            document.getElementById('slideImage')?.addEventListener('change', function(event) {
                 console.log("Slide image file selected.");
                 const file = event.target.files[0];
                 const preview = document.getElementById('slidePreview');
-                if (file) {
+                if (file && preview) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         preview.src = e.target.result;
                         preview.style.display = 'block';
                     };
                     reader.readAsDataURL(file);
-                } else {
+                } else if (preview) {
                     preview.style.display = 'none';
                 }
             });
 
-            document.getElementById('itemImage').addEventListener('change', function(event) {
+            document.getElementById('itemImage')?.addEventListener('change', function(event) {
                 console.log("Menu item image file selected.");
                 const file = event.target.files[0];
                 const preview = document.getElementById('itemPreview');
-                if (file) {
+                if (file && preview) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         preview.src = e.target.result;
                         preview.style.display = 'block';
                     };
                     reader.readAsDataURL(file);
-                } else {
+                } else if (preview) {
                     preview.style.display = 'none';
                 }
             });
@@ -880,6 +880,8 @@
                     case 'analytics':
                         loadAnalyticsData();
                         break;
+                    default:
+                        console.warn(`Unknown section: ${section}`);
                 }
             }
 
@@ -1005,6 +1007,9 @@
                                 console.log(`Updating order ${orderId} status to ${newStatus}`);
                                 update(ref(database, `orders/${orderId}`), {
                                     status: newStatus
+                                }).catch(error => {
+                                    console.error("Error updating order status:", error);
+                                    alert("Failed to update order status: " + error.message);
                                 });
                             });
                         });
@@ -1025,7 +1030,7 @@
 
                     if (users) {
                         Object.entries(users).forEach(([userId, userData]) => {
-                            if (userData.loginHistory) {
+                            if (userData?.loginHistory) {
                                 Object.values(userData.loginHistory).forEach(login => {
                                     const row = document.createElement('tr');
                                     row.innerHTML = `
@@ -1080,10 +1085,12 @@
                 // Ensure the button exists before adding the listener
                 const uploadSlideBtn = document.getElementById('uploadSlideBtn');
                 if (uploadSlideBtn) {
-                    uploadSlideBtn.addEventListener('click', async function() {
+                    console.log("Setting up Upload Slide button listener.");
+                    uploadSlideBtn.addEventListener('click', async function(event) {
+                        event.preventDefault(); // Prevent any default form submission
                         console.log("Upload Slide button clicked.");
                         const fileInput = document.getElementById('slideImage');
-                        const file = fileInput.files[0];
+                        const file = fileInput?.files[0];
 
                         if (!file) {
                             alert('Please select an image file.');
@@ -1097,36 +1104,40 @@
                             console.log(`Preparing to upload slide: ${fileName}`);
 
                             // Upload the file
+                            console.log("Starting file upload to Firebase Storage...");
                             const snapshot = await uploadBytes(storageReference, file);
-                            console.log('Slide uploaded to Storage:', snapshot);
+                            console.log('Slide uploaded to Storage successfully:', snapshot);
 
                             // Get the public download URL
+                            console.log("Getting download URL...");
                             const downloadURL = await getDownloadURL(snapshot.ref);
                             console.log('Slide File available at:', downloadURL);
 
                             // Save the URL and metadata to the Realtime Database
+                            console.log("Saving slide data to Realtime Database...");
                             const newSlideRef = push(ref(database, 'slides'));
                             await set(newSlideRef, {
                                 url: downloadURL, // Store the permanent URL
                                 name: file.name,
                                 timestamp: new Date().toISOString()
                             });
-                            console.log('Slide data saved to Realtime Database.');
+                            console.log('Slide data saved to Realtime Database successfully.');
 
                             // Reset form
-                            fileInput.value = '';
-                            document.getElementById('slidePreview').style.display = 'none';
+                            if (fileInput) fileInput.value = '';
+                            const preview = document.getElementById('slidePreview');
+                            if (preview) preview.style.display = 'none';
                             alert('Slide uploaded successfully!');
                             // Reload data to show new slide
                             loadSlidesData();
 
                         } catch (error) {
-                            console.error('Error uploading slide:', error);
+                            console.error('Error in slide upload process:', error);
                             alert('Error uploading slide: ' + error.message);
                         }
                     });
                 } else {
-                    console.error("Upload Slide button not found in DOM.");
+                    console.error("CRITICAL ERROR: Upload Slide button (id='uploadSlideBtn') not found in DOM. Upload functionality will not work.");
                 }
             }
 
@@ -1167,12 +1178,17 @@
                 // Ensure the button exists before adding the listener
                 const addItemBtn = document.getElementById('addItemBtn');
                 if (addItemBtn) {
-                    addItemBtn.addEventListener('click', async function() {
+                    console.log("Setting up Add Item button listener.");
+                    addItemBtn.addEventListener('click', async function(event) {
+                        event.preventDefault(); // Prevent any default form submission
                         console.log("Add Item button clicked.");
-                        const name = document.getElementById('itemName').value.trim();
-                        const price = document.getElementById('itemPrice').value.trim();
+                        const nameInput = document.getElementById('itemName');
+                        const priceInput = document.getElementById('itemPrice');
                         const fileInput = document.getElementById('itemImage');
-                        const file = fileInput.files[0];
+                        
+                        const name = nameInput?.value.trim();
+                        const price = priceInput?.value.trim();
+                        const file = fileInput?.files[0];
 
                         if (!name || !price) {
                             alert('Please enter item name and price.');
@@ -1189,15 +1205,17 @@
                                 console.log(`Preparing to upload menu item image: ${fileName}`);
 
                                 // Upload the file
+                                console.log("Starting file upload to Firebase Storage...");
                                 const snapshot = await uploadBytes(storageReference, file);
-                                console.log('Menu item image uploaded to Storage:', snapshot);
+                                console.log('Menu item image uploaded to Storage successfully:', snapshot);
 
                                 // Get the public download URL
+                                console.log("Getting download URL...");
                                 imageUrl = await getDownloadURL(snapshot.ref);
                                 console.log('Menu item File available at:', imageUrl);
 
                             } catch (error) {
-                                console.error('Error uploading menu item image:', error);
+                                console.error('Error in menu item image upload process:', error);
                                 alert('Error uploading image: ' + error.message);
                                 return; // Stop if image upload fails
                             }
@@ -1207,6 +1225,7 @@
 
                         try {
                             // Save the item data (including the image URL) to the Realtime Database
+                            console.log("Saving menu item data to Realtime Database...");
                             const newItemRef = push(ref(database, 'menu'));
                             await set(newItemRef, {
                                 name: name,
@@ -1214,24 +1233,25 @@
                                 image: imageUrl, // Store the permanent URL (can be empty string if no file)
                                 timestamp: new Date().toISOString()
                             });
-                            console.log('Menu item data saved to Realtime Database.');
+                            console.log('Menu item data saved to Realtime Database successfully.');
 
                             // Reset form
-                            document.getElementById('itemName').value = '';
-                            document.getElementById('itemPrice').value = '';
-                            fileInput.value = '';
-                            document.getElementById('itemPreview').style.display = 'none';
+                            if (nameInput) nameInput.value = '';
+                            if (priceInput) priceInput.value = '';
+                            if (fileInput) fileInput.value = '';
+                            const preview = document.getElementById('itemPreview');
+                            if (preview) preview.style.display = 'none';
                             alert('Menu item added successfully!');
                             // Reload data to show new item
                             loadMenuData();
 
                         } catch (error) {
-                            console.error('Error adding menu item:', error);
+                            console.error('Error in menu item save process:', error);
                             alert('Error adding menu item: ' + error.message);
                         }
                     });
                 } else {
-                     console.error("Add Item button not found in DOM.");
+                     console.error("CRITICAL ERROR: Add Item button (id='addItemBtn') not found in DOM. Add item functionality will not work.");
                 }
             }
 
@@ -1260,27 +1280,29 @@
                         const totalViews = analyticsData.totalViews || 0;
 
                         // Update the HTML elements
-                        todayViewsElement.textContent = todayViews;
-                        totalViewsElement.textContent = totalViews;
+                        if (todayViewsElement) todayViewsElement.textContent = todayViews;
+                        if (totalViewsElement) totalViewsElement.textContent = totalViews;
 
                         // Display detailed data structure for debugging/viewing
-                        if (analyticsData.pageViews) {
-                            let pageViewsHtml = '<h3>Page Views by Date:</h3><ul>';
-                            for (const [date, count] of Object.entries(analyticsData.pageViews)) {
-                                pageViewsHtml += `<li>${date}: ${count} views</li>`;
+                        if (dataDisplayElement) {
+                            if (analyticsData.pageViews) {
+                                let pageViewsHtml = '<h3>Page Views by Date:</h3><ul>';
+                                for (const [date, count] of Object.entries(analyticsData.pageViews)) {
+                                    pageViewsHtml += `<li>${date}: ${count} views</li>`;
+                                }
+                                pageViewsHtml += '</ul>';
+                                dataDisplayElement.innerHTML = pageViewsHtml;
+                            } else {
+                                dataDisplayElement.innerHTML = '<p>No page view data available yet.</p>';
                             }
-                            pageViewsHtml += '</ul>';
-                            dataDisplayElement.innerHTML = pageViewsHtml;
-                        } else {
-                            dataDisplayElement.innerHTML = '<p>No page view data available yet.</p>';
                         }
 
                     } else {
                         // Handle case where 'analytics' node doesn't exist at all
                         console.log("Analytics data not found in database.");
-                        todayViewsElement.textContent = '0';
-                        totalViewsElement.textContent = '0';
-                        dataDisplayElement.innerHTML = '<p>No analytics data found. Ensure your main website is sending analytics data.</p>';
+                        if (todayViewsElement) todayViewsElement.textContent = '0';
+                        if (totalViewsElement) totalViewsElement.textContent = '0';
+                        if (dataDisplayElement) dataDisplayElement.innerHTML = '<p>No analytics data found. Ensure your main website is sending analytics data.</p>';
                     }
                 });
             }
@@ -1368,7 +1390,7 @@
                         .then(() => {
                             alert('Order deleted successfully!');
                             // Reload data
-                            if (document.getElementById('orders').style.display !== 'none') {
+                            if (document.getElementById('orders')?.style.display !== 'none') {
                                 loadOrdersData();
                             }
                         })
@@ -1386,7 +1408,7 @@
                         .then(() => {
                             alert('Slide deleted successfully!');
                             // Reload data
-                            if (document.getElementById('slides').style.display !== 'none') {
+                            if (document.getElementById('slides')?.style.display !== 'none') {
                                 loadSlidesData();
                             }
                         })
@@ -1404,7 +1426,7 @@
                         .then(() => {
                             alert('Menu item deleted successfully!');
                             // Reload data
-                            if (document.getElementById('menu').style.display !== 'none') {
+                            if (document.getElementById('menu')?.style.display !== 'none') {
                                 loadMenuData();
                             }
                         })
@@ -1426,6 +1448,7 @@
             loadDashboardData();
 
         }); // End of DOMContentLoaded
+        console.log("Script module loaded. Waiting for DOMContentLoaded...");
     </script>
 </body>
 </html>
