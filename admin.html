@@ -751,629 +751,681 @@
         };
 
         // Initialize Firebase
+        console.log("Initializing Firebase...");
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const database = getDatabase(app);
         // Initialize Firebase Storage
         const storage = getStorage(app);
+        console.log("Firebase initialized.");
 
-        // Authentication
-        const correctPassword = "Sanu.0000";
-        const loginContainer = document.getElementById('loginContainer');
-        const mainContainer = document.getElementById('mainContainer');
-        const adminPassword = document.getElementById('adminPassword');
-        const loginBtn = document.getElementById('loginBtn');
-        const errorMessage = document.getElementById('errorMessage');
-        const logoutBtn = document.getElementById('logoutBtn');
+        // --- DOMContentLoaded Event Listener ---
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("DOM fully loaded and parsed.");
 
-        // Check if already logged in
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
-            loginContainer.style.display = 'none';
-            mainContainer.classList.remove('blur-content');
-        }
+            // Authentication Elements
+            const correctPassword = "Sanu.0000";
+            const loginContainer = document.getElementById('loginContainer');
+            const mainContainer = document.getElementById('mainContainer');
+            const adminPassword = document.getElementById('adminPassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const logoutBtn = document.getElementById('logoutBtn');
 
-        loginBtn.addEventListener('click', function() {
-            if (adminPassword.value === correctPassword) {
+            // Check if already logged in
+            if (localStorage.getItem('adminLoggedIn') === 'true') {
+                console.log("User already logged in.");
                 loginContainer.style.display = 'none';
                 mainContainer.classList.remove('blur-content');
-                localStorage.setItem('adminLoggedIn', 'true');
-            } else {
-                errorMessage.style.display = 'block';
             }
-        });
 
-        logoutBtn.addEventListener('click', function() {
-            localStorage.removeItem('adminLoggedIn');
-            location.reload();
-        });
-
-        // Navigation
-        const navLinks = document.querySelectorAll('.sidebar-menu a');
-        const sections = document.querySelectorAll('.section');
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                // Remove active class from all links and sections
-                navLinks.forEach(l => l.classList.remove('active'));
-                sections.forEach(s => s.style.display = 'none');
-
-                // Add active class to clicked link
-                this.classList.add('active');
-
-                // Show corresponding section
-                const target = this.getAttribute('data-target');
-                document.getElementById(target).style.display = 'block';
-
-                // Load data for the section
-                loadDataForSection(target);
-            });
-        });
-
-        // Add preview functionality for images
-        document.getElementById('slideImage').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('slidePreview');
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.style.display = 'none';
-            }
-        });
-
-        document.getElementById('itemImage').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('itemPreview');
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.style.display = 'none';
-            }
-        });
-
-        // Load data for each section
-        function loadDataForSection(section) {
-            switch(section) {
-                case 'dashboard':
-                    loadDashboardData();
-                    break;
-                case 'orders':
-                    loadOrdersData();
-                    break;
-                case 'users':
-                    loadUserLoginData();
-                    break;
-                case 'slides':
-                    loadSlidesData();
-                    break;
-                case 'menu':
-                    loadMenuData();
-                    break;
-                case 'analytics':
-                    loadAnalyticsData();
-                    break;
-            }
-        }
-
-        // Dashboard Data
-        function loadDashboardData() {
-            // Load total orders
-            const ordersRef = ref(database, 'orders');
-            onValue(ordersRef, (snapshot) => {
-                const orders = snapshot.val();
-                if (orders) {
-                    const orderCount = Object.keys(orders).length;
-                    document.getElementById('totalOrders').textContent = orderCount;
-
-                    // Calculate total revenue
-                    let totalRevenue = 0;
-                    Object.values(orders).forEach(order => {
-                        totalRevenue += order.amount || 0;
-                    });
-                    document.getElementById('totalRevenue').textContent = `₹${totalRevenue}`;
-
-                    // Populate recent orders
-                    const recentOrdersTable = document.getElementById('recentOrdersTable');
-                    recentOrdersTable.innerHTML = '';
-
-                    // Get last 5 orders
-                    const orderEntries = Object.entries(orders);
-                    const recentOrders = orderEntries.slice(-5);
-
-                    recentOrders.forEach(([id, order]) => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${id}</td>
-                            <td>${new Date(order.timestamp).toLocaleString()}</td>
-                            <td>${order.items ? Object.keys(order.items).length : 0} items</td>
-                            <td>₹${order.amount || 0}</td>
-                            <td><span class="status ${order.status || 'pending'}">${order.status || 'Pending'}</span></td>
-                        `;
-                        recentOrdersTable.appendChild(row);
-                    });
+            loginBtn.addEventListener('click', function() {
+                console.log("Login button clicked.");
+                if (adminPassword.value === correctPassword) {
+                    console.log("Password correct.");
+                    loginContainer.style.display = 'none';
+                    mainContainer.classList.remove('blur-content');
+                    localStorage.setItem('adminLoggedIn', 'true');
                 } else {
-                     document.getElementById('totalOrders').textContent = '0';
-                     document.getElementById('totalRevenue').textContent = '₹0';
-                     document.getElementById('recentOrdersTable').innerHTML = '<tr><td colspan="5">No orders found</td></tr>';
+                    console.log("Password incorrect.");
+                    errorMessage.style.display = 'block';
                 }
             });
 
-            // Load today's views
-            const analyticsRef = ref(database, 'analytics');
-            onValue(analyticsRef, (snapshot) => {
-                const analyticsData = snapshot.val();
-                const today = new Date().toISOString().split('T')[0];
-                let todayViews = 0;
-
-                if (analyticsData && analyticsData.pageViews && analyticsData.pageViews[today] !== undefined) {
-                    todayViews = analyticsData.pageViews[today];
-                }
-                document.getElementById('todayViews').textContent = todayViews;
+            logoutBtn.addEventListener('click', function() {
+                console.log("Logout button clicked.");
+                localStorage.removeItem('adminLoggedIn');
+                location.reload();
             });
 
-            // Load total users
-            const usersRef = ref(database, 'users');
-            onValue(usersRef, (snapshot) => {
-                const users = snapshot.val();
-                if (users) {
-                    const userCount = Object.keys(users).length;
-                    document.getElementById('totalUsers').textContent = userCount;
+            // Navigation
+            const navLinks = document.querySelectorAll('.sidebar-menu a');
+            const sections = document.querySelectorAll('.section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log(`Navigation link clicked: ${this.getAttribute('data-target')}`);
+
+                    // Remove active class from all links and sections
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    sections.forEach(s => s.style.display = 'none');
+
+                    // Add active class to clicked link
+                    this.classList.add('active');
+
+                    // Show corresponding section
+                    const target = this.getAttribute('data-target');
+                    document.getElementById(target).style.display = 'block';
+
+                    // Load data for the section
+                    loadDataForSection(target);
+                });
+            });
+
+            // Add preview functionality for images
+            document.getElementById('slideImage').addEventListener('change', function(event) {
+                console.log("Slide image file selected.");
+                const file = event.target.files[0];
+                const preview = document.getElementById('slidePreview');
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
                 } else {
-                    document.getElementById('totalUsers').textContent = '0';
+                    preview.style.display = 'none';
                 }
             });
-        }
 
-        // Orders Data
-        function loadOrdersData() {
-            const ordersRef = ref(database, 'orders');
-            onValue(ordersRef, (snapshot) => {
-                const orders = snapshot.val();
-                const ordersTable = document.getElementById('ordersTable');
-                ordersTable.innerHTML = '';
+            document.getElementById('itemImage').addEventListener('change', function(event) {
+                console.log("Menu item image file selected.");
+                const file = event.target.files[0];
+                const preview = document.getElementById('itemPreview');
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
 
-                if (orders) {
-                    Object.entries(orders).forEach(([id, order]) => {
-                        const row = document.createElement('tr');
-                        const itemsCount = order.items ? Object.keys(order.items).length : 0;
-                        let itemsList = '';
-                        if (order.items) {
-                            itemsList = Object.values(order.items).map(item => item.name).join(', ');
-                        }
+            // --- Firebase Interaction Functions ---
 
-                        row.innerHTML = `
-                            <td>${id}</td>
-                            <td>${new Date(order.timestamp).toLocaleString()}</td>
-                            <td>${itemsList}</td>
-                            <td>${itemsCount}</td>
-                            <td>₹${order.amount || 0}</td>
-                            <td>${order.location || 'N/A'}</td>
-                            <td>
-                                <select class="status-select" data-order-id="${id}">
-                                    <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                                    <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
-                                    <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button class="btn btn-print" onclick="printOrder('${id}')">
-                                    <i class="fas fa-print"></i>
-                                </button>
-                                <button class="btn btn-delete" onclick="deleteOrder('${id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        `;
-                        ordersTable.appendChild(row);
-                    });
+            // Load data for each section
+            function loadDataForSection(section) {
+                console.log(`Loading data for section: ${section}`);
+                switch(section) {
+                    case 'dashboard':
+                        loadDashboardData();
+                        break;
+                    case 'orders':
+                        loadOrdersData();
+                        break;
+                    case 'users':
+                        loadUserLoginData();
+                        break;
+                    case 'slides':
+                        loadSlidesData();
+                        break;
+                    case 'menu':
+                        loadMenuData();
+                        break;
+                    case 'analytics':
+                        loadAnalyticsData();
+                        break;
+                }
+            }
 
-                    // Add event listeners for status changes
-                    document.querySelectorAll('.status-select').forEach(select => {
-                        select.addEventListener('change', function() {
-                            const orderId = this.getAttribute('data-order-id');
-                            const newStatus = this.value;
-                            update(ref(database, `orders/${orderId}`), {
-                                status: newStatus
+            // Dashboard Data
+            function loadDashboardData() {
+                console.log("Loading Dashboard data...");
+                // Load total orders
+                const ordersRef = ref(database, 'orders');
+                onValue(ordersRef, (snapshot) => {
+                    const orders = snapshot.val();
+                    if (orders) {
+                        const orderCount = Object.keys(orders).length;
+                        document.getElementById('totalOrders').textContent = orderCount;
+
+                        // Calculate total revenue
+                        let totalRevenue = 0;
+                        Object.values(orders).forEach(order => {
+                            totalRevenue += order.amount || 0;
+                        });
+                        document.getElementById('totalRevenue').textContent = `₹${totalRevenue}`;
+
+                        // Populate recent orders
+                        const recentOrdersTable = document.getElementById('recentOrdersTable');
+                        recentOrdersTable.innerHTML = '';
+
+                        // Get last 5 orders
+                        const orderEntries = Object.entries(orders);
+                        const recentOrders = orderEntries.slice(-5);
+
+                        recentOrders.forEach(([id, order]) => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${id}</td>
+                                <td>${new Date(order.timestamp).toLocaleString()}</td>
+                                <td>${order.items ? Object.keys(order.items).length : 0} items</td>
+                                <td>₹${order.amount || 0}</td>
+                                <td><span class="status ${order.status || 'pending'}">${order.status || 'Pending'}</span></td>
+                            `;
+                            recentOrdersTable.appendChild(row);
+                        });
+                    } else {
+                         document.getElementById('totalOrders').textContent = '0';
+                         document.getElementById('totalRevenue').textContent = '₹0';
+                         document.getElementById('recentOrdersTable').innerHTML = '<tr><td colspan="5">No orders found</td></tr>';
+                    }
+                });
+
+                // Load today's views
+                const analyticsRef = ref(database, 'analytics');
+                onValue(analyticsRef, (snapshot) => {
+                    const analyticsData = snapshot.val();
+                    const today = new Date().toISOString().split('T')[0];
+                    let todayViews = 0;
+
+                    if (analyticsData && analyticsData.pageViews && analyticsData.pageViews[today] !== undefined) {
+                        todayViews = analyticsData.pageViews[today];
+                    }
+                    document.getElementById('todayViews').textContent = todayViews;
+                });
+
+                // Load total users
+                const usersRef = ref(database, 'users');
+                onValue(usersRef, (snapshot) => {
+                    const users = snapshot.val();
+                    if (users) {
+                        const userCount = Object.keys(users).length;
+                        document.getElementById('totalUsers').textContent = userCount;
+                    } else {
+                        document.getElementById('totalUsers').textContent = '0';
+                    }
+                });
+            }
+
+            // Orders Data
+            function loadOrdersData() {
+                console.log("Loading Orders data...");
+                const ordersRef = ref(database, 'orders');
+                onValue(ordersRef, (snapshot) => {
+                    const orders = snapshot.val();
+                    const ordersTable = document.getElementById('ordersTable');
+                    ordersTable.innerHTML = '';
+
+                    if (orders) {
+                        Object.entries(orders).forEach(([id, order]) => {
+                            const row = document.createElement('tr');
+                            const itemsCount = order.items ? Object.keys(order.items).length : 0;
+                            let itemsList = '';
+                            if (order.items) {
+                                itemsList = Object.values(order.items).map(item => item.name).join(', ');
+                            }
+
+                            row.innerHTML = `
+                                <td>${id}</td>
+                                <td>${new Date(order.timestamp).toLocaleString()}</td>
+                                <td>${itemsList}</td>
+                                <td>${itemsCount}</td>
+                                <td>₹${order.amount || 0}</td>
+                                <td>${order.location || 'N/A'}</td>
+                                <td>
+                                    <select class="status-select" data-order-id="${id}">
+                                        <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                        <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                        <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn btn-print" onclick="printOrder('${id}')">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                    <button class="btn btn-delete" onclick="deleteOrder('${id}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            `;
+                            ordersTable.appendChild(row);
+                        });
+
+                        // Add event listeners for status changes
+                        document.querySelectorAll('.status-select').forEach(select => {
+                            select.addEventListener('change', function() {
+                                const orderId = this.getAttribute('data-order-id');
+                                const newStatus = this.value;
+                                console.log(`Updating order ${orderId} status to ${newStatus}`);
+                                update(ref(database, `orders/${orderId}`), {
+                                    status: newStatus
+                                });
                             });
                         });
-                    });
-                } else {
-                    ordersTable.innerHTML = '<tr><td colspan="8">No orders found</td></tr>';
-                }
-            });
-        }
+                    } else {
+                        ordersTable.innerHTML = '<tr><td colspan="8">No orders found</td></tr>';
+                    }
+                });
+            }
 
-        // User Login Data
-        function loadUserLoginData() {
-            const usersRef = ref(database, 'users');
-            onValue(usersRef, (snapshot) => {
-                const users = snapshot.val();
-                const userLoginTable = document.getElementById('userLoginTable');
-                userLoginTable.innerHTML = '';
+            // User Login Data
+            function loadUserLoginData() {
+                console.log("Loading User Login data...");
+                const usersRef = ref(database, 'users');
+                onValue(usersRef, (snapshot) => {
+                    const users = snapshot.val();
+                    const userLoginTable = document.getElementById('userLoginTable');
+                    userLoginTable.innerHTML = '';
 
-                if (users) {
-                    Object.entries(users).forEach(([userId, userData]) => {
-                        if (userData.loginHistory) {
-                            Object.values(userData.loginHistory).forEach(login => {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td>${userId}</td>
-                                    <td>${new Date(login.timestamp).toLocaleString()}</td>
-                                    <td>${login.ip || 'N/A'}</td>
-                                    <td>${login.device || 'N/A'}</td>
-                                `;
-                                userLoginTable.appendChild(row);
+                    if (users) {
+                        Object.entries(users).forEach(([userId, userData]) => {
+                            if (userData.loginHistory) {
+                                Object.values(userData.loginHistory).forEach(login => {
+                                    const row = document.createElement('tr');
+                                    row.innerHTML = `
+                                        <td>${userId}</td>
+                                        <td>${new Date(login.timestamp).toLocaleString()}</td>
+                                        <td>${login.ip || 'N/A'}</td>
+                                        <td>${login.device || 'N/A'}</td>
+                                    `;
+                                    userLoginTable.appendChild(row);
+                                });
+                            }
+                        });
+                         if (userLoginTable.innerHTML === '') {
+                             userLoginTable.innerHTML = '<tr><td colspan="4">No user login history found</td></tr>';
+                         }
+                    } else {
+                        userLoginTable.innerHTML = '<tr><td colspan="4">No users found</td></tr>';
+                    }
+                });
+            }
+
+            // Slides Data (Fixed Image Upload)
+            function loadSlidesData() {
+                console.log("Loading Slides data...");
+                const slidesRef = ref(database, 'slides');
+                onValue(slidesRef, (snapshot) => {
+                    const slides = snapshot.val();
+                    const slidesTable = document.getElementById('slidesTable');
+                    slidesTable.innerHTML = '';
+
+                    if (slides) {
+                        Object.entries(slides).forEach(([id, slide]) => {
+                            const row = document.createElement('tr');
+                            // Use the stored URL from Storage
+                            row.innerHTML = `
+                                <td><img src="${slide.url}" alt="Slide" style="width: 100px; height: 60px; object-fit: cover;" onerror="this.onerror=null; this.src='https://via.placeholder.com/100x60?text=Image+Not+Found';"></td>
+                                <td>${new Date(slide.timestamp).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn btn-delete" onclick="deleteSlide('${id}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            `;
+                            slidesTable.appendChild(row);
+                        });
+                    } else {
+                         slidesTable.innerHTML = '<tr><td colspan="3">No slides found</td></tr>';
+                    }
+                });
+
+                // --- Upload slide to Firebase Storage ---
+                // Ensure the button exists before adding the listener
+                const uploadSlideBtn = document.getElementById('uploadSlideBtn');
+                if (uploadSlideBtn) {
+                    uploadSlideBtn.addEventListener('click', async function() {
+                        console.log("Upload Slide button clicked.");
+                        const fileInput = document.getElementById('slideImage');
+                        const file = fileInput.files[0];
+
+                        if (!file) {
+                            alert('Please select an image file.');
+                            return;
+                        }
+
+                        try {
+                            // Create a reference to the file location in Storage
+                            const fileName = `${Date.now()}_${file.name}`;
+                            const storageReference = storageRef(storage, `slides/${fileName}`);
+                            console.log(`Preparing to upload slide: ${fileName}`);
+
+                            // Upload the file
+                            const snapshot = await uploadBytes(storageReference, file);
+                            console.log('Slide uploaded to Storage:', snapshot);
+
+                            // Get the public download URL
+                            const downloadURL = await getDownloadURL(snapshot.ref);
+                            console.log('Slide File available at:', downloadURL);
+
+                            // Save the URL and metadata to the Realtime Database
+                            const newSlideRef = push(ref(database, 'slides'));
+                            await set(newSlideRef, {
+                                url: downloadURL, // Store the permanent URL
+                                name: file.name,
+                                timestamp: new Date().toISOString()
                             });
-                        }
-                    });
-                     if (userLoginTable.innerHTML === '') {
-                         userLoginTable.innerHTML = '<tr><td colspan="4">No user login history found</td></tr>';
-                     }
-                } else {
-                    userLoginTable.innerHTML = '<tr><td colspan="4">No users found</td></tr>';
-                }
-            });
-        }
+                            console.log('Slide data saved to Realtime Database.');
 
-        // Slides Data (Fixed Image Upload)
-        function loadSlidesData() {
-            const slidesRef = ref(database, 'slides');
-            onValue(slidesRef, (snapshot) => {
-                const slides = snapshot.val();
-                const slidesTable = document.getElementById('slidesTable');
-                slidesTable.innerHTML = '';
-
-                if (slides) {
-                    Object.entries(slides).forEach(([id, slide]) => {
-                        const row = document.createElement('tr');
-                        // Use the stored URL from Storage
-                        row.innerHTML = `
-                            <td><img src="${slide.url}" alt="Slide" style="width: 100px; height: 60px; object-fit: cover;" onerror="this.onerror=null; this.src='https://via.placeholder.com/100x60?text=Image+Not+Found';"></td>
-                            <td>${new Date(slide.timestamp).toLocaleDateString()}</td>
-                            <td>
-                                <button class="btn btn-delete" onclick="deleteSlide('${id}')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </td>
-                        `;
-                        slidesTable.appendChild(row);
-                    });
-                } else {
-                     slidesTable.innerHTML = '<tr><td colspan="3">No slides found</td></tr>';
-                }
-            });
-
-            // Upload slide to Firebase Storage
-            document.getElementById('uploadSlideBtn').addEventListener('click', async function() {
-                const fileInput = document.getElementById('slideImage');
-                const file = fileInput.files[0];
-
-                if (!file) {
-                    alert('Please select an image file.');
-                    return;
-                }
-
-                try {
-                    // Create a reference to the file location in Storage
-                    const fileName = `${Date.now()}_${file.name}`;
-                    const storageReference = storageRef(storage, `slides/${fileName}`);
-
-                    // Upload the file
-                    const snapshot = await uploadBytes(storageReference, file);
-                    console.log('Slide uploaded to Storage:', snapshot);
-
-                    // Get the public download URL
-                    const downloadURL = await getDownloadURL(snapshot.ref);
-                    console.log('File available at:', downloadURL);
-
-                    // Save the URL and metadata to the Realtime Database
-                    const newSlideRef = push(ref(database, 'slides'));
-                    await set(newSlideRef, {
-                        url: downloadURL, // Store the permanent URL
-                        name: file.name,
-                        timestamp: new Date().toISOString()
-                    });
-
-                    // Reset form
-                    fileInput.value = '';
-                    document.getElementById('slidePreview').style.display = 'none';
-                    alert('Slide uploaded successfully!');
-                    // Reload data to show new slide
-                    loadSlidesData();
-
-                } catch (error) {
-                    console.error('Error uploading slide:', error);
-                    alert('Error uploading slide: ' + error.message);
-                }
-            });
-        }
-
-        // Menu Data (Fixed Image Upload)
-        function loadMenuData() {
-            const menuRef = ref(database, 'menu');
-            onValue(menuRef, (snapshot) => {
-                const menu = snapshot.val();
-                const menuTable = document.getElementById('menuTable');
-                menuTable.innerHTML = '';
-
-                if (menu) {
-                    Object.entries(menu).forEach(([id, item]) => {
-                        const row = document.createElement('tr');
-                        // Use the stored URL from Storage
-                        row.innerHTML = `
-                            <td><img src="${item.image || 'https://via.placeholder.com/60?text=No+Image'}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=Image+Not+Found';"></td>
-                            <td>${item.name}</td>
-                            <td>₹${item.price}</td>
-                            <td>
-                                <button class="btn btn-edit" onclick="editMenuItem('${id}')">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button class="btn btn-delete" onclick="deleteMenuItem('${id}')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </td>
-                        `;
-                        menuTable.appendChild(row);
-                    });
-                } else {
-                    menuTable.innerHTML = '<tr><td colspan="4">No menu items found</td></tr>';
-                }
-            });
-
-            // Add menu item with image upload to Firebase Storage
-            document.getElementById('addItemBtn').addEventListener('click', async function() {
-                const name = document.getElementById('itemName').value.trim();
-                const price = document.getElementById('itemPrice').value.trim();
-                const fileInput = document.getElementById('itemImage');
-                const file = fileInput.files[0];
-
-                if (!name || !price) {
-                    alert('Please enter item name and price.');
-                    return;
-                }
-
-                let imageUrl = ''; // Initialize image URL
-
-                if (file) {
-                    try {
-                        // Create a reference to the file location in Storage
-                        const fileName = `${Date.now()}_${file.name}`;
-                        const storageReference = storageRef(storage, `menu_items/${fileName}`);
-
-                        // Upload the file
-                        const snapshot = await uploadBytes(storageReference, file);
-                        console.log('Menu item image uploaded to Storage:', snapshot);
-
-                        // Get the public download URL
-                        imageUrl = await getDownloadURL(snapshot.ref);
-                        console.log('File available at:', imageUrl);
-
-                    } catch (error) {
-                        console.error('Error uploading menu item image:', error);
-                        alert('Error uploading image: ' + error.message);
-                        return; // Stop if image upload fails
-                    }
-                }
-
-                try {
-                    // Save the item data (including the image URL) to the Realtime Database
-                    const newItemRef = push(ref(database, 'menu'));
-                    await set(newItemRef, {
-                        name: name,
-                        price: parseFloat(price),
-                        image: imageUrl, // Store the permanent URL (can be empty string if no file)
-                        timestamp: new Date().toISOString()
-                    });
-
-                    // Reset form
-                    document.getElementById('itemName').value = '';
-                    document.getElementById('itemPrice').value = '';
-                    fileInput.value = '';
-                    document.getElementById('itemPreview').style.display = 'none';
-                    alert('Menu item added successfully!');
-                    // Reload data to show new item
-                    loadMenuData();
-
-                } catch (error) {
-                    console.error('Error adding menu item:', error);
-                    alert('Error adding menu item: ' + error.message);
-                }
-            });
-        }
-
-        // Analytics Data (Fixed Reading Logic)
-        function loadAnalyticsData() {
-            const analyticsRef = ref(database, 'analytics');
-            onValue(analyticsRef, (snapshot) => {
-                // Get the raw data object
-                const analyticsData = snapshot.val();
-
-                // Get references to the HTML elements to update
-                const todayViewsElement = document.getElementById('todayViewsAnalytics');
-                const totalViewsElement = document.getElementById('totalViewsAnalytics');
-                const dataDisplayElement = document.getElementById('analyticsDataDisplay'); // For detailed view
-
-                // Get today's date string (YYYY-MM-DD)
-                const today = new Date().toISOString().split('T')[0];
-
-                // Check if data exists
-                if (analyticsData) {
-                    // Try to get today's views, default to 0 if not found
-                    const todayViews = (analyticsData.pageViews && analyticsData.pageViews[today]) ? analyticsData.pageViews[today] : 0;
-
-                    // Try to get total views, default to 0 if not found
-                    const totalViews = analyticsData.totalViews || 0;
-
-                    // Update the HTML elements
-                    todayViewsElement.textContent = todayViews;
-                    totalViewsElement.textContent = totalViews;
-
-                    // Display detailed data structure for debugging/viewing
-                    if (analyticsData.pageViews) {
-                        let pageViewsHtml = '<h3>Page Views by Date:</h3><ul>';
-                        for (const [date, count] of Object.entries(analyticsData.pageViews)) {
-                            pageViewsHtml += `<li>${date}: ${count} views</li>`;
-                        }
-                        pageViewsHtml += '</ul>';
-                        dataDisplayElement.innerHTML = pageViewsHtml;
-                    } else {
-                        dataDisplayElement.innerHTML = '<p>No page view data available yet.</p>';
-                    }
-
-                } else {
-                    // Handle case where 'analytics' node doesn't exist at all
-                    console.log("Analytics data not found in database.");
-                    todayViewsElement.textContent = '0';
-                    totalViewsElement.textContent = '0';
-                    dataDisplayElement.innerHTML = '<p>No analytics data found. Ensure your main website is sending analytics data.</p>';
-                }
-            });
-        }
-
-        // Global functions for buttons
-        window.printOrder = function(orderId) {
-            // Create a printable version of the order
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>Order #${orderId}</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; }
-                            .header { text-align: center; margin-bottom: 20px; }
-                            .order-details { margin-bottom: 20px; }
-                            table { width: 100%; border-collapse: collapse; }
-                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                            th { background-color: #f2f2f2; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>Restaurant Order</h1>
-                            <p>Order ID: ${orderId}</p>
-                        </div>
-                        <div class="order-details" id="orderDetails">
-                            <!-- Order details will be populated here -->
-                        </div>
-                    </body>
-                </html>
-            `);
-
-            // Fetch order details and populate the print window
-            const orderRef = ref(database, `orders/${orderId}`);
-            onValue(orderRef, (snapshot) => {
-                const order = snapshot.val();
-                if (order) {
-                    const orderDetails = printWindow.document.getElementById('orderDetails');
-                    let itemsHtml = '';
-                    if (order.items) {
-                        itemsHtml = `
-                            <h2>Items</h2>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${Object.values(order.items || {}).map(item => `
-                                        <tr>
-                                            <td>${item.name}</td>
-                                            <td>${item.quantity}</td>
-                                            <td>₹${item.price * item.quantity}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        `;
-                    } else {
-                        itemsHtml = '<p>No items found for this order.</p>';
-                    }
-
-                    orderDetails.innerHTML = `
-                        <p><strong>Date:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
-                        <p><strong>Total Amount:</strong> ₹${order.amount}</p>
-                        <p><strong>Status:</strong> ${order.status || 'Pending'}</p>
-                        ${itemsHtml}
-                    `;
-                    printWindow.print();
-                } else {
-                    printWindow.document.body.innerHTML = '<p>Order not found.</p>';
-                }
-            }, { onlyOnce: true });
-        };
-
-        window.deleteOrder = function(orderId) {
-            if (confirm('Are you sure you want to delete this order?')) {
-                remove(ref(database, `orders/${orderId}`))
-                    .then(() => {
-                        alert('Order deleted successfully!');
-                        // Reload data
-                        if (document.getElementById('orders').style.display !== 'none') {
-                            loadOrdersData();
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error deleting order:', error);
-                        alert('Error deleting order: ' + error.message);
-                    });
-            }
-        };
-
-        window.deleteSlide = function(slideId) {
-            if (confirm('Are you sure you want to delete this slide?')) {
-                remove(ref(database, `slides/${slideId}`))
-                    .then(() => {
-                        alert('Slide deleted successfully!');
-                        // Reload data
-                        if (document.getElementById('slides').style.display !== 'none') {
+                            // Reset form
+                            fileInput.value = '';
+                            document.getElementById('slidePreview').style.display = 'none';
+                            alert('Slide uploaded successfully!');
+                            // Reload data to show new slide
                             loadSlidesData();
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error deleting slide:', error);
-                        alert('Error deleting slide: ' + error.message);
-                    });
-            }
-        };
 
-        window.deleteMenuItem = function(itemId) {
-            if (confirm('Are you sure you want to delete this menu item?')) {
-                remove(ref(database, `menu/${itemId}`))
-                    .then(() => {
-                        alert('Menu item deleted successfully!');
-                        // Reload data
-                        if (document.getElementById('menu').style.display !== 'none') {
+                        } catch (error) {
+                            console.error('Error uploading slide:', error);
+                            alert('Error uploading slide: ' + error.message);
+                        }
+                    });
+                } else {
+                    console.error("Upload Slide button not found in DOM.");
+                }
+            }
+
+            // Menu Data (Fixed Image Upload)
+            function loadMenuData() {
+                console.log("Loading Menu data...");
+                const menuRef = ref(database, 'menu');
+                onValue(menuRef, (snapshot) => {
+                    const menu = snapshot.val();
+                    const menuTable = document.getElementById('menuTable');
+                    menuTable.innerHTML = '';
+
+                    if (menu) {
+                        Object.entries(menu).forEach(([id, item]) => {
+                            const row = document.createElement('tr');
+                            // Use the stored URL from Storage
+                            row.innerHTML = `
+                                <td><img src="${item.image || 'https://via.placeholder.com/60?text=No+Image'}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.onerror=null; this.src='https://via.placeholder.com/60?text=Image+Not+Found';"></td>
+                                <td>${item.name}</td>
+                                <td>₹${item.price}</td>
+                                <td>
+                                    <button class="btn btn-edit" onclick="editMenuItem('${id}')">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-delete" onclick="deleteMenuItem('${id}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            `;
+                            menuTable.appendChild(row);
+                        });
+                    } else {
+                        menuTable.innerHTML = '<tr><td colspan="4">No menu items found</td></tr>';
+                    }
+                });
+
+                // --- Add menu item with image upload to Firebase Storage ---
+                // Ensure the button exists before adding the listener
+                const addItemBtn = document.getElementById('addItemBtn');
+                if (addItemBtn) {
+                    addItemBtn.addEventListener('click', async function() {
+                        console.log("Add Item button clicked.");
+                        const name = document.getElementById('itemName').value.trim();
+                        const price = document.getElementById('itemPrice').value.trim();
+                        const fileInput = document.getElementById('itemImage');
+                        const file = fileInput.files[0];
+
+                        if (!name || !price) {
+                            alert('Please enter item name and price.');
+                            return;
+                        }
+
+                        let imageUrl = ''; // Initialize image URL
+
+                        if (file) {
+                            try {
+                                // Create a reference to the file location in Storage
+                                const fileName = `${Date.now()}_${file.name}`;
+                                const storageReference = storageRef(storage, `menu_items/${fileName}`);
+                                console.log(`Preparing to upload menu item image: ${fileName}`);
+
+                                // Upload the file
+                                const snapshot = await uploadBytes(storageReference, file);
+                                console.log('Menu item image uploaded to Storage:', snapshot);
+
+                                // Get the public download URL
+                                imageUrl = await getDownloadURL(snapshot.ref);
+                                console.log('Menu item File available at:', imageUrl);
+
+                            } catch (error) {
+                                console.error('Error uploading menu item image:', error);
+                                alert('Error uploading image: ' + error.message);
+                                return; // Stop if image upload fails
+                            }
+                        } else {
+                             console.log("No image file selected for menu item.");
+                        }
+
+                        try {
+                            // Save the item data (including the image URL) to the Realtime Database
+                            const newItemRef = push(ref(database, 'menu'));
+                            await set(newItemRef, {
+                                name: name,
+                                price: parseFloat(price),
+                                image: imageUrl, // Store the permanent URL (can be empty string if no file)
+                                timestamp: new Date().toISOString()
+                            });
+                            console.log('Menu item data saved to Realtime Database.');
+
+                            // Reset form
+                            document.getElementById('itemName').value = '';
+                            document.getElementById('itemPrice').value = '';
+                            fileInput.value = '';
+                            document.getElementById('itemPreview').style.display = 'none';
+                            alert('Menu item added successfully!');
+                            // Reload data to show new item
                             loadMenuData();
+
+                        } catch (error) {
+                            console.error('Error adding menu item:', error);
+                            alert('Error adding menu item: ' + error.message);
                         }
-                    })
-                    .catch((error) => {
-                        console.error('Error deleting menu item:', error);
-                        alert('Error deleting menu item: ' + error.message);
                     });
+                } else {
+                     console.error("Add Item button not found in DOM.");
+                }
             }
-        };
 
-        window.editMenuItem = function(itemId) {
-            // In a real implementation, you would show a modal with the item details
-            alert('Edit functionality would be implemented here. Item ID: ' + itemId);
-        };
+            // Analytics Data (Fixed Reading Logic)
+            function loadAnalyticsData() {
+                console.log("Loading Analytics data...");
+                const analyticsRef = ref(database, 'analytics');
+                onValue(analyticsRef, (snapshot) => {
+                    // Get the raw data object
+                    const analyticsData = snapshot.val();
 
-        // Initial load of dashboard data
-        loadDashboardData();
+                    // Get references to the HTML elements to update
+                    const todayViewsElement = document.getElementById('todayViewsAnalytics');
+                    const totalViewsElement = document.getElementById('totalViewsAnalytics');
+                    const dataDisplayElement = document.getElementById('analyticsDataDisplay'); // For detailed view
+
+                    // Get today's date string (YYYY-MM-DD)
+                    const today = new Date().toISOString().split('T')[0];
+
+                    // Check if data exists
+                    if (analyticsData) {
+                        // Try to get today's views, default to 0 if not found
+                        const todayViews = (analyticsData.pageViews && analyticsData.pageViews[today]) ? analyticsData.pageViews[today] : 0;
+
+                        // Try to get total views, default to 0 if not found
+                        const totalViews = analyticsData.totalViews || 0;
+
+                        // Update the HTML elements
+                        todayViewsElement.textContent = todayViews;
+                        totalViewsElement.textContent = totalViews;
+
+                        // Display detailed data structure for debugging/viewing
+                        if (analyticsData.pageViews) {
+                            let pageViewsHtml = '<h3>Page Views by Date:</h3><ul>';
+                            for (const [date, count] of Object.entries(analyticsData.pageViews)) {
+                                pageViewsHtml += `<li>${date}: ${count} views</li>`;
+                            }
+                            pageViewsHtml += '</ul>';
+                            dataDisplayElement.innerHTML = pageViewsHtml;
+                        } else {
+                            dataDisplayElement.innerHTML = '<p>No page view data available yet.</p>';
+                        }
+
+                    } else {
+                        // Handle case where 'analytics' node doesn't exist at all
+                        console.log("Analytics data not found in database.");
+                        todayViewsElement.textContent = '0';
+                        totalViewsElement.textContent = '0';
+                        dataDisplayElement.innerHTML = '<p>No analytics data found. Ensure your main website is sending analytics data.</p>';
+                    }
+                });
+            }
+
+            // --- Global functions for buttons ---
+            window.printOrder = function(orderId) {
+                console.log(`Print Order button clicked for ID: ${orderId}`);
+                // Create a printable version of the order
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Order #${orderId}</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; }
+                                .header { text-align: center; margin-bottom: 20px; }
+                                .order-details { margin-bottom: 20px; }
+                                table { width: 100%; border-collapse: collapse; }
+                                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                                th { background-color: #f2f2f2; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="header">
+                                <h1>Restaurant Order</h1>
+                                <p>Order ID: ${orderId}</p>
+                            </div>
+                            <div class="order-details" id="orderDetails">
+                                <!-- Order details will be populated here -->
+                            </div>
+                        </body>
+                    </html>
+                `);
+
+                // Fetch order details and populate the print window
+                const orderRef = ref(database, `orders/${orderId}`);
+                onValue(orderRef, (snapshot) => {
+                    const order = snapshot.val();
+                    if (order) {
+                        const orderDetails = printWindow.document.getElementById('orderDetails');
+                        let itemsHtml = '';
+                        if (order.items) {
+                            itemsHtml = `
+                                <h2>Items</h2>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${Object.values(order.items || {}).map(item => `
+                                            <tr>
+                                                <td>${item.name}</td>
+                                                <td>${item.quantity}</td>
+                                                <td>₹${item.price * item.quantity}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            `;
+                        } else {
+                            itemsHtml = '<p>No items found for this order.</p>';
+                        }
+
+                        orderDetails.innerHTML = `
+                            <p><strong>Date:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
+                            <p><strong>Total Amount:</strong> ₹${order.amount}</p>
+                            <p><strong>Status:</strong> ${order.status || 'Pending'}</p>
+                            ${itemsHtml}
+                        `;
+                        printWindow.print();
+                    } else {
+                        printWindow.document.body.innerHTML = '<p>Order not found.</p>';
+                    }
+                }, { onlyOnce: true });
+            };
+
+            window.deleteOrder = function(orderId) {
+                console.log(`Delete Order button clicked for ID: ${orderId}`);
+                if (confirm('Are you sure you want to delete this order?')) {
+                    remove(ref(database, `orders/${orderId}`))
+                        .then(() => {
+                            alert('Order deleted successfully!');
+                            // Reload data
+                            if (document.getElementById('orders').style.display !== 'none') {
+                                loadOrdersData();
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error deleting order:', error);
+                            alert('Error deleting order: ' + error.message);
+                        });
+                }
+            };
+
+            window.deleteSlide = function(slideId) {
+                console.log(`Delete Slide button clicked for ID: ${slideId}`);
+                if (confirm('Are you sure you want to delete this slide?')) {
+                    remove(ref(database, `slides/${slideId}`))
+                        .then(() => {
+                            alert('Slide deleted successfully!');
+                            // Reload data
+                            if (document.getElementById('slides').style.display !== 'none') {
+                                loadSlidesData();
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error deleting slide:', error);
+                            alert('Error deleting slide: ' + error.message);
+                        });
+                }
+            };
+
+            window.deleteMenuItem = function(itemId) {
+                console.log(`Delete Menu Item button clicked for ID: ${itemId}`);
+                if (confirm('Are you sure you want to delete this menu item?')) {
+                    remove(ref(database, `menu/${itemId}`))
+                        .then(() => {
+                            alert('Menu item deleted successfully!');
+                            // Reload data
+                            if (document.getElementById('menu').style.display !== 'none') {
+                                loadMenuData();
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error deleting menu item:', error);
+                            alert('Error deleting menu item: ' + error.message);
+                        });
+                }
+            };
+
+            window.editMenuItem = function(itemId) {
+                console.log(`Edit Menu Item button clicked for ID: ${itemId}`);
+                // In a real implementation, you would show a modal with the item details
+                alert('Edit functionality would be implemented here. Item ID: ' + itemId);
+            };
+
+            // Initial load of dashboard data
+            console.log("Initial dashboard data load triggered.");
+            loadDashboardData();
+
+        }); // End of DOMContentLoaded
     </script>
 </body>
 </html>
