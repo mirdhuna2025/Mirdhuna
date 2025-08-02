@@ -1776,5 +1776,121 @@
 
 </script>
 <!-- End of analytics tracking code -->
+    <!-- Add this script to your MAIN website's index.html -->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration (SAME as admin panel)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
+        authDomain: "mirdhuna-4f652.firebaseapp.com",
+        databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
+        projectId: "mirdhuna-4f652",
+        storageBucket: "mirdhuna-4f652.firebasestorage.app",
+        messagingSenderId: "184403369330",
+        appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
+        measurementId: "G-ZFWSGKE744"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app); // Get database instance
+
+    // --- Function to get User's IP Address ---
+    async function getUserIP() {
+        try {
+            // Using a free IP geolocation API (like ipapi.co - check their terms)
+            // Note: Free services might have rate limits or require API keys eventually.
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        } catch (error) {
+            console.error('Error fetching IP address:', error);
+            return 'Unknown IP';
+        }
+    }
+
+    // --- Function to get approximate Location based on IP ---
+    async function getLocationByIP(ip) {
+        if (ip === 'Unknown IP') return 'Unknown Location';
+
+        try {
+            // Using ipapi.co for geolocation based on IP
+            // Again, check terms and rate limits.
+            const response = await fetch(`https://ipapi.co/${ip}/json/`);
+            const data = await response.json();
+            if (data.error) {
+                console.warn('IP Geolocation API error:', data.reason);
+                return 'Location Lookup Failed';
+            }
+            // Construct a readable location string (city, region, country)
+            return `${data.city || 'N/A'}, ${data.region || 'N/A'}, ${data.country_name || 'N/A'}`;
+        } catch (error) {
+            console.error('Error fetching location by IP:', error);
+            return 'Location Lookup Error';
+        }
+    }
+
+    // --- Function to get Device/Browser Info ---
+    function getDeviceInfo() {
+        const userAgent = navigator.userAgent;
+        // Simple parsing - you can make this more sophisticated
+        if (userAgent.includes('Firefox')) return 'Firefox';
+        if (userAgent.includes('Chrome')) return 'Chrome';
+        if (userAgent.includes('Safari')) return 'Safari';
+        if (userAgent.includes('Edge')) return 'Edge';
+        return userAgent.substring(0, 50) + '...'; // Truncate long strings
+    }
+
+    // --- Function to log a user login/visit ---
+    async function logUserVisit() {
+        try {
+            // In a real app with Firebase Auth, you'd get the actual user ID
+            // For now, we'll use a placeholder or a simple session ID
+            // Let's generate a simple unique ID for anonymous visits
+            // Or use localStorage to identify returning anonymous users
+            let userId = localStorage.getItem('anonymousUserId');
+            if (!userId) {
+                userId = 'anon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                localStorage.setItem('anonymousUserId', userId);
+            }
+
+            const timestamp = new Date().toISOString();
+            const ip = await getUserIP();
+            const device = getDeviceInfo();
+            const location = await getLocationByIP(ip); // Get location based on IP
+
+            // Prepare the login data object
+            const loginData = {
+                timestamp: timestamp,
+                ip: ip,
+                device: device,
+                location: location // Add location
+            };
+
+            // Determine the path in the database
+            // We'll store it under /users/$userId/loginHistory
+            const loginHistoryRef = push(ref(database, `users/${userId}/loginHistory`));
+
+            // Save the login data
+            await set(loginHistoryRef, loginData);
+
+            console.log("User visit logged successfully for user:", userId, "at", timestamp, "from", location);
+
+        } catch (error) {
+            console.error("Error logging user visit:", error);
+            // Optionally, send error to a logging service or display a user-friendly message
+        }
+    }
+
+    // --- Call this function when the page loads ---
+    window.addEventListener('DOMContentLoaded', logUserVisit);
+
+</script>
+<!-- End of user login tracking code -->
 </body>
 </html>
