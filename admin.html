@@ -611,36 +611,37 @@
 
                 <!-- Slide Management -->
                 <div class="section" id="slides" style="display: none;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Slide Management</h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="slideImageUrl">Enter Slide Image URL</label>
-                                <input type="text" id="slideImageUrl" class="form-control" placeholder="Enter the full URL of the image (e.g., https://example.com/image.jpg)">
-                            </div>
-                            <button class="btn btn-submit" id="uploadSlideBtn">
-                                <i class="fas fa-link"></i> Add Slide
-                            </button>
-
-                            <div class="table-container" style="margin-top: 30px;">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Slide</th>
-                                            <th>Upload Date</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="slidesTable">
-                                        <!-- Slides will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  <div class="card">
+    <div class="card-header">
+      <h2>Slide Management</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="slideImageUrl">Enter Slide Image URL</label>
+        <input type="text" id="slideImageUrl" class="form-control" placeholder="Enter the full URL of the image (e.g., https://example.com/image.jpg)">
+        <div id="slidePreview" style="margin-top:10px;"></div>
+      </div>
+      <button class="btn btn-submit" id="uploadSlideBtn">
+        <i class="fas fa-link"></i> Add Slide
+      </button>
+      <div class="table-container" style="margin-top: 30px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Slide</th>
+              <th>Upload Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="slidesTable">
+            <!-- Slides will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+                
 
                 <!-- Menu Management -->
                 <div class="section" id="menu" style="display: none;">
