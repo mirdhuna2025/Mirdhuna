@@ -1525,5 +1525,32 @@
         }); // End of DOMContentLoaded
         console.log("Script module loaded. Waiting for DOMContentLoaded...");
     </script>
+    // Preview image as admin types/pastes URL
+const slideImageUrlInput = document.getElementById('slideImageUrl');
+const slidePreview = document.getElementById('slidePreview');
+slideImageUrlInput.addEventListener('input', () => {
+  const url = slideImageUrlInput.value.trim();
+  slidePreview.innerHTML = url ? `<img src="${url}" style="max-width:200px;max-height:120px;" onerror="this.style.display='none'">` : "";
+});
+
+const uploadSlideBtn = document.getElementById('uploadSlideBtn');
+uploadSlideBtn.addEventListener('click', async function(event) {
+  event.preventDefault();
+  const imageUrl = slideImageUrlInput.value.trim();
+  if (!imageUrl || !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg)$/i.test(imageUrl)) {
+    alert('Please enter a valid image URL (must be a direct .jpg, .png, .gif, .webp, .svg).');
+    return;
+  }
+  // Save URL as you already do...
+  const newSlideRef = firebase.database().ref('slides').push();
+  await newSlideRef.set({
+    url: imageUrl,
+    timestamp: new Date().toISOString()
+  });
+  slideImageUrlInput.value = '';
+  slidePreview.innerHTML = '';
+  alert('Slide added successfully!');
+  loadSlidesData();
+});
 </body>
     </html>
