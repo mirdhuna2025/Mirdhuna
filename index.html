@@ -1891,9 +1891,12 @@
     window.addEventListener('DOMContentLoaded', logUserVisit);
 
 </script>
+
+   
 <!-- End of user login tracking code -->
     <!-- Paste this code just before the closing </body> tag in your index.html -->
-// Load slides from DB and display them
+<body>
+    // Load slides from DB and display them
 function loadSlidesToGallery() {
   const slidesGallery = document.getElementById('slidesGallery');
   firebase.database().ref('slides').once('value').then(snapshot => {
