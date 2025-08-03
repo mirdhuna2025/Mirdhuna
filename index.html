@@ -1893,7 +1893,29 @@
 </script>
 <!-- End of user login tracking code -->
     <!-- Paste this code just before the closing </body> tag in your index.html -->
-
+// Load slides from DB and display them
+function loadSlidesToGallery() {
+  const slidesGallery = document.getElementById('slidesGallery');
+  firebase.database().ref('slides').once('value').then(snapshot => {
+    slidesGallery.innerHTML = '';
+    const slides = snapshot.val();
+    if (slides) {
+      Object.values(slides).forEach(slide => {
+        const img = document.createElement('img');
+        img.src = slide.url;
+        img.style.maxWidth = '220px';
+        img.style.maxHeight = '140px';
+        img.alt = "Slide";
+        img.onerror = () => img.style.display = 'none';
+        slidesGallery.appendChild(img);
+      });
+    } else {
+      slidesGallery.innerHTML = "<span>No slides found.</span>";
+    }
+  });
+}
+// Call on page load
+window.addEventListener('DOMContentLoaded', loadSlidesToGallery);
 
 </body>
 </html>
