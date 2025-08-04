@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase-js.min.js"></script>
   
   <script>
     tailwind.config = {
@@ -181,6 +182,27 @@
         grid-template-columns: 1fr;
       }
     }
+    
+    /* Loading spinner */
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #e11d48;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Status indicators */
+    .status-pending { background-color: #fef3c7; color: #92400e; }
+    .status-preparing { background-color: #dbeafe; color: #1e40af; }
+    .status-ready { background-color: #dcfce7; color: #166534; }
+    .status-delivered { background-color: #ede9fe; color: #5b21b6; }
   </style>
 </head>
 <body class="min-h-screen">
@@ -304,6 +326,10 @@
       <!-- Two items per slot grid - ONLY for menu items -->
       <div id="menuList" class="menu-grid">
         <!-- Menu items will be populated here -->
+        <div class="col-span-2 text-center py-12">
+          <div class="spinner"></div>
+          <p class="mt-4 text-gray-600">Loading delicious menu items...</p>
+        </div>
       </div>
     </div>
   </section>
@@ -323,6 +349,10 @@
           </h3>
           <div id="recentOrders" class="space-y-4">
             <!-- Recent orders will be populated here -->
+            <div class="text-center py-8">
+              <div class="spinner"></div>
+              <p class="mt-4 text-gray-600">Loading your order history...</p>
+            </div>
           </div>
         </div>
         
@@ -720,48 +750,64 @@
   </footer>
 
   <script>
-    // Mock data for demonstration
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://cfgjvbhfhfgskssopknn.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmZ2p2YmhmaGZnc2tzc29wa25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMDQ1MzQsImV4cCI6MjA2OTc4MDUzNH0.uAsDR4Vj7fSQ7q5Qz859WPzj7qlJIsHpF23Rl7dmj7w';
+    
+    // Initialize Supabase
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // Global variables
     let userPhone = null;
     let userLocation = null;
     let cart = [];
-    let menuItems = [
-      { id: 1, name: "Truffle Margherita", category: "Pizza", price: 299, image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-      { id: 2, name: "Gourmet Cheeseburger", category: "Burger", price: 179, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-      { id: 3, name: "Avocado Club Sandwich", category: "Sandwich", price: 199, image: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-      { id: 4, name: "Belgian Chocolate Shake", category: "Shakes", price: 149, image: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-      { id: 5, name: "Spicy Pepperoni Feast", category: "Pizza", price: 349, image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-      { id: 6, name: "Vegan Power Burger", category: "Burger", price: 189, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-      { id: 7, name: "Grilled Veg Sandwich", category: "Sandwich", price: 159, image: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-      { id: 8, name: "Mango Shake", category: "Shakes", price: 129, image: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
-    ];
-    
-    // Mock order history
-    let orderHistory = [
-      { id: 1001, items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], total: 209, date: "2023-06-15", status: "delivered" },
-      { id: 1002, items: [{name: "Truffle Margherita", qty: 1}], total: 299, date: "2023-06-12", status: "delivered" },
-      { id: 1003, items: [{name: "Avocado Club Sandwich", qty: 2}], total: 398, date: "2023-06-10", status: "delivered" },
-      { id: 1004, items: [{name: "Belgian Chocolate Shake", qty: 1}, {name: "Vegan Power Burger", qty: 1}], total: 338, date: "2023-06-08", status: "delivered" }
-    ];
-    
-    // Favorite combinations
+    let menuItems = [];
+    let orderHistory = [];
     let favoriteOrders = [
       { name: "Burger Feast", items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], price: 209 },
       { name: "Pizza Night", items: [{name: "Truffle Margherita", qty: 1}, {name: "Belgian Chocolate Shake", qty: 1}], price: 448 },
       { name: "Healthy Combo", items: [{name: "Avocado Club Sandwich", qty: 1}, {name: "Belgian Chocolate Shake", qty: 1}], price: 348 }
     ];
-
+    
     // Initialize the app
-    function initApp() {
-      loadMenu();
-      displayRecentOrders();
+    async function initApp() {
+      await loadMenu();
+      await loadOrderHistory();
       displayFavoriteOrders();
       animateCounters();
+      
+      // Subscribe to real-time order updates
+      subscribeToOrderUpdates();
     }
-
-    // Load menu items
-    function loadMenu() {
+    
+    // Load menu items from Supabase
+    async function loadMenu() {
+      try {
+        const { data, error } = await supabase
+          .from('menu_items')
+          .select('*')
+          .order('category');
+        
+        if (error) throw error;
+        
+        menuItems = data;
+        displayMenu();
+      } catch (error) {
+        console.error('Error loading menu:', error);
+        showtoast("Failed to load menu. Please try again.");
+      }
+    }
+    
+    // Display menu items
+    function displayMenu() {
       const container = document.getElementById('menuList');
       container.innerHTML = '';
+      
+      if (menuItems.length === 0) {
+        container.innerHTML = '<p class="col-span-2 text-center py-8 text-gray-500">No menu items available</p>';
+        return;
+      }
+      
       menuItems.forEach((item, index) => {
         setTimeout(() => {
           const div = document.createElement('div');
@@ -769,7 +815,7 @@
           div.style.animation = `fadeInUp 0.5s ease-out ${index * 0.1}s both`;
           div.innerHTML = `
             <div class="relative">
-              <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
+              <img src="${item.image_path}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
               <div class="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">
                 ₹${item.price}
               </div>
@@ -792,12 +838,18 @@
         }, index * 100);
       });
     }
-
+    
     // Filter menu by category
     function filterCategory(category) {
       const filtered = category === 'all' ? menuItems : menuItems.filter(i => i.category === category);
       const container = document.getElementById('menuList');
       container.innerHTML = '';
+      
+      if (filtered.length === 0) {
+        container.innerHTML = '<p class="col-span-2 text-center py-8 text-gray-500">No items in this category</p>';
+        return;
+      }
+      
       filtered.forEach((item, index) => {
         setTimeout(() => {
           const div = document.createElement('div');
@@ -805,7 +857,7 @@
           div.style.animation = `fadeInUp 0.5s ease-out ${index * 0.1}s both`;
           div.innerHTML = `
             <div class="relative">
-              <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
+              <img src="${item.image_path}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
               <div class="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">
                 ₹${item.price}
               </div>
@@ -828,7 +880,121 @@
         }, index * 100);
       });
     }
-
+    
+    // Load order history from Supabase
+    async function loadOrderHistory() {
+      if (!userPhone) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('user_phone', userPhone)
+          .order('ordered_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        orderHistory = data;
+        displayRecentOrders();
+      } catch (error) {
+        console.error('Error loading order history:', error);
+        showtoast("Failed to load order history.");
+      }
+    }
+    
+    // Display recent orders
+    function displayRecentOrders() {
+      const container = document.getElementById('recentOrders');
+      container.innerHTML = '';
+      
+      if (orderHistory.length === 0) {
+        container.innerHTML = '<p class="text-center py-8 text-gray-500">No order history yet</p>';
+        return;
+      }
+      
+      orderHistory.slice(0, 3).forEach(order => {
+        const div = document.createElement('div');
+        div.className = 'history-item bg-white p-4 rounded-lg shadow';
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-dark">Order #${order.id.toString().slice(-4)}</p>
+              <p class="text-sm text-gray-600 mt-1">${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
+              <p class="text-xs text-gray-500 mt-2">${new Date(order.ordered_at).toLocaleDateString()}</p>
+              <span class="inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${
+                order.status === 'pending' ? 'status-pending' :
+                order.status === 'preparing' ? 'status-preparing' :
+                order.status === 'ready' ? 'status-ready' : 'status-delivered'
+              }">
+                ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+              </span>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-primary">₹${order.total}</p>
+              <button onclick="reorder(${order.id})" class="mt-2 bg-primary text-white px-3 py-1 rounded-full text-xs font-medium">
+                Reorder
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+    
+    // Display favorite orders
+    function displayFavoriteOrders() {
+      const container = document.getElementById('favoriteOrders');
+      container.innerHTML = '';
+      
+      favoriteOrders.forEach((order, index) => {
+        const div = document.createElement('div');
+        div.className = 'history-item bg-white p-4 rounded-lg shadow';
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-dark">${order.name}</p>
+              <p class="text-sm text-gray-600 mt-1">${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-primary">₹${order.price}</p>
+              <button onclick="orderFavorite(${index})" class="mt-2 bg-gradient-to-r from-accent to-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                Order Now
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+    
+    // Subscribe to real-time order updates
+    function subscribeToOrderUpdates() {
+      if (!userPhone) return;
+      
+      supabase
+        .channel('orders')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'orders',
+            filter: `user_phone=eq.${userPhone}`
+          },
+          (payload) => {
+            // Update the order in local history
+            const updatedOrder = payload.new;
+            const index = orderHistory.findIndex(o => o.id === updatedOrder.id);
+            if (index !== -1) {
+              orderHistory[index] = updatedOrder;
+              displayRecentOrders();
+              showtoast(`Order status updated to: ${updatedOrder.status}`);
+            }
+          }
+        )
+        .subscribe();
+    }
+    
     // Add item to cart
     function addToCart(id) {
       if (!userPhone) return openLoginModal();
@@ -839,7 +1005,7 @@
       updateCartUI();
       showtoast("Added to cart!");
     }
-
+    
     // Quick add buttons
     function quickAdd(id) {
       if (!userPhone) return openLoginModal();
@@ -848,12 +1014,12 @@
       updateCartUI();
       showtoast("${item.name} added to cart!");
     }
-
+    
     // Update cart UI
     function updateCartUI() {
       document.getElementById('cartCount').textContent = cart.reduce((sum, i) => sum + i.qty, 0);
     }
-
+    
     // Show toast notification
     function showtoast(msg) {
       const t = document.getElementById('toast');
@@ -861,7 +1027,7 @@
       t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 3000);
     }
-
+    
     // Open login modal
     function openLoginModal() { 
       document.getElementById('loginModal').classList.remove('hidden'); 
@@ -912,7 +1078,7 @@
       openCart(); // Refresh cart display
       updateCartUI();
     }
-
+    
     // Show section
     function showSection(id) {
       document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
@@ -936,18 +1102,34 @@
         document.querySelector('.fixed.bottom-24.right-6').classList.add('hidden');
       }
     }
-
+    
     // User login
     async function loginUser() {
       const num = document.getElementById('mobileInput').value.trim();
       if (!num || num.length !== 10) return showtoast("Enter valid 10-digit number");
       userPhone = '91' + num;
       userLocation = await detectLocation();
-
+      
+      // Save login log to Supabase
+      try {
+        await supabase.from('login_logs').insert({
+          phone: userPhone,
+          location_lat: userLocation.lat,
+          location_lng: userLocation.lng,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error('Error saving login log:', error);
+      }
+      
       document.getElementById('loginModal').classList.add('hidden');
       showtoast("Welcome back! Happy ordering");
+      
+      // Reload data for logged in user
+      await loadOrderHistory();
+      subscribeToOrderUpdates();
     }
-
+    
     // Detect location
     async function detectLocation() {
       return new Promise(resolve => {
@@ -966,46 +1148,63 @@
         }
       });
     }
-
-    // WhatsApp Receipt System - NEW FEATURE
+    
+    // Place order with WhatsApp receipts
     async function placeOrder() {
       if (cart.length === 0) return showtoast("Cart is empty");
       
       let total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
       
-      // Add to order history
+      // Create order object
       const newOrder = {
-        id: Date.now(),
-        items: cart.map(item => ({ name: item.name, qty: item.qty })),
+        user_phone: userPhone,
+        items: cart,
         total: total,
-        date: new Date().toISOString().split('T')[0],
-        status: "pending"
+        status: "pending",
+        user_location: userLocation,
+        ordered_at: new Date().toISOString()
       };
       
-      orderHistory.unshift(newOrder);
-      displayRecentOrders();
-      
-      // Send WhatsApp receipts to BOTH business and customer
-      sendWhatsAppReceiptToBusiness(newOrder);
-      sendWhatsAppReceiptToCustomer(newOrder);
-      
-      showtoast("Order placed successfully! 🎉");
-      cart = [];
-      updateCartUI();
-      closeCart();
+      try {
+        // Save order to Supabase
+        const { data, error } = await supabase
+          .from('orders')
+          .insert([newOrder])
+          .select();
+        
+        if (error) throw error;
+        
+        const order = data[0];
+        
+        // Update order history
+        orderHistory.unshift(order);
+        displayRecentOrders();
+        
+        // Send WhatsApp receipts
+        sendWhatsAppReceiptToBusiness(order);
+        sendWhatsAppReceiptToCustomer(order);
+        
+        showtoast("Order placed successfully! 🎉");
+        cart = [];
+        updateCartUI();
+        closeCart();
+      } catch (error) {
+        console.error('Error placing order:', error);
+        showtoast("Failed to place order. Please try again.");
+      }
     }
-
-    // Receipt to YOUR business number
+    
+    // WhatsApp receipt to business
     function sendWhatsAppReceiptToBusiness(order) {
       const message = `✅ *NEW ORDER - MIRDHUNA*
 
 Order ID: #${order.id.toString().slice(-4)}
 Items: ${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}
 Total: ₹${order.total}
-Status: Confirmed
+Status: ${order.status}
 
-Customer Phone: ${userPhone}
-Location: ${userLocation.lat}, ${userLocation.lng}
+Customer Phone: ${order.user_phone}
+Location: ${order.user_location.lat}, ${order.user_location.lng}
 预计准备时间: 20-30 mins
 
 Prepare order now!`;
@@ -1013,8 +1212,8 @@ Prepare order now!`;
       const encodedMsg = encodeURIComponent(message);
       window.open(`https://wa.me/919835124772?text=${encodedMsg}`, '_blank');
     }
-
-    // Receipt to CUSTOMER's number
+    
+    // WhatsApp receipt to customer
     function sendWhatsAppReceiptToCustomer(order) {
       const message = `✅ *MIRDHUNA ORDER CONFIRMATION*
 
@@ -1022,80 +1221,21 @@ Hello! Thank you for your order #${order.id.toString().slice(-4)}
 
 Items: ${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}
 Total: ₹${order.total}
-Status: Confirmed
+Status: ${order.status}
 
 预计准备时间: 20-30 mins
-Delivery to: ${userLocation.lat}, ${userLocation.lng}
+Delivery to: ${order.user_location.lat}, ${order.user_location.lng}
 
 We'll prepare your order soon! 
 Questions? Reply to this message.
 
 Thank you for choosing MIRDHUNA! 🍔🍕`;
       
-      // Remove the +91 prefix if already included
-      const customerNumber = userPhone.replace('+91', '');
+      const customerNumber = order.user_phone.replace('+91', '');
       const encodedMsg = encodeURIComponent(message);
       window.open(`https://wa.me/${customerNumber}?text=${encodedMsg}`, '_blank');
     }
-
-    // Display recent orders
-    function displayRecentOrders() {
-      const container = document.getElementById('recentOrders');
-      container.innerHTML = '';
-      
-      if (orderHistory.length === 0) {
-        container.innerHTML = '<p class="text-center text-gray-500 py-8">No order history yet</p>';
-        return;
-      }
-      
-      orderHistory.slice(0, 3).forEach(order => {
-        const div = document.createElement('div');
-        div.className = 'history-item bg-white p-4 rounded-lg shadow';
-        div.innerHTML = `
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="font-bold text-dark">Order #${order.id.toString().slice(-4)}</p>
-              <p class="text-sm text-gray-600 mt-1">${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
-              <p class="text-xs text-gray-500 mt-2">${order.date}</p>
-            </div>
-            <div class="text-right">
-              <p class="font-bold text-primary">₹${order.total}</p>
-              <button onclick="reorder(${order.id})" class="mt-2 bg-primary text-white px-3 py-1 rounded-full text-xs font-medium">
-                Reorder
-              </button>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    // Display favorite orders
-    function displayFavoriteOrders() {
-      const container = document.getElementById('favoriteOrders');
-      container.innerHTML = '';
-      
-      favoriteOrders.forEach((order, index) => {
-        const div = document.createElement('div');
-        div.className = 'history-item bg-white p-4 rounded-lg shadow';
-        div.innerHTML = `
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="font-bold text-dark">${order.name}</p>
-              <p class="text-sm text-gray-600 mt-1">${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
-            </div>
-            <div class="text-right">
-              <p class="font-bold text-primary">₹${order.price}</p>
-              <button onclick="orderFavorite(${index})" class="mt-2 bg-gradient-to-r from-accent to-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                Order Now
-              </button>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
+    
     // Reorder function
     function reorder(orderId) {
       if (!userPhone) return openLoginModal();
@@ -1116,7 +1256,7 @@ Thank you for choosing MIRDHUNA! 🍔🍕`;
       openCart();
       showtoast("Order added to cart!");
     }
-
+    
     // Order favorite combination
     function orderFavorite(index) {
       if (!userPhone) return openLoginModal();
@@ -1137,7 +1277,7 @@ Thank you for choosing MIRDHUNA! 🍔🍕`;
       openCart();
       showtoast("${favorite.name} added to cart!");
     }
-
+    
     // Submit feedback
     function submitFeedback(feedback) {
       const feedbacks = {
@@ -1149,7 +1289,7 @@ Thank you for choosing MIRDHUNA! 🍔🍕`;
       
       showtoast(feedbacks[feedback]);
     }
-
+    
     // Animate counters
     function animateCounters() {
       const counters = document.querySelectorAll('.counter');
@@ -1171,7 +1311,7 @@ Thank you for choosing MIRDHUNA! 🍔🍕`;
         updateCounter();
       });
     }
-
+    
     // Search functionality
     document.getElementById('searchInput').addEventListener('input', function() {
       const searchTerm = this.value.toLowerCase();
@@ -1186,9 +1326,9 @@ Thank you for choosing MIRDHUNA! 🍔🍕`;
         }
       });
     });
-
+    
     // Initialize the app when page loads
     window.onload = initApp;
   </script>
 </body>
-            </html>
+      </html>
