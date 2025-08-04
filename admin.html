@@ -287,12 +287,12 @@
       <form id="loginForm">
         <div class="mb-6">
           <label class="block text-gray-700 mb-2 font-medium">Username</label>
-          <input type="text" id="username" placeholder="Enter username" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" value="Sanu">
+          <input type="text" id="username" placeholder="Enter username" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" autocomplete="off">
         </div>
         
         <div class="mb-6">
           <label class="block text-gray-700 mb-2 font-medium">Password</label>
-          <input type="password" id="password" placeholder="Enter password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" value="Sanu.0000">
+          <input type="password" id="password" placeholder="Enter password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" autocomplete="off">
         </div>
         
         <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-bold shadow-lg hover:shadow-xl transition">
@@ -1480,13 +1480,6 @@
   </div>
   
   <script>
-    // Supabase Configuration
-    const SUPABASE_URL = 'https://cfgjvbhfhfgskssopknn.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmZ2p2YmhmaGZnc2tzc29wa25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMDQ1MzQsImV4cCI6MjA2OTc4MDUzNH0.uAsDR4Vj7fSQ7q5Qz859WPzj7qlJIsHpF23Rl7dmj7w';
-    
-    // Initialize Supabase
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
     // DOM Elements
     const loginScreen = document.getElementById('loginScreen');
     const adminDashboard = document.getElementById('adminDashboard');
@@ -1509,11 +1502,15 @@
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
       
-      // Validate credentials (in a real app, this would be server-side)
+      // Validate credentials
       if (username === 'Sanu' && password === 'Sanu.0000') {
         loginScreen.classList.add('hidden');
         adminDashboard.classList.remove('hidden');
         showtoast('Welcome to MIRDHUNA Admin!');
+        
+        // Reset form
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
       } else {
         showtoast('Invalid credentials. Please try again.');
       }
@@ -1523,8 +1520,6 @@
     logoutBtn.addEventListener('click', function() {
       adminDashboard.classList.add('hidden');
       loginScreen.classList.remove('hidden');
-      document.getElementById('username').value = 'Sanu';
-      document.getElementById('password').value = 'Sanu.0000';
       showtoast('You have been logged out.');
     });
     
@@ -1577,62 +1572,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       // Set initial active section
       document.querySelector('.sidebar-item[data-section="dashboard"]').click();
-      
-      // Subscribe to real-time updates
-      subscribeToRealtimeUpdates();
     });
-    
-    // Real-time Updates
-    function subscribeToRealtimeUpdates() {
-      // Subscribe to orders
-      supabase
-        .channel('orders')
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'orders'
-          },
-          (payload) => {
-            console.log('New order received:', payload.new);
-            showtoast('New order received!');
-            // Update dashboard in real-time
-            updateOrderList(payload.new);
-          }
-        )
-        .subscribe();
-      
-      // Subscribe to login logs
-      supabase
-        .channel('login_logs')
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'login_logs'
-          },
-          (payload) => {
-            console.log('New login recorded:', payload.new);
-            // Update user history in real-time
-            updateUserHistory(payload.new);
-          }
-        )
-        .subscribe();
-    }
-    
-    // Update order list in real-time
-    function updateOrderList(order) {
-      // This would update the UI with the new order
-      console.log('Updating order list with:', order);
-    }
-    
-    // Update user history in real-time
-    function updateUserHistory(login) {
-      // This would update the user history UI
-      console.log('Updating user history with:', login);
-    }
     
     // Thermal Printer Functionality
     document.querySelector('.thermal-print-btn').addEventListener('click', function() {
