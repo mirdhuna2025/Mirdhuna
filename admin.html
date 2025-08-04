@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIRDHUNA Admin | Real-time Management</title>
+  <title>MIRDHUNA Admin | Management System</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase-js.min.js"></script>
   
   <script>
     tailwind.config = {
@@ -36,6 +35,7 @@
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
       min-height: 100vh;
+      overflow: hidden;
     }
     
     .admin-header {
@@ -546,8 +546,64 @@
                     <th class="pb-3">Action</th>
                   </tr>
                 </thead>
-                <tbody id="ordersTableBody">
-                  <!-- Orders will be populated here by JavaScript -->
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1023</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <span>+91 9835124772</span>
+                      </div>
+                    </td>
+                    <td class="py-4">2 items</td>
+                    <td class="py-4 font-bold">₹387</td>
+                    <td class="py-4">
+                      <span class="status-badge status-pending">Pending</span>
+                    </td>
+                    <td class="py-4">
+                      <button class="action-btn btn-primary text-sm">Process</button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1022</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <span>+91 9876543210</span>
+                      </div>
+                    </td>
+                    <td class="py-4">1 item</td>
+                    <td class="py-4 font-bold">₹299</td>
+                    <td class="py-4">
+                      <span class="status-badge status-preparing">Preparing</span>
+                    </td>
+                    <td class="py-4">
+                      <button class="action-btn btn-warning text-sm">Ready</button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1021</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <span>+91 9123456789</span>
+                      </div>
+                    </td>
+                    <td class="py-4">3 items</td>
+                    <td class="py-4 font-bold">₹547</td>
+                    <td class="py-4">
+                      <span class="status-badge status-ready">Ready</span>
+                    </td>
+                    <td class="py-4">
+                      <button class="action-btn btn-success text-sm">Deliver</button>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -591,8 +647,45 @@
             
             <div class="card p-6">
               <h3 class="text-xl font-bold text-dark mb-6">Popular Menu Items</h3>
-              <div class="space-y-4" id="popularItemsContainer">
-                <!-- Popular items will be populated here -->
+              <div class="space-y-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
+                    <span class="text-xs font-bold">1</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium">Cheeseburger</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div class="bg-primary h-2 rounded-full" style="width: 92%"></div>
+                    </div>
+                  </div>
+                  <span class="text-sm font-bold text-primary">42 orders</span>
+                </div>
+                
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
+                    <span class="text-xs font-bold">2</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium">Margherita Pizza</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div class="bg-secondary h-2 rounded-full" style="width: 85%"></div>
+                    </div>
+                  </div>
+                  <span class="text-sm font-bold text-secondary">38 orders</span>
+                </div>
+                
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
+                    <span class="text-xs font-bold">3</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium">Club Sandwich</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div class="bg-accent h-2 rounded-full" style="width: 72%"></div>
+                    </div>
+                  </div>
+                  <span class="text-sm font-bold text-accent">29 orders</span>
+                </div>
               </div>
             </div>
           </div>
@@ -633,8 +726,99 @@
                     <th class="pb-3">Actions</th>
                   </tr>
                 </thead>
-                <tbody id="allOrdersTableBody">
-                  <!-- All orders will be populated here -->
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1023</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <div>
+                          <p>+91 9835124772</p>
+                          <p class="text-xs text-gray-500">Lat: 26.8467, Lng: 75.8158</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-4">
+                      <ul class="space-y-1">
+                        <li>Gourmet Cheeseburger x2</li>
+                        <li>Truffle Fries x1</li>
+                      </ul>
+                    </td>
+                    <td class="py-4 font-bold">₹387</td>
+                    <td class="py-4">10:23 AM</td>
+                    <td class="py-4">
+                      <span class="status-badge status-pending">Pending</span>
+                    </td>
+                    <td class="py-4">
+                      <div class="flex space-x-2">
+                        <button class="action-btn btn-primary text-sm">Process</button>
+                        <button class="action-btn btn-danger text-sm">Cancel</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1022</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <div>
+                          <p>+91 9876543210</p>
+                          <p class="text-xs text-gray-500">Lat: 26.8523, Lng: 75.8210</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-4">
+                      <ul class="space-y-1">
+                        <li>Truffle Margherita x1</li>
+                      </ul>
+                    </td>
+                    <td class="py-4 font-bold">₹299</td>
+                    <td class="py-4">09:45 AM</td>
+                    <td class="py-4">
+                      <span class="status-badge status-preparing">Preparing</span>
+                    </td>
+                    <td class="py-4">
+                      <div class="flex space-x-2">
+                        <button class="action-btn btn-warning text-sm">Ready</button>
+                        <button class="action-btn btn-danger text-sm">Cancel</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1021</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <div>
+                          <p>+91 9123456789</p>
+                          <p class="text-xs text-gray-500">Lat: 26.8391, Lng: 75.8082</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-4">
+                      <ul class="space-y-1">
+                        <li>Avocado Club Sandwich x2</li>
+                        <li>Belgian Chocolate Shake x1</li>
+                      </ul>
+                    </td>
+                    <td class="py-4 font-bold">₹547</td>
+                    <td class="py-4">08:30 AM</td>
+                    <td class="py-4">
+                      <span class="status-badge status-ready">Ready</span>
+                    </td>
+                    <td class="py-4">
+                      <div class="flex space-x-2">
+                        <button class="action-btn btn-success text-sm">Deliver</button>
+                        <button class="action-btn btn-danger text-sm">Cancel</button>
+                      </div>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -743,7 +927,85 @@
                 
                 <div id="menuItemsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <!-- Menu items will be populated here -->
-                  <div class="loading-spinner"></div>
+                  <div class="menu-item-card">
+                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Pizza" class="menu-image">
+                    <div class="p-4">
+                      <h4 class="font-bold text-lg">Truffle Margherita</h4>
+                      <p class="text-gray-600 text-sm mb-2">Pizza</p>
+                      <p class="text-gray-700 text-sm mb-3">Premium pizza with truffle oil</p>
+                      <div class="flex justify-between items-center">
+                        <span class="font-bold text-primary">₹299</span>
+                        <div class="flex space-x-2">
+                          <button class="text-blue-500 hover:text-blue-700" onclick="openEditModal(1)">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-red-500 hover:text-red-700" onclick="deleteMenuItem(1)">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="menu-item-card">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Burger" class="menu-image">
+                    <div class="p-4">
+                      <h4 class="font-bold text-lg">Gourmet Cheeseburger</h4>
+                      <p class="text-gray-600 text-sm mb-2">Burger</p>
+                      <p class="text-gray-700 text-sm mb-3">Double patty with special sauce</p>
+                      <div class="flex justify-between items-center">
+                        <span class="font-bold text-primary">₹179</span>
+                        <div class="flex space-x-2">
+                          <button class="text-blue-500 hover:text-blue-700" onclick="openEditModal(2)">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-red-500 hover:text-red-700" onclick="deleteMenuItem(2)">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="menu-item-card">
+                    <img src="https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Sandwich" class="menu-image">
+                    <div class="p-4">
+                      <h4 class="font-bold text-lg">Avocado Club Sandwich</h4>
+                      <p class="text-gray-600 text-sm mb-2">Sandwich</p>
+                      <p class="text-gray-700 text-sm mb-3">Fresh avocado with grilled chicken</p>
+                      <div class="flex justify-between items-center">
+                        <span class="font-bold text-primary">₹199</span>
+                        <div class="flex space-x-2">
+                          <button class="text-blue-500 hover:text-blue-700" onclick="openEditModal(3)">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-red-500 hover:text-red-700" onclick="deleteMenuItem(3)">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="menu-item-card">
+                    <img src="https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Shake" class="menu-image">
+                    <div class="p-4">
+                      <h4 class="font-bold text-lg">Belgian Chocolate Shake</h4>
+                      <p class="text-gray-600 text-sm mb-2">Shakes</p>
+                      <p class="text-gray-700 text-sm mb-3">Rich chocolate with whipped cream</p>
+                      <div class="flex justify-between items-center">
+                        <span class="font-bold text-primary">₹149</span>
+                        <div class="flex space-x-2">
+                          <button class="text-blue-500 hover:text-blue-700" onclick="openEditModal(4)">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-red-500 hover:text-red-700" onclick="deleteMenuItem(4)">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -826,8 +1088,28 @@
                     <th class="pb-3">Device</th>
                   </tr>
                 </thead>
-                <tbody id="userHistoryTableBody">
-                  <!-- User history will be populated here -->
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">+91 9835124772</td>
+                    <td class="py-4">2023-06-15 10:20 AM</td>
+                    <td class="py-4">Jaipur, Rajasthan</td>
+                    <td class="py-4">26.8467, 75.8158</td>
+                    <td class="py-4">Samsung Galaxy S21</td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">+91 9876543210</td>
+                    <td class="py-4">2023-06-15 09:40 AM</td>
+                    <td class="py-4">Jaipur, Rajasthan</td>
+                    <td class="py-4">26.8523, 75.8210</td>
+                    <td class="py-4">iPhone 14 Pro</td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">+91 9123456789</td>
+                    <td class="py-4">2023-06-15 08:25 AM</td>
+                    <td class="py-4">Jaipur, Rajasthan</td>
+                    <td class="py-4">26.8391, 75.8082</td>
+                    <td class="py-4">Google Pixel 7</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -929,6 +1211,44 @@
                       </div>
                     </div>
                   </div>
+                  
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 3" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Healthy Sandwiches</h4>
+                      <p class="text-sm">Fresh ingredients, guilt-free pleasure</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Inactive</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 4" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Chocolate Shake Madness</h4>
+                      <p class="text-sm">Irresistible chocolatey goodness</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Active</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -995,67 +1315,67 @@
           
           <!-- Key Metrics -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="card p-6">
+            <div class="stat-card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold text-primary">1,240</p>
-                  <p class="text-gray-600">Total Orders</p>
+                  <p class="text-3xl font-bold">1,240</p>
+                  <p class="text-blue-200">Total Orders</p>
                 </div>
-                <i class="fas fa-shopping-bag text-3xl text-gray-300"></i>
+                <i class="fas fa-shopping-bag text-3xl opacity-30"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
+                  <div class="bg-white h-2 rounded-full" style="width: 75%"></div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">+12% from last month</p>
+                <p class="text-xs text-blue-200 mt-2">+12% from last month</p>
               </div>
             </div>
             
-            <div class="card p-6">
+            <div class="stat-card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold text-primary">₹3.2M</p>
-                  <p class="text-gray-600">Total Revenue</p>
+                  <p class="text-3xl font-bold">₹3.2M</p>
+                  <p class="text-blue-200">Total Revenue</p>
                 </div>
-                <i class="fas fa-rupee-sign text-3xl text-gray-300"></i>
+                <i class="fas fa-rupee-sign text-3xl opacity-30"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
+                  <div class="bg-white h-2 rounded-full" style="width: 85%"></div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">+18% from last month</p>
+                <p class="text-xs text-blue-200 mt-2">+18% from last month</p>
               </div>
             </div>
             
-            <div class="card p-6">
+            <div class="stat-card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold text-primary">4.8</p>
-                  <p class="text-gray-600">Avg. Rating</p>
+                  <p class="text-3xl font-bold">4.8</p>
+                  <p class="text-blue-200">Avg. Rating</p>
                 </div>
-                <i class="fas fa-star text-3xl text-gray-300"></i>
+                <i class="fas fa-star text-3xl opacity-30"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
+                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
+                  <div class="bg-white h-2 rounded-full" style="width: 95%"></div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">+0.2 from last month</p>
+                <p class="text-xs text-blue-200 mt-2">+0.2 from last month</p>
               </div>
             </div>
             
-            <div class="card p-6">
+            <div class="stat-card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold text-primary">87%</p>
-                  <p class="text-gray-600">Repeat Customers</p>
+                  <p class="text-3xl font-bold">87%</p>
+                  <p class="text-blue-200">Repeat Customers</p>
                 </div>
-                <i class="fas fa-users text-3xl text-gray-300"></i>
+                <i class="fas fa-users text-3xl opacity-30"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
+                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
+                  <div class="bg-white h-2 rounded-full" style="width: 87%"></div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">+3% from last month</p>
+                <p class="text-xs text-blue-200 mt-2">+3% from last month</p>
               </div>
             </div>
           </div>
@@ -1203,7 +1523,7 @@
           <input type="hidden" id="editItemId">
           <div class="mb-4">
             <label class="block text-gray-700 mb-2">Item Name</label>
-            <input type="text" id="editItemName" class="w-full p-2 border rounded" required>
+            <input type="text" id="editItemName" placeholder="Enter item name" class="w-full p-2 border rounded" required>
           </div>
           
           <div class="mb-4">
@@ -1219,17 +1539,17 @@
           
           <div class="mb-4">
             <label class="block text-gray-700 mb-2">Price (₹)</label>
-            <input type="number" id="editItemPrice" class="w-full p-2 border rounded" min="1" required>
+            <input type="number" id="editItemPrice" placeholder="Enter price" class="w-full p-2 border rounded" min="1" required>
           </div>
           
           <div class="mb-4">
             <label class="block text-gray-700 mb-2">Description</label>
-            <textarea id="editItemDescription" class="w-full p-2 border rounded" rows="3"></textarea>
+            <textarea id="editItemDescription" placeholder="Enter description" class="w-full p-2 border rounded" rows="3"></textarea>
           </div>
           
-          <div class="mb-4">
+          <div class="mb-6">
             <label class="block text-gray-700 mb-2">Image URL</label>
-            <input type="url" id="editItemImage" class="w-full p-2 border rounded" required>
+            <input type="url" id="editItemImageUrl" placeholder="Enter image URL" class="w-full p-2 border rounded" required>
           </div>
           
           <div class="flex justify-end space-x-3">
@@ -1242,13 +1562,6 @@
   </div>
   
   <script>
-    // Supabase Configuration
-    const SUPABASE_URL = 'https://cfgjvbhfhfgskssopknn.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmZ2p2YmhmaGZnc2tzc29wa25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMDQ1MzQsImV4cCI6MjA2OTc4MDUzNH0.uAsDR4Vj7fSQ7q5Qz859WPzj7qlJIsHpF23Rl7dmj7w';
-    
-    // Initialize Supabase
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
     // DOM Elements
     const loginScreen = document.getElementById('loginScreen');
     const adminDashboard = document.getElementById('adminDashboard');
@@ -1266,10 +1579,6 @@
       analytics: document.getElementById('analyticsSection')
     };
     
-    // Menu items array
-    let menuItems = [];
-    let orders = [];
-    
     // Login Form Handler
     loginForm.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -1282,8 +1591,9 @@
         adminDashboard.classList.remove('hidden');
         showtoast('Welcome to MIRDHUNA Admin!');
         
-        // Initialize dashboard
-        initDashboard();
+        // Reset form
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
       } else {
         showtoast('Invalid credentials. Please try again.');
       }
@@ -1293,8 +1603,6 @@
     logoutBtn.addEventListener('click', function() {
       adminDashboard.classList.add('hidden');
       loginScreen.classList.remove('hidden');
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
       showtoast('You have been logged out.');
     });
     
@@ -1316,15 +1624,6 @@
         const section = this.getAttribute('data-section');
         Object.values(sections).forEach(sec => sec.classList.add('hidden'));
         sections[section].classList.remove('hidden');
-        
-        // Load section data if needed
-        if (section === 'menu') {
-          loadMenuItems();
-        } else if (section === 'orders') {
-          loadOrders();
-        } else if (section === 'users') {
-          loadUserHistory();
-        }
       });
     });
     
@@ -1352,345 +1651,46 @@
       }, 3000);
     }
     
-    // Initialize the dashboard
-    function initDashboard() {
-      // Subscribe to real-time updates
-      subscribeToRealtimeUpdates();
-      
-      // Load initial data
-      loadMenuItems();
-      loadOrders();
-      loadUserHistory();
-    }
-    
-    // Real-time Updates
-    function subscribeToRealtimeUpdates() {
-      // Subscribe to menu items
-      supabase
-        .channel('menu_items')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'menu_items'
-          },
-          (payload) => {
-            console.log('Menu item change:', payload);
-            loadMenuItems(); // Reload menu items
-          }
-        )
-        .subscribe();
-      
-      // Subscribe to orders
-      supabase
-        .channel('orders')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'orders'
-          },
-          (payload) => {
-            console.log('Order change:', payload);
-            loadOrders(); // Reload orders
-          }
-        )
-        .subscribe();
-      
-      // Subscribe to login logs
-      supabase
-        .channel('login_logs')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'login_logs'
-          },
-          (payload) => {
-            console.log('Login log change:', payload);
-            loadUserHistory(); // Reload user history
-          }
-        )
-        .subscribe();
-    }
-    
-    // Load Menu Items
-    async function loadMenuItems() {
-      try {
-        const { data, error } = await supabase
-          .from('menu_items')
-          .select('*')
-          .order('id');
-        
-        if (error) throw error;
-        
-        menuItems = data;
-        renderMenuItems();
-      } catch (error) {
-        console.error('Error loading menu items:', error);
-        showtoast('Failed to load menu items');
-      }
-    }
-    
-    // Render Menu Items
-    function renderMenuItems() {
-      const container = document.getElementById('menuItemsContainer');
-      container.innerHTML = '';
-      
-      if (menuItems.length === 0) {
-        container.innerHTML = '<p class="col-span-2 text-center py-8 text-gray-500">No menu items found</p>';
-        return;
-      }
-      
-      menuItems.forEach(item => {
-        const menuItemElement = document.createElement('div');
-        menuItemElement.className = 'menu-item-card';
-        menuItemElement.innerHTML = `
-          <img src="${item.image_path}" alt="${item.name}" class="menu-image">
-          <div class="p-4">
-            <h3 class="font-bold text-lg">${item.name}</h3>
-            <p class="text-gray-600 text-sm mb-2">${item.category}</p>
-            <p class="text-gray-700 text-sm mb-3">${item.description || 'No description'}</p>
-            <div class="flex justify-between items-center">
-              <span class="font-bold text-primary">₹${item.price}</span>
-              <div class="flex space-x-2">
-                <button onclick="openEditModal(${item.id})" class="text-blue-500 hover:text-blue-700">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button onclick="deleteMenuItem(${item.id})" class="text-red-500 hover:text-red-700">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-        container.appendChild(menuItemElement);
-      });
-    }
-    
-    // Open Add Menu Item Modal
+    // Menu Management Functions
     function openAddMenuItemModal() {
       document.getElementById('addMenuItemForm').reset();
     }
     
-    // Add Menu Item Form Handler
-    document.getElementById('addMenuItemForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const newItem = {
-        name: document.getElementById('menuItemName').value,
-        category: document.getElementById('menuItemCategory').value,
-        price: parseInt(document.getElementById('menuItemPrice').value),
-        description: document.getElementById('menuItemDescription').value,
-        image_path: document.getElementById('menuItemImageUrl').value
-      };
-      
-      try {
-        const { data, error } = await supabase
-          .from('menu_items')
-          .insert([newItem])
-          .select();
-        
-        if (error) throw error;
-        
-        showtoast('Menu item added successfully!');
-        document.getElementById('addMenuItemForm').reset();
-        loadMenuItems(); // Reload menu items
-      } catch (error) {
-        console.error('Error adding menu item:', error);
-        showtoast('Failed to add menu item');
-      }
-    });
-    
-    // Open Edit Modal
     function openEditModal(itemId) {
-      const item = menuItems.find(i => i.id === itemId);
-      if (!item) return;
-      
-      document.getElementById('editItemId').value = item.id;
-      document.getElementById('editItemName').value = item.name;
-      document.getElementById('editItemCategory').value = item.category;
-      document.getElementById('editItemPrice').value = item.price;
-      document.getElementById('editItemDescription').value = item.description || '';
-      document.getElementById('editItemImage').value = item.image_path;
+      // In a real app, this would populate the form with item data
+      document.getElementById('editItemId').value = itemId;
+      document.getElementById('editItemName').value = 'Sample Item ' + itemId;
+      document.getElementById('editItemCategory').value = 'Pizza';
+      document.getElementById('editItemPrice').value = '299';
+      document.getElementById('editItemDescription').value = 'Sample description for item ' + itemId;
+      document.getElementById('editItemImageUrl').value = 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
       
       editMenuItemModal.classList.remove('hidden');
     }
     
-    // Close Edit Modal
     function closeEditModal() {
       editMenuItemModal.classList.add('hidden');
     }
     
-    // Edit Menu Item Form Handler
-    document.getElementById('editMenuItemForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const itemId = document.getElementById('editItemId').value;
-      const updatedItem = {
-        name: document.getElementById('editItemName').value,
-        category: document.getElementById('editItemCategory').value,
-        price: parseInt(document.getElementById('editItemPrice').value),
-        description: document.getElementById('editItemDescription').value,
-        image_path: document.getElementById('editItemImage').value
-      };
-      
-      try {
-        const { data, error } = await supabase
-          .from('menu_items')
-          .update(updatedItem)
-          .eq('id', itemId)
-          .select();
-        
-        if (error) throw error;
-        
-        showtoast('Menu item updated successfully!');
-        closeEditModal();
-        loadMenuItems(); // Reload menu items
-      } catch (error) {
-        console.error('Error updating menu item:', error);
-        showtoast('Failed to update menu item');
+    function deleteMenuItem(itemId) {
+      if (confirm('Are you sure you want to delete this menu item?')) {
+        showtoast('Menu item deleted successfully!');
+        // In a real app, this would delete the item from the database
       }
+    }
+    
+    // Add Menu Item Form Handler
+    document.getElementById('addMenuItemForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      showtoast('Menu item added successfully!');
+      this.reset();
     });
     
-    // Delete Menu Item
-    async function deleteMenuItem(itemId) {
-      if (!confirm('Are you sure you want to delete this menu item?')) return;
-      
-      try {
-        const { error } = await supabase
-          .from('menu_items')
-          .delete()
-          .eq('id', itemId);
-        
-        if (error) throw error;
-        
-        showtoast('Menu item deleted successfully!');
-        loadMenuItems(); // Reload menu items
-      } catch (error) {
-        console.error('Error deleting menu item:', error);
-        showtoast('Failed to delete menu item');
-      }
-    }
-    
-    // Load Orders
-    async function loadOrders() {
-      try {
-        const { data, error } = await supabase
-          .from('orders')
-          .select('*')
-          .order('ordered_at', { ascending: false })
-          .limit(10);
-        
-        if (error) throw error;
-        
-        orders = data;
-        renderOrders();
-      } catch (error) {
-        console.error('Error loading orders:', error);
-        showtoast('Failed to load orders');
-      }
-    }
-    
-    // Render Orders
-    function renderOrders() {
-      const container = document.getElementById('ordersTableBody');
-      container.innerHTML = '';
-      
-      if (orders.length === 0) {
-        container.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No orders found</td></tr>';
-        return;
-      }
-      
-      orders.slice(0, 5).forEach(order => {
-        const orderRow = document.createElement('tr');
-        orderRow.className = 'border-b hover:bg-gray-50';
-        orderRow.innerHTML = `
-          <td class="py-4 font-medium">#${order.id.toString().slice(-4)}</td>
-          <td class="py-4">
-            <div class="flex items-center">
-              <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
-                <i class="fas fa-user text-gray-600 text-xs"></i>
-              </div>
-              <div>
-                <p>${order.user_phone}</p>
-                <p class="text-xs text-gray-500">Lat: ${order.user_location?.lat || 'N/A'}, Lng: ${order.user_location?.lng || 'N/A'}</p>
-              </div>
-            </div>
-          </td>
-          <td class="py-4">
-            <ul class="space-y-1">
-              ${order.items.map(item => `<li>${item.name} x${item.qty}</li>`).join('')}
-            </ul>
-          </td>
-          <td class="py-4 font-bold">₹${order.total}</td>
-          <td class="py-4">
-            <span class="status-badge ${
-              order.status === 'pending' ? 'status-pending' :
-              order.status === 'preparing' ? 'status-preparing' :
-              order.status === 'ready' ? 'status-ready' : 'status-delivered'
-            }">${order.status}</span>
-          </td>
-          <td class="py-4">
-            <div class="flex space-x-2">
-              <button class="action-btn btn-primary text-sm">Process</button>
-              <button class="action-btn btn-danger text-sm">Cancel</button>
-            </div>
-          </td>
-        `;
-        container.appendChild(orderRow);
-      });
-    }
-    
-    // Load User History
-    async function loadUserHistory() {
-      try {
-        const { data, error } = await supabase
-          .from('login_logs')
-          .select('*')
-          .order('timestamp', { ascending: false })
-          .limit(10);
-        
-        if (error) throw error;
-        
-        renderUserHistory(data);
-      } catch (error) {
-        console.error('Error loading user history:', error);
-        showtoast('Failed to load user history');
-      }
-    }
-    
-    // Render User History
-    function renderUserHistory(logs) {
-      const container = document.getElementById('userHistoryTableBody');
-      container.innerHTML = '';
-      
-      if (logs.length === 0) {
-        container.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">No user history found</td></tr>';
-        return;
-      }
-      
-      logs.slice(0, 5).forEach(log => {
-        const logRow = document.createElement('tr');
-        logRow.className = 'border-b hover:bg-gray-50';
-        logRow.innerHTML = `
-          <td class="py-4 font-medium">${log.phone}</td>
-          <td class="py-4">${new Date(log.timestamp).toLocaleString()}</td>
-          <td class="py-4">Jaipur, Rajasthan</td>
-          <td class="py-4">${log.location_lat || 'N/A'}, ${log.location_lng || 'N/A'}</td>
-          <td class="py-4">Samsung Galaxy S21</td>
-        `;
-        container.appendChild(logRow);
-      });
-    }
-    
-    // Initialize the app when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      // Set initial active section
-      document.querySelector('.sidebar-item[data-section="dashboard"]').click();
+    // Edit Menu Item Form Handler
+    document.getElementById('editMenuItemForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      showtoast('Menu item updated successfully!');
+      closeEditModal();
     });
     
     // Thermal Printer Functionality
@@ -1704,6 +1704,12 @@
       showtoast('Printing test page...');
       // In a real implementation, this would print a test page
     });
+    
+    // Initialize the dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set initial active section
+      document.querySelector('.sidebar-item[data-section="dashboard"]').click();
+    });
   </script>
 </body>
-  </html>
+                        </html>
