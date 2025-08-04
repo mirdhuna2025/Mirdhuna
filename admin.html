@@ -1,1 +1,1650 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIRDHUNA Admin | Complete Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase-js.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+            heading: ['Roboto', 'sans-serif']
+          },
+          colors: {
+            primary: '#1e40af',
+            secondary: '#3b82f6',
+            accent: '#0ea5e9',
+            dark: '#0f172a',
+            success: '#10b981',
+            warning: '#f59e0b',
+            danger: '#ef4444'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    
+    .admin-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar {
+      background: #1e293b;
+      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+      height: calc(100vh - 80px);
+      position: sticky;
+      top: 80px;
+    }
+    
+    .sidebar-item {
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-item.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-left: 3px solid #3b82f6;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(30, 58, 138, 0.3);
+    }
+    
+    .table-container {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .blurred-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(100px);
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-form {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-preparing { background: #dbeafe; color: #1e40af; }
+    .status-ready { background: #dcfce7; color: #166534; }
+    .status-delivered { background: #ede9fe; color: #5b21b6; }
+    
+    .order-item {
+      border-left: 3px solid #1e40af;
+      transition: all 0.3s ease;
+    }
+    
+    .order-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .print-area {
+      background: white;
+      padding: 1rem;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      max-width: 300px;
+      margin: 0 auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+    
+    .print-header {
+      text-align: center;
+      border-bottom: 1px dashed #000;
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .print-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.25rem;
+    }
+    
+    .print-total {
+      border-top: 1px dashed #000;
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .thermal-print {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .thermal-print-btn {
+      background: #1e293b;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .thermal-print-btn:hover {
+      background: #0f172a;
+      transform: translateY(-2px);
+    }
+    
+    .slide-preview {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .slide-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .slide-preview:hover .slide-image {
+      transform: scale(1.05);
+    }
+    
+    .slide-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+      padding: 1rem;
+    }
+    
+    .action-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: #1e40af;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #1e3a8a;
+    }
+    
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #059669;
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    
+    .btn-warning {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background: #d97706;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Login Screen -->
+  <div id="loginScreen" class="blurred-bg">
+    <div class="login-form">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-lock text-2xl text-white"></i>
+        </div>
+        <h2 class="text-2xl font-heading font-bold text-dark">MIRDHUNA ADMIN</h2>
+        <p class="text-gray-600">Secure Management Portal</p>
+      </div>
+      
+      <form id="loginForm">
+        <div class="mb-6">
+          <label class="block text-gray-700 mb-2 font-medium">Username</label>
+          <input type="text" id="username" placeholder="Enter username" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" value="Sanu">
+        </div>
+        
+        <div class="mb-6">
+          <label class="block text-gray-700 mb-2 font-medium">Password</label>
+          <input type="password" id="password" placeholder="Enter password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" value="Sanu.0000">
+        </div>
+        
+        <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-bold shadow-lg hover:shadow-xl transition">
+          <i class="fas fa-sign-in-alt mr-2"></i> Login to Dashboard
+        </button>
+        
+        <p class="text-xs text-gray-500 mt-4 text-center">Protected with advanced security protocols</p>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Main Admin Dashboard -->
+  <div id="adminDashboard" class="hidden">
+    <!-- Header -->
+    <header class="admin-header text-white py-4 px-6">
+      <div class="container mx-auto flex justify-between items-center">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3">
+            <i class="fas fa-utensils text-primary text-xl"></i>
+          </div>
+          <h1 class="text-2xl font-heading font-bold">MIRDHUNA ADMIN</h1>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+          <div class="relative">
+            <button class="bg-white bg-opacity-20 p-2 rounded-full">
+              <i class="fas fa-bell text-xl"></i>
+              <span class="absolute top-0 right-0 bg-danger text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+            </button>
+          </div>
+          
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+              <i class="fas fa-user text-gray-600"></i>
+            </div>
+            <div>
+              <p class="font-medium">Admin User</p>
+              <p class="text-xs text-blue-200">Online</p>
+            </div>
+          </div>
+          
+          <button id="logoutBtn" class="bg-danger p-2 rounded-full">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+    
+    <div class="flex">
+      <!-- Sidebar -->
+      <aside class="sidebar w-64 p-4">
+        <nav>
+          <ul class="space-y-2">
+            <li>
+              <a href="#" class="sidebar-item active flex items-center p-3 text-white" data-section="dashboard">
+                <i class="fas fa-home mr-3 text-lg"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="orders">
+                <i class="fas fa-shopping-cart mr-3 text-lg"></i>
+                <span>Orders</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="menu">
+                <i class="fas fa-utensils mr-3 text-lg"></i>
+                <span>Menu Management</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="users">
+                <i class="fas fa-users mr-3 text-lg"></i>
+                <span>User History</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="slides">
+                <i class="fas fa-images mr-3 text-lg"></i>
+                <span>Slide Management</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="analytics">
+                <i class="fas fa-chart-line mr-3 text-lg"></i>
+                <span>Analytics</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        
+        <div class="mt-8 p-4 bg-dark rounded-lg">
+          <h3 class="text-white font-bold mb-3">System Status</h3>
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Database</span>
+                <span>Operational</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-success h-2 rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Storage</span>
+                <span>85%</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-warning h-2 rounded-full" style="width: 85%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>API</span>
+                <span>99.9%</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-success h-2 rounded-full" style="width: 99.9%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      
+      <!-- Main Content -->
+      <main class="flex-1 p-6">
+        <!-- Dashboard Section -->
+        <section id="dashboardSection">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Dashboard Overview</h2>
+            <p class="text-gray-600">Welcome back! Here's what's happening today.</p>
+          </div>
+          
+          <!-- Stats Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold">₹24.5K</p>
+                  <p class="text-blue-200">Today's Revenue</p>
+                </div>
+                <i class="fas fa-rupee-sign text-3xl opacity-30"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
+                  <div class="bg-white h-2 rounded-full" style="width: 75%"></div>
+                </div>
+                <p class="text-xs text-blue-200 mt-2">12% increase from yesterday</p>
+              </div>
+            </div>
+            
+            <div class="stat-card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold">142</p>
+                  <p class="text-blue-200">Orders Today</p>
+                </div>
+                <i class="fas fa-shopping-bag text-3xl opacity-30"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
+                  <div class="bg-white h-2 rounded-full" style="width: 85%"></div>
+                </div>
+                <p class="text-xs text-blue-200 mt-2">18% increase from yesterday</p>
+              </div>
+            </div>
+            
+            <div class="stat-card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold">4.8★</p>
+                  <p class="text-blue-200">Avg Rating</p>
+                </div>
+                <i class="fas fa-star text-3xl opacity-30"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
+                  <div class="bg-white h-2 rounded-full" style="width: 95%"></div>
+                </div>
+                <p class="text-xs text-blue-200 mt-2">Excellent feedback</p>
+              </div>
+            </div>
+            
+            <div class="stat-card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold">87%</p>
+                  <p class="text-blue-200">Repeat Customers</p>
+                </div>
+                <i class="fas fa-users text-3xl opacity-30"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
+                  <div class="bg-white h-2 rounded-full" style="width: 87%"></div>
+                </div>
+                <p class="text-xs text-blue-200 mt-2">Loyal customer base</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recent Orders -->
+          <div class="card p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-bold text-dark">Recent Orders</h3>
+              <button class="text-primary font-medium">View All</button>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-left text-gray-500 border-b">
+                    <th class="pb-3">Order ID</th>
+                    <th class="pb-3">Customer</th>
+                    <th class="pb-3">Items</th>
+                    <th class="pb-3">Amount</th>
+                    <th class="pb-3">Status</th>
+                    <th class="pb-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1023</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <span>+91 9835124772</span>
+                      </div>
+                    </td>
+                    <td class="py-4">2 items</td>
+                    <td class="py-4 font-bold">₹387</td>
+                    <td class="py-4">
+                      <span class="status-badge status-pending">Pending</span>
+                    </td>
+                    <td class="py-4">
+                      <button class="action-btn btn-primary text-sm">Process</button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1022</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <span>+91 9876543210</span>
+                      </div>
+                    </td>
+                    <td class="py-4">1 item</td>
+                    <td class="py-4 font-bold">₹299</td>
+                    <td class="py-4">
+                      <span class="status-badge status-preparing">Preparing</span>
+                    </td>
+                    <td class="py-4">
+                      <button class="action-btn btn-warning text-sm">Ready</button>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1021</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <span>+91 9123456789</span>
+                      </div>
+                    </td>
+                    <td class="py-4">3 items</td>
+                    <td class="py-4 font-bold">₹547</td>
+                    <td class="py-4">
+                      <span class="status-badge status-ready">Ready</span>
+                    </td>
+                    <td class="py-4">
+                      <button class="action-btn btn-success text-sm">Deliver</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Analytics Chart -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="card p-6">
+              <h3 class="text-xl font-bold text-dark mb-6">Sales Overview</h3>
+              <div class="h-64 flex items-end justify-between px-4">
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 60%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Mon</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 80%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Tue</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 40%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Wed</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 90%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Thu</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 70%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Fri</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 100%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Sat</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 50%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Sun</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <h3 class="text-xl font-bold text-dark mb-6">Popular Menu Items</h3>
+              <div class="space-y-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
+                    <span class="text-xs font-bold">1</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium">Cheeseburger</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div class="bg-primary h-2 rounded-full" style="width: 92%"></div>
+                    </div>
+                  </div>
+                  <span class="text-sm font-bold text-primary">42 orders</span>
+                </div>
+                
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
+                    <span class="text-xs font-bold">2</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium">Margherita Pizza</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div class="bg-secondary h-2 rounded-full" style="width: 85%"></div>
+                    </div>
+                  </div>
+                  <span class="text-sm font-bold text-secondary">38 orders</span>
+                </div>
+                
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
+                    <span class="text-xs font-bold">3</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium">Club Sandwich</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div class="bg-accent h-2 rounded-full" style="width: 72%"></div>
+                    </div>
+                  </div>
+                  <span class="text-sm font-bold text-accent">29 orders</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Orders Section -->
+        <section id="ordersSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Order Management</h2>
+            <p class="text-gray-600">Manage all customer orders in real-time</p>
+          </div>
+          
+          <div class="card p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-bold text-dark">All Orders</h3>
+              <div class="flex space-x-3">
+                <select class="border p-2 rounded-lg">
+                  <option>All Statuses</option>
+                  <option>Pending</option>
+                  <option>Preparing</option>
+                  <option>Ready</option>
+                  <option>Delivered</option>
+                </select>
+                <input type="text" placeholder="Search orders..." class="border p-2 rounded-lg">
+              </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-left text-gray-500 border-b">
+                    <th class="pb-3">Order ID</th>
+                    <th class="pb-3">Customer</th>
+                    <th class="pb-3">Items</th>
+                    <th class="pb-3">Amount</th>
+                    <th class="pb-3">Time</th>
+                    <th class="pb-3">Status</th>
+                    <th class="pb-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1023</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <div>
+                          <p>+91 9835124772</p>
+                          <p class="text-xs text-gray-500">Lat: 26.8467, Lng: 75.8158</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-4">
+                      <ul class="space-y-1">
+                        <li>Gourmet Cheeseburger x2</li>
+                        <li>Truffle Fries x1</li>
+                      </ul>
+                    </td>
+                    <td class="py-4 font-bold">₹387</td>
+                    <td class="py-4">10:23 AM</td>
+                    <td class="py-4">
+                      <span class="status-badge status-pending">Pending</span>
+                    </td>
+                    <td class="py-4">
+                      <div class="flex space-x-2">
+                        <button class="action-btn btn-primary text-sm">Process</button>
+                        <button class="action-btn btn-danger text-sm">Cancel</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1022</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <div>
+                          <p>+91 9876543210</p>
+                          <p class="text-xs text-gray-500">Lat: 26.8523, Lng: 75.8210</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-4">
+                      <ul class="space-y-1">
+                        <li>Truffle Margherita x1</li>
+                      </ul>
+                    </td>
+                    <td class="py-4 font-bold">₹299</td>
+                    <td class="py-4">09:45 AM</td>
+                    <td class="py-4">
+                      <span class="status-badge status-preparing">Preparing</span>
+                    </td>
+                    <td class="py-4">
+                      <div class="flex space-x-2">
+                        <button class="action-btn btn-warning text-sm">Ready</button>
+                        <button class="action-btn btn-danger text-sm">Cancel</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">#ORD-1021</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                          <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <div>
+                          <p>+91 9123456789</p>
+                          <p class="text-xs text-gray-500">Lat: 26.8391, Lng: 75.8082</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="py-4">
+                      <ul class="space-y-1">
+                        <li>Avocado Club Sandwich x2</li>
+                        <li>Belgian Chocolate Shake x1</li>
+                      </ul>
+                    </td>
+                    <td class="py-4 font-bold">₹547</td>
+                    <td class="py-4">08:30 AM</td>
+                    <td class="py-4">
+                      <span class="status-badge status-ready">Ready</span>
+                    </td>
+                    <td class="py-4">
+                      <div class="flex space-x-2">
+                        <button class="action-btn btn-success text-sm">Deliver</button>
+                        <button class="action-btn btn-danger text-sm">Cancel</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="flex justify-between items-center mt-6">
+              <p class="text-gray-600">Showing 1 to 3 of 120 orders</p>
+              <div class="flex space-x-2">
+                <button class="action-btn bg-gray-200">Previous</button>
+                <button class="action-btn bg-gray-200">Next</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Thermal Printer Receipt -->
+          <div class="card p-6">
+            <h3 class="text-xl font-bold text-dark mb-6">Thermal Printer Receipt</h3>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+              <div class="flex-1">
+                <div class="print-area">
+                  <div class="print-header">
+                    <h2 class="font-bold text-lg">MIRDHUNA CAFE</h2>
+                    <p class="text-xs">123 Food Street, Culinary District</p>
+                    <p class="text-xs">Jaipur, Rajasthan</p>
+                  </div>
+                  
+                  <div class="mb-2">
+                    <p class="text-xs">Order ID: #ORD-1023</p>
+                    <p class="text-xs">Date: 2023-06-15 10:23 AM</p>
+                    <p class="text-xs">Customer: +91 9835124772</p>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <div class="print-item">
+                      <span>Gourmet Cheeseburger x2</span>
+                      <span>₹358</span>
+                    </div>
+                    <div class="print-item">
+                      <span>Truffle Fries x1</span>
+                      <span>₹29</span>
+                    </div>
+                  </div>
+                  
+                  <div class="print-total">
+                    <span>TOTAL</span>
+                    <span>₹387</span>
+                  </div>
+                  
+                  <div class="text-center mt-4 text-xs">
+                    <p>Thank you for your order!</p>
+                    <p>Visit us again at mirdhuna.com</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex-1 thermal-print">
+                <h4 class="font-bold mb-4">Printer Controls</h4>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-gray-700 mb-2">Printer IP Address</label>
+                    <input type="text" placeholder="192.168.1.100" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div>
+                    <label class="block text-gray-700 mb-2">Port</label>
+                    <input type="text" placeholder="9100" class="w-full p-2 border rounded" value="9100">
+                  </div>
+                  
+                  <div class="flex space-x-3">
+                    <button class="thermal-print-btn flex-1">
+                      <i class="fas fa-print mr-2"></i> Print Receipt
+                    </button>
+                    <button class="thermal-print-btn flex-1">
+                      <i class="fas fa-file-pdf mr-2"></i> Download PDF
+                    </button>
+                  </div>
+                  
+                  <div class="mt-6">
+                    <h5 class="font-bold mb-2">Print Test</h5>
+                    <button class="thermal-print-btn w-full">
+                      <i class="fas fa-print mr-2"></i> Print Test Page
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Menu Management Section -->
+        <section id="menuSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Menu Management</h2>
+            <p class="text-gray-600">Add, edit, or remove menu items</p>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+              <div class="card p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                  <h3 class="text-xl font-bold text-dark">Menu Items</h3>
+                  <button class="action-btn btn-primary">
+                    <i class="fas fa-plus mr-2"></i> Add New Item
+                  </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="border rounded-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Pizza" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                      <h4 class="font-bold text-lg">Truffle Margherita</h4>
+                      <p class="text-gray-600 text-sm mb-2">Premium pizza with truffle oil</p>
+                      <div class="flex justify-between items-center">
+                        <span class="font-bold text-primary">₹299</span>
+                        <div class="flex space-x-2">
+                          <button class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="border rounded-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Burger" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                      <h4 class="font-bold text-lg">Gourmet Cheeseburger</h4>
+                      <p class="text-gray-600 text-sm mb-2">Double patty with special sauce</p>
+                      <div class="flex justify-between items-center">
+                        <span class="font-bold text-primary">₹179</span>
+                        <div class="flex space-x-2">
+                          <button class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="border rounded-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Sandwich" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                      <h4 class="font-bold text-lg">Avocado Club Sandwich</h4>
+                      <p class="text-gray-600 text-sm mb-2">Fresh avocado with grilled chicken</p>
+                      <div class="flex justify-between items-center">
+                        <span class="font-bold text-primary">₹199</span>
+                        <div class="flex space-x-2">
+                          <button class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="border rounded-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Shake" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                      <h4 class="font-bold text-lg">Belgian Chocolate Shake</h4>
+                      <p class="text-gray-600 text-sm mb-2">Rich chocolate with whipped cream</p>
+                      <div class="flex justify-between items-center">
+                        <span class="font-bold text-primary">₹149</span>
+                        <div class="flex space-x-2">
+                          <button class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="card p-6 sticky top-24">
+                <h3 class="text-xl font-bold text-dark mb-6">Add New Menu Item</h3>
+                
+                <form>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Item Name</label>
+                    <input type="text" placeholder="Enter item name" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Category</label>
+                    <select class="w-full p-2 border rounded">
+                      <option>Pizza</option>
+                      <option>Burger</option>
+                      <option>Sandwich</option>
+                      <option>Shakes</option>
+                      <option>Desserts</option>
+                    </select>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Price (₹)</label>
+                    <input type="number" placeholder="Enter price" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Description</label>
+                    <textarea placeholder="Enter description" class="w-full p-2 border rounded" rows="3"></textarea>
+                  </div>
+                  
+                  <div class="mb-6">
+                    <label class="block text-gray-700 mb-2">Image</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                      <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                      <p class="text-gray-600">Drag & drop or click to upload</p>
+                      <input type="file" class="hidden" id="imageUpload">
+                      <label for="imageUpload" class="action-btn btn-primary mt-3 inline-block cursor-pointer">
+                        <i class="fas fa-upload mr-2"></i> Choose File
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <button type="submit" class="action-btn btn-primary w-full">
+                    <i class="fas fa-save mr-2"></i> Save Menu Item
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- User History Section -->
+        <section id="usersSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">User Login History</h2>
+            <p class="text-gray-600">Track customer logins with location data</p>
+          </div>
+          
+          <div class="card p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-bold text-dark">Login Records</h3>
+              <div class="flex space-x-3">
+                <input type="text" placeholder="Search by phone..." class="border p-2 rounded-lg">
+                <select class="border p-2 rounded-lg">
+                  <option>Last 24 Hours</option>
+                  <option>Last 7 Days</option>
+                  <option>Last 30 Days</option>
+                  <option>All Time</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-left text-gray-500 border-b">
+                    <th class="pb-3">Phone Number</th>
+                    <th class="pb-3">Login Time</th>
+                    <th class="pb-3">Location</th>
+                    <th class="pb-3">Coordinates</th>
+                    <th class="pb-3">Device</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">+91 9835124772</td>
+                    <td class="py-4">2023-06-15 10:20 AM</td>
+                    <td class="py-4">Jaipur, Rajasthan</td>
+                    <td class="py-4">26.8467, 75.8158</td>
+                    <td class="py-4">Samsung Galaxy S21</td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">+91 9876543210</td>
+                    <td class="py-4">2023-06-15 09:40 AM</td>
+                    <td class="py-4">Jaipur, Rajasthan</td>
+                    <td class="py-4">26.8523, 75.8210</td>
+                    <td class="py-4">iPhone 14 Pro</td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-medium">+91 9123456789</td>
+                    <td class="py-4">2023-06-15 08:25 AM</td>
+                    <td class="py-4">Jaipur, Rajasthan</td>
+                    <td class="py-4">26.8391, 75.8082</td>
+                    <td class="py-4">Google Pixel 7</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="flex justify-between items-center mt-6">
+              <p class="text-gray-600">Showing 1 to 3 of 142 records</p>
+              <div class="flex space-x-2">
+                <button class="action-btn bg-gray-200">Previous</button>
+                <button class="action-btn bg-gray-200">Next</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Map Visualization -->
+          <div class="card p-6">
+            <h3 class="text-xl font-bold text-dark mb-6">Customer Location Map</h3>
+            <div class="bg-gray-200 rounded-xl h-96 flex items-center justify-center">
+              <div class="text-center">
+                <i class="fas fa-map-marked-alt text-5xl text-gray-500 mb-4"></i>
+                <p class="text-gray-600">Interactive map showing customer locations</p>
+                <p class="text-sm text-gray-500 mt-2">(Integration with Google Maps API)</p>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <div class="bg-blue-50 p-4 rounded-lg">
+                <h4 class="font-bold text-blue-800 mb-2">Most Active Area</h4>
+                <p class="text-2xl font-bold">Vaishali Nagar</p>
+                <p class="text-sm text-gray-600">42% of customers</p>
+              </div>
+              
+              <div class="bg-green-50 p-4 rounded-lg">
+                <h4 class="font-bold text-green-800 mb-2">Average Distance</h4>
+                <p class="text-2xl font-bold">3.2 km</p>
+                <p class="text-sm text-gray-600">from cafe location</p>
+              </div>
+              
+              <div class="bg-purple-50 p-4 rounded-lg">
+                <h4 class="font-bold text-purple-800 mb-2">Peak Hours</h4>
+                <p class="text-2xl font-bold">12:00 PM - 2:00 PM</p>
+                <p class="text-sm text-gray-600">highest login activity</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Slide Management Section -->
+        <section id="slidesSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Slide Management</h2>
+            <p class="text-gray-600">Manage homepage carousel slides</p>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+              <div class="card p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                  <h3 class="text-xl font-bold text-dark">Current Slides</h3>
+                  <button class="action-btn btn-primary">
+                    <i class="fas fa-plus mr-2"></i> Add New Slide
+                  </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 1" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Summer Pizza Special</h4>
+                      <p class="text-sm">Fresh ingredients, amazing taste</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Active</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 2" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Burger Bonanza</h4>
+                      <p class="text-sm">Juicy burgers with crispy fries</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Active</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 3" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Healthy Sandwiches</h4>
+                      <p class="text-sm">Fresh ingredients, guilt-free pleasure</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Inactive</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 4" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Chocolate Shake Madness</h4>
+                      <p class="text-sm">Irresistible chocolatey goodness</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Active</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="card p-6 sticky top-24">
+                <h3 class="text-xl font-bold text-dark mb-6">Add New Slide</h3>
+                
+                <form>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Slide Title</label>
+                    <input type="text" placeholder="Enter slide title" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Description</label>
+                    <textarea placeholder="Enter description" class="w-full p-2 border rounded" rows="3"></textarea>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">CTA Text</label>
+                    <input type="text" placeholder="e.g. Order Now" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">CTA Link</label>
+                    <input type="text" placeholder="e.g. /menu#burgers" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div class="mb-6">
+                    <label class="block text-gray-700 mb-2">Image</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                      <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                      <p class="text-gray-600">Drag & drop or click to upload</p>
+                      <input type="file" class="hidden" id="slideUpload">
+                      <label for="slideUpload" class="action-btn btn-primary mt-3 inline-block cursor-pointer">
+                        <i class="fas fa-upload mr-2"></i> Choose File
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="flex items-center">
+                      <input type="checkbox" class="mr-2">
+                      <span>Active Slide</span>
+                    </label>
+                  </div>
+                  
+                  <button type="submit" class="action-btn btn-primary w-full">
+                    <i class="fas fa-save mr-2"></i> Save Slide
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Analytics Section -->
+        <section id="analyticsSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Analytics Dashboard</h2>
+            <p class="text-gray-600">Comprehensive insights into your business performance</p>
+          </div>
+          
+          <!-- Key Metrics -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">1,240</p>
+                  <p class="text-gray-600">Total Orders</p>
+                </div>
+                <i class="fas fa-shopping-bag text-3xl text-gray-300"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">+12% from last month</p>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">₹3.2M</p>
+                  <p class="text-gray-600">Total Revenue</p>
+                </div>
+                <i class="fas fa-rupee-sign text-3xl text-gray-300"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">+18% from last month</p>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">4.8</p>
+                  <p class="text-gray-600">Avg. Rating</p>
+                </div>
+                <i class="fas fa-star text-3xl text-gray-300"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">+0.2 from last month</p>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">87%</p>
+                  <p class="text-gray-600">Repeat Customers</p>
+                </div>
+                <i class="fas fa-users text-3xl text-gray-300"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">+3% from last month</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Charts -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="card p-6">
+              <h3 class="text-xl font-bold text-dark mb-6">Revenue Trends</h3>
+              <div class="h-64 flex items-end justify-between px-4">
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 60%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Jan</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 70%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Feb</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 50%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Mar</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 80%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Apr</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 90%"></div>
+                  <p class="text-xs mt-2 text-gray-600">May</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 100%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Jun</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <h3 class="text-xl font-bold text-dark mb-6">Customer Demographics</h3>
+              <div class="h-64 flex items-center justify-center">
+                <div class="relative w-48 h-48">
+                  <div class="absolute inset-0 rounded-full border-8 border-blue-500"></div>
+                  <div class="absolute inset-0 rounded-full border-8 border-green-500 transform rotate-120"></div>
+                  <div class="absolute inset-0 rounded-full border-8 border-yellow-500 transform rotate-240"></div>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center">
+                      <p class="text-2xl font-bold">Age Groups</p>
+                      <p class="text-sm text-gray-600">18-35: 62%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Top Performing Items -->
+          <div class="card p-6">
+            <h3 class="text-xl font-bold text-dark mb-6">Top Performing Menu Items</h3>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-left text-gray-500 border-b">
+                    <th class="pb-3">Rank</th>
+                    <th class="pb-3">Item Name</th>
+                    <th class="pb-3">Category</th>
+                    <th class="pb-3">Orders</th>
+                    <th class="pb-3">Revenue</th>
+                    <th class="pb-3">Rating</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-bold text-primary">#1</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                        <span>Gourmet Cheeseburger</span>
+                      </div>
+                    </td>
+                    <td class="py-4">Burger</td>
+                    <td class="py-4">420</td>
+                    <td class="py-4 font-bold">₹75,180</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-bold text-primary">#2</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                        <span>Truffle Margherita</span>
+                      </div>
+                    </td>
+                    <td class="py-4">Pizza</td>
+                    <td class="py-4">380</td>
+                    <td class="py-4 font-bold">₹113,620</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.7</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-bold text-primary">#3</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                        <span>Club Sandwich</span>
+                      </div>
+                    </td>
+                    <td class="py-4">Sandwich</td>
+                    <td class="py-4">290</td>
+                    <td class="py-4 font-bold">₹57,710</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.6</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  
+  <script>
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://cfgjvbhfhfgskssopknn.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmZ2p2YmhmaGZnc2tzc29wa25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMDQ1MzQsImV4cCI6MjA2OTc4MDUzNH0.uAsDR4Vj7fSQ7q5Qz859WPzj7qlJIsHpF23Rl7dmj7w';
+    
+    // Initialize Supabase
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // DOM Elements
+    const loginScreen = document.getElementById('loginScreen');
+    const adminDashboard = document.getElementById('adminDashboard');
+    const loginForm = document.getElementById('loginForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    // Sections
+    const sections = {
+      dashboard: document.getElementById('dashboardSection'),
+      orders: document.getElementById('ordersSection'),
+      menu: document.getElementById('menuSection'),
+      users: document.getElementById('usersSection'),
+      slides: document.getElementById('slidesSection'),
+      analytics: document.getElementById('analyticsSection')
+    };
+    
+    // Login Form Handler
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      // Validate credentials (in a real app, this would be server-side)
+      if (username === 'Sanu' && password === 'Sanu.0000') {
+        loginScreen.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        showtoast('Welcome to MIRDHUNA Admin!');
+      } else {
+        showtoast('Invalid credentials. Please try again.');
+      }
+    });
+    
+    // Logout Handler
+    logoutBtn.addEventListener('click', function() {
+      adminDashboard.classList.add('hidden');
+      loginScreen.classList.remove('hidden');
+      document.getElementById('username').value = 'Sanu';
+      document.getElementById('password').value = 'Sanu.0000';
+      showtoast('You have been logged out.');
+    });
+    
+    // Navigation
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Update active state
+        document.querySelectorAll('.sidebar-item').forEach(i => {
+          i.classList.remove('active');
+          i.classList.add('text-gray-300');
+        });
+        this.classList.add('active');
+        this.classList.remove('text-gray-300');
+        this.classList.add('text-white');
+        
+        // Show selected section
+        const section = this.getAttribute('data-section');
+        Object.values(sections).forEach(sec => sec.classList.add('hidden'));
+        sections[section].classList.remove('hidden');
+      });
+    });
+    
+    // Toast Notification
+    function showtoast(message) {
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-6 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300';
+      toast.innerHTML = `
+        <div class="flex items-center">
+          <i class="fas fa-info-circle mr-2"></i>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      // Add to body
+      document.body.appendChild(toast);
+      
+      // Remove after delay
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+          document.body.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+    
+    // Initialize the dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set initial active section
+      document.querySelector('.sidebar-item[data-section="dashboard"]').click();
+      
+      // Subscribe to real-time updates
+      subscribeToRealtimeUpdates();
+    });
+    
+    // Real-time Updates
+    function subscribeToRealtimeUpdates() {
+      // Subscribe to orders
+      supabase
+        .channel('orders')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'orders'
+          },
+          (payload) => {
+            console.log('New order received:', payload.new);
+            showtoast('New order received!');
+            // Update dashboard in real-time
+            updateOrderList(payload.new);
+          }
+        )
+        .subscribe();
+      
+      // Subscribe to login logs
+      supabase
+        .channel('login_logs')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'login_logs'
+          },
+          (payload) => {
+            console.log('New login recorded:', payload.new);
+            // Update user history in real-time
+            updateUserHistory(payload.new);
+          }
+        )
+        .subscribe();
+    }
+    
+    // Update order list in real-time
+    function updateOrderList(order) {
+      // This would update the UI with the new order
+      console.log('Updating order list with:', order);
+    }
+    
+    // Update user history in real-time
+    function updateUserHistory(login) {
+      // This would update the user history UI
+      console.log('Updating user history with:', login);
+    }
+    
+    // Thermal Printer Functionality
+    document.querySelector('.thermal-print-btn').addEventListener('click', function() {
+      showtoast('Printing receipt...');
+      // In a real implementation, this would connect to a thermal printer
+    });
+    
+    // Print Test Page
+    document.querySelectorAll('.thermal-print-btn')[1].addEventListener('click', function() {
+      showtoast('Printing test page...');
+      // In a real implementation, this would print a test page
+    });
+  </script>
+</body>
+  </html>
