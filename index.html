@@ -1,1926 +1,1194 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIRDHUNA - Online Food Ordering</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { 
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        :root {
-            --primary: #FF6B00;
-            --secondary: #FFD166;
-            --accent: #06D6A0;
-            --dark: #1A1A1A;
-            --light: #FFF9C4;
-            --white: #FFFFFF;
-            --shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        body {
-            background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%);
-            color: var(--dark);
-            min-height: 100vh;
-            padding: 15px;
-            background-attachment: fixed;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        /* Header Styles */
-        header {
-            display: grid;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-shadow: 2px 2px 0 rgba(255, 107, 0, 0.2);
-            letter-spacing: 1px;
-        }
-        
-        .tagline {
-            font-size: 0.9rem;
-            color: var(--dark);
-            font-weight: 500;
-        }
-        
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-        }
-        
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
-            transition: all 0.3s ease;
-            padding: 6px 15px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-        }
-        
-        .contact-item:hover {
-            background: rgba(255, 255, 255, 0.5);
-            transform: translateY(-1px);
-        }
-        
-        .contact-item i {
-            color: var(--primary);
-            font-size: 1rem;
-        }
-        
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            border-radius: 20px;
-            padding: 50px;
-            margin-bottom: 40px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            z-index: 1;
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .hero h1 {
-            font-size: 3.5rem;
-            color: var(--primary);
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 0 var(--secondary);
-        }
-        
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            color: var(--dark);
-            line-height: 1.6;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            padding: 15px 40px;
-            background: var(--primary);
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .cta-button:hover {
-            background: #e65100;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 107, 0, 0.6);
-        }
-        
-        /* Slides Section */
-        .slides-container {
-            margin-bottom: 40px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            position: relative;
-            height: 200px;
-        }
-        
-        .slides {
-            display: flex;
-            transition: transform 0.5s ease;
-            height: 100%;
-        }
-        
-        .slide {
-            min-width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: flex-end;
-        }
-        
-        .slide-content {
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 15px;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .slide-content h3 {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        
-        .slide-content p {
-            font-size: 0.9rem;
-        }
-        
-        .slide-indicators {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-        }
-        
-        .indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.5);
-            cursor: pointer;
-        }
-        
-        .indicator.active {
-            background: white;
-        }
-        
-        /* Menu Section */
-        .menu-section {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 40px;
-        }
-        
-        h2 {
-            color: var(--primary);
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid var(--secondary);
-            font-size: 1.8rem;
-        }
-        
-        .menu-categories {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            scrollbar-width: none;
-        }
-        
-        .menu-categories::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .category-btn {
-            padding: 12px 25px;
-            background: #f5f5f5;
-            border: none;
-            border-radius: 30px;
-            font-weight: 500;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-        }
-        
-        .category-btn.active, .category-btn:hover {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 5px 10px rgba(255, 107, 0, 0.3);
-        }
-        
-        .menu-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 25px;
-        }
-        
-        .menu-item {
-            border: 1px solid #e0e0e0;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            background: white;
-        }
-        
-        .menu-item:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-        
-        .item-image {
-            height: 150px;
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .item-details {
-            padding: 20px;
-        }
-        
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        
-        .item-name {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--dark);
-        }
-        
-        .item-price {
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-        
-        .item-description {
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            min-height: 60px;
-        }
-        
-        .add-to-cart {
-            width: 100%;
-            padding: 12px;
-            background: var(--secondary);
-            color: var(--dark);
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-        }
-        
-        .add-to-cart:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 30px;
-            background: white;
-            border-radius: 20px;
-            margin-top: 30px;
-            box-shadow: var(--shadow);
-        }
-        
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .footer-logo {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-        
-        .footer-links {
-            display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
-        }
-        
-        .footer-links a {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-        
-        .footer-links a:hover {
-            color: var(--primary);
-        }
-        
-        .copyright {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-            color: #666;
-            font-size: 0.8rem;
-        }
-        
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            width: 95%;
-            max-width: 500px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            position: relative;
-            animation: modalOpen 0.4s ease;
-        }
-        
-        @keyframes modalOpen {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #999;
-            transition: all 0.3s ease;
-        }
-        
-        .close-modal:hover {
-            color: var(--primary);
-        }
-        
-        .modal h2 {
-            margin-top: 0;
-            text-align: center;
-        }
-        
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
-        
-        .form-group label {
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--dark);
-            font-size: 0.9rem;
-        }
-        
-        .form-group input {
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .form-group input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
-        }
-        
-        .location-info {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 10px;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .location-info i {
-            color: var(--primary);
-        }
-        
-        .login-btn {
-            padding: 15px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        
-        .login-btn:hover {
-            background: #e65100;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.3);
-        }
-        
-        .checkout-modal .cart-item {
-            padding: 10px 0;
-            border-bottom: 1px dashed #e0e0e0;
-        }
-        
-        .checkout-modal .cart-item:last-child {
-            border-bottom: none;
-        }
-        
-        .checkout-modal .cart-total {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 1.3rem;
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 2px solid var(--secondary);
-        }
-        
-        .place-order-btn {
-            padding: 15px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 25px;
-            width: 100%;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(6, 214, 160, 0.3);
-        }
-        
-        .place-order-btn:hover {
-            background: #05b88b;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(6, 214, 160, 0.5);
-        }
-        
-        /* Cart Indicator */
-        .cart-indicator {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--primary);
-            color: white;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            cursor: pointer;
-            z-index: 100;
-            transition: all 0.3s ease;
-        }
-        
-        .cart-indicator:hover {
-            transform: scale(1.1);
-        }
-        
-        .cart-indicator .count {
-            position: absolute;
-            top: -3px;
-            right: -3px;
-            background: var(--accent);
-            color: white;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-        
-        /* Order History */
-        .order-history {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 40px;
-            display: none;
-        }
-        
-        .order-history h2 {
-            color: var(--primary);
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid var(--secondary);
-            font-size: 1.8rem;
-        }
-        
-        .order-item {
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-        
-        .order-items {
-            margin: 10px 0;
-            padding-left: 15px;
-        }
-        
-        .order-total {
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        .order-status {
-            padding: 3px 8px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        .status-pending {
-            background: #fff3e0;
-            color: #ff9800;
-        }
-        
-        .status-progress {
-            background: #e3f2fd;
-            color: #2196f3;
-        }
-        
-        .status-completed {
-            background: #e8f5e9;
-            color: #4caf50;
-        }
-        
-        /* User Info */
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: white;
-            padding: 10px 15px;
-            border-radius: 30px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-        }
-        
-        .user-info i {
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
-        
-        .logout-btn {
-            background: #f44336;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .logout-btn:hover {
-            background: #d32f2f;
-        }
-        
-        /* Notification Badge */
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #f44336;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: bold;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        /* Live Update Indicator */
-        .live-update-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #4ade80;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 30px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .live-update-indicator .dot {
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIRDHUNA | Premium Food Experience</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Playfair Display', 'serif'],
+            body: ['Poppins', 'sans-serif']
+          },
+          colors: {
+            primary: '#e11d48',
+            secondary: '#f43f5e',
+            accent: '#f97316',
+            dark: '#1e293b',
+            light: '#f8fafc'
+          },
+          animation: {
+            'float': 'float 3s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-slow': 'bounce 3s infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' }
             }
-            
-            .contact-info {
-                align-items: center;
-                width: 100%;
-            }
-            
-            .hero {
-                padding: 30px 20px;
-            }
-            
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero p {
-                font-size: 1.1rem;
-            }
-            
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .menu-items {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-            
-            .user-info {
-                justify-content: space-between;
-            }
+          }
         }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            header {
-                padding: 10px 0;
-            }
-            
-            .logo {
-                font-size: 1.8rem;
-            }
-            
-            .hero {
-                padding: 25px 10px;
-                margin-bottom: 20px;
-            }
-            
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .hero p {
-                font-size: 0.95rem;
-            }
-            
-            .slides-container {
-                height: 180px;
-                margin-bottom: 20px;
-            }
-            
-            .menu-section {
-                padding: 15px;
-                margin-bottom: 20px;
-            }
-            
-            h2 {
-                font-size: 1.3rem;
-                margin-bottom: 15px;
-            }
-            
-            .menu-items {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-            
-            .item-image {
-                height: 120px;
-            }
-            
-            .item-details {
-                padding: 12px;
-            }
-            
-            .item-header {
-                margin-bottom: 8px;
-            }
-            
-            .item-name, .item-price {
-                font-size: 0.9rem;
-            }
-            
-            .item-description {
-                font-size: 0.8rem;
-                margin-bottom: 12px;
-                min-height: 50px;
-            }
-            
-            .add-to-cart {
-                padding: 8px;
-                font-size: 0.85rem;
-            }
-            
-            footer {
-                padding: 15px;
-                margin-top: 15px;
-            }
-            
-            .footer-logo {
-                font-size: 1.3rem;
-            }
-            
-            .footer-links {
-                gap: 10px;
-            }
-            
-            .footer-links a {
-                font-size: 0.8rem;
-            }
-            
-            .copyright {
-                font-size: 0.7rem;
-                margin-top: 12px;
-                padding-top: 12px;
-            }
-            
-            .cart-indicator {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-                bottom: 15px;
-                right: 15px;
-            }
-            
-            .cart-indicator .count {
-                width: 20px;
-                height: 20px;
-                font-size: 0.6rem;
-            }
-            
-            .modal-content {
-                padding: 20px;
-                width: 90%;
-            }
-            
-            .modal h2 {
-                font-size: 1.3rem;
-            }
-            
-            .close-modal {
-                top: 12px;
-                right: 12px;
-                font-size: 1.2rem;
-            }
-            
-            .order-history {
-                padding: 15px;
-            }
-            
-            .order-item {
-                padding: 12px;
-            }
-            
-            .order-header {
-                margin-bottom: 8px;
-                font-size: 0.9rem;
-            }
-            
-            .order-items {
-                margin: 8px 0;
-                padding-left: 12px;
-                font-size: 0.85rem;
-            }
-            
-            .order-total {
-                font-size: 1rem;
-            }
-            
-            .order-status {
-                font-size: 0.7rem;
-                padding: 2px 6px;
-            }
-            
-            .user-info {
-                padding: 8px 12px;
-                margin-bottom: 15px;
-            }
-            
-            .user-info i {
-                font-size: 1rem;
-            }
-            
-            .logout-btn {
-                padding: 4px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .live-update-indicator {
-                top: 15px;
-                right: 15px;
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .live-update-indicator .dot {
-                width: 8px;
-                height: 8px;
-            }
-        }
-    </style>
+      }
+    }
+  </script>
+  
+  <style>
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: linear-gradient(135deg, #fff9f0 0%, #fff1f2 100%);
+      overflow-x: hidden;
+    }
+    
+    .hero-gradient {
+      background: linear-gradient(135deg, rgba(225, 29, 72, 0.9) 0%, rgba(249, 115, 22, 0.85) 100%);
+    }
+    
+    .menu-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .menu-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(225, 29, 72, 0.4);
+    }
+    
+    .history-item {
+      border-left: 4px solid #e11d48;
+      transition: all 0.3s ease;
+    }
+    
+    .history-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-50px);
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: white;
+      font-weight: bold;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
+    }
+    
+    .nav-item.active {
+      color: #e11d48;
+      font-weight: 600;
+      position: relative;
+    }
+    
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 3px;
+      background: #e11d48;
+      border-radius: 3px;
+    }
+    
+    .floating-element {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Counter animation */
+    .counter {
+      transition: all 1s ease-in-out;
+    }
+    
+    /* Two items per slot grid - ONLY for menu */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    
+    /* Responsive grid for other sections */
+    .responsive-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    
+    @media (max-width: 640px) {
+      .responsive-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="logo-container">
-                <div class="logo">MIRDHUNA</div>
-                <div class="tagline">Delicious Food Delivered</div>
-            </div>
-            <div class="contact-info">
-                <a href ="https://maps.app.goo.gl/kotovw4g7chuqy5J8" target="_blank" class="contact-item">
-                    <i class="fas fa-map-marker-alt"></i> Location
-                </a>
-                <a href="tel:9835124772" class="contact-item">
-                    <i class="fas fa-phone"></i> +91 9835124772
-                </a>
-                <a href="https://wa.me/9835124772" target="_blank" class="contact-item">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                </a>
-                <a href="https://www.facebook.com/profile.php?id=61557985779261" target="_blank" class="contact-item">
-                    <i class="fab fa-facebook"></i> Facebook
-                </a>
-                <a href="https://www.instagram.com/mirdhuna/" target="_blank" class="contact-item">
-                    <i class="fab fa-instagram"></i> Instagram
-                </a>
-            </div>
-        </header>
-        
-        <!-- Live Update Indicator -->
-        <div class="live-update-indicator" id="liveUpdateIndicator">
-            <div class="dot"></div>
-            <span>Updating orders...</span>
-        </div>
-        
-        <!-- User Info Section (shown when logged in) -->
-        <div class="user-info" id="userInfo" style="display: none;">
-            <i class="fas fa-user"></i>
-            <span id="userMobile">Logged in as: </span>
-            <button class="logout-btn" id="logoutBtn">Logout</button>
-        </div>
-        
-        <div class="hero">
-            <div class="hero-content">
-                <h1>Delicious Food at Your Doorstep</h1>
-                <p>Order your favorite pizza, burgers, sandwiches, and shakes online. Fast delivery, fresh ingredients, and amazing taste!</p>
-                <button class="cta-button" id="orderNowBtn">Order Now</button>
-            </div>
-        </div>
-        <div id="slidesGallery" style="margin: 30px 0; display: flex; gap: 16px; flex-wrap: wrap;">
-  <!-- Slide images will appear here -->
-</div>
-        <div class="slides-container">
-            <div class="slides" id="slidesContainer">
-                <!-- Slides will be populated here -->
-            </div>
-            <div class="slide-indicators" id="slideIndicators">
-                <!-- Indicators will be populated here -->
-            </div>
-        </div>
-        
-        <!-- Order History Section -->
-        <div class="order-history" id="orderHistory">
-            <h2>Your Order History</h2>
-            <div id="orderHistoryList">
-                <!-- Order history will be populated here -->
-            </div>
-        </div>
-        
-        <div class="menu-section">
-            <h2>Our Menu</h2>
-            <div class="menu-categories" id="menuCategories">
-                <!-- Categories will be populated here -->
-            </div>
-            
-            <div class="menu-items" id="menuItemsContainer">
-                <!-- Menu items will be loaded here -->
-            </div>
-        </div>
-        
-        <footer>
-            <div class="footer-content">
-                <div class="footer-logo">MIRDHUNA</div>
-                <div class="footer-links">
-                    <a href="#">Home</a>
-                    <a href="#">Menu</a>
-                    <a href="#">About Us</a>
-                    <a href="#">Contact</a>
-                    <a href="admin.html">Admin</a>
-                </div>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2023 MIRDHUNA. All rights reserved.</p>
-                <p>Online Pizza, Burger, Sandwich & Shake Delivery</p>
-            </div>
-        </footer>
+<body class="min-h-screen">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Item added to cart!</div>
+
+  <!-- Header -->
+  <header class="hero-gradient text-white py-16 px-4 relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-full h-full opacity-10">
+      <div class="absolute top-10 left-10 w-64 h-64 bg-white rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+      <div class="absolute top-10 right-10 w-64 h-64 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+      <div class="absolute bottom-10 left-1/2 w-64 h-64 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
     </div>
     
-    <!-- Cart Indicator -->
-    <div class="cart-indicator" id="cartIndicator">
-        <i class="fas fa-shopping-cart"></i>
-        <div class="count" id="cartCount">0</div>
+    <!-- Floating food elements -->
+    <div class="absolute bottom-20 left-10 floating-element">
+      <div class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
+        <i class="fas fa-pizza-slice text-white text-2xl"></i>
+      </div>
+    </div>
+    <div class="absolute top-24 right-20 floating-element animation-delay-1000">
+      <div class="w-12 h-12 bg-red-400 rounded-full flex items-center justify-center shadow-lg">
+        <i class="fas fa-hamburger text-white text-xl"></i>
+      </div>
+    </div>
+    <div class="absolute top-1/3 left-1/4 floating-element animation-delay-2000">
+      <div class="w-10 h-10 bg-green-400 rounded-full flex items-center justify-center shadow-lg">
+        <i class="fas fa-martini-glass text-white"></i>
+      </div>
     </div>
     
-    <!-- Login Modal -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <span class="close-modal" id="closeLoginModal">&times;</span>
-            <h2>User Login</h2>
-            <form class="login-form" id="loginForm">
-                <div class="form-group">
-                    <label for="mobile">Mobile Number</label>
-                    <input type="tel" id="mobile" placeholder="Enter your 10-digit mobile number" required>
-                </div>
-                <div class="form-group">
-                    <label>Location (Auto-detected)</label>
-                    <div class="location-info" id="locationInfo">
-                        <i class="fas fa-location-arrow"></i>
-                        <span>Detecting your location...</span>
-                    </div>
-                </div>
-                <button type="submit" class="login-btn">Login & Place Order</button>
-            </form>
+    <div class="container mx-auto relative z-10 text-center">
+      <h1 class="text-5xl md:text-7xl font-heading font-bold mb-4 tracking-tight">MIRDHUNA</h1>
+      <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">Experience Culinary Excellence with Every Bite</p>
+      <div class="flex justify-center gap-4">
+        <button onclick="showSection('menu')" class="btn-primary px-8 py-3 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all">
+          <i class="fas fa-utensils mr-2"></i> Order Now
+        </button>
+        <button onclick="openLoginModal()" class="bg-white bg-opacity-20 backdrop-blur-sm px-8 py-3 rounded-full font-bold text-lg hover:bg-opacity-30 transition-all">
+          <i class="fas fa-user mr-2"></i> Login
+        </button>
+      </div>
+      
+      <!-- Stats counters -->
+      <div class="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
+        <div class="text-center">
+          <p class="text-4xl font-bold text-white counter" data-target="5000">0</p>
+          <p class="text-yellow-200">Happy Customers</p>
         </div>
+        <div class="text-center">
+          <p class="text-4xl font-bold text-white counter" data-target="4.9">0</p>
+          <p class="text-yellow-200">Rating</p>
+        </div>
+        <div class="text-center">
+          <p class="text-4xl font-bold text-white counter" data-target="30">0</p>
+          <p class="text-yellow-200">Min Delivery</p>
+        </div>
+      </div>
     </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg sticky top-0 z-20">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between py-4">
+        <div class="flex space-x-8">
+          <button onclick="showSection('menu')" class="nav-item active flex flex-col items-center px-3 py-2">
+            <i class="fas fa-utensils text-xl mb-1"></i>
+            <span class="text-xs">Menu</span>
+          </button>
+          <button onclick="showSection('history')" class="nav-item flex flex-col items-center px-3 py-2">
+            <i class="fas fa-history text-xl mb-1"></i>
+            <span class="text-xs">History</span>
+          </button>
+        </div>
+        <div class="relative">
+          <button onclick="openCart()" class="bg-primary text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all relative">
+            <i class="fas fa-shopping-cart text-xl"></i>
+            <span id="cartCount" class="cart-badge">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Menu Section -->
+  <section id="menu" class="py-12 px-4">
+    <div class="container mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Our Signature Menu</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Handcrafted with passion, served with love. Each dish tells a story of culinary artistry.</p>
+      </div>
+      
+      <!-- Advanced search -->
+      <div class="mb-8 max-w-2xl mx-auto">
+        <div class="relative">
+          <input type="text" id="searchInput" placeholder="Search menu items..." class="w-full p-4 pl-12 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+          <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <i class="fas fa-microphone"></i>
+          </button>
+        </div>
+        
+        <div class="flex flex-wrap gap-2 mt-3 justify-center">
+          <button class="px-3 py-1 bg-gray-100 rounded-full text-sm hover:bg-primary hover:text-white transition">Vegetarian</button>
+          <button class="px-3 py-1 bg-gray-100 rounded-full text-sm hover:bg-primary hover:text-white transition">Spicy</button>
+          <button class="px-3 py-1 bg-gray-100 rounded-full text-sm hover:bg-primary hover:text-white transition">Under ₹200</button>
+          <button class="px-3 py-1 bg-gray-100 rounded-full text-sm hover:bg-primary hover:text-white transition">New</button>
+        </div>
+      </div>
+      
+      <div class="flex flex-wrap justify-center gap-3 mb-8">
+        <button onclick="filterCategory('all')" class="btn-primary px-5 py-2 rounded-full text-sm font-medium">All Items</button>
+        <button onclick="filterCategory('Pizza')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Pizza</button>
+        <button onclick="filterCategory('Burger')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Burger</button>
+        <button onclick="filterCategory('Sandwich')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Sandwich</button>
+        <button onclick="filterCategory('Shakes')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Shakes</button>
+      </div>
+      
+      <!-- Two items per slot grid - ONLY for menu items -->
+      <div id="menuList" class="menu-grid">
+        <!-- Menu items will be populated here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Order History Section -->
+  <section id="history" class="py-12 px-4 hidden">
+    <div class="container mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Your Culinary Journey</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Relive your favorite moments and discover new favorites</p>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
+            <i class="fas fa-history text-primary mr-3"></i> Recent Orders
+          </h3>
+          <div id="recentOrders" class="space-y-4">
+            <!-- Recent orders will be populated here -->
+          </div>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
+            <i class="fas fa-heart text-red-500 mr-3"></i> Favorite Combinations
+          </h3>
+          <div id="favoriteOrders" class="space-y-4">
+            <!-- Favorite orders will be populated here -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass-card rounded-2xl p-6 shadow-xl mt-8">
+        <h3 class="text-2xl font-bold text-dark mb-4">Share Your Experience</h3>
+        <p class="text-gray-600 mb-4">How was your dining experience with us?</p>
+        <div class="flex justify-around text-4xl">
+          <span class="cursor-pointer transform hover:scale-125 transition-transform duration-300" onclick="submitFeedback('sad')">😞</span>
+          <span class="cursor-pointer transform hover:scale-125 transition-transform duration-300" onclick="submitFeedback('neutral')">😐</span>
+          <span class="cursor-pointer transform hover:scale-125 transition-transform duration-300" onclick="submitFeedback('happy')">😊</span>
+          <span class="cursor-pointer transform hover:scale-125 transition-transform duration-300" onclick="submitFeedback('excited')">🤩</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Happy Customers Section -->
+  <section class="py-12 px-4 bg-gradient-to-r from-yellow-50 to-orange-50">
+    <div class="container mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Happy Customers</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">Join thousands of satisfied customers who love our food</p>
+      </div>
+      
+      <!-- Responsive grid for testimonials -->
+      <div class="responsive-grid">
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <div class="flex items-center mb-4">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+              <i class="fas fa-user text-2xl text-gray-500"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg">Rajesh Kumar</h3>
+              <div class="text-yellow-400 flex">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700 italic">"The best burgers in town! Fresh ingredients and quick delivery. Will definitely order again!"</p>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <div class="flex items-center mb-4">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+              <i class="fas fa-user text-2xl text-gray-500"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg">Priya Sharma</h3>
+              <div class="text-yellow-400 flex">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700 italic">"Loved the pizza! The crust was perfect and the toppings were fresh. Great service too!"</p>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <div class="flex items-center mb-4">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+              <i class="fas fa-user text-2xl text-gray-500"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg">Amit Patel</h3>
+              <div class="text-yellow-400 flex">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700 italic">"The shakes are amazing! Perfect consistency and great flavors. My kids love them!"</p>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <div class="flex items-center mb-4">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+              <i class="fas fa-user text-2xl text-gray-500"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg">Sneha Gupta</h3>
+              <div class="text-yellow-400 flex">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700 italic">"The sandwiches are so fresh and delicious. Perfect for a quick lunch!"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Information -->
+  <section class="py-12 px-4">
+    <div class="container mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Get In Touch</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">We'd love to hear from you. Visit us or connect online!</p>
+      </div>
+      
+      <!-- Responsive grid for contact info -->
+      <div class="responsive-grid">
+        <!-- Location and Map -->
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
+            <i class="fas fa-map-marker-alt text-primary mr-3"></i> Our Location
+          </h3>
+          <div class="bg-gray-200 rounded-xl h-48 mb-6 flex items-center justify-center">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3529.87050048481!2d75.815857!3d26.846693!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4adf4c5d0d9f%3A0x1a0b2b0e0b0b0b0b!2sJaipur%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
+              width="100%" 
+              height="100%" 
+              style="border:0; border-radius: 12px;" 
+              allowfullscreen="" 
+              loading="lazy">
+            </iframe>
+          </div>
+          <p class="text-gray-700 mb-4">
+            <i class="fas fa-map-marker-alt text-primary mr-2"></i>
+            123 Food Street, Culinary District, Jaipur
+          </p>
+          <p class="text-gray-700">
+            <i class="fas fa-phone-alt text-primary mr-2"></i>
+            +91 9835124772
+          </p>
+        </div>
+        
+        <!-- Social Media and Contact -->
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <h3 class="text-2xl font-bold text-dark mb-6">Connect With Us</h3>
+          
+          <!-- Social Media Links -->
+          <div class="space-y-4 mb-8">
+            <a href="https://wa.me/919835124772" target="_blank" class="bg-green-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-green-600 transition transform hover:scale-105">
+              <i class="fab fa-whatsapp text-2xl mr-3"></i>
+              <span class="font-bold">WhatsApp</span>
+            </a>
+            <a href="https://facebook.com" target="_blank" class="bg-blue-600 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-blue-700 transition transform hover:scale-105">
+              <i class="fab fa-facebook-f text-2xl mr-3"></i>
+              <span class="font-bold">Facebook</span>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:from-purple-600 hover:to-pink-600 transition transform hover:scale-105">
+              <i class="fab fa-instagram text-2xl mr-3"></i>
+              <span class="font-bold">Instagram</span>
+            </a>
+            <a href="tel:+919835124772" class="bg-red-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-red-600 transition transform hover:scale-105">
+              <i class="fas fa-phone-alt text-2xl mr-3"></i>
+              <span class="font-bold">Call Us: +91 9835124772</span>
+            </a>
+          </div>
+          
+          <!-- Opening Hours -->
+          <h4 class="text-xl font-bold text-dark mb-4">Opening Hours</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between py-2 border-b border-gray-200">
+              <span>Monday - Friday</span>
+              <span class="font-medium">10:00 AM - 10:00 PM</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-200">
+              <span>Saturday</span>
+              <span class="font-medium">10:00 AM - 11:00 PM</span>
+            </div>
+            <div class="flex justify-between py-2">
+              <span>Sunday</span>
+              <span class="font-medium">11:00 AM - 9:00 PM</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Loyalty Program -->
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <h3 class="text-2xl font-bold text-dark mb-6">Loyalty Rewards</h3>
+          
+          <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl p-5 mb-6">
+            <div class="flex justify-between items-center">
+              <div>
+                <h4 class="font-bold text-lg mb-1">Your Points</h4>
+                <p class="text-3xl font-bold">120</p>
+              </div>
+              <div class="text-right">
+                <h4 class="font-bold text-lg mb-1">Next Reward</h4>
+                <p class="text-xl">₹50 off</p>
+              </div>
+            </div>
+            <div class="mt-4 bg-white bg-opacity-20 rounded-full h-2">
+              <div class="bg-white h-2 rounded-full" style="width: 60%"></div>
+            </div>
+            <p class="text-xs mt-2 text-center">80 points to next reward</p>
+          </div>
+          
+          <h4 class="text-xl font-bold text-dark mb-4">How It Works</h4>
+          <ul class="space-y-3">
+            <li class="flex items-start">
+              <div class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">1</div>
+              <p>Earn 1 point for every ₹1 spent</p>
+            </li>
+            <li class="flex items-start">
+              <div class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">2</div>
+              <p>Redeem 100 points for ₹50 off</p>
+            </li>
+            <li class="flex items-start">
+              <div class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">3</div>
+              <p>Special bonuses on birthdays</p>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Social Proof Stats -->
+        <div class="glass-card rounded-2xl p-6 shadow-xl">
+          <h3 class="text-2xl font-bold text-dark mb-6">Our Achievements</h3>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="text-center p-4 bg-white rounded-xl shadow">
+              <p class="text-3xl font-bold text-primary">4.9</p>
+              <p class="text-gray-600">Average Rating</p>
+            </div>
+            <div class="text-center p-4 bg-white rounded-xl shadow">
+              <p class="text-3xl font-bold text-primary">10K+</p>
+              <p class="text-gray-600">Happy Customers</p>
+            </div>
+            <div class="text-center p-4 bg-white rounded-xl shadow">
+              <p class="text-3xl font-bold text-primary">98%</p>
+              <p class="text-gray-600">Repeat Orders</p>
+            </div>
+            <div class="text-center p-4 bg-white rounded-xl shadow">
+              <p class="text-3xl font-bold text-primary">30min</p>
+              <p class="text-gray-600">Avg Delivery Time</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cart Modal -->
+  <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+    <div class="bg-white w-11/12 md:w-2/3 lg:w-1/2 max-h-96 rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-6 bg-gradient-to-r from-primary to-accent text-white">
+        <h3 class="text-xl font-bold flex items-center">
+          <i class="fas fa-shopping-cart mr-2"></i> Your Order
+        </h3>
+      </div>
+      <div id="cartItems" class="p-4 max-h-60 overflow-y-auto"></div>
+      
+      <!-- Customization Options -->
+      <div class="p-4 bg-gray-50 border-t">
+        <h4 class="font-bold text-sm mb-2">Customize Your Order</h4>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="flex items-center bg-white p-2 rounded border">
+            <input type="checkbox" class="mr-2"> Extra Cheese (+₹30)
+          </label>
+          <label class="flex items-center bg-white p-2 rounded border">
+            <input type="checkbox" class="mr-2"> Spicy Sauce (+₹20)
+          </label>
+          <label class="flex items-center bg-white p-2 rounded border">
+            <input type="checkbox" class="mr-2"> No Onion
+          </label>
+          <label class="flex items-center bg-white p-2 rounded border">
+            <input type="checkbox" class="mr-2"> Extra Patty (+₹50)
+          </label>
+        </div>
+      </div>
+      
+      <div class="p-4 border-t flex justify-between font-bold text-lg">
+        <span>Total:</span>
+        <span class="text-primary">₹<span id="cartTotal">0</span></span>
+      </div>
+      <div class="p-4 bg-gray-50 flex">
+        <button onclick="closeCart()" class="flex-1 py-3 mr-2 bg-gray-300 text-gray-700 rounded-full font-medium">Cancel</button>
+        <button onclick="placeOrder()" class="flex-1 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-full font-medium shadow-lg hover:shadow-xl transition">Place Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl w-11/12 max-w-md shadow-2xl relative overflow-hidden">
+      <div class="p-8">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-user text-white text-2xl"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-dark">Welcome Back</h3>
+          <p class="text-gray-600 mt-2">Sign in to continue your culinary journey</p>
+        </div>
+        
+        <div class="mb-6">
+          <label class="block text-gray-700 mb-2 font-medium">Mobile Number</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">+91</span>
+            </div>
+            <input type="tel" id="mobileInput" placeholder="9835124772" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" maxlength="10"/>
+          </div>
+        </div>
+        
+        <button onclick="loginUser()" class="btn-primary w-full py-3 rounded-lg font-bold text-white shadow-lg hover:shadow-xl transition w-full">
+          Continue to MIRDHUNA
+        </button>
+        
+        <p class="text-xs text-gray-500 mt-4 text-center">We'll detect your location automatically for faster delivery</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Add Buttons -->
+  <div class="fixed bottom-24 right-6 z-30 hidden md:block">
+    <div class="flex flex-col space-y-3">
+      <button onclick="quickAdd(2)" class="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center text-white hover:bg-red-700 transition transform hover:scale-110">
+        <i class="fas fa-burger"></i>
+      </button>
+      <button onclick="quickAdd(1)" class="w-14 h-14 bg-secondary rounded-full shadow-lg flex items-center justify-center text-white hover:bg-red-600 transition transform hover:scale-110">
+        <i class="fas fa-pizza-slice"></i>
+      </button>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-white py-12 px-4">
+    <div class="container mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-2xl font-heading font-bold mb-4">MIRDHUNA</h3>
+          <p class="text-gray-400 mb-4">Crafting unforgettable culinary experiences since 2020</p>
+          <div class="flex space-x-4">
+            <a href="https://facebook.com" target="_blank" class="text-gray-400 hover:text-white transition">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="text-gray-400 hover:text-white transition">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://wa.me/919835124772" target="_blank" class="text-gray-400 hover:text-white transition">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Menu</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition">Careers</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Contact</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li class="flex items-start">
+              <i class="fas fa-map-marker-alt mt-1 mr-3"></i>
+              <span>123 Food Street, Culinary District</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-phone-alt mr-3"></i>
+              <span>+91 9835124772</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-envelope mr-3"></i>
+              <span>hello@mirdhuna.com</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">Opening Hours</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li class="flex justify-between">
+              <span>Monday - Friday</span>
+              <span>10:00 AM - 10:00 PM</span>
+            </li>
+            <li class="flex justify-between">
+              <span>Saturday</span>
+              <span>10:00 AM - 11:00 PM</span>
+            </li>
+            <li class="flex justify-between">
+              <span>Sunday</span>
+              <span>11:00 AM - 9:00 PM</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+        <p>© 2025 MIRDHUNA Café. All rights reserved. Crafted with ❤️ for food lovers</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mock data for demonstration
+    let userPhone = null;
+    let userLocation = null;
+    let cart = [];
+    let menuItems = [
+      { id: 1, name: "Truffle Margherita", category: "Pizza", price: 299, image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+      { id: 2, name: "Gourmet Cheeseburger", category: "Burger", price: 179, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+      { id: 3, name: "Avocado Club Sandwich", category: "Sandwich", price: 199, image: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+      { id: 4, name: "Belgian Chocolate Shake", category: "Shakes", price: 149, image: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+      { id: 5, name: "Spicy Pepperoni Feast", category: "Pizza", price: 349, image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+      { id: 6, name: "Vegan Power Burger", category: "Burger", price: 189, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+      { id: 7, name: "Grilled Veg Sandwich", category: "Sandwich", price: 159, image: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+      { id: 8, name: "Mango Shake", category: "Shakes", price: 129, image: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
+    ];
     
-    <!-- Checkout Modal -->
-    <div class="modal" id="checkoutModal">
-        <div class="modal-content checkout-modal">
-            <span class="close-modal" id="closeCheckoutModal">&times;</span>
-            <h2>Order Summary</h2>
-            <div id="checkoutCartItems">
-                <!-- Cart items will be populated here -->
+    // Mock order history
+    let orderHistory = [
+      { id: 1001, items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], total: 209, date: "2023-06-15", status: "delivered" },
+      { id: 1002, items: [{name: "Truffle Margherita", qty: 1}], total: 299, date: "2023-06-12", status: "delivered" },
+      { id: 1003, items: [{name: "Avocado Club Sandwich", qty: 2}], total: 398, date: "2023-06-10", status: "delivered" },
+      { id: 1004, items: [{name: "Belgian Chocolate Shake", qty: 1}, {name: "Vegan Power Burger", qty: 1}], total: 338, date: "2023-06-08", status: "delivered" }
+    ];
+    
+    // Favorite combinations
+    let favoriteOrders = [
+      { name: "Burger Feast", items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], price: 209 },
+      { name: "Pizza Night", items: [{name: "Truffle Margherita", qty: 1}, {name: "Belgian Chocolate Shake", qty: 1}], price: 448 },
+      { name: "Healthy Combo", items: [{name: "Avocado Club Sandwich", qty: 1}, {name: "Belgian Chocolate Shake", qty: 1}], price: 348 }
+    ];
+
+    // Initialize the app
+    function initApp() {
+      loadMenu();
+      displayRecentOrders();
+      displayFavoriteOrders();
+      animateCounters();
+    }
+
+    // Load menu items
+    function loadMenu() {
+      const container = document.getElementById('menuList');
+      container.innerHTML = '';
+      menuItems.forEach((item, index) => {
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
+          div.style.animation = `fadeInUp 0.5s ease-out ${index * 0.1}s both`;
+          div.innerHTML = `
+            <div class="relative">
+              <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
+              <div class="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">
+                ₹${item.price}
+              </div>
+              <!-- Interactive hover effect -->
+              <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                <div class="text-white opacity-0 hover:opacity-100 transition-opacity duration-300 text-center p-4">
+                  <p class="text-sm">Mozzarella, Basil, Tomato Sauce</p>
+                </div>
+              </div>
             </div>
-            <div class="cart-total">
-                <span>Total:</span>
-                <span id="checkoutCartTotal">₹0</span>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-dark mb-2">${item.name}</h3>
+              <p class="text-gray-600 mb-4">Premium ingredients crafted to perfection</p>
+              <button onclick="addToCart(${item.id})" class="btn-primary w-full py-3 rounded-lg font-bold text-white shadow hover:shadow-lg transition">
+                <i class="fas fa-plus mr-2"></i> Add to Cart
+              </button>
             </div>
-            <button class="place-order-btn" id="placeOrderBtn">Place Order</button>
-        </div>
-    </div>
-
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, get, child, update, remove } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
-            authDomain: "mirdhuna-4f652.firebaseapp.com",
-            databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
-            projectId: "mirdhuna-4f652",
-            storageBucket: "mirdhuna-4f652.firebasestorage.app",
-            messagingSenderId: "184403369330",
-            appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
-            measurementId: "G-ZFWSGKE744"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const database = getDatabase(app);
-        const storage = getStorage(app);
-
-        // DOM Elements
-        const loginModal = document.getElementById('loginModal');
-        const checkoutModal = document.getElementById('checkoutModal');
-        const orderNowBtn = document.getElementById('orderNowBtn');
-        const closeLoginModal = document.getElementById('closeLoginModal');
-        const closeCheckoutModal = document.getElementById('closeCheckoutModal');
-        const loginForm = document.getElementById('loginForm');
-        const locationInfo = document.getElementById('locationInfo');
-        const checkoutCartItemsContainer = document.getElementById('checkoutCartItems');
-        const checkoutCartTotalElement = document.getElementById('checkoutCartTotal');
-        const placeOrderBtn = document.getElementById('placeOrderBtn');
-        const categoryButtons = document.querySelectorAll('.category-btn');
-        const menuItemsContainer = document.getElementById('menuItemsContainer');
-        const cartIndicator = document.getElementById('cartIndicator');
-        const cartCount = document.getElementById('cartCount');
-        const userInfo = document.getElementById('userInfo');
-        const userMobile = document.getElementById('userMobile');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const orderHistory = document.getElementById('orderHistory');
-        const orderHistoryList = document.getElementById('orderHistoryList');
-        const slidesContainer = document.getElementById('slidesContainer');
-        const slideIndicators = document.getElementById('slideIndicators');
-        const menuCategories = document.getElementById('menuCategories');
-        const liveUpdateIndicator = document.getElementById('liveUpdateIndicator');
-        
-        // State variables
-        let cart = [];
-        let total = 0;
-        let userLoggedIn = false;
-        let currentUser = null;
-        let currentSlide = 0;
-        let userLocation = "";
-        let lastOrdersUpdate = 0;
-        let liveUpdateInterval;
-        
-        // Auto-detect location
-        function detectLocation() {
-            locationInfo.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Detecting your location...</span>';
-            
-            // Use Geolocation API to get current location
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        const googleMapsUrl = `https://maps.google.com/?q=${lat},${lng}`;
-                        userLocation = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                        
-                        locationInfo.innerHTML = `
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Located at: <a href="${googleMapsUrl}" target="_blank">${userLocation}</a></span>
-                        `;
-                    },
-                    function(error) {
-                        console.error("Geolocation error:", error);
-                        // Fallback to simulated location
-                        setTimeout(() => {
-                            const latitude = 17.3850;
-                            const longitude = 78.4867;
-                            const googleMapsUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-                            userLocation = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-                            
-                            locationInfo.innerHTML = `
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Located at: <a href="${googleMapsUrl}" target="_blank">${userLocation}</a></span>
-                            `;
-                        }, 1000);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 300000
-                    }
-                );
-            } else {
-                // Fallback if geolocation is not supported
-                setTimeout(() => {
-                    const latitude = 17.3850;
-                    const longitude = 78.4867;
-                    const googleMapsUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
-                    userLocation = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-                    
-                    locationInfo.innerHTML = `
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Located at: <a href="${googleMapsUrl}" target="_blank">${userLocation}</a></span>
-                    `;
-                }, 1000);
-            }
-        }
-        
-        // Add item to cart
-        function addToCart(itemName, price) {
-            cart.push({ name: itemName, price: parseInt(price) });
-            updateCart();
-            
-            // Visual feedback
-            const button = event.target;
-            const originalText = button.textContent;
-            button.textContent = 'Added!';
-            button.style.backgroundColor = '#4CAF50';
-            button.style.color = 'white';
-            
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.style.backgroundColor = '';
-                button.style.color = '';
-            }, 1500);
-        }
-        
-        // Update cart display
-        function updateCart() {
-            // Clear cart display
-            checkoutCartItemsContainer.innerHTML = '';
-            
-            // Calculate total
-            total = 0;
-            
-            // Add items to cart display
-            if (cart.length === 0) {
-                checkoutCartItemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Your cart is empty</p>';
-            } else {
-                cart.forEach(item => {
-                    // Checkout modal display
-                    const checkoutCartItem = document.createElement('div');
-                    checkoutCartItem.className = 'cart-item';
-                    checkoutCartItem.innerHTML = `
-                        <span>${item.name}</span>
-                        <span>₹${item.price}</span>
-                    `;
-                    checkoutCartItemsContainer.appendChild(checkoutCartItem);
-                    
-                    total += item.price;
-                });
-            }
-            
-            // Update total display
-            checkoutCartTotalElement.textContent = `₹${total}`;
-            
-            // Update cart count
-            cartCount.textContent = cart.length;
-        }
-        
-        // Filter menu items by category
-        function filterMenu(category) {
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                if (category === 'all' || item.dataset.category === category) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }
-        
-        // Render menu items from Firebase
-        function renderMenuItems() {
-            const menuRef = ref(database, 'menu');
-            onValue(menuRef, (snapshot) => {
-                const data = snapshot.val();
-                menuItemsContainer.innerHTML = '';
-                
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        const item = data[key];
-                        const menuItem = document.createElement('div');
-                        menuItem.className = 'menu-item';
-                        menuItem.dataset.category = item.category;
-                        
-                        // Use default image if none provided
-                        const imageUrl = item.image || getDefaultImage(item.category);
-                        
-                        menuItem.innerHTML = `
-                            <div class="item-image" style="background-image: url('${imageUrl}');"></div>
-                            <div class="item-details">
-                                <div class="item-header">
-                                    <div class="item-name">${item.name}</div>
-                                    <div class="item-price">₹${item.price}</div>
-                                </div>
-                                <p class="item-description">${item.description}</p>
-                                <button class="add-to-cart" data-item="${item.name}" data-price="${item.price}">Add to Cart</button>
-                            </div>
-                        `;
-                        
-                        menuItemsContainer.appendChild(menuItem);
-                    });
-                    
-                    // Add event listeners to new buttons
-                    document.querySelectorAll('.add-to-cart').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const itemName = this.dataset.item;
-                            const price = this.dataset.price;
-                            addToCart(itemName, price);
-                        });
-                    });
-                } else {
-                    menuItemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No menu items found</p>';
-                }
-            });
-        }
-        
-        // Get default image based on category
-        function getDefaultImage(category) {
-            const images = {
-                pizza: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-                burger: "https://images.unsplash.com/photo-1550353127-b0da3aeaa0ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-                sandwich: "https://images.unsplash.com/photo-1481070414553-cd3db49a08bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-                shake: "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
-            };
-            return images[category] || images.pizza;
-        }
-        
-        // Render menu categories from Firebase
-        function renderMenuCategories() {
-            const menuRef = ref(database, 'menu');
-            get(menuRef).then((snapshot) => {
-                const data = snapshot.val();
-                menuCategories.innerHTML = '';
-                
-                if (data) {
-                    const categories = [...new Set(Object.values(data).map(item => item.category))];
-                    
-                    // Add "All Items" button
-                    const allButton = document.createElement('button');
-                    allButton.className = 'category-btn active';
-                    allButton.dataset.category = 'all';
-                    allButton.textContent = 'All Items';
-                    menuCategories.appendChild(allButton);
-                    
-                    // Add category buttons
-                    categories.forEach(category => {
-                        const button = document.createElement('button');
-                        button.className = 'category-btn';
-                        button.dataset.category = category;
-                        button.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-                        menuCategories.appendChild(button);
-                    });
-                    
-                    // Add event listeners
-                    document.querySelectorAll('.category-btn').forEach(button => {
-                        button.addEventListener('click', function() {
-                            // Update active button
-                            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-                            this.classList.add('active');
-                            
-                            // Filter menu items
-                            const category = this.dataset.category;
-                            filterMenu(category);
-                        });
-                    });
-                } else {
-                    menuCategories.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No categories found</p>';
-                }
-            });
-        }
-        
-        // Render slides from Firebase
-        function renderSlides() {
-            const slidesRef = ref(database, 'slides');
-            onValue(slidesRef, (snapshot) => {
-                const data = snapshot.val();
-                slidesContainer.innerHTML = '';
-                slideIndicators.innerHTML = '';
-                
-                if (data) {
-                    Object.keys(data).forEach((key, index) => {
-                        const slide = data[key];
-                        const slideElement = document.createElement('div');
-                        slideElement.className = 'slide';
-                        slideElement.style.backgroundImage = `url('${slide.image}')`;
-                        
-                        const slideContent = document.createElement('div');
-                        slideContent.className = 'slide-content';
-                        slideContent.innerHTML = `
-                            <h3>${slide.title}</h3>
-                            <p>${slide.description}</p>
-                        `;
-                        
-                        slideElement.appendChild(slideContent);
-                        slidesContainer.appendChild(slideElement);
-                        
-                        // Add indicator
-                        const indicator = document.createElement('div');
-                        indicator.className = 'indicator';
-                        if (index === 0) indicator.classList.add('active');
-                        slideIndicators.appendChild(indicator);
-                    });
-                    
-                    // Add event listeners to indicators
-                    document.querySelectorAll('.indicator').forEach((indicator, index) => {
-                        indicator.addEventListener('click', () => {
-                            currentSlide = index;
-                            showSlide(currentSlide);
-                        });
-                    });
-                } else {
-                    slidesContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No slides found</p>';
-                }
-            });
-        }
-        
-        // Show slide
-        function showSlide(index) {
-            slidesContainer.style.transform = `translateX(-${index * 100}%)`;
-            const indicators = document.querySelectorAll('.indicator');
-            indicators.forEach((indicator, i) => {
-                indicator.classList.toggle('active', i === index);
-            });
-        }
-        
-        // Next slide
-        function nextSlide() {
-            const indicators = document.querySelectorAll('.indicator');
-            currentSlide = (currentSlide + 1) % indicators.length;
-            showSlide(currentSlide);
-        }
-        
-        // Save order to Firebase
-        function saveOrder(mobile, location, items, total) {
-            const ordersRef = ref(database, 'orders');
-            const newOrderRef = push(ordersRef);
-            
-            const order = {
-                id: 'ORD' + Date.now(),
-                mobile: mobile,
-                location: location,
-                items: items,
-                total: total,
-                status: 'Pending',
-                timestamp: new Date().toISOString(),
-                itemCount: items.length
-            };
-            
-            set(newOrderRef, order)
-                .then(() => {
-                    console.log('Order saved successfully!');
-                    // Update last orders update timestamp
-                    lastOrdersUpdate = Date.now();
-                    localStorage.setItem('mirdhuna_last_orders_update', lastOrdersUpdate.toString());
-                })
-                .catch((error) => {
-                    console.error('Error saving order:', error);
-                });
-            
-            return order.id;
-        }
-        
-        // Load user order history from Firebase
-        function loadUserOrderHistory(mobile) {
-            const ordersRef = ref(database, 'orders');
-            onValue(ordersRef, (snapshot) => {
-                const data = snapshot.val();
-                orderHistoryList.innerHTML = '';
-                
-                if (data) {
-                    const userOrders = Object.values(data).filter(order => order.mobile === mobile);
-                    
-                    if (userOrders.length === 0) {
-                        orderHistoryList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No order history found</p>';
-                        return;
-                    }
-                    
-                    // Sort orders by timestamp (newest first)
-                    userOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                    
-                    userOrders.forEach(order => {
-                        const orderDate = new Date(order.timestamp).toLocaleDateString();
-                        const orderTime = new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        
-                        const orderElement = document.createElement('div');
-                        orderElement.className = 'order-item';
-                        orderElement.innerHTML = `
-                            <div class="order-header">
-                                <span>Order ID: ${order.id}</span>
-                                <span class="order-status status-${order.status.toLowerCase()}">${order.status}</span>
-                            </div>
-                            <div>Date: ${orderDate} at ${orderTime}</div>
-                            <div class="order-items">
-                                Items: ${order.items.map(item => item.name).join(', ')}
-                            </div>
-                            <div class="order-total">Total: ₹${order.total}</div>
-                        `;
-                        orderHistoryList.appendChild(orderElement);
-                    });
-                    
-                    // Show order history section
-                    orderHistory.style.display = 'block';
-                } else {
-                    orderHistoryList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No order history found</p>';
-                }
-            });
-        }
-        
-        // Check if user is already logged in
-        function checkLoginStatus() {
-            const savedUser = localStorage.getItem('mirdhuna_user');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                userLoggedIn = true;
-                userMobile.textContent = `Logged in as: ${currentUser.mobile}`;
-                userInfo.style.display = 'flex';
-                
-                // Load user order history
-                loadUserOrderHistory(currentUser.mobile);
-                
-                // If cart has items, show checkout modal directly
-                if (cart.length > 0) {
-                    updateCart();
-                    showModal(checkoutModal);
-                }
-            }
-        }
-        
-        // Show modal
-        function showModal(modal) {
-            modal.style.display = 'flex';
-        }
-        
-        // Hide modal
-        function hideModal(modal) {
-            modal.style.display = 'none';
-        }
-        
-        // Check for order updates across devices
-        function checkForOrderUpdates() {
-            const storedLastUpdate = localStorage.getItem('mirdhuna_last_orders_update');
-            if (storedLastUpdate && parseInt(storedLastUpdate) > lastOrdersUpdate) {
-                lastOrdersUpdate = parseInt(storedLastUpdate);
-                
-                // Show live update indicator
-                liveUpdateIndicator.style.display = 'flex';
-                setTimeout(() => {
-                    liveUpdateIndicator.style.display = 'none';
-                }, 2000);
-                
-                // Reload user order history if logged in
-                if (userLoggedIn && currentUser) {
-                    loadUserOrderHistory(currentUser.mobile);
-                }
-            }
-        }
-        
-        // Start live updates
-        function startLiveUpdates() {
-            // Clear any existing interval
-            if (liveUpdateInterval) {
-                clearInterval(liveUpdateInterval);
-            }
-            
-            // Set up interval to check for updates
-            liveUpdateInterval = setInterval(checkForOrderUpdates, 3000); // Check every 3 seconds
-        }
-        
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize cart
-            updateCart();
-            
-            // Render menu items and categories
-            renderMenuItems();
-            renderMenuCategories();
-            
-            // Render slides
-            renderSlides();
-            
-            // Check login status
-            checkLoginStatus();
-            
-            // Start live updates
-            startLiveUpdates();
-            
-            // Detect location on page load
-            detectLocation();
-            
-            // Order Now button
-            orderNowBtn.addEventListener('click', function() {
-                if (userLoggedIn) {
-                    // If already logged in, show checkout modal directly
-                    if (cart.length > 0) {
-                        updateCart();
-                        showModal(checkoutModal);
-                    } else {
-                        alert('Please add items to your cart first!');
-                    }
-                } else {
-                    // Show login modal
-                    showModal(loginModal);
-                }
-            });
-            
-            // Cart indicator click
-            cartIndicator.addEventListener('click', function() {
-                if (cart.length === 0) {
-                    alert('Your cart is empty! Please add items before checkout.');
-                    return;
-                }
-                
-                if (userLoggedIn) {
-                    // If already logged in, show checkout modal directly
-                    updateCart();
-                    showModal(checkoutModal);
-                } else {
-                    // Show login modal
-                    showModal(loginModal);
-                }
-            });
-            
-            // Close modals
-            closeLoginModal.addEventListener('click', function() {
-                hideModal(loginModal);
-            });
-            
-            closeCheckoutModal.addEventListener('click', function() {
-                hideModal(checkoutModal);
-            });
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target === loginModal) {
-                    hideModal(loginModal);
-                }
-                if (event.target === checkoutModal) {
-                    hideModal(checkoutModal);
-                }
-            });
-            
-            // Login form submission
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const mobile = document.getElementById('mobile').value;
-                
-                if(mobile.length === 10 && /^\d+$/.test(mobile)) {
-                    userLoggedIn = true;
-                    currentUser = { mobile: mobile, location: userLocation };
-                    
-                    // Save user to localStorage
-                    localStorage.setItem('mirdhuna_user', JSON.stringify(currentUser));
-                    
-                    // Update UI
-                    userMobile.textContent = `Logged in as: ${mobile}`;
-                    userInfo.style.display = 'flex';
-                    
-                    // Load user order history
-                    loadUserOrderHistory(mobile);
-                    
-                    alert(`Login successful!\nMobile: ${mobile}\nLocation detected. You can now place orders.`);
-                    hideModal(loginModal);
-                    
-                    // If cart has items, show checkout modal directly
-                    if (cart.length > 0) {
-                        updateCart();
-                        showModal(checkoutModal);
-                    }
-                } else {
-                    alert('Please enter a valid 10-digit mobile number');
-                }
-            });
-            
-            // Place order button
-            placeOrderBtn.addEventListener('click', function() {
-                if (!userLoggedIn) {
-                    alert('Please login first to place an order.');
-                    hideModal(checkoutModal);
-                    showModal(loginModal);
-                    return;
-                }
-                
-                if (cart.length === 0) {
-                    alert('Your cart is empty! Please add items before checkout.');
-                    return;
-                }
-                
-                // Save order to Firebase
-                const orderId = saveOrder(currentUser.mobile, userLocation, cart, total);
-                
-                alert(`Order placed successfully!\nOrder ID: ${orderId}\nTotal: ₹${total}\nThank you for ordering with MIRDHUNA!`);
-                
-                // Reset cart
-                cart = [];
-                updateCart();
-                hideModal(checkoutModal);
-                
-                // Reload order history
-                loadUserOrderHistory(currentUser.mobile);
-            });
-            
-            // Slide indicators
-            document.querySelectorAll('.indicator').forEach((indicator, index) => {
-                indicator.addEventListener('click', () => {
-                    currentSlide = index;
-                    showSlide(currentSlide);
-                });
-            });
-            
-            // Auto slide change
-            setInterval(nextSlide, 5000);
-            
-            // Logout button
-            logoutBtn.addEventListener('click', function() {
-                userLoggedIn = false;
-                currentUser = null;
-                localStorage.removeItem('mirdhuna_user');
-                userInfo.style.display = 'none';
-                orderHistory.style.display = 'none';
-                alert('You have been logged out.');
-            });
-        });
-    </script>
-    <!-- Add this inside the <head> or at the end of <body> in your MAIN website's index.html -->
-<script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getDatabase, ref, update, increment } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
-
-    // Your web app's Firebase configuration (SAME as admin panel)
-    const firebaseConfig = {
-        apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
-        authDomain: "mirdhuna-4f652.firebaseapp.com",
-        databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
-        projectId: "mirdhuna-4f652",
-        storageBucket: "mirdhuna-4f652.firebasestorage.app",
-        messagingSenderId: "184403369330",
-        appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
-        measurementId: "G-ZFWSGKE744"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app); // Get database instance
-
-    // Function to log a page view
-    async function logPageView() {
-        try {
-            const today = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD
-
-            // Prepare the updates
-            const updates = {};
-            updates[`analytics/pageViews/${today}`] = increment(1);
-            updates['analytics/totalViews'] = increment(1);
-
-            // Send the updates to the database
-            await update(ref(database), updates);
-            console.log("Analytics updated for", today);
-        } catch (error) {
-            console.error("Error updating analytics:", error);
-            // Optionally, send error to a logging service
-        }
-    }
-
-    // Call this function when the page loads
-    window.addEventListener('DOMContentLoaded', logPageView);
-
-</script>
-<!-- End of analytics tracking code -->
-    <!-- Add this script to your MAIN website's index.html -->
-<script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-
-    // Your web app's Firebase configuration (SAME as admin panel)
-    const firebaseConfig = {
-        apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
-        authDomain: "mirdhuna-4f652.firebaseapp.com",
-        databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
-        projectId: "mirdhuna-4f652",
-        storageBucket: "mirdhuna-4f652.firebasestorage.app",
-        messagingSenderId: "184403369330",
-        appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
-        measurementId: "G-ZFWSGKE744"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app); // Get database instance
-
-    // --- Function to get User's IP Address ---
-    async function getUserIP() {
-        try {
-            // Using a free IP geolocation API (like ipapi.co - check their terms)
-            // Note: Free services might have rate limits or require API keys eventually.
-            const response = await fetch('https://api.ipify.org?format=json');
-            const data = await response.json();
-            return data.ip;
-        } catch (error) {
-            console.error('Error fetching IP address:', error);
-            return 'Unknown IP';
-        }
-    }
-
-    // --- Function to get approximate Location based on IP ---
-    async function getLocationByIP(ip) {
-        if (ip === 'Unknown IP') return 'Unknown Location';
-
-        try {
-            // Using ipapi.co for geolocation based on IP
-            // Again, check terms and rate limits.
-            const response = await fetch(`https://ipapi.co/${ip}/json/`);
-            const data = await response.json();
-            if (data.error) {
-                console.warn('IP Geolocation API error:', data.reason);
-                return 'Location Lookup Failed';
-            }
-            // Construct a readable location string (city, region, country)
-            return `${data.city || 'N/A'}, ${data.region || 'N/A'}, ${data.country_name || 'N/A'}`;
-        } catch (error) {
-            console.error('Error fetching location by IP:', error);
-            return 'Location Lookup Error';
-        }
-    }
-
-    // --- Function to get Device/Browser Info ---
-    function getDeviceInfo() {
-        const userAgent = navigator.userAgent;
-        // Simple parsing - you can make this more sophisticated
-        if (userAgent.includes('Firefox')) return 'Firefox';
-        if (userAgent.includes('Chrome')) return 'Chrome';
-        if (userAgent.includes('Safari')) return 'Safari';
-        if (userAgent.includes('Edge')) return 'Edge';
-        return userAgent.substring(0, 50) + '...'; // Truncate long strings
-    }
-
-    // --- Function to log a user login/visit ---
-    async function logUserVisit() {
-        try {
-            // In a real app with Firebase Auth, you'd get the actual user ID
-            // For now, we'll use a placeholder or a simple session ID
-            // Let's generate a simple unique ID for anonymous visits
-            // Or use localStorage to identify returning anonymous users
-            let userId = localStorage.getItem('anonymousUserId');
-            if (!userId) {
-                userId = 'anon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                localStorage.setItem('anonymousUserId', userId);
-            }
-
-            const timestamp = new Date().toISOString();
-            const ip = await getUserIP();
-            const device = getDeviceInfo();
-            const location = await getLocationByIP(ip); // Get location based on IP
-
-            // Prepare the login data object
-            const loginData = {
-                timestamp: timestamp,
-                ip: ip,
-                device: device,
-                location: location // Add location
-            };
-
-            // Determine the path in the database
-            // We'll store it under /users/$userId/loginHistory
-            const loginHistoryRef = push(ref(database, `users/${userId}/loginHistory`));
-
-            // Save the login data
-            await set(loginHistoryRef, loginData);
-
-            console.log("User visit logged successfully for user:", userId, "at", timestamp, "from", location);
-
-        } catch (error) {
-            console.error("Error logging user visit:", error);
-            // Optionally, send error to a logging service or display a user-friendly message
-        }
-    }
-
-    // --- Call this function when the page loads ---
-    window.addEventListener('DOMContentLoaded', logUserVisit);
-
-
-
-   
-<!-- End of user login tracking code -->
-    <!-- Paste this code just before the closing </body> tag in your index.html -->
-<body>
-    // Load slides from DB and display them
-function loadSlidesToGallery() {
-  const slidesGallery = document.getElementById('slidesGallery');
-  firebase.database().ref('slides').once('value').then(snapshot => {
-    slidesGallery.innerHTML = '';
-    const slides = snapshot.val();
-    if (slides) {
-      Object.values(slides).forEach(slide => {
-        const img = document.createElement('img');
-        img.src = slide.url;
-        img.style.maxWidth = '220px';
-        img.style.maxHeight = '140px';
-        img.alt = "Slide";
-        img.onerror = () => img.style.display = 'none';
-        slidesGallery.appendChild(img);
+          `;
+          container.appendChild(div);
+        }, index * 100);
       });
-    } else {
-      slidesGallery.innerHTML = "<span>No slides found.</span>";
     }
-  });
-}
-// Call on page load
-window.addEventListener('DOMContentLoaded', loadSlidesToGallery);
-</script>
+
+    // Filter menu by category
+    function filterCategory(category) {
+      const filtered = category === 'all' ? menuItems : menuItems.filter(i => i.category === category);
+      const container = document.getElementById('menuList');
+      container.innerHTML = '';
+      filtered.forEach((item, index) => {
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
+          div.style.animation = `fadeInUp 0.5s ease-out ${index * 0.1}s both`;
+          div.innerHTML = `
+            <div class="relative">
+              <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
+              <div class="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">
+                ₹${item.price}
+              </div>
+              <!-- Interactive hover effect -->
+              <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                <div class="text-white opacity-0 hover:opacity-100 transition-opacity duration-300 text-center p-4">
+                  <p class="text-sm">Mozzarella, Basil, Tomato Sauce</p>
+                </div>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-dark mb-2">${item.name}</h3>
+              <p class="text-gray-600 mb-4">Premium ingredients crafted to perfection</p>
+              <button onclick="addToCart(${item.id})" class="btn-primary w-full py-3 rounded-lg font-bold text-white shadow hover:shadow-lg transition">
+                <i class="fas fa-plus mr-2"></i> Add to Cart
+              </button>
+            </div>
+          `;
+          container.appendChild(div);
+        }, index * 100);
+      });
+    }
+
+    // Add item to cart
+    function addToCart(id) {
+      if (!userPhone) return openLoginModal();
+      const item = menuItems.find(i => i.id === id);
+      const existing = cart.find(c => c.id === id);
+      if (existing) existing.qty += 1;
+      else cart.push({ ...item, qty: 1 });
+      updateCartUI();
+      showtoast("Added to cart!");
+    }
+
+    // Quick add buttons
+    function quickAdd(id) {
+      if (!userPhone) return openLoginModal();
+      const item = menuItems.find(i => i.id === id);
+      cart.push({ ...item, qty: 1 });
+      updateCartUI();
+      showtoast("${item.name} added to cart!");
+    }
+
+    // Update cart UI
+    function updateCartUI() {
+      document.getElementById('cartCount').textContent = cart.reduce((sum, i) => sum + i.qty, 0);
+    }
+
+    // Show toast notification
+    function showtoast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Open login modal
+    function openLoginModal() { 
+      document.getElementById('loginModal').classList.remove('hidden'); 
+    }
+    
+    // Close cart modal
+    function closeCart() { 
+      document.getElementById('cartModal').classList.add('hidden'); 
+    }
+    
+    // Open cart modal
+    function openCart() {
+      const container = document.getElementById('cartItems');
+      container.innerHTML = '';
+      let total = 0;
+      
+      if (cart.length === 0) {
+        container.innerHTML = '<p class="text-center py-8 text-gray-500">Your cart is empty</p>';
+      } else {
+        cart.forEach(item => {
+          const itemTotal = item.price * item.qty;
+          total += itemTotal;
+          const div = document.createElement('div');
+          div.className = 'flex justify-between items-center py-4 border-b';
+          div.innerHTML = `
+            <div>
+              <p class="font-medium text-dark">${item.name}</p>
+              <p class="text-sm text-gray-600">Qty: ${item.qty}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-primary">₹${itemTotal}</p>
+              <button onclick="removeFromCart(${item.id})" class="text-red-500 text-sm mt-1">
+                <i class="fas fa-trash"></i> Remove
+              </button>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+      
+      document.getElementById('cartTotal').textContent = total;
+      document.getElementById('cartModal').classList.remove('hidden');
+    }
+    
+    // Remove item from cart
+    function removeFromCart(id) {
+      cart = cart.filter(item => item.id !== id);
+      openCart(); // Refresh cart display
+      updateCartUI();
+    }
+
+    // Show section
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      
+      // Update nav active state
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      if (id === 'menu') {
+        document.querySelectorAll('.nav-item')[0].classList.add('active');
+      } else if (id === 'history') {
+        document.querySelectorAll('.nav-item')[1].classList.add('active');
+      }
+      
+      // Show/hide quick add buttons
+      if (id === 'menu') {
+        document.querySelector('.fixed.bottom-24.right-6').classList.remove('hidden');
+      } else {
+        document.querySelector('.fixed.bottom-24.right-6').classList.add('hidden');
+      }
+    }
+
+    // User login
+    async function loginUser() {
+      const num = document.getElementById('mobileInput').value.trim();
+      if (!num || num.length !== 10) return showtoast("Enter valid 10-digit number");
+      userPhone = '91' + num;
+      userLocation = await detectLocation();
+
+      document.getElementById('loginModal').classList.add('hidden');
+      showtoast("Welcome back! Happy ordering");
+    }
+
+    // Detect location
+    async function detectLocation() {
+      return new Promise(resolve => {
+        if (!navigator.geolocation) resolve({ lat: 0, lng: 0 });
+        else {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              const crd = pos.coords;
+              resolve({ lat: crd.latitude, lng: crd.longitude });
+            },
+            () => {
+              showtoast("Location access denied. Using default location");
+              resolve({ lat: 0, lng: 0 });
+            }
+          );
+        }
+      });
+    }
+
+    // WhatsApp Receipt System - NEW FEATURE
+    async function placeOrder() {
+      if (cart.length === 0) return showtoast("Cart is empty");
+      
+      let total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      
+      // Add to order history
+      const newOrder = {
+        id: Date.now(),
+        items: cart.map(item => ({ name: item.name, qty: item.qty })),
+        total: total,
+        date: new Date().toISOString().split('T')[0],
+        status: "pending"
+      };
+      
+      orderHistory.unshift(newOrder);
+      displayRecentOrders();
+      
+      // Send WhatsApp receipts to BOTH business and customer
+      sendWhatsAppReceiptToBusiness(newOrder);
+      sendWhatsAppReceiptToCustomer(newOrder);
+      
+      showtoast("Order placed successfully! 🎉");
+      cart = [];
+      updateCartUI();
+      closeCart();
+    }
+
+    // Receipt to YOUR business number
+    function sendWhatsAppReceiptToBusiness(order) {
+      const message = `✅ *NEW ORDER - MIRDHUNA*
+
+Order ID: #${order.id.toString().slice(-4)}
+Items: ${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}
+Total: ₹${order.total}
+Status: Confirmed
+
+Customer Phone: ${userPhone}
+Location: ${userLocation.lat}, ${userLocation.lng}
+预计准备时间: 20-30 mins
+
+Prepare order now!`;
+      
+      const encodedMsg = encodeURIComponent(message);
+      window.open(`https://wa.me/919835124772?text=${encodedMsg}`, '_blank');
+    }
+
+    // Receipt to CUSTOMER's number
+    function sendWhatsAppReceiptToCustomer(order) {
+      const message = `✅ *MIRDHUNA ORDER CONFIRMATION*
+
+Hello! Thank you for your order #${order.id.toString().slice(-4)}
+
+Items: ${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}
+Total: ₹${order.total}
+Status: Confirmed
+
+预计准备时间: 20-30 mins
+Delivery to: ${userLocation.lat}, ${userLocation.lng}
+
+We'll prepare your order soon! 
+Questions? Reply to this message.
+
+Thank you for choosing MIRDHUNA! 🍔🍕`;
+      
+      // Remove the +91 prefix if already included
+      const customerNumber = userPhone.replace('+91', '');
+      const encodedMsg = encodeURIComponent(message);
+      window.open(`https://wa.me/${customerNumber}?text=${encodedMsg}`, '_blank');
+    }
+
+    // Display recent orders
+    function displayRecentOrders() {
+      const container = document.getElementById('recentOrders');
+      container.innerHTML = '';
+      
+      if (orderHistory.length === 0) {
+        container.innerHTML = '<p class="text-center text-gray-500 py-8">No order history yet</p>';
+        return;
+      }
+      
+      orderHistory.slice(0, 3).forEach(order => {
+        const div = document.createElement('div');
+        div.className = 'history-item bg-white p-4 rounded-lg shadow';
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-dark">Order #${order.id.toString().slice(-4)}</p>
+              <p class="text-sm text-gray-600 mt-1">${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
+              <p class="text-xs text-gray-500 mt-2">${order.date}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-primary">₹${order.total}</p>
+              <button onclick="reorder(${order.id})" class="mt-2 bg-primary text-white px-3 py-1 rounded-full text-xs font-medium">
+                Reorder
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Display favorite orders
+    function displayFavoriteOrders() {
+      const container = document.getElementById('favoriteOrders');
+      container.innerHTML = '';
+      
+      favoriteOrders.forEach((order, index) => {
+        const div = document.createElement('div');
+        div.className = 'history-item bg-white p-4 rounded-lg shadow';
+        div.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-bold text-dark">${order.name}</p>
+              <p class="text-sm text-gray-600 mt-1">${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-primary">₹${order.price}</p>
+              <button onclick="orderFavorite(${index})" class="mt-2 bg-gradient-to-r from-accent to-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                Order Now
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Reorder function
+    function reorder(orderId) {
+      if (!userPhone) return openLoginModal();
+      
+      const order = orderHistory.find(o => o.id === orderId);
+      if (!order) return;
+      
+      // Clear cart and add items from order
+      cart = [];
+      order.items.forEach(item => {
+        const menuItem = menuItems.find(m => m.name === item.name);
+        if (menuItem) {
+          cart.push({ ...menuItem, qty: item.qty });
+        }
+      });
+      
+      updateCartUI();
+      openCart();
+      showtoast("Order added to cart!");
+    }
+
+    // Order favorite combination
+    function orderFavorite(index) {
+      if (!userPhone) return openLoginModal();
+      
+      const favorite = favoriteOrders[index];
+      if (!favorite) return;
+      
+      // Clear cart and add items from favorite
+      cart = [];
+      favorite.items.forEach(item => {
+        const menuItem = menuItems.find(m => m.name === item.name);
+        if (menuItem) {
+          cart.push({ ...menuItem, qty: item.qty });
+        }
+      });
+      
+      updateCartUI();
+      openCart();
+      showtoast("${favorite.name} added to cart!");
+    }
+
+    // Submit feedback
+    function submitFeedback(feedback) {
+      const feedbacks = {
+        sad: "We're sorry to hear that. We'll work to improve!",
+        neutral: "Thank you for your feedback. We appreciate it!",
+        happy: "Wonderful! We're thrilled you enjoyed your experience!",
+        excited: "Absolutely thrilled! Thank you for the love! 🎉"
+      };
+      
+      showtoast(feedbacks[feedback]);
+    }
+
+    // Animate counters
+    function animateCounters() {
+      const counters = document.querySelectorAll('.counter');
+      counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const increment = target / 100;
+        let current = 0;
+        
+        const updateCounter = () => {
+          if (current < target) {
+            current += increment;
+            counter.innerText = Math.ceil(current);
+            setTimeout(updateCounter, 20);
+          } else {
+            counter.innerText = target;
+          }
+        };
+        
+        updateCounter();
+      });
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const menuCards = document.querySelectorAll('#menuList .menu-card');
+      
+      menuCards.forEach(card => {
+        const itemName = card.querySelector('h3').textContent.toLowerCase();
+        if (itemName.includes(searchTerm)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+
+    // Initialize the app when page loads
+    window.onload = initApp;
+  </script>
 </body>
-</html>
+            </html>
