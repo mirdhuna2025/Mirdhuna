@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MIRDHUNA Admin | Management System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase-js.min.js"></script>
@@ -15,16 +15,25 @@
         extend: {
           fontFamily: {
             sans: ['Poppins', 'sans-serif'],
-            heading: ['Roboto', 'sans-serif']
+            heading: ['Playfair Display', 'serif']
           },
           colors: {
-            primary: '#1e40af',
-            secondary: '#3b82f6',
-            accent: '#0ea5e9',
-            dark: '#0f172a',
-            success: '#10b981',
-            warning: '#f59e0b',
-            danger: '#ef4444'
+            primary: '#e11d48',
+            secondary: '#f43f5e',
+            accent: '#f97316',
+            dark: '#1e293b',
+            light: '#f8fafc'
+          },
+          animation: {
+            'float': 'float 3s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-slow': 'bounce 3s infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' }
+            }
           }
         }
       }
@@ -32,15 +41,14 @@
   </script>
   
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
-      min-height: 100vh;
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: linear-gradient(135deg, #fff9f0 0%, #fff1f2 100%);
       overflow-x: hidden;
     }
     
     .admin-header {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      background: linear-gradient(135deg, rgba(225, 29, 72, 0.9) 0%, rgba(249, 115, 22, 0.85) 100%);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     
@@ -70,57 +78,107 @@
     .card {
       background: white;
       border-radius: 12px;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
       transition: all 0.3s ease;
     }
     
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
     
-    .stat-card {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-      color: white;
-      border-radius: 12px;
-      box-shadow: 0 6px 15px rgba(30, 58, 138, 0.3);
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
     }
     
-    .table-container {
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    .btn-primary {
+      background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
     }
     
-    .blurred-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backdrop-filter: blur(100px);
-      background: rgba(255, 255, 255, 0.1);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(225, 29, 72, 0.4);
     }
     
-    .login-form {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-      width: 100%;
-      max-width: 400px;
-      padding: 2rem;
-      animation: fadeIn 0.5s ease-out;
+    .history-item {
+      border-left: 4px solid #e11d48;
+      transition: all 0.3s ease;
     }
     
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
+    .history-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .toast { 
+      position: fixed; top: 20px; right: 20px; 
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white; padding: 15px 25px;
+      border-radius: 12px; z-index: 1000; opacity: 0; 
+      transform: translateY(-50px); transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .toast.show { opacity: 1; transform: translateY(0); }
+    
+    .cart-badge {
+      position: absolute; top: -8px; right: -8px; 
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: white; font-weight: bold; width: 24px; height: 24px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
+    }
+    
+    .nav-item.active {
+      color: #e11d48;
+      font-weight: 600;
+      position: relative;
+    }
+    
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 3px;
+      background: #e11d48;
+      border-radius: 3px;
+    }
+    
+    .floating-element {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
     
+    /* Counter animation */
+    .counter {
+      transition: all 1s ease-in-out;
+    }
+    
+    /* Two items per slot grid - ONLY for menu */
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .two-col-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Status badges */
     .status-badge {
       padding: 0.25rem 0.75rem;
       border-radius: 20px;
@@ -133,72 +191,58 @@
     .status-ready { background: #dcfce7; color: #166534; }
     .status-delivered { background: #ede9fe; color: #5b21b6; }
     
-    .order-item {
-      border-left: 3px solid #1e40af;
-      transition: all 0.3s ease;
-    }
-    
-    .order-item:hover {
-      transform: translateX(5px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    }
-    
-    .print-area {
-      background: white;
-      padding: 1rem;
-      border: 1px dashed #ccc;
-      border-radius: 8px;
-      max-width: 300px;
-      margin: 0 auto;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-    }
-    
-    .print-header {
-      text-align: center;
-      border-bottom: 1px dashed #000;
-      padding-bottom: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .print-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.25rem;
-    }
-    
-    .print-total {
-      border-top: 1px dashed #000;
-      padding-top: 0.5rem;
-      margin-top: 0.5rem;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-    }
-    
-    .thermal-print {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-top: 1rem;
-    }
-    
-    .thermal-print-btn {
-      background: #1e293b;
-      color: white;
-      border: none;
+    /* Action buttons */
+    .action-btn {
       padding: 0.5rem 1rem;
       border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s ease;
       cursor: pointer;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
       transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
     }
     
-    .thermal-print-btn:hover {
-      background: #0f172a;
-      transform: translateY(-2px);
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(225, 29, 72, 0.4);
     }
     
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(245, 158, 11, 0.4);
+    }
+    
+    /* Slide preview */
     .slide-preview {
       position: relative;
       overflow: hidden;
@@ -227,62 +271,15 @@
       padding: 1rem;
     }
     
-    .action-btn {
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      border: none;
+    /* Menu card */
+    .menu-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
     
-    .btn-primary {
-      background: #1e40af;
-      color: white;
-    }
-    
-    .btn-primary:hover {
-      background: #1e3a8a;
-    }
-    
-    .btn-success {
-      background: #10b981;
-      color: white;
-    }
-    
-    .btn-success:hover {
-      background: #059669;
-    }
-    
-    .btn-danger {
-      background: #ef4444;
-      color: white;
-    }
-    
-    .btn-danger:hover {
-      background: #dc2626;
-    }
-    
-    .btn-warning {
-      background: #f59e0b;
-      color: white;
-    }
-    
-    .btn-warning:hover {
-      background: #d97706;
-    }
-    
-    .menu-item-card {
-      transition: all 0.3s ease;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-    
-    .menu-item-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    .menu-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
     
     .menu-image {
@@ -290,107 +287,46 @@
       height: 180px;
       object-fit: cover;
     }
-    
-    .loading-spinner {
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-left-color: #1e40af;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .sidebar {
-        position: fixed;
-        left: -100%;
-        top: 80px;
-        width: 280px;
-        height: calc(100vh - 80px);
-        transition: left 0.3s ease;
-      }
-      
-      .sidebar.active {
-        left: 0;
-      }
-      
-      .main-content {
-        margin-left: 0;
-      }
-      
-      .menu-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .stats-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-      
-      .print-area {
-        max-width: 100%;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .table-container {
-        overflow-x: auto;
-      }
-      
-      .print-area {
-        font-size: 10px;
-      }
-    }
   </style>
 </head>
 <body class="min-h-screen">
-  <!-- Mobile Menu Toggle -->
-  <div class="md:hidden fixed top-4 left-4 z-50">
-    <button id="mobileMenuToggle" class="bg-primary text-white p-3 rounded-full shadow-lg">
-      <i class="fas fa-bars"></i>
-    </button>
-  </div>
-  
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Item added to cart!</div>
+
   <!-- Login Screen -->
-  <div id="loginScreen" class="blurred-bg">
-    <div class="login-form">
-      <div class="text-center mb-8">
-        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="fas fa-lock text-2xl text-white"></i>
+  <div id="loginScreen" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl w-11/12 max-w-md shadow-2xl relative overflow-hidden">
+      <div class="p-8">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-lock text-white text-2xl"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-dark">MIRDHUNA ADMIN</h3>
+          <p class="text-gray-600 mt-2">Secure Management Portal</p>
         </div>
-        <h2 class="text-2xl font-heading font-bold text-dark">MIRDHUNA ADMIN</h2>
-        <p class="text-gray-600">Secure Management Portal</p>
+        
+        <form id="loginForm">
+          <div class="mb-6">
+            <label class="block text-gray-700 mb-2 font-medium">Username</label>
+            <input type="text" id="username" placeholder="Enter username" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" autocomplete="off">
+          </div>
+          
+          <div class="mb-6">
+            <label class="block text-gray-700 mb-2 font-medium">Password</label>
+            <input type="password" id="password" placeholder="Enter password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" autocomplete="off">
+          </div>
+          
+          <button type="submit" class="btn-primary w-full py-3 rounded-lg font-bold text-white shadow-lg hover:shadow-xl transition">
+            <i class="fas fa-sign-in-alt mr-2"></i> Login to Dashboard
+          </button>
+          
+          <p class="text-xs text-gray-500 mt-4 text-center">Protected with advanced security protocols</p>
+        </form>
       </div>
-      
-      <form id="loginForm">
-        <div class="mb-6">
-          <label class="block text-gray-700 mb-2 font-medium">Username</label>
-          <input type="text" id="username" placeholder="Enter username" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" autocomplete="off">
-        </div>
-        
-        <div class="mb-6">
-          <label class="block text-gray-700 mb-2 font-medium">Password</label>
-          <input type="password" id="password" placeholder="Enter password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" autocomplete="off">
-        </div>
-        
-        <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-bold shadow-lg hover:shadow-xl transition">
-          <i class="fas fa-sign-in-alt mr-2"></i> Login to Dashboard
-        </button>
-        
-        <p class="text-xs text-gray-500 mt-4 text-center">Protected with advanced security protocols</p>
-      </form>
     </div>
   </div>
-  
+
   <!-- Main Admin Dashboard -->
   <div id="adminDashboard" class="hidden">
     <!-- Header -->
@@ -430,44 +366,44 @@
     
     <div class="flex">
       <!-- Sidebar -->
-      <aside id="sidebar" class="sidebar w-64 p-4">
+      <aside class="sidebar w-64 p-4">
         <nav>
           <ul class="space-y-2">
             <li>
-              <a href="#" class="sidebar-item active flex items-center p-3 text-white" data-section="dashboard">
+              <button onclick="showSection('dashboard')" class="sidebar-item active flex items-center p-3 text-white" data-section="dashboard">
                 <i class="fas fa-home mr-3 text-lg"></i>
                 <span>Dashboard</span>
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="orders">
+              <button onclick="showSection('orders')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="orders">
                 <i class="fas fa-shopping-cart mr-3 text-lg"></i>
                 <span>Orders</span>
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="menu">
+              <button onclick="showSection('menu')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="menu">
                 <i class="fas fa-utensils mr-3 text-lg"></i>
                 <span>Menu Management</span>
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="users">
+              <button onclick="showSection('users')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="users">
                 <i class="fas fa-users mr-3 text-lg"></i>
                 <span>User History</span>
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="slides">
+              <button onclick="showSection('slides')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="slides">
                 <i class="fas fa-images mr-3 text-lg"></i>
                 <span>Slide Management</span>
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="analytics">
+              <button onclick="showSection('analytics')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="analytics">
                 <i class="fas fa-chart-line mr-3 text-lg"></i>
                 <span>Analytics</span>
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
@@ -507,7 +443,7 @@
       </aside>
       
       <!-- Main Content -->
-      <main class="flex-1 p-6 main-content">
+      <main class="flex-1 p-6">
         <!-- Dashboard Section -->
         <section id="dashboardSection">
           <div class="mb-8">
@@ -516,68 +452,68 @@
           </div>
           
           <!-- Stats Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 stats-grid">
-            <div class="stat-card p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold">₹24.5K</p>
-                  <p class="text-blue-200">Today's Revenue</p>
+                  <p class="text-3xl font-bold text-primary">₹24.5K</p>
+                  <p class="text-gray-600">Today's Revenue</p>
                 </div>
                 <i class="fas fa-rupee-sign text-3xl opacity-30"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
-                  <div class="bg-white h-2 rounded-full" style="width: 75%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
                 </div>
-                <p class="text-xs text-blue-200 mt-2">12% increase from yesterday</p>
+                <p class="text-xs text-gray-500 mt-2">12% increase from yesterday</p>
               </div>
             </div>
             
-            <div class="stat-card p-6">
+            <div class="card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold">142</p>
-                  <p class="text-blue-200">Orders Today</p>
+                  <p class="text-3xl font-bold text-primary">142</p>
+                  <p class="text-gray-600">Orders Today</p>
                 </div>
                 <i class="fas fa-shopping-bag text-3xl opacity-30"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
-                  <div class="bg-white h-2 rounded-full" style="width: 85%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
                 </div>
-                <p class="text-xs text-blue-200 mt-2">18% increase from yesterday</p>
+                <p class="text-xs text-gray-500 mt-2">18% increase from yesterday</p>
               </div>
             </div>
             
-            <div class="stat-card p-6">
+            <div class="card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold">4.8★</p>
-                  <p class="text-blue-200">Avg Rating</p>
+                  <p class="text-3xl font-bold text-primary">4.8★</p>
+                  <p class="text-gray-600">Avg Rating</p>
                 </div>
                 <i class="fas fa-star text-3xl opacity-30"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
-                  <div class="bg-white h-2 rounded-full" style="width: 95%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
                 </div>
-                <p class="text-xs text-blue-200 mt-2">Excellent feedback</p>
+                <p class="text-xs text-gray-500 mt-2">Excellent feedback</p>
               </div>
             </div>
             
-            <div class="stat-card p-6">
+            <div class="card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold">87%</p>
-                  <p class="text-blue-200">Repeat Customers</p>
+                  <p class="text-3xl font-bold text-primary">87%</p>
+                  <p class="text-gray-600">Repeat Customers</p>
                 </div>
                 <i class="fas fa-users text-3xl opacity-30"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
-                  <div class="bg-white h-2 rounded-full" style="width: 87%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
                 </div>
-                <p class="text-xs text-blue-200 mt-2">Loyal customer base</p>
+                <p class="text-xs text-gray-500 mt-2">Loyal customer base</p>
               </div>
             </div>
           </div>
@@ -601,14 +537,8 @@
                     <th class="pb-3">Action</th>
                   </tr>
                 </thead>
-                <tbody id="recentOrdersTable">
-                  <!-- Orders will be populated by JavaScript -->
-                  <tr>
-                    <td colspan="6" class="text-center py-8 text-gray-500">
-                      <div class="loading-spinner"></div>
-                      <p>Loading orders...</p>
-                    </td>
-                  </tr>
+                <tbody id="ordersTableBody">
+                  <!-- Orders will be populated here -->
                 </tbody>
               </table>
             </div>
@@ -652,12 +582,8 @@
             
             <div class="card p-6">
               <h3 class="text-xl font-bold text-dark mb-6">Popular Menu Items</h3>
-              <div class="space-y-4" id="popularItemsList">
-                <!-- Popular items will be populated by JavaScript -->
-                <div class="text-center py-8 text-gray-500">
-                  <div class="loading-spinner mx-auto"></div>
-                  <p>Loading popular items...</p>
-                </div>
+              <div class="space-y-4" id="popularItemsContainer">
+                <!-- Popular items will be populated here -->
               </div>
             </div>
           </div>
@@ -698,14 +624,8 @@
                     <th class="pb-3">Actions</th>
                   </tr>
                 </thead>
-                <tbody id="allOrdersTable">
-                  <!-- All orders will be populated by JavaScript -->
-                  <tr>
-                    <td colspan="7" class="text-center py-8 text-gray-500">
-                      <div class="loading-spinner"></div>
-                      <p>Loading all orders...</p>
-                    </td>
-                  </tr>
+                <tbody id="allOrdersTableBody">
+                  <!-- All orders will be populated here -->
                 </tbody>
               </table>
             </div>
@@ -812,12 +732,9 @@
                   </button>
                 </div>
                 
-                <div id="menuItemsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 menu-grid">
-                  <!-- Menu items will be populated by JavaScript -->
-                  <div class="col-span-2 text-center py-12">
-                    <div class="loading-spinner"></div>
-                    <p class="mt-4 text-gray-600">Loading menu items...</p>
-                  </div>
+                <!-- Two items per slot grid -->
+                <div id="menuItemsContainer" class="two-col-grid gap-6">
+                  <!-- Menu items will be populated here -->
                 </div>
               </div>
             </div>
@@ -837,7 +754,7 @@
                     <select id="menuItemCategory" class="w-full p-2 border rounded" required>
                       <option value="">Select Category</option>
                       <option value="Pizza">Pizza</option>
-option value="Burger">Burger</option>
+                      <option value="Burger">Burger</option>
                       <option value="Sandwich">Sandwich</option>
                       <option value="Shakes">Shakes</option>
                       <option value="Desserts">Desserts</option>
@@ -900,14 +817,8 @@ option value="Burger">Burger</option>
                     <th class="pb-3">Device</th>
                   </tr>
                 </thead>
-                <tbody id="userHistoryTable">
-                  <!-- User history will be populated by JavaScript -->
-                  <tr>
-                    <td colspan="5" class="text-center py-8 text-gray-500">
-                      <div class="loading-spinner"></div>
-                      <p>Loading user history...</p>
-                    </td>
-                  </tr>
+                <tbody id="userHistoryTableBody">
+                  <!-- User history will be populated here -->
                 </tbody>
               </table>
             </div>
@@ -971,7 +882,8 @@ option value="Burger">Burger</option>
                   </button>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Two items per slot grid for slides -->
+                <div class="two-col-grid gap-6">
                   <div class="slide-preview">
                     <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 1" class="slide-image">
                     <div class="slide-overlay">
@@ -1113,67 +1025,67 @@ option value="Burger">Burger</option>
           
           <!-- Key Metrics -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="stat-card p-6">
+            <div class="card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold">1,240</p>
-                  <p class="text-blue-200">Total Orders</p>
+                  <p class="text-3xl font-bold text-primary">1,240</p>
+                  <p class="text-gray-600">Total Orders</p>
                 </div>
-                <i class="fas fa-shopping-bag text-3xl opacity-30"></i>
+                <i class="fas fa-shopping-bag text-3xl text-gray-300"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
-                  <div class="bg-white h-2 rounded-full" style="width: 75%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
                 </div>
-                <p class="text-xs text-blue-200 mt-2">+12% from last month</p>
+                <p class="text-xs text-gray-500 mt-2">+12% from last month</p>
               </div>
             </div>
             
-            <div class="stat-card p-6">
+            <div class="card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold">₹3.2M</p>
-                  <p class="text-blue-200">Total Revenue</p>
+                  <p class="text-3xl font-bold text-primary">₹3.2M</p>
+                  <p class="text-gray-600">Total Revenue</p>
                 </div>
-                <i class="fas fa-rupee-sign text-3xl opacity-30"></i>
+                <i class="fas fa-rupee-sign text-3xl text-gray-300"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
-                  <div class="bg-white h-2 rounded-full" style="width: 85%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
                 </div>
-                <p class="text-xs text-blue-200 mt-2">+18% from last month</p>
+                <p class="text-xs text-gray-500 mt-2">+18% from last month</p>
               </div>
             </div>
             
-            <div class="stat-card p-6">
+            <div class="card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold">4.8</p>
-                  <p class="text-blue-200">Avg. Rating</p>
+                  <p class="text-3xl font-bold text-primary">4.8</p>
+                  <p class="text-gray-600">Avg. Rating</p>
                 </div>
-                <i class="fas fa-star text-3xl opacity-30"></i>
+                <i class="fas fa-star text-3xl text-gray-300"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
-                  <div class="bg-white h-2 rounded-full" style="width: 95%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
                 </div>
-                <p class="text-xs text-blue-200 mt-2">Excellent feedback</p>
+                <p class="text-xs text-gray-500 mt-2">+0.2 from last month</p>
               </div>
             </div>
             
-            <div class="stat-card p-6">
+            <div class="card p-6">
               <div class="flex justify-between items-center">
                 <div>
-                  <p class="text-3xl font-bold">87%</p>
-                  <p class="text-blue-200">Repeat Customers</p>
+                  <p class="text-3xl font-bold text-primary">87%</p>
+                  <p class="text-gray-600">Repeat Customers</p>
                 </div>
-                <i class="fas fa-users text-3xl opacity-30"></i>
+                <i class="fas fa-users text-3xl text-gray-300"></i>
               </div>
               <div class="mt-4">
-                <div class="w-full bg-blue-400 bg-opacity-30 rounded-full h-2">
-                  <div class="bg-white h-2 rounded-full" style="width: 87%"></div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
                 </div>
-                <p class="text-xs text-blue-200 mt-2">Loyal customer base</p>
+                <p class="text-xs text-gray-500 mt-2">+3% from last month</p>
               </div>
             </div>
           </div>
@@ -1345,9 +1257,9 @@ option value="Burger">Burger</option>
             <textarea id="editItemDescription" class="w-full p-2 border rounded" rows="3"></textarea>
           </div>
           
-          <div class="mb-6">
+          <div class="mb-4">
             <label class="block text-gray-700 mb-2">Image URL</label>
-            <input type="url" id="editItemImageUrl" class="w-full p-2 border rounded" required>
+            <input type="url" id="editItemImage" class="w-full p-2 border rounded" required>
           </div>
           
           <div class="flex justify-end space-x-3">
@@ -1373,8 +1285,6 @@ option value="Burger">Burger</option>
     const loginForm = document.getElementById('loginForm');
     const logoutBtn = document.getElementById('logoutBtn');
     const editMenuItemModal = document.getElementById('editMenuItemModal');
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const sidebar = document.getElementById('sidebar');
     
     // Sections
     const sections = {
@@ -1390,7 +1300,7 @@ option value="Burger">Burger</option>
     let menuItems = [];
     let orders = [];
     let userHistory = [];
-    let popularItems = [];
+    let favoriteOrders = [];
     
     // Login Form Handler
     loginForm.addEventListener('submit', function(e) {
@@ -1398,7 +1308,7 @@ option value="Burger">Burger</option>
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
       
-      // Validate credentials
+      // Validate credentials (Simple validation without Supabase)
       if (username === 'Sanu' && password === 'Sanu.0000') {
         loginScreen.classList.add('hidden');
         adminDashboard.classList.remove('hidden');
@@ -1421,13 +1331,6 @@ option value="Burger">Burger</option>
       loginScreen.classList.remove('hidden');
       showtoast('You have been logged out.');
     });
-    
-    // Mobile Menu Toggle
-    if (mobileMenuToggle) {
-      mobileMenuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-      });
-    }
     
     // Navigation
     document.querySelectorAll('.sidebar-item').forEach(item => {
@@ -1455,8 +1358,10 @@ option value="Burger">Burger</option>
           loadOrders();
         } else if (section === 'users') {
           loadUserHistory();
-        } else if (section === 'dashboard') {
-          loadDashboardData();
+        } else if (section === 'slides') {
+          loadSlides();
+        } else if (section === 'analytics') {
+          loadAnalytics();
         }
       });
     });
@@ -1464,24 +1369,13 @@ option value="Burger">Burger</option>
     // Toast Notification
     function showtoast(message) {
       // Create toast element
-      const toast = document.createElement('div');
-      toast.className = 'fixed bottom-6 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300';
-      toast.innerHTML = `
-        <div class="flex items-center">
-          <i class="fas fa-info-circle mr-2"></i>
-          <span>${message}</span>
-        </div>
-      `;
-      
-      // Add to body
-      document.body.appendChild(toast);
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
       
       // Remove after delay
       setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => {
-          document.body.removeChild(toast);
-        }, 300);
+        toast.classList.remove('show');
       }, 3000);
     }
     
@@ -1491,10 +1385,11 @@ option value="Burger">Burger</option>
       subscribeToRealtimeUpdates();
       
       // Load initial data
-      loadDashboardData();
       loadMenuItems();
       loadOrders();
       loadUserHistory();
+      loadSlides();
+      loadAnalytics();
     }
     
     // Real-time Updates
@@ -1551,100 +1446,6 @@ option value="Burger">Burger</option>
         .subscribe();
     }
     
-    // Load Dashboard Data
-    async function loadDashboardData() {
-      try {
-        // Load recent orders
-        const { data: ordersData, error: ordersError } = await supabase
-          .from('orders')
-          .select('*')
-          .order('ordered_at', { ascending: false })
-          .limit(5);
-        
-        if (ordersError) throw ordersError;
-        orders = ordersData;
-        renderRecentOrders();
-        
-        // Load popular items
-        const { data: itemsData, error: itemsError } = await supabase
-          .from('menu_items')
-          .select('*')
-          .order('id');
-        
-        if (itemsError) throw itemsError;
-        popularItems = itemsData.slice(0, 3);
-        renderPopularItems();
-      } catch (error) {
-        console.error('Error loading dashboard data:', error);
-        showtoast('Failed to load dashboard data');
-      }
-    }
-    
-    // Render Recent Orders
-    function renderRecentOrders() {
-      const container = document.getElementById('recentOrdersTable');
-      container.innerHTML = '';
-      
-      if (orders.length === 0) {
-        container.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No recent orders</td></tr>';
-        return;
-      }
-      
-      orders.slice(0, 3).forEach(order => {
-        const orderRow = document.createElement('tr');
-        orderRow.className = 'border-b hover:bg-gray-50';
-        orderRow.innerHTML = `
-          <td class="py-4 font-medium">#${order.id.toString().slice(-4)}</td>
-          <td class="py-4">
-            <div class="flex items-center">
-              <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
-                <i class="fas fa-user text-gray-600 text-xs"></i>
-              </div>
-              <span>${order.user_phone}</span>
-            </div>
-          </td>
-          <td class="py-4">${order.items.length} items</td>
-          <td class="py-4 font-bold">₹${order.total}</td>
-          <td class="py-4">
-            <span class="status-badge status-${order.status}">${order.status}</span>
-          </td>
-          <td class="py-4">
-            <button class="action-btn btn-primary text-sm">Process</button>
-          </td>
-        `;
-        container.appendChild(orderRow);
-      });
-    }
-    
-    // Render Popular Items
-    function renderPopularItems() {
-      const container = document.getElementById('popularItemsList');
-      container.innerHTML = '';
-      
-      if (popularItems.length === 0) {
-        container.innerHTML = '<p class="text-center py-8 text-gray-500">No popular items found</p>';
-        return;
-      }
-      
-      popularItems.forEach((item, index) => {
-        const itemElement = document.createElement('div');
-        itemElement.className = 'flex items-center';
-        itemElement.innerHTML = `
-          <div class="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
-            <span class="text-xs font-bold">${index + 1}</span>
-          </div>
-          <div class="flex-1">
-            <p class="font-medium">${item.name}</p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-              <div class="bg-primary h-2 rounded-full" style="width: ${92 - (index * 10)}%"></div>
-            </div>
-          </div>
-          <span class="text-sm font-bold text-primary">${Math.floor(Math.random() * 50) + 20} orders</span>
-        `;
-        container.appendChild(itemElement);
-      });
-    }
-    
     // Load Menu Items
     async function loadMenuItems() {
       try {
@@ -1656,15 +1457,26 @@ option value="Burger">Burger</option>
         if (error) throw error;
         
         menuItems = data;
-        renderMenuItems();
+        displayMenuItems();
       } catch (error) {
         console.error('Error loading menu items:', error);
         showtoast('Failed to load menu items');
+        
+        // Fallback to mock data
+        menuItems = [
+          { id: 1, name: "Truffle Margherita", category: "Pizza", price: 299, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 2, name: "Gourmet Cheeseburger", category: "Burger", price: 179, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 3, name: "Avocado Club Sandwich", category: "Sandwich", price: 199, image_path: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 4, name: "Belgian Chocolate Shake", category: "Shakes", price: 149, image_path: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 5, name: "Spicy Pepperoni Feast", category: "Pizza", price: 349, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 6, name: "Vegan Power Burger", category: "Burger", price: 189, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
+        ];
+        displayMenuItems();
       }
     }
     
-    // Render Menu Items
-    function renderMenuItems() {
+    // Display Menu Items (2 items per slot)
+    function displayMenuItems() {
       const container = document.getElementById('menuItemsContainer');
       container.innerHTML = '';
       
@@ -1673,30 +1485,58 @@ option value="Burger">Burger</option>
         return;
       }
       
-      menuItems.forEach(item => {
-        const menuItemElement = document.createElement('div');
-        menuItemElement.className = 'menu-item-card';
-        menuItemElement.innerHTML = `
-          <img src="${item.image_path}" alt="${item.name}" class="menu-image">
-          <div class="p-4">
-            <h4 class="font-bold text-lg">${item.name}</h4>
-            <p class="text-gray-600 text-sm mb-2">${item.category}</p>
-            <p class="text-gray-700 text-sm mb-3">${item.description || 'No description'}</p>
-            <div class="flex justify-between items-center">
-              <span class="font-bold text-primary">₹${item.price}</span>
-              <div class="flex space-x-2">
+      // Group items in pairs for two-column layout
+      for (let i = 0; i < menuItems.length; i += 2) {
+        const pair = menuItems.slice(i, i + 2);
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
+        
+        pair.forEach(item => {
+          const colDiv = document.createElement('div');
+          colDiv.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
+          colDiv.innerHTML = `
+            <img src="${item.image_path}" alt="${item.name}" class="menu-image">
+            <div class="p-4">
+              <h3 class="font-bold text-lg">${item.name}</h3>
+              <p class="text-primary font-semibold">₹${item.price}</p>
+              <p class="text-gray-600 text-sm mb-3">${item.description || 'No description'}</p>
+              <div class="flex justify-between items-center">
                 <button onclick="openEditModal(${item.id})" class="text-blue-500 hover:text-blue-700">
                   <i class="fas fa-edit"></i>
                 </button>
                 <button onclick="deleteMenuItem(${item.id})" class="text-red-500 hover:text-red-700">
                   <i class="fas fa-trash"></i>
                 </button>
+                <button onclick="addToCart(${item.id})" class="btn-primary px-4 py-2 rounded-full font-bold text-white shadow hover:shadow-lg transition">
+                  <i class="fas fa-plus mr-2"></i> Add to Cart
+                </button>
               </div>
             </div>
-          </div>
-        `;
-        container.appendChild(menuItemElement);
-      });
+          `;
+          rowDiv.appendChild(colDiv);
+        });
+        
+        // Fill empty slot if odd number of items
+        if (pair.length === 1) {
+          const emptyDiv = document.createElement('div');
+          emptyDiv.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
+          emptyDiv.innerHTML = `
+            <div class="bg-gray-200 h-48 flex items-center justify-center">
+              <i class="fas fa-plus text-gray-400 text-3xl"></i>
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-lg">Add New Item</h3>
+              <p class="text-gray-600 text-sm mb-3">Click to add a new menu item</p>
+              <button onclick="openAddMenuItemModal()" class="btn-primary w-full py-2 rounded-full font-bold text-white shadow hover:shadow-lg transition">
+                <i class="fas fa-plus mr-2"></i> Add Item
+              </button>
+            </div>
+          `;
+          rowDiv.appendChild(emptyDiv);
+        }
+        
+        container.appendChild(rowDiv);
+      }
     }
     
     // Open Add Menu Item Modal
@@ -1743,7 +1583,7 @@ option value="Burger">Burger</option>
       document.getElementById('editItemCategory').value = item.category;
       document.getElementById('editItemPrice').value = item.price;
       document.getElementById('editItemDescription').value = item.description || '';
-      document.getElementById('editItemImageUrl').value = item.image_path;
+      document.getElementById('editItemImage').value = item.image_path;
       
       editMenuItemModal.classList.remove('hidden');
     }
@@ -1763,7 +1603,7 @@ option value="Burger">Burger</option>
         category: document.getElementById('editItemCategory').value,
         price: parseInt(document.getElementById('editItemPrice').value),
         description: document.getElementById('editItemDescription').value,
-        image_path: document.getElementById('editItemImageUrl').value
+        image_path: document.getElementById('editItemImage').value
       };
       
       try {
@@ -1816,24 +1656,32 @@ option value="Burger">Burger</option>
         if (error) throw error;
         
         orders = data;
-        renderOrders();
+        displayOrders();
       } catch (error) {
         console.error('Error loading orders:', error);
         showtoast('Failed to load orders');
+        
+        // Fallback to mock data
+        orders = [
+          { id: 1001, user_phone: "+91 9835124772", items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], total: 209, status: "pending", user_location: {lat: 26.8467, lng: 75.8158}, ordered_at: "2023-06-15T10:23:00Z" },
+          { id: 1002, user_phone: "+91 9876543210", items: [{name: "Truffle Margherita", qty: 1}], total: 299, status: "preparing", user_location: {lat: 26.8523, lng: 75.8210}, ordered_at: "2023-06-15T09:45:00Z" },
+          { id: 1003, user_phone: "+91 9123456789", items: [{name: "Avocado Club Sandwich", qty: 2}], total: 398, status: "ready", user_location: {lat: 26.8391, lng: 75.8082}, ordered_at: "2023-06-15T08:30:00Z" }
+        ];
+        displayOrders();
       }
     }
     
-    // Render Orders
-    function renderOrders() {
-      const container = document.getElementById('allOrdersTable');
+    // Display Orders
+    function displayOrders() {
+      const container = document.getElementById('ordersTableBody');
       container.innerHTML = '';
       
       if (orders.length === 0) {
-        container.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-500">No orders found</td></tr>';
+        container.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No orders found</td></tr>';
         return;
       }
       
-      orders.forEach(order => {
+      orders.slice(0, 5).forEach(order => {
         const orderRow = document.createElement('tr');
         orderRow.className = 'border-b hover:bg-gray-50';
         orderRow.innerHTML = `
@@ -1855,9 +1703,12 @@ option value="Burger">Burger</option>
             </ul>
           </td>
           <td class="py-4 font-bold">₹${order.total}</td>
-          <td class="py-4">${new Date(order.ordered_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
           <td class="py-4">
-            <span class="status-badge status-${order.status}">${order.status}</span>
+            <span class="status-badge ${
+              order.status === 'pending' ? 'status-pending' :
+              order.status === 'preparing' ? 'status-preparing' :
+              order.status === 'ready' ? 'status-ready' : 'status-delivered'
+            }">${order.status}</span>
           </td>
           <td class="py-4">
             <div class="flex space-x-2">
@@ -1882,16 +1733,24 @@ option value="Burger">Burger</option>
         if (error) throw error;
         
         userHistory = data;
-        renderUserHistory();
+        displayUserHistory();
       } catch (error) {
         console.error('Error loading user history:', error);
         showtoast('Failed to load user history');
+        
+        // Fallback to mock data
+        userHistory = [
+          { phone: "+91 9835124772", timestamp: "2023-06-15T10:20:00Z", location_lat: 26.8467, location_lng: 75.8158 },
+          { phone: "+91 9876543210", timestamp: "2023-06-15T09:40:00Z", location_lat: 26.8523, location_lng: 75.8210 },
+          { phone: "+91 9123456789", timestamp: "2023-06-15T08:25:00Z", location_lat: 26.8391, location_lng: 75.8082 }
+        ];
+        displayUserHistory();
       }
     }
     
-    // Render User History
-    function renderUserHistory() {
-      const container = document.getElementById('userHistoryTable');
+    // Display User History
+    function displayUserHistory() {
+      const container = document.getElementById('userHistoryTableBody');
       container.innerHTML = '';
       
       if (userHistory.length === 0) {
@@ -1913,23 +1772,202 @@ option value="Burger">Burger</option>
       });
     }
     
-    // Thermal Printer Functionality
-    document.querySelector('.thermal-print-btn').addEventListener('click', function() {
-      showtoast('Printing receipt...');
-      // In a real implementation, this would connect to a thermal printer
-    });
+    // Load Slides
+    async function loadSlides() {
+      try {
+        const { data, error } = await supabase
+          .from('slides')
+          .select('*')
+          .order('id');
+        
+        if (error) throw error;
+        
+        // Slides are already handled in HTML
+        console.log('Slides loaded:', data);
+      } catch (error) {
+        console.error('Error loading slides:', error);
+        showtoast('Failed to load slides');
+      }
+    }
     
-    // Print Test Page
-    document.querySelectorAll('.thermal-print-btn')[1].addEventListener('click', function() {
-      showtoast('Printing test page...');
-      // In a real implementation, this would print a test page
-    });
+    // Load Analytics
+    async function loadAnalytics() {
+      try {
+        const { data, error } = await supabase
+          .from('analytics')
+          .select('*');
+        
+        if (error) throw error;
+        
+        // Analytics are already handled in HTML
+        console.log('Analytics loaded:', data);
+      } catch (error) {
+        console.error('Error loading analytics:', error);
+        showtoast('Failed to load analytics');
+      }
+    }
+    
+    // Add to Cart
+    function addToCart(id) {
+      const item = menuItems.find(i => i.id === id);
+      const existing = cart.find(c => c.id === id);
+      if (existing) existing.qty += 1;
+      else cart.push({ ...item, qty: 1 });
+      updateCartUI();
+      showtoast("Added to cart!");
+    }
+    
+    // Update Cart UI
+    function updateCartUI() {
+      document.getElementById('cartCount').textContent = cart.reduce((sum, i) => sum + i.qty, 0);
+    }
+    
+    // Show Section
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      
+      // Update nav active state
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      if (id === 'menu') {
+        document.querySelectorAll('.nav-item')[0].classList.add('active');
+      } else if (id === 'history') {
+        document.querySelectorAll('.nav-item')[1].classList.add('active');
+      }
+    }
+    
+    // User Login
+    async function loginUser() {
+      const num = document.getElementById('mobileInput').value.trim();
+      if (!num || num.length !== 10) return showtoast("Enter valid 10-digit number");
+      userPhone = '91' + num;
+      userLocation = await detectLocation();
+
+      document.getElementById('loginModal').classList.add('hidden');
+      showtoast("Welcome back! Happy ordering");
+    }
+    
+    // Detect Location
+    async function detectLocation() {
+      return new Promise(resolve => {
+        if (!navigator.geolocation) resolve({ lat: 0, lng: 0 });
+        else {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              const crd = pos.coords;
+              resolve({ lat: crd.latitude, lng: crd.longitude });
+            },
+            () => {
+              showtoast("Location access denied. Using default location");
+              resolve({ lat: 0, lng: 0 });
+            }
+          );
+        }
+      });
+    }
+    
+    // Place Order
+    async function placeOrder() {
+      if (cart.length === 0) return showtoast("Cart is empty");
+      
+      let total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      
+      // Add to order history
+      const newOrder = {
+        user_phone: userPhone,
+        items: cart,
+        total: total,
+        status: 'pending',
+        user_location: userLocation,
+        ordered_at: new Date().toISOString()
+      };
+      
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .insert([newOrder])
+          .select();
+        
+        if (error) throw error;
+        
+        showtoast("Order placed successfully! 🎉");
+        cart = [];
+        updateCartUI();
+        closeCart();
+        sendWhatsAppConfirmation();
+      } catch (error) {
+        console.error('Error placing order:', error);
+        showtoast("Failed to place order");
+      }
+    }
+    
+    // Send WhatsApp Confirmation
+    function sendWhatsAppConfirmation() {
+      const msg = `✅ *MIRDHUNA*: Your order of ₹${document.getElementById('cartTotal').textContent} is confirmed! We'll prepare it soon.`;
+      const url = `https://wa.me/919835124772?text=${encodeURIComponent(msg)}`;
+      fetch(url).catch(() => {}); // Just trigger
+    }
+    
+    // Submit Feedback
+    function submitFeedback(feedback) {
+      const feedbacks = {
+        sad: "We're sorry to hear that. We'll work to improve!",
+        neutral: "Thank you for your feedback. We appreciate it!",
+        happy: "Wonderful! We're thrilled you enjoyed your experience!",
+        excited: "Absolutely thrilled! Thank you for the love! 🎉"
+      };
+      
+      showtoast(feedbacks[feedback]);
+    }
     
     // Initialize the app when page loads
-    document.addEventListener('DOMContentLoaded', function() {
+    window.onload = function() {
       // Set initial active section
       document.querySelector('.sidebar-item[data-section="dashboard"]').click();
+      
+      // Animate counters
+      animateCounters();
+    };
+    
+    // Animate counters (Feature 16)
+    function animateCounters() {
+      const counters = document.querySelectorAll('.counter');
+      counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const increment = target / 100;
+        let current = 0;
+        
+        const updateCounter = () => {
+          if (current < target) {
+            current += increment;
+            counter.innerText = Math.ceil(current);
+            setTimeout(updateCounter, 20);
+          } else {
+            counter.innerText = target;
+          }
+        };
+        
+        updateCounter();
+      });
+    }
+    
+    // Search functionality (Feature 6)
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const menuCards = document.querySelectorAll('#menuItemsContainer .menu-card');
+      
+      menuCards.forEach(card => {
+        const itemName = card.querySelector('h3').textContent.toLowerCase();
+        if (itemName.includes(searchTerm)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
     });
   </script>
 </body>
-  </html>
+</html>
