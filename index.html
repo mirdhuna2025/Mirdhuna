@@ -14,8 +14,8 @@
       theme: {
         extend: {
           fontFamily: {
-            heading: ['Playfair Display', 'serif'],
-            body: ['Poppins', 'sans-serif']
+            sans: ['Poppins', 'sans-serif'],
+            heading: ['Playfair Display', 'serif']
           },
           colors: {
             primary: '#e11d48',
@@ -88,41 +88,23 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     }
     
-    .toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
+    .toast { 
+      position: fixed; top: 20px; right: 20px; 
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      color: white;
-      padding: 15px 25px;
-      border-radius: 12px;
-      z-index: 1000;
-      opacity: 0;
-      transform: translateY(-50px);
-      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      color: white; padding: 15px 25px;
+      border-radius: 12px; z-index: 50; opacity: 0; 
+      transform: translateY(-50px); transition: all 0.4s; 
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
     
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .toast.show { opacity: 1; transform: translateY(0); }
     
-    .cart-badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
+    .cart-badge { 
+      position: absolute; top: -8px; right: -8px; 
       background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-      color: white;
-      font-weight: bold;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
+      color: white; font-weight: bold; width: 24px; height: 24px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
     }
     
     .nav-item.active {
@@ -148,14 +130,8 @@
     }
     
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     /* Counter animation */
@@ -163,46 +139,18 @@
       transition: all 1s ease-in-out;
     }
     
-    /* Two items per slot grid - ONLY for menu */
-    .menu-grid {
+    /* Two items per slot grid */
+    .two-col-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
     }
     
-    /* Responsive grid for other sections */
-    .responsive-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem;
-    }
-    
-    @media (max-width: 640px) {
-      .responsive-grid {
+    @media (max-width: 768px) {
+      .two-col-grid {
         grid-template-columns: 1fr;
       }
     }
-    
-    /* Loading spinner */
-    .spinner {
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-left-color: #e11d48;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Status indicators */
-    .status-pending { background-color: #fef3c7; color: #92400e; }
-    .status-preparing { background-color: #dbeafe; color: #1e40af; }
-    .status-ready { background-color: #dcfce7; color: #166534; }
-    .status-delivered { background-color: #ede9fe; color: #5b21b6; }
   </style>
 </head>
 <body class="min-h-screen">
@@ -218,7 +166,7 @@
       <div class="absolute bottom-10 left-1/2 w-64 h-64 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
     </div>
     
-    <!-- Floating food elements -->
+    <!-- Floating food elements (Feature 1) -->
     <div class="absolute bottom-20 left-10 floating-element">
       <div class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
         <i class="fas fa-pizza-slice text-white text-2xl"></i>
@@ -247,7 +195,7 @@
         </button>
       </div>
       
-      <!-- Stats counters -->
+      <!-- Stats counters (Feature 16) -->
       <div class="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
         <div class="text-center">
           <p class="text-4xl font-bold text-white counter" data-target="5000">0</p>
@@ -297,7 +245,7 @@
         <p class="text-gray-600 max-w-2xl mx-auto">Handcrafted with passion, served with love. Each dish tells a story of culinary artistry.</p>
       </div>
       
-      <!-- Advanced search -->
+      <!-- Advanced search (Feature 6) -->
       <div class="mb-8 max-w-2xl mx-auto">
         <div class="relative">
           <input type="text" id="searchInput" placeholder="Search menu items..." class="w-full p-4 pl-12 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -323,13 +271,9 @@
         <button onclick="filterCategory('Shakes')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Shakes</button>
       </div>
       
-      <!-- Two items per slot grid - ONLY for menu items -->
-      <div id="menuList" class="menu-grid">
+      <!-- Two items per slot grid (Feature 2) -->
+      <div id="menuList" class="two-col-grid">
         <!-- Menu items will be populated here -->
-        <div class="col-span-2 text-center py-12">
-          <div class="spinner"></div>
-          <p class="mt-4 text-gray-600">Loading delicious menu items...</p>
-        </div>
       </div>
     </div>
   </section>
@@ -342,17 +286,13 @@
         <p class="text-gray-600 max-w-2xl mx-auto">Relive your favorite moments and discover new favorites</p>
       </div>
       
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="two-col-grid gap-8">
         <div class="glass-card rounded-2xl p-6 shadow-xl">
           <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
             <i class="fas fa-history text-primary mr-3"></i> Recent Orders
           </h3>
           <div id="recentOrders" class="space-y-4">
             <!-- Recent orders will be populated here -->
-            <div class="text-center py-8">
-              <div class="spinner"></div>
-              <p class="mt-4 text-gray-600">Loading your order history...</p>
-            </div>
           </div>
         </div>
         
@@ -387,8 +327,8 @@
         <p class="text-gray-600 max-w-2xl mx-auto">Join thousands of satisfied customers who love our food</p>
       </div>
       
-      <!-- Responsive grid for testimonials -->
-      <div class="responsive-grid">
+      <!-- Two items per slot grid for testimonials -->
+      <div class="two-col-grid">
         <div class="glass-card rounded-2xl p-6 shadow-xl">
           <div class="flex items-center mb-4">
             <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
@@ -460,8 +400,8 @@
         <p class="text-gray-600 max-w-2xl mx-auto">We'd love to hear from you. Visit us or connect online!</p>
       </div>
       
-      <!-- Responsive grid for contact info -->
-      <div class="responsive-grid">
+      <!-- Two items per slot grid for contact info -->
+      <div class="two-col-grid">
         <!-- Location and Map -->
         <div class="glass-card rounded-2xl p-6 shadow-xl">
           <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
@@ -487,11 +427,11 @@
           </p>
         </div>
         
-        <!-- Social Media and Contact -->
+        <!-- Social Media and Contact (Feature 13) -->
         <div class="glass-card rounded-2xl p-6 shadow-xl">
           <h3 class="text-2xl font-bold text-dark mb-6">Connect With Us</h3>
           
-          <!-- Social Media Links -->
+          <!-- Social Media Links (Attractive View) -->
           <div class="space-y-4 mb-8">
             <a href="https://wa.me/919835124772" target="_blank" class="bg-green-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-green-600 transition transform hover:scale-105">
               <i class="fab fa-whatsapp text-2xl mr-3"></i>
@@ -529,7 +469,7 @@
           </div>
         </div>
         
-        <!-- Loyalty Program -->
+        <!-- Loyalty Program (Feature 9) -->
         <div class="glass-card rounded-2xl p-6 shadow-xl">
           <h3 class="text-2xl font-bold text-dark mb-6">Loyalty Rewards</h3>
           
@@ -604,7 +544,7 @@
       </div>
       <div id="cartItems" class="p-4 max-h-60 overflow-y-auto"></div>
       
-      <!-- Customization Options -->
+      <!-- Customization Options (Feature 9) -->
       <div class="p-4 bg-gray-50 border-t">
         <h4 class="font-bold text-sm mb-2">Customize Your Order</h4>
         <div class="grid grid-cols-2 gap-2">
@@ -625,11 +565,11 @@
       
       <div class="p-4 border-t flex justify-between font-bold text-lg">
         <span>Total:</span>
-        <span class="text-primary">₹<span id="cartTotal">0</span></span>
+        <span>₹<span id="cartTotal">0</span></span>
       </div>
       <div class="p-4 bg-gray-50 flex">
-        <button onclick="closeCart()" class="flex-1 py-3 mr-2 bg-gray-300 text-gray-700 rounded-full font-medium">Cancel</button>
-        <button onclick="placeOrder()" class="flex-1 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-full font-medium shadow-lg hover:shadow-xl transition">Place Order</button>
+        <button onclick="closeCart()" class="flex-1 py-2 mr-2 bg-gray-400 text-white rounded-full font-medium">Cancel</button>
+        <button onclick="placeOrder()" class="flex-1 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full font-medium shadow-lg hover:shadow-xl transition">Place Order</button>
       </div>
     </div>
   </div>
@@ -665,7 +605,7 @@
     </div>
   </div>
 
-  <!-- Quick Add Buttons -->
+  <!-- Quick Add Buttons (Feature 13) -->
   <div class="fixed bottom-24 right-6 z-30 hidden md:block">
     <div class="flex flex-col space-y-3">
       <button onclick="quickAdd(2)" class="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center text-white hover:bg-red-700 transition transform hover:scale-110">
@@ -729,15 +669,15 @@
           <ul class="space-y-2 text-gray-400">
             <li class="flex justify-between">
               <span>Monday - Friday</span>
-              <span>10:00 AM - 10:00 PM</span>
+              <span class="font-medium">10:00 AM - 10:00 PM</span>
             </li>
             <li class="flex justify-between">
               <span>Saturday</span>
-              <span>10:00 AM - 11:00 PM</span>
+              <span class="font-medium">10:00 AM - 11:00 PM</span>
             </li>
             <li class="flex justify-between">
               <span>Sunday</span>
-              <span>11:00 AM - 9:00 PM</span>
+              <span class="font-medium">11:00 AM - 9:00 PM</span>
             </li>
           </ul>
         </div>
@@ -753,11 +693,9 @@
     // Supabase Configuration
     const SUPABASE_URL = 'https://cfgjvbhfhfgskssopknn.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmZ2p2YmhmaGZnc2tzc29wa25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMDQ1MzQsImV4cCI6MjA2OTc4MDUzNH0.uAsDR4Vj7fSQ7q5Qz859WPzj7qlJIsHpF23Rl7dmj7w';
-    
-    // Initialize Supabase
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-    // Global variables
+
+    // Mock data for demonstration
     let userPhone = null;
     let userLocation = null;
     let cart = [];
@@ -768,151 +706,170 @@
       { name: "Pizza Night", items: [{name: "Truffle Margherita", qty: 1}, {name: "Belgian Chocolate Shake", qty: 1}], price: 448 },
       { name: "Healthy Combo", items: [{name: "Avocado Club Sandwich", qty: 1}, {name: "Belgian Chocolate Shake", qty: 1}], price: 348 }
     ];
-    
+
     // Initialize the app
     async function initApp() {
       await loadMenu();
-      await loadOrderHistory();
+      displayRecentOrders();
       displayFavoriteOrders();
       animateCounters();
-      
-      // Subscribe to real-time order updates
-      subscribeToOrderUpdates();
     }
-    
+
     // Load menu items from Supabase
     async function loadMenu() {
       try {
-        const { data, error } = await supabase
-          .from('menu_items')
-          .select('*')
-          .order('category');
-        
+        const { data, error } = await supabase.from('menu_items').select('*').order('category');
         if (error) throw error;
-        
         menuItems = data;
-        displayMenu();
+        displayMenu(data);
       } catch (error) {
-        console.error('Error loading menu:', error);
-        showtoast("Failed to load menu. Please try again.");
+        console.error("Error loading menu:", error);
+        // Fallback to mock data
+        menuItems = [
+          { id: 1, name: "Truffle Margherita", category: "Pizza", price: 299, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 2, name: "Gourmet Cheeseburger", category: "Burger", price: 179, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 3, name: "Avocado Club Sandwich", category: "Sandwich", price: 199, image_path: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 4, name: "Belgian Chocolate Shake", category: "Shakes", price: 149, image_path: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 5, name: "Spicy Pepperoni Feast", category: "Pizza", price: 349, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 6, name: "Vegan Power Burger", category: "Burger", price: 189, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 7, name: "Grilled Veg Sandwich", category: "Sandwich", price: 159, image_path: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+          { id: 8, name: "Mango Shake", category: "Shakes", price: 129, image_path: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
+        ];
+        displayMenu(menuItems);
       }
     }
-    
-    // Display menu items
-    function displayMenu() {
+
+    // Display menu with two items per slot
+    function displayMenu(items) {
       const container = document.getElementById('menuList');
       container.innerHTML = '';
-      
-      if (menuItems.length === 0) {
-        container.innerHTML = '<p class="col-span-2 text-center py-8 text-gray-500">No menu items available</p>';
-        return;
-      }
-      
-      menuItems.forEach((item, index) => {
+      items.forEach((item, i) => {
         setTimeout(() => {
           const div = document.createElement('div');
           div.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
-          div.style.animation = `fadeInUp 0.5s ease-out ${index * 0.1}s both`;
+          div.style.animation = `fadeInUp 0.5s ease-out ${i * 0.1}s both`;
           div.innerHTML = `
-            <div class="relative">
-              <img src="${item.image_path}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
-              <div class="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">
-                ₹${item.price}
-              </div>
-              <!-- Interactive hover effect -->
-              <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                <div class="text-white opacity-0 hover:opacity-100 transition-opacity duration-300 text-center p-4">
-                  <p class="text-sm">Mozzarella, Basil, Tomato Sauce</p>
-                </div>
-              </div>
-            </div>
+            <img src="${item.image_path}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
             <div class="p-6">
-              <h3 class="text-xl font-bold text-dark mb-2">${item.name}</h3>
-              <p class="text-gray-600 mb-4">Premium ingredients crafted to perfection</p>
-              <button onclick="addToCart(${item.id})" class="btn-primary w-full py-3 rounded-lg font-bold text-white shadow hover:shadow-lg transition">
+              <h3 class="font-bold text-lg">${item.name}</h3>
+              <p class="text-primary font-semibold">₹${item.price}</p>
+              <button onclick="addToCart(${item.id})" class="btn-primary mt-3 w-full py-2 rounded-lg font-bold text-white shadow hover:shadow-lg transition">
                 <i class="fas fa-plus mr-2"></i> Add to Cart
               </button>
             </div>
           `;
           container.appendChild(div);
-        }, index * 100);
+        }, i * 100);
       });
     }
-    
+
     // Filter menu by category
     function filterCategory(category) {
       const filtered = category === 'all' ? menuItems : menuItems.filter(i => i.category === category);
-      const container = document.getElementById('menuList');
-      container.innerHTML = '';
-      
-      if (filtered.length === 0) {
-        container.innerHTML = '<p class="col-span-2 text-center py-8 text-gray-500">No items in this category</p>';
-        return;
-      }
-      
-      filtered.forEach((item, index) => {
-        setTimeout(() => {
-          const div = document.createElement('div');
-          div.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
-          div.style.animation = `fadeInUp 0.5s ease-out ${index * 0.1}s both`;
-          div.innerHTML = `
-            <div class="relative">
-              <img src="${item.image_path}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
-              <div class="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">
-                ₹${item.price}
-              </div>
-              <!-- Interactive hover effect -->
-              <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                <div class="text-white opacity-0 hover:opacity-100 transition-opacity duration-300 text-center p-4">
-                  <p class="text-sm">Mozzarella, Basil, Tomato Sauce</p>
-                </div>
-              </div>
-            </div>
-            <div class="p-6">
-              <h3 class="text-xl font-bold text-dark mb-2">${item.name}</h3>
-              <p class="text-gray-600 mb-4">Premium ingredients crafted to perfection</p>
-              <button onclick="addToCart(${item.id})" class="btn-primary w-full py-3 rounded-lg font-bold text-white shadow hover:shadow-lg transition">
-                <i class="fas fa-plus mr-2"></i> Add to Cart
-              </button>
-            </div>
-          `;
-          container.appendChild(div);
-        }, index * 100);
+      document.getElementById('menuList').innerHTML = '<p class="col-span-full text-center py-8 text-gray-500">Loading...</p>';
+      setTimeout(() => displayMenu(filtered), 200);
+    }
+
+    // Add to cart
+    function addToCart(id) {
+      if (!userPhone) return openLoginModal();
+      const item = menuItems.find(i => i.id === id);
+      const existing = cart.find(c => c.id === id);
+      if (existing) existing.qty += 1;
+      else cart.push({ ...item, qty: 1 });
+      updateCartUI();
+      showtoast("Added to cart!");
+    }
+
+    // Quick add buttons (Feature 13)
+    function quickAdd(id) {
+      if (!userPhone) return openLoginModal();
+      const item = menuItems.find(i => i.id === id);
+      cart.push({ ...item, qty: 1 });
+      updateCartUI();
+      showtoast("${item.name} added to cart!");
+    }
+
+    // Update cart UI
+    function updateCartUI() {
+      document.getElementById('cartCount').textContent = cart.reduce((sum, i) => sum + i.qty, 0);
+    }
+
+    // Show toast notification
+    function showtoast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Detect location
+    async function detectLocation() {
+      return new Promise(resolve => {
+        if (!navigator.geolocation) resolve({ lat: 0, lng: 0 });
+        else {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              const crd = pos.coords;
+              resolve({ lat: crd.latitude, lng: crd.longitude });
+            },
+            () => {
+              alert("Please enable location to continue.");
+              resolve({ lat: 0, lng: 0 });
+            }
+          );
+        }
       });
     }
-    
-    // Load order history from Supabase
-    async function loadOrderHistory() {
-      if (!userPhone) return;
-      
-      try {
-        const { data, error } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('user_phone', userPhone)
-          .order('ordered_at', { ascending: false });
-        
-        if (error) throw error;
-        
-        orderHistory = data;
-        displayRecentOrders();
-      } catch (error) {
-        console.error('Error loading order history:', error);
-        showtoast("Failed to load order history.");
+
+    // User login (without Supabase)
+    async function loginUser() {
+      const num = document.getElementById('mobileInput').value.trim();
+      if (!num || num.length !== 10) return alert("Enter valid 10-digit number");
+      userPhone = '91' + num;
+      userLocation = await detectLocation();
+
+      document.getElementById('loginBtn').textContent = 'Hi, ' + num.slice(-4);
+      document.getElementById('loginModal').classList.add('hidden');
+      showtoast("Logged in successfully!");
+    }
+
+    // Place order with Supabase
+    async function placeOrder() {
+      if (cart.length === 0) return showtoast("Cart is empty");
+
+      const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      const { data, error } = await supabase.from('orders').insert({
+        user_phone: userPhone,
+        items: cart,
+        total: total,
+        status: 'pending',
+        user_location: userLocation,
+        ordered_at: new Date().toISOString()
+      }).select();
+
+      if (error) {
+        showtoast("Failed to place order");
+        console.error(error);
+      } else {
+        showtoast("Order placed successfully!");
+        cart = [];
+        updateCartUI();
+        closeCart();
       }
     }
-    
+
     // Display recent orders
     function displayRecentOrders() {
       const container = document.getElementById('recentOrders');
       container.innerHTML = '';
-      
-      if (orderHistory.length === 0) {
-        container.innerHTML = '<p class="text-center py-8 text-gray-500">No order history yet</p>';
-        return;
-      }
-      
-      orderHistory.slice(0, 3).forEach(order => {
+      orderHistory = [
+        { id: 1001, items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], total: 209, date: "2023-06-15", status: "delivered" },
+        { id: 1002, items: [{name: "Truffle Margherita", qty: 1}], total: 299, date: "2023-06-12", status: "delivered" },
+        { id: 1003, items: [{name: "Avocado Club Sandwich", qty: 2}], total: 398, date: "2023-06-10", status: "delivered" }
+      ];
+
+      orderHistory.forEach(order => {
         const div = document.createElement('div');
         div.className = 'history-item bg-white p-4 rounded-lg shadow';
         div.innerHTML = `
@@ -920,14 +877,7 @@
             <div>
               <p class="font-bold text-dark">Order #${order.id.toString().slice(-4)}</p>
               <p class="text-sm text-gray-600 mt-1">${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
-              <p class="text-xs text-gray-500 mt-2">${new Date(order.ordered_at).toLocaleDateString()}</p>
-              <span class="inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${
-                order.status === 'pending' ? 'status-pending' :
-                order.status === 'preparing' ? 'status-preparing' :
-                order.status === 'ready' ? 'status-ready' : 'status-delivered'
-              }">
-                ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-              </span>
+              <p class="text-xs text-gray-500 mt-2">${order.date}</p>
             </div>
             <div class="text-right">
               <p class="font-bold text-primary">₹${order.total}</p>
@@ -940,12 +890,12 @@
         container.appendChild(div);
       });
     }
-    
+
     // Display favorite orders
     function displayFavoriteOrders() {
       const container = document.getElementById('favoriteOrders');
       container.innerHTML = '';
-      
+
       favoriteOrders.forEach((order, index) => {
         const div = document.createElement('div');
         div.className = 'history-item bg-white p-4 rounded-lg shadow';
@@ -966,318 +916,37 @@
         container.appendChild(div);
       });
     }
-    
-    // Subscribe to real-time order updates
-    function subscribeToOrderUpdates() {
-      if (!userPhone) return;
-      
-      supabase
-        .channel('orders')
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'orders',
-            filter: `user_phone=eq.${userPhone}`
-          },
-          (payload) => {
-            // Update the order in local history
-            const updatedOrder = payload.new;
-            const index = orderHistory.findIndex(o => o.id === updatedOrder.id);
-            if (index !== -1) {
-              orderHistory[index] = updatedOrder;
-              displayRecentOrders();
-              showtoast(`Order status updated to: ${updatedOrder.status}`);
-            }
-          }
-        )
-        .subscribe();
-    }
-    
-    // Add item to cart
-    function addToCart(id) {
-      if (!userPhone) return openLoginModal();
-      const item = menuItems.find(i => i.id === id);
-      const existing = cart.find(c => c.id === id);
-      if (existing) existing.qty += 1;
-      else cart.push({ ...item, qty: 1 });
-      updateCartUI();
-      showtoast("Added to cart!");
-    }
-    
-    // Quick add buttons
-    function quickAdd(id) {
-      if (!userPhone) return openLoginModal();
-      const item = menuItems.find(i => i.id === id);
-      cart.push({ ...item, qty: 1 });
-      updateCartUI();
-      showtoast("${item.name} added to cart!");
-    }
-    
-    // Update cart UI
-    function updateCartUI() {
-      document.getElementById('cartCount').textContent = cart.reduce((sum, i) => sum + i.qty, 0);
-    }
-    
-    // Show toast notification
-    function showtoast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
-    
-    // Open login modal
-    function openLoginModal() { 
-      document.getElementById('loginModal').classList.remove('hidden'); 
-    }
-    
-    // Close cart modal
-    function closeCart() { 
-      document.getElementById('cartModal').classList.add('hidden'); 
-    }
-    
-    // Open cart modal
-    function openCart() {
-      const container = document.getElementById('cartItems');
-      container.innerHTML = '';
-      let total = 0;
-      
-      if (cart.length === 0) {
-        container.innerHTML = '<p class="text-center py-8 text-gray-500">Your cart is empty</p>';
-      } else {
-        cart.forEach(item => {
-          const itemTotal = item.price * item.qty;
-          total += itemTotal;
-          const div = document.createElement('div');
-          div.className = 'flex justify-between items-center py-4 border-b';
-          div.innerHTML = `
-            <div>
-              <p class="font-medium text-dark">${item.name}</p>
-              <p class="text-sm text-gray-600">Qty: ${item.qty}</p>
-            </div>
-            <div class="text-right">
-              <p class="font-bold text-primary">₹${itemTotal}</p>
-              <button onclick="removeFromCart(${item.id})" class="text-red-500 text-sm mt-1">
-                <i class="fas fa-trash"></i> Remove
-              </button>
-            </div>
-          `;
-          container.appendChild(div);
-        });
-      }
-      
-      document.getElementById('cartTotal').textContent = total;
-      document.getElementById('cartModal').classList.remove('hidden');
-    }
-    
-    // Remove item from cart
-    function removeFromCart(id) {
-      cart = cart.filter(item => item.id !== id);
-      openCart(); // Refresh cart display
-      updateCartUI();
-    }
-    
-    // Show section
-    function showSection(id) {
-      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      
-      // Update nav active state
-      document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
-      if (id === 'menu') {
-        document.querySelectorAll('.nav-item')[0].classList.add('active');
-      } else if (id === 'history') {
-        document.querySelectorAll('.nav-item')[1].classList.add('active');
-      }
-      
-      // Show/hide quick add buttons
-      if (id === 'menu') {
-        document.querySelector('.fixed.bottom-24.right-6').classList.remove('hidden');
-      } else {
-        document.querySelector('.fixed.bottom-24.right-6').classList.add('hidden');
-      }
-    }
-    
-    // User login
-    async function loginUser() {
-      const num = document.getElementById('mobileInput').value.trim();
-      if (!num || num.length !== 10) return showtoast("Enter valid 10-digit number");
-      userPhone = '91' + num;
-      userLocation = await detectLocation();
-      
-      // Save login log to Supabase
-      try {
-        await supabase.from('login_logs').insert({
-          phone: userPhone,
-          location_lat: userLocation.lat,
-          location_lng: userLocation.lng,
-          timestamp: new Date().toISOString()
-        });
-      } catch (error) {
-        console.error('Error saving login log:', error);
-      }
-      
-      document.getElementById('loginModal').classList.add('hidden');
-      showtoast("Welcome back! Happy ordering");
-      
-      // Reload data for logged in user
-      await loadOrderHistory();
-      subscribeToOrderUpdates();
-    }
-    
-    // Detect location
-    async function detectLocation() {
-      return new Promise(resolve => {
-        if (!navigator.geolocation) resolve({ lat: 0, lng: 0 });
-        else {
-          navigator.geolocation.getCurrentPosition(
-            pos => {
-              const crd = pos.coords;
-              resolve({ lat: crd.latitude, lng: crd.longitude });
-            },
-            () => {
-              showtoast("Location access denied. Using default location");
-              resolve({ lat: 0, lng: 0 });
-            }
-          );
-        }
-      });
-    }
-    
-    // Place order with WhatsApp receipts
-    async function placeOrder() {
-      if (cart.length === 0) return showtoast("Cart is empty");
-      
-      let total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      
-      // Create order object
-      const newOrder = {
-        user_phone: userPhone,
-        items: cart,
-        total: total,
-        status: "pending",
-        user_location: userLocation,
-        ordered_at: new Date().toISOString()
-      };
-      
-      try {
-        // Save order to Supabase
-        const { data, error } = await supabase
-          .from('orders')
-          .insert([newOrder])
-          .select();
-        
-        if (error) throw error;
-        
-        const order = data[0];
-        
-        // Update order history
-        orderHistory.unshift(order);
-        displayRecentOrders();
-        
-        // Send WhatsApp receipts
-        sendWhatsAppReceiptToBusiness(order);
-        sendWhatsAppReceiptToCustomer(order);
-        
-        showtoast("Order placed successfully! 🎉");
-        cart = [];
-        updateCartUI();
-        closeCart();
-      } catch (error) {
-        console.error('Error placing order:', error);
-        showtoast("Failed to place order. Please try again.");
-      }
-    }
-    
-    // WhatsApp receipt to business
-    function sendWhatsAppReceiptToBusiness(order) {
-      const message = `✅ *NEW ORDER - MIRDHUNA*
 
-Order ID: #${order.id.toString().slice(-4)}
-Items: ${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}
-Total: ₹${order.total}
-Status: ${order.status}
-
-Customer Phone: ${order.user_phone}
-Location: ${order.user_location.lat}, ${order.user_location.lng}
-预计准备时间: 20-30 mins
-
-Prepare order now!`;
-      
-      const encodedMsg = encodeURIComponent(message);
-      window.open(`https://wa.me/919835124772?text=${encodedMsg}`, '_blank');
-    }
-    
-    // WhatsApp receipt to customer
-    function sendWhatsAppReceiptToCustomer(order) {
-      const message = `✅ *MIRDHUNA ORDER CONFIRMATION*
-
-Hello! Thank you for your order #${order.id.toString().slice(-4)}
-
-Items: ${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}
-Total: ₹${order.total}
-Status: ${order.status}
-
-预计准备时间: 20-30 mins
-Delivery to: ${order.user_location.lat}, ${order.user_location.lng}
-
-We'll prepare your order soon! 
-Questions? Reply to this message.
-
-Thank you for choosing MIRDHUNA! 🍔🍕`;
-      
-      const customerNumber = order.user_phone.replace('+91', '');
-      const encodedMsg = encodeURIComponent(message);
-      window.open(`https://wa.me/${customerNumber}?text=${encodedMsg}`, '_blank');
-    }
-    
     // Reorder function
     function reorder(orderId) {
       if (!userPhone) return openLoginModal();
-      
       const order = orderHistory.find(o => o.id === orderId);
       if (!order) return;
-      
-      // Clear cart and add items from order
       cart = [];
       order.items.forEach(item => {
         const menuItem = menuItems.find(m => m.name === item.name);
-        if (menuItem) {
-          cart.push({ ...menuItem, qty: item.qty });
-        }
+        if (menuItem) cart.push({ ...menuItem, qty: item.qty });
       });
-      
       updateCartUI();
       openCart();
       showtoast("Order added to cart!");
     }
-    
+
     // Order favorite combination
     function orderFavorite(index) {
       if (!userPhone) return openLoginModal();
-      
       const favorite = favoriteOrders[index];
       if (!favorite) return;
-      
-      // Clear cart and add items from favorite
       cart = [];
       favorite.items.forEach(item => {
         const menuItem = menuItems.find(m => m.name === item.name);
-        if (menuItem) {
-          cart.push({ ...menuItem, qty: item.qty });
-        }
+        if (menuItem) cart.push({ ...menuItem, qty: item.qty });
       });
-      
       updateCartUI();
       openCart();
       showtoast("${favorite.name} added to cart!");
     }
-    
+
     // Submit feedback
     function submitFeedback(feedback) {
       const feedbacks = {
@@ -1286,18 +955,16 @@ Thank you for choosing MIRDHUNA! 🍔🍕`;
         happy: "Wonderful! We're thrilled you enjoyed your experience!",
         excited: "Absolutely thrilled! Thank you for the love! 🎉"
       };
-      
       showtoast(feedbacks[feedback]);
     }
-    
-    // Animate counters
+
+    // Animate counters (Feature 16)
     function animateCounters() {
       const counters = document.querySelectorAll('.counter');
       counters.forEach(counter => {
         const target = +counter.getAttribute('data-target');
         const increment = target / 100;
         let current = 0;
-        
         const updateCounter = () => {
           if (current < target) {
             current += increment;
@@ -1307,16 +974,14 @@ Thank you for choosing MIRDHUNA! 🍔🍕`;
             counter.innerText = target;
           }
         };
-        
         updateCounter();
       });
     }
-    
-    // Search functionality
+
+    // Search functionality (Feature 6)
     document.getElementById('searchInput').addEventListener('input', function() {
       const searchTerm = this.value.toLowerCase();
       const menuCards = document.querySelectorAll('#menuList .menu-card');
-      
       menuCards.forEach(card => {
         const itemName = card.querySelector('h3').textContent.toLowerCase();
         if (itemName.includes(searchTerm)) {
@@ -1326,9 +991,44 @@ Thank you for choosing MIRDHUNA! 🍔🍕`;
         }
       });
     });
-    
+
+    // Show section
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+      if (id === 'menu') document.querySelectorAll('.nav-item')[0].classList.add('active');
+      else if (id === 'history') document.querySelectorAll('.nav-item')[1].classList.add('active');
+    }
+
+    // Open/close modals
+    function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+    function closeCart() { document.getElementById('cartModal').classList.add('hidden'); }
+    function openCart() {
+      const container = document.getElementById('cartItems');
+      container.innerHTML = '';
+      let total = 0;
+      if (cart.length === 0) {
+        container.innerHTML = '<p class="text-center py-8 text-gray-500">Your cart is empty</p>';
+      } else {
+        cart.forEach(item => {
+          const itemTotal = item.price * item.qty;
+          total += itemTotal;
+          const div = document.createElement('div');
+          div.className = 'flex justify-between py-1 border-b';
+          div.innerHTML = `
+            <span>${item.name} x${item.qty}</span>
+            <span>₹${itemTotal}</span>
+          `;
+          container.appendChild(div);
+        });
+      }
+      document.getElementById('cartTotal').textContent = total;
+      document.getElementById('cartModal').classList.remove('hidden');
+    }
+
     // Initialize the app when page loads
     window.onload = initApp;
   </script>
 </body>
-      </html>
+</html>
