@@ -695,7 +695,7 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmZ2p2YmhmaGZnc2tzc29wa25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMDQ1MzQsImV4cCI6MjA2OTc4MDUzNH0.uAsDR4Vj7fSQ7q5Qz859WPzj7qlJIsHpF23Rl7dmj7w';
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Mock data for demonstration
+    // Global variables
     let userPhone = null;
     let userLocation = null;
     let cart = [];
@@ -826,7 +826,7 @@
     async function loginUser() {
       const num = document.getElementById('mobileInput').value.trim();
       if (!num || num.length !== 10) return alert("Enter valid 10-digit number");
-      userPhone = '91' + num;
+      userPhone = '+91' + num;
       userLocation = await detectLocation();
 
       // Save login to Supabase
@@ -1003,4 +1003,4 @@
     window.onload = initApp;
   </script>
 </body>
-      </html>
+</html>
