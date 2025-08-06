@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIRDHUNA | Premium Food Experience</title>
+  <title>MIRDHUNA Admin | Management System</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -23,17 +23,6 @@
             accent: '#f97316',
             dark: '#1e293b',
             light: '#f8fafc'
-          },
-          animation: {
-            'float': 'float 3s ease-in-out infinite',
-            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'bounce-slow': 'bounce 3s infinite'
-          },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-10px)' }
-            }
           }
         }
       }
@@ -47,17 +36,43 @@
       overflow-x: hidden;
     }
     
-    .hero-gradient {
+    .admin-header {
       background: linear-gradient(135deg, rgba(225, 29, 72, 0.9) 0%, rgba(249, 115, 22, 0.85) 100%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     
-    .menu-card {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    .sidebar {
+      background: #1e293b;
+      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+      height: calc(100vh - 80px);
+      position: sticky;
+      top: 80px;
+      z-index: 100;
+    }
+    
+    .sidebar-item {
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-item.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-left: 3px solid #3b82f6;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
     }
     
-    .menu-card:hover {
-      transform: translateY(-10px) scale(1.02);
+    .card:hover {
+      transform: translateY(-5px) scale(1.02);
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
     
@@ -92,14 +107,14 @@
       position: fixed; top: 20px; right: 20px; 
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       color: white; padding: 15px 25px;
-      border-radius: 12px; z-index: 50; opacity: 0; 
-      transform: translateY(-50px); transition: all 0.4s; 
+      border-radius: 12px; z-index: 1000; opacity: 0; 
+      transform: translateY(-50px); transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
     
     .toast.show { opacity: 1; transform: translateY(0); }
     
-    .cart-badge { 
+    .cart-badge {
       position: absolute; top: -8px; right: -8px; 
       background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
       color: white; font-weight: bold; width: 24px; height: 24px;
@@ -139,7 +154,7 @@
       transition: all 1s ease-in-out;
     }
     
-    /* Two items per slot grid */
+    /* Two items per slot grid - ONLY for menu */
     .two-col-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -151,6 +166,200 @@
         grid-template-columns: 1fr;
       }
     }
+    
+    /* Status badges */
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-preparing { background: #dbeafe; color: #1e40af; }
+    .status-ready { background: #dcfce7; color: #166534; }
+    .status-delivered { background: #ede9fe; color: #5b21b6; }
+    
+    /* Action buttons */
+    .action-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(225, 29, 72, 0.4);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(245, 158, 11, 0.4);
+    }
+    
+    /* Slide preview */
+    .slide-preview {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .slide-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .slide-preview:hover .slide-image {
+      transform: scale(1.05);
+    }
+    
+    .slide-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+      padding: 1rem;
+    }
+    
+    /* Menu card */
+    .menu-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .menu-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .menu-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    
+    /* Login modal styles */
+    .login-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .login-content {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .login-header h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .login-form .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .login-form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #374151;
+      font-weight: 500;
+    }
+    
+    .login-form input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+    
+    .login-form input:focus {
+      outline: none;
+      border-color: #e11d48;
+      box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+    }
+    
+    .login-form button {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    
+    .login-form .btn-primary {
+      background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
+      color: white;
+    }
+    
+    .login-form .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+    }
+    
+    .login-footer {
+      text-align: center;
+      margin-top: 1rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -158,572 +367,1270 @@
   <!-- Toast Notification -->
   <div id="toast" class="toast">Item added to cart!</div>
 
-  <!-- Header -->
-  <header class="hero-gradient text-white py-16 px-4 relative overflow-hidden">
-    <div class="absolute top-0 left-0 w-full h-full opacity-10">
-      <div class="absolute top-10 left-10 w-64 h-64 bg-white rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-      <div class="absolute top-10 right-10 w-64 h-64 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-      <div class="absolute bottom-10 left-1/2 w-64 h-64 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
-    </div>
-    
-    <!-- Floating food elements (Feature 1) -->
-    <div class="absolute bottom-20 left-10 floating-element">
-      <div class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
-        <i class="fas fa-pizza-slice text-white text-2xl"></i>
+  <!-- Admin Login Modal -->
+  <div id="adminLoginModal" class="login-modal">
+    <div class="login-content">
+      <div class="login-header">
+        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-lock text-white text-2xl"></i>
+        </div>
+        <h3>MIRDHUNA ADMIN</h3>
+        <p class="text-gray-600">Secure Management Portal</p>
       </div>
-    </div>
-    <div class="absolute top-24 right-20 floating-element animation-delay-1000">
-      <div class="w-12 h-12 bg-red-400 rounded-full flex items-center justify-center shadow-lg">
-        <i class="fas fa-hamburger text-white text-xl"></i>
-      </div>
-    </div>
-    <div class="absolute top-1/3 left-1/4 floating-element animation-delay-2000">
-      <div class="w-10 h-10 bg-green-400 rounded-full flex items-center justify-center shadow-lg">
-        <i class="fas fa-martini-glass text-white"></i>
-      </div>
-    </div>
-    
-    <div class="container mx-auto relative z-10 text-center">
-      <h1 class="text-5xl md:text-7xl font-heading font-bold mb-4 tracking-tight">MIRDHUNA</h1>
-      <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">Experience Culinary Excellence with Every Bite</p>
-      <div class="flex justify-center gap-4">
-        <button onclick="showSection('menu')" class="btn-primary px-8 py-3 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all">
-          <i class="fas fa-utensils mr-2"></i> Order Now
+      
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="adminUsername" placeholder="Enter username" autocomplete="off">
+        </div>
+        
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="adminPassword" placeholder="Enter password" autocomplete="off">
+        </div>
+        
+        <button type="submit" class="btn-primary">
+          <i class="fas fa-sign-in-alt mr-2"></i> Login to Dashboard
         </button>
-        <button onclick="openLoginModal()" class="bg-white bg-opacity-20 backdrop-blur-sm px-8 py-3 rounded-full font-bold text-lg hover:bg-opacity-30 transition-all">
-          <i class="fas fa-user mr-2"></i> Login
-        </button>
-      </div>
-      
-      <!-- Stats counters (Feature 16) -->
-      <div class="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
-        <div class="text-center">
-          <p class="text-4xl font-bold text-white counter" data-target="5000">0</p>
-          <p class="text-yellow-200">Happy Customers</p>
-        </div>
-        <div class="text-center">
-          <p class="text-4xl font-bold text-white counter" data-target="4.9">0</p>
-          <p class="text-yellow-200">Rating</p>
-        </div>
-        <div class="text-center">
-          <p class="text-4xl font-bold text-white counter" data-target="30">0</p>
-          <p class="text-yellow-200">Min Delivery</p>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Navigation -->
-  <nav class="bg-white shadow-lg sticky top-0 z-20">
-    <div class="container mx-auto px-4">
-      <div class="flex justify-between py-4">
-        <div class="flex space-x-8">
-          <button onclick="showSection('menu')" class="nav-item active flex flex-col items-center px-3 py-2">
-            <i class="fas fa-utensils text-xl mb-1"></i>
-            <span class="text-xs">Menu</span>
-          </button>
-          <button onclick="showSection('history')" class="nav-item flex flex-col items-center px-3 py-2">
-            <i class="fas fa-history text-xl mb-1"></i>
-            <span class="text-xs">History</span>
-          </button>
-        </div>
-        <div class="relative">
-          <button onclick="openCart()" class="bg-primary text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all relative">
-            <i class="fas fa-shopping-cart text-xl"></i>
-            <span id="cartCount" class="cart-badge">0</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Menu Section -->
-  <section id="menu" class="py-12 px-4">
-    <div class="container mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Our Signature Menu</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Handcrafted with passion, served with love. Each dish tells a story of culinary artistry.</p>
-      </div>
-      
-      <!-- Advanced search (Feature 6) -->
-      <div class="mb-8 max-w-2xl mx-auto">
-        <div class="relative">
-          <input type="text" id="searchInput" placeholder="Search menu items..." class="w-full p-4 pl-12 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent">
-          <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-            <i class="fas fa-microphone"></i>
-          </button>
-        </div>
         
-        <div class="flex flex-wrap gap-2 mt-3 justify-center">
-          <button class="px-3 py-1 bg-gray-100 rounded-full text-sm hover:bg-primary hover:text-white transition">Vegetarian</button>
-          <button class="px-3 py-1 bg-gray-100 rounded-full text-sm hover:bg-primary hover:text-white transition">Spicy</button>
-          <button class="px-3 py-1 bg-gray-100 rounded-full text-sm hover:bg-primary hover:text-white transition">Under ₹200</button>
-          <button class="px-3 py-1 bg-gray-100 rounded-full text-sm hover:bg-primary hover:text-white transition">New</button>
-        </div>
-      </div>
-      
-      <div class="flex flex-wrap justify-center gap-3 mb-8">
-        <button onclick="filterCategory('all')" class="btn-primary px-5 py-2 rounded-full text-sm font-medium">All Items</button>
-        <button onclick="filterCategory('Pizza')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Pizza</button>
-        <button onclick="filterCategory('Burger')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Burger</button>
-        <button onclick="filterCategory('Sandwich')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Sandwich</button>
-        <button onclick="filterCategory('Shakes')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Shakes</button>
-      </div>
-      
-      <!-- Two items per slot grid (Feature 2) -->
-      <div id="menuList" class="two-col-grid">
-        <!-- Menu items will be populated here -->
-      </div>
-    </div>
-  </section>
-
-  <!-- Order History Section -->
-  <section id="history" class="py-12 px-4 hidden">
-    <div class="container mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Your Culinary Journey</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Relive your favorite moments and discover new favorites</p>
-      </div>
-      
-      <div class="two-col-grid gap-8">
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
-            <i class="fas fa-history text-primary mr-3"></i> Recent Orders
-          </h3>
-          <div id="recentOrders" class="space-y-4">
-            <!-- Recent orders will be populated here -->
-          </div>
-        </div>
-        
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
-            <i class="fas fa-heart text-red-500 mr-3"></i> Favorite Combinations
-          </h3>
-          <div id="favoriteOrders" class="space-y-4">
-            <!-- Favorite orders will be populated here -->
-          </div>
-        </div>
-      </div>
-      
-      <div class="glass-card rounded-2xl p-6 shadow-xl mt-8">
-        <h3 class="text-2xl font-bold text-dark mb-4">Share Your Experience</h3>
-        <p class="text-gray-600 mb-4">How was your dining experience with us?</p>
-        <div class="flex justify-around text-4xl">
-          <span class="cursor-pointer transform hover:scale-125 transition-transform duration-300" onclick="submitFeedback('sad')">😞</span>
-          <span class="cursor-pointer transform hover:scale-125 transition-transform duration-300" onclick="submitFeedback('neutral')">😐</span>
-          <span class="cursor-pointer transform hover:scale-125 transition-transform duration-300" onclick="submitFeedback('happy')">😊</span>
-          <span class="cursor-pointer transform hover:scale-125 transition-transform duration-300" onclick="submitFeedback('excited')">🤩</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Happy Customers Section -->
-  <section class="py-12 px-4 bg-gradient-to-r from-yellow-50 to-orange-50">
-    <div class="container mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Happy Customers</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Join thousands of satisfied customers who love our food</p>
-      </div>
-      
-      <!-- Two items per slot grid for testimonials -->
-      <div class="two-col-grid">
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <div class="flex items-center mb-4">
-            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-              <i class="fas fa-user text-2xl text-gray-500"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-lg">Rajesh Kumar</h3>
-              <div class="text-yellow-400 flex">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              </div>
-            </div>
-          </div>
-          <p class="text-gray-700 italic">"The best burgers in town! Fresh ingredients and quick delivery. Will definitely order again!"</p>
-        </div>
-        
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <div class="flex items-center mb-4">
-            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-              <i class="fas fa-user text-2xl text-gray-500"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-lg">Priya Sharma</h3>
-              <div class="text-yellow-400 flex">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-              </div>
-            </div>
-          </div>
-          <p class="text-gray-700 italic">"Loved the pizza! The crust was perfect and the toppings were fresh. Great service too!"</p>
-        </div>
-        
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <div class="flex items-center mb-4">
-            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-              <i class="fas fa-user text-2xl text-gray-500"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-lg">Amit Patel</h3>
-              <div class="text-yellow-400 flex">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              </div>
-            </div>
-          </div>
-          <p class="text-gray-700 italic">"The shakes are amazing! Perfect consistency and great flavors. My kids love them!"</p>
-        </div>
-        
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <div class="flex items-center mb-4">
-            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-              <i class="fas fa-user text-2xl text-gray-500"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-lg">Sneha Gupta</h3>
-              <div class="text-yellow-400 flex">
-                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-              </div>
-            </div>
-          </div>
-          <p class="text-gray-700 italic">"The sandwiches are so fresh and delicious. Perfect for a quick lunch!"</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact Information -->
-  <section class="py-12 px-4">
-    <div class="container mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Get In Touch</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">We'd love to hear from you. Visit us or connect online!</p>
-      </div>
-      
-      <!-- Two items per slot grid for contact info -->
-      <div class="two-col-grid">
-        <!-- Location and Map -->
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
-            <i class="fas fa-map-marker-alt text-primary mr-3"></i> Our Location
-          </h3>
-          <div class="bg-gray-200 rounded-xl h-48 mb-6 flex items-center justify-center">
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3529.87050048481!2d75.815857!3d26.846693!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4adf4c5d0d9f%3A0x1a0b2b0e0b0b0b0b!2sJaipur%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
-              width="100%" 
-              height="100%" 
-              style="border:0; border-radius: 12px;" 
-              allowfullscreen="" 
-              loading="lazy">
-            </iframe>
-          </div>
-          <p class="text-gray-700 mb-4">
-            <i class="fas fa-map-marker-alt text-primary mr-2"></i>
-            123 Food Street, Culinary District, Jaipur
-          </p>
-          <p class="text-gray-700">
-            <i class="fas fa-phone-alt text-primary mr-2"></i>
-            +91 9835124772
-          </p>
-        </div>
-        
-        <!-- Social Media and Contact (Feature 13) -->
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6">Connect With Us</h3>
-          
-          <!-- Social Media Links (Attractive View) -->
-          <div class="space-y-4 mb-8">
-            <a href="https://wa.me/919835124772" target="_blank" class="bg-green-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-green-600 transition transform hover:scale-105">
-              <i class="fab fa-whatsapp text-2xl mr-3"></i>
-              <span class="font-bold">WhatsApp</span>
-            </a>
-            <a href="https://facebook.com" target="_blank" class="bg-blue-600 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-blue-700 transition transform hover:scale-105">
-              <i class="fab fa-facebook-f text-2xl mr-3"></i>
-              <span class="font-bold">Facebook</span>
-            </a>
-            <a href="https://instagram.com" target="_blank" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:from-purple-600 hover:to-pink-600 transition transform hover:scale-105">
-              <i class="fab fa-instagram text-2xl mr-3"></i>
-              <span class="font-bold">Instagram</span>
-            </a>
-            <a href="tel:+919835124772" class="bg-red-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-red-600 transition transform hover:scale-105">
-              <i class="fas fa-phone-alt text-2xl mr-3"></i>
-              <span class="font-bold">Call Us: +91 9835124772</span>
-            </a>
-          </div>
-          
-          <!-- Opening Hours -->
-          <h4 class="text-xl font-bold text-dark mb-4">Opening Hours</h4>
-          <div class="space-y-2">
-            <div class="flex justify-between py-2 border-b border-gray-200">
-              <span>Monday - Friday</span>
-              <span class="font-medium">10:00 AM - 10:00 PM</span>
-            </div>
-            <div class="flex justify-between py-2 border-b border-gray-200">
-              <span>Saturday</span>
-              <span class="font-medium">10:00 AM - 11:00 PM</span>
-            </div>
-            <div class="flex justify-between py-2">
-              <span>Sunday</span>
-              <span class="font-medium">11:00 AM - 9:00 PM</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Loyalty Program (Feature 9) -->
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6">Loyalty Rewards</h3>
-          
-          <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl p-5 mb-6">
-            <div class="flex justify-between items-center">
-              <div>
-                <h4 class="font-bold text-lg mb-1">Your Points</h4>
-                <p class="text-3xl font-bold">120</p>
-              </div>
-              <div class="text-right">
-                <h4 class="font-bold text-lg mb-1">Next Reward</h4>
-                <p class="text-xl">₹50 off</p>
-              </div>
-            </div>
-            <div class="mt-4 bg-white bg-opacity-20 rounded-full h-2">
-              <div class="bg-white h-2 rounded-full" style="width: 60%"></div>
-            </div>
-            <p class="text-xs mt-2 text-center">80 points to next reward</p>
-          </div>
-          
-          <h4 class="text-xl font-bold text-dark mb-4">How It Works</h4>
-          <ul class="space-y-3">
-            <li class="flex items-start">
-              <div class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">1</div>
-              <p>Earn 1 point for every ₹1 spent</p>
-            </li>
-            <li class="flex items-start">
-              <div class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">2</div>
-              <p>Redeem 100 points for ₹50 off</p>
-            </li>
-            <li class="flex items-start">
-              <div class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">3</div>
-              <p>Special bonuses on birthdays</p>
-            </li>
-          </ul>
-        </div>
-        
-        <!-- Social Proof Stats -->
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6">Our Achievements</h3>
-          
-          <div class="grid grid-cols-2 gap-4">
-            <div class="text-center p-4 bg-white rounded-xl shadow">
-              <p class="text-3xl font-bold text-primary">4.9</p>
-              <p class="text-gray-600">Average Rating</p>
-            </div>
-            <div class="text-center p-4 bg-white rounded-xl shadow">
-              <p class="text-3xl font-bold text-primary">10K+</p>
-              <p class="text-gray-600">Happy Customers</p>
-            </div>
-            <div class="text-center p-4 bg-white rounded-xl shadow">
-              <p class="text-3xl font-bold text-primary">98%</p>
-              <p class="text-gray-600">Repeat Orders</p>
-            </div>
-            <div class="text-center p-4 bg-white rounded-xl shadow">
-              <p class="text-3xl font-bold text-primary">30min</p>
-              <p class="text-gray-600">Avg Delivery Time</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Cart Modal -->
-  <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-    <div class="bg-white w-11/12 md:w-2/3 lg:w-1/2 max-h-96 rounded-2xl shadow-2xl overflow-hidden">
-      <div class="p-6 bg-gradient-to-r from-primary to-accent text-white">
-        <h3 class="text-xl font-bold flex items-center">
-          <i class="fas fa-shopping-cart mr-2"></i> Your Order
-        </h3>
-      </div>
-      <div id="cartItems" class="p-4 max-h-60 overflow-y-auto"></div>
-      
-      <!-- Customization Options (Feature 9) -->
-      <div class="p-4 bg-gray-50 border-t">
-        <h4 class="font-bold text-sm mb-2">Customize Your Order</h4>
-        <div class="grid grid-cols-2 gap-2">
-          <label class="flex items-center bg-white p-2 rounded border">
-            <input type="checkbox" class="mr-2"> Extra Cheese (+₹30)
-          </label>
-          <label class="flex items-center bg-white p-2 rounded border">
-            <input type="checkbox" class="mr-2"> Spicy Sauce (+₹20)
-          </label>
-          <label class="flex items-center bg-white p-2 rounded border">
-            <input type="checkbox" class="mr-2"> No Onion
-          </label>
-          <label class="flex items-center bg-white p-2 rounded border">
-            <input type="checkbox" class="mr-2"> Extra Patty (+₹50)
-          </label>
-        </div>
-      </div>
-      
-      <div class="p-4 border-t flex justify-between font-bold text-lg">
-        <span>Total:</span>
-        <span>₹<span id="cartTotal">0</span></span>
-      </div>
-      <div class="p-4 bg-gray-50 flex">
-        <button onclick="closeCart()" class="flex-1 py-2 mr-2 bg-gray-400 text-white rounded-full font-medium">Cancel</button>
-        <button onclick="placeOrder()" class="flex-1 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full font-medium shadow-lg hover:shadow-xl transition">Place Order</button>
-      </div>
+        <p class="login-footer">Protected with advanced security protocols</p>
+      </form>
     </div>
   </div>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl w-11/12 max-w-md shadow-2xl relative overflow-hidden">
-      <div class="p-8">
-        <div class="text-center mb-6">
-          <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-user text-white text-2xl"></i>
-          </div>
-          <h3 class="text-2xl font-bold text-dark">Welcome Back</h3>
-          <p class="text-gray-600 mt-2">Sign in to continue your culinary journey</p>
+  <!-- Customer Login Modal -->
+  <div id="customerLoginModal" class="login-modal hidden">
+    <div class="login-content">
+      <div class="login-header">
+        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-user text-white text-2xl"></i>
         </div>
-        
-        <div class="mb-6">
-          <label class="block text-gray-700 mb-2 font-medium">Mobile Number</label>
+        <h3>Welcome Back</h3>
+        <p class="text-gray-600">Sign in to continue your culinary journey</p>
+      </div>
+      
+      <form id="customerLoginForm">
+        <div class="form-group">
+          <label>Mobile Number</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500">+91</span>
             </div>
-            <input type="tel" id="mobileInput" placeholder="9835124772" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" maxlength="10"/>
+            <input type="tel" id="mobileInput" placeholder="9835124772" maxlength="10">
           </div>
         </div>
         
-        <button onclick="loginUser()" class="btn-primary w-full py-3 rounded-lg font-bold text-white shadow-lg hover:shadow-xl transition w-full">
-          Continue to MIRDHUNA
+        <button type="submit" class="btn-primary">
+          <i class="fas fa-sign-in-alt mr-2"></i> Continue to MIRDHUNA
         </button>
         
-        <p class="text-xs text-gray-500 mt-4 text-center">We'll detect your location automatically for faster delivery</p>
+        <p class="login-footer">We'll detect your location automatically for faster delivery</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Admin Dashboard -->
+  <div id="adminDashboard" class="hidden">
+    <!-- Header -->
+    <header class="admin-header text-white py-4 px-6">
+      <div class="container mx-auto flex justify-between items-center">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3">
+            <i class="fas fa-utensils text-primary text-xl"></i>
+          </div>
+          <h1 class="text-2xl font-heading font-bold">MIRDHUNA ADMIN</h1>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+          <div class="relative">
+            <button class="bg-white bg-opacity-20 p-2 rounded-full">
+              <i class="fas fa-bell text-xl"></i>
+              <span class="absolute top-0 right-0 bg-danger text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+            </button>
+          </div>
+          
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+              <i class="fas fa-user text-gray-600"></i>
+            </div>
+            <div>
+              <p class="font-medium">Admin User</p>
+              <p class="text-xs text-blue-200">Online</p>
+            </div>
+          </div>
+          
+          <button id="logoutBtn" class="bg-danger p-2 rounded-full">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Quick Add Buttons (Feature 13) -->
-  <div class="fixed bottom-24 right-6 z-30 hidden md:block">
-    <div class="flex flex-col space-y-3">
-      <button onclick="quickAdd(2)" class="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center text-white hover:bg-red-700 transition transform hover:scale-110">
-        <i class="fas fa-burger"></i>
-      </button>
-      <button onclick="quickAdd(1)" class="w-14 h-14 bg-secondary rounded-full shadow-lg flex items-center justify-center text-white hover:bg-red-600 transition transform hover:scale-110">
-        <i class="fas fa-pizza-slice"></i>
-      </button>
-    </div>
-  </div>
-
-  <footer class="bg-dark text-white py-12 px-4">
-    <div class="container mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div>
-          <h3 class="text-2xl font-heading font-bold mb-4">MIRDHUNA</h3>
-          <p class="text-gray-400 mb-4">Crafting unforgettable culinary experiences since 2020</p>
-          <div class="flex space-x-4">
-            <a href="https://facebook.com" target="_blank" class="text-gray-400 hover:text-white transition">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://instagram.com" target="_blank" class="text-gray-400 hover:text-white transition">
-              <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://wa.me/919835124772" target="_blank" class="text-gray-400 hover:text-white transition">
-              <i class="fab fa-whatsapp"></i>
-            </a>
+    </header>
+    
+    <div class="flex">
+      <!-- Sidebar -->
+      <aside class="sidebar w-64 p-4">
+        <nav>
+          <ul class="space-y-2">
+            <li>
+              <a href="#" class="sidebar-item active flex items-center p-3 text-white" data-section="dashboard">
+                <i class="fas fa-home mr-3 text-lg"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="orders">
+                <i class="fas fa-shopping-cart mr-3 text-lg"></i>
+                <span>Orders</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="menu">
+                <i class="fas fa-utensils mr-3 text-lg"></i>
+                <span>Menu Management</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="users">
+                <i class="fas fa-users mr-3 text-lg"></i>
+                <span>User History</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="slides">
+                <i class="fas fa-images mr-3 text-lg"></i>
+                <span>Slide Management</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="analytics">
+                <i class="fas fa-chart-line mr-3 text-lg"></i>
+                <span>Analytics</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        
+        <div class="mt-8 p-4 bg-dark rounded-lg">
+          <h3 class="text-white font-bold mb-3">System Status</h3>
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Database</span>
+                <span>Operational</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-success h-2 rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Storage</span>
+                <span>85%</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-warning h-2 rounded-full" style="width: 85%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs text-gray-400 mb-1">
+                <span>API</span>
+                <span>99.9%</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-success h-2 rounded-full" style="width: 99.9%"></div>
+              </div>
+            </div>
           </div>
         </div>
-        
-        <div>
-          <h4 class="text-lg font-bold mb-4">Quick Links</h4>
-          <ul class="space-y-2">
-            <li><a href="#" class="text-gray-400 hover:text-white transition">Menu</a></li>
-            <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
-            <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
-            <li><a href="#" class="text-gray-400 hover:text-white transition">Careers</a></li>
-          </ul>
-        </div>
-        
-        <div>
-          <h4 class="text-lg font-bold mb-4">Contact</h4>
-          <ul class="space-y-2 text-gray-400">
-            <li class="flex items-start">
-              <i class="fas fa-map-marker-alt mt-1 mr-3"></i>
-              <span>123 Food Street, Culinary District</span>
-            </li>
-            <li class="flex items-center">
-              <i class="fas fa-phone-alt mr-3"></i>
-              <span>+91 9835124772</span>
-            </li>
-            <li class="flex items-center">
-              <i class="fas fa-envelope mr-3"></i>
-              <span>hello@mirdhuna.com</span>
-            </li>
-          </ul>
-        </div>
-        
-        <div>
-          <h4 class="text-lg font-bold mb-4">Opening Hours</h4>
-          <ul class="space-y-2 text-gray-400">
-            <li class="flex justify-between">
-              <span>Monday - Friday</span>
-              <span class="font-medium">10:00 AM - 10:00 PM</span>
-            </li>
-            <li class="flex justify-between">
-              <span>Saturday</span>
-              <span class="font-medium">10:00 AM - 11:00 PM</span>
-            </li>
-            <li class="flex justify-between">
-              <span>Sunday</span>
-              <span class="font-medium">11:00 AM - 9:00 PM</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+      </aside>
       
-      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
-        <p>© 2025 MIRDHUNA Café. All rights reserved. Crafted with ❤️ for food lovers</p>
+      <!-- Main Content -->
+      <main class="flex-1 p-6">
+        <!-- Dashboard Section -->
+        <section id="dashboardSection">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Dashboard Overview</h2>
+            <p class="text-gray-600">Welcome back! Here's what's happening today.</p>
+          </div>
+          
+          <!-- Stats Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">₹24.5K</p>
+                  <p class="text-gray-600">Today's Revenue</p>
+                </div>
+                <i class="fas fa-rupee-sign text-3xl opacity-30"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">12% increase from yesterday</p>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">142</p>
+                  <p class="text-gray-600">Orders Today</p>
+                </div>
+                <i class="fas fa-shopping-bag text-3xl opacity-30"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">18% increase from yesterday</p>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">4.8★</p>
+                  <p class="text-gray-600">Avg Rating</p>
+                </div>
+                <i class="fas fa-star text-3xl opacity-30"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Excellent feedback</p>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">87%</p>
+                  <p class="text-gray-600">Repeat Customers</p>
+                </div>
+                <i class="fas fa-users text-3xl opacity-30"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Loyal customer base</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Recent Orders -->
+          <div class="card p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-bold text-dark">Recent Orders</h3>
+              <button class="text-primary font-medium">View All</button>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-left text-gray-500 border-b">
+                    <th class="pb-3">Order ID</th>
+                    <th class="pb-3">Customer</th>
+                    <th class="pb-3">Items</th>
+                    <th class="pb-3">Amount</th>
+                    <th class="pb-3">Status</th>
+                    <th class="pb-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                  <!-- Orders will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Analytics Chart -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="card p-6">
+              <h3 class="text-xl font-bold text-dark mb-6">Sales Overview</h3>
+              <div class="h-64 flex items-end justify-between px-4">
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 60%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Mon</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 80%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Tue</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 40%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Wed</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 90%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Thu</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 70%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Fri</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 100%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Sat</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 50%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Sun</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <h3 class="text-xl font-bold text-dark mb-6">Popular Menu Items</h3>
+              <div class="space-y-4" id="popularItemsContainer">
+                <!-- Popular items will be populated here -->
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Orders Section -->
+        <section id="ordersSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Order Management</h2>
+            <p class="text-gray-600">Manage all customer orders in real-time</p>
+          </div>
+          
+          <div class="card p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-bold text-dark">All Orders</h3>
+              <div class="flex space-x-3">
+                <select class="border p-2 rounded-lg">
+                  <option>All Statuses</option>
+                  <option>Pending</option>
+                  <option>Preparing</option>
+                  <option>Ready</option>
+                  <option>Delivered</option>
+                </select>
+                <input type="text" placeholder="Search orders..." class="border p-2 rounded-lg">
+              </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-left text-gray-500 border-b">
+                    <th class="pb-3">Order ID</th>
+                    <th class="pb-3">Customer</th>
+                    <th class="pb-3">Items</th>
+                    <th class="pb-3">Amount</th>
+                    <th class="pb-3">Time</th>
+                    <th class="pb-3">Status</th>
+                    <th class="pb-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="allOrdersTableBody">
+                  <!-- All orders will be populated here -->
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="flex justify-between items-center mt-6">
+              <p class="text-gray-600">Showing 1 to 3 of 120 orders</p>
+              <div class="flex space-x-2">
+                <button class="action-btn bg-gray-200">Previous</button>
+                <button class="action-btn bg-gray-200">Next</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Thermal Printer Receipt -->
+          <div class="card p-6">
+            <h3 class="text-xl font-bold text-dark mb-6">Thermal Printer Receipt</h3>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+              <div class="flex-1">
+                <div class="print-area">
+                  <div class="print-header">
+                    <h2 class="font-bold text-lg">MIRDHUNA CAFE</h2>
+                    <p class="text-xs">123 Food Street, Culinary District</p>
+                    <p class="text-xs">Jaipur, Rajasthan</p>
+                  </div>
+                  
+                  <div class="mb-2">
+                    <p class="text-xs">Order ID: #ORD-1023</p>
+                    <p class="text-xs">Date: 2023-06-15 10:23 AM</p>
+                    <p class="text-xs">Customer: +91 9835124772</p>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <div class="print-item">
+                      <span>Gourmet Cheeseburger x2</span>
+                      <span>₹358</span>
+                    </div>
+                    <div class="print-item">
+                      <span>Truffle Fries x1</span>
+                      <span>₹29</span>
+                    </div>
+                  </div>
+                  
+                  <div class="print-total">
+                    <span>TOTAL</span>
+                    <span>₹387</span>
+                  </div>
+                  
+                  <div class="text-center mt-4 text-xs">
+                    <p>Thank you for your order!</p>
+                    <p>Visit us again at mirdhuna.com</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex-1 thermal-print">
+                <h4 class="font-bold mb-4">Printer Controls</h4>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-gray-700 mb-2">Printer IP Address</label>
+                    <input type="text" placeholder="192.168.1.100" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div>
+                    <label class="block text-gray-700 mb-2">Port</label>
+                    <input type="text" placeholder="9100" class="w-full p-2 border rounded" value="9100">
+                  </div>
+                  
+                  <div class="flex space-x-3">
+                    <button class="thermal-print-btn flex-1">
+                      <i class="fas fa-print mr-2"></i> Print Receipt
+                    </button>
+                    <button class="thermal-print-btn flex-1">
+                      <i class="fas fa-file-pdf mr-2"></i> Download PDF
+                    </button>
+                  </div>
+                  
+                  <div class="mt-6">
+                    <h5 class="font-bold mb-2">Print Test</h5>
+                    <button class="thermal-print-btn w-full">
+                      <i class="fas fa-print mr-2"></i> Print Test Page
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Menu Management Section -->
+        <section id="menuSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Menu Management</h2>
+            <p class="text-gray-600">Add, edit, or remove menu items</p>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+              <div class="card p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                  <h3 class="text-xl font-bold text-dark">Menu Items</h3>
+                  <button class="action-btn btn-primary" onclick="openAddMenuItemModal()">
+                    <i class="fas fa-plus mr-2"></i> Add New Item
+                  </button>
+                </div>
+                
+                <!-- Two items per slot grid -->
+                <div id="menuItemsContainer" class="two-col-grid gap-6">
+                  <!-- Menu items will be populated here -->
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="card p-6 sticky top-24">
+                <h3 class="text-xl font-bold text-dark mb-6">Add New Menu Item</h3>
+                
+                <form id="addMenuItemForm">
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Item Name</label>
+                    <input type="text" id="menuItemName" placeholder="Enter item name" class="w-full p-2 border rounded" required>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Category</label>
+                    <select id="menuItemCategory" class="w-full p-2 border rounded" required>
+                      <option value="">Select Category</option>
+                      <option value="Pizza">Pizza</option>
+                      <option value="Burger">Burger</option>
+                      <option value="Sandwich">Sandwich</option>
+                      <option value="Shakes">Shakes</option>
+                      <option value="Desserts">Desserts</option>
+                    </select>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Price (₹)</label>
+                    <input type="number" id="menuItemPrice" placeholder="Enter price" class="w-full p-2 border rounded" min="1" required>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Description</label>
+                    <textarea id="menuItemDescription" placeholder="Enter description" class="w-full p-2 border rounded" rows="3"></textarea>
+                  </div>
+                  
+                  <div class="mb-6">
+                    <label class="block text-gray-700 mb-2">Image URL</label>
+                    <input type="url" id="menuItemImageUrl" placeholder="Enter image URL" class="w-full p-2 border rounded" required>
+                  </div>
+                  
+                  <button type="submit" class="action-btn btn-primary w-full">
+                    <i class="fas fa-save mr-2"></i> Save Menu Item
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- User History Section -->
+        <section id="usersSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">User Login History</h2>
+            <p class="text-gray-600">Track customer logins with location data</p>
+          </div>
+          
+          <div class="card p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-bold text-dark">Login Records</h3>
+              <div class="flex space-x-3">
+                <input type="text" placeholder="Search by phone..." class="border p-2 rounded-lg">
+                <select class="border p-2 rounded-lg">
+                  <option>Last 24 Hours</option>
+                  <option>Last 7 Days</option>
+                  <option>Last 30 Days</option>
+                  <option>All Time</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-left text-gray-500 border-b">
+                    <th class="pb-3">Phone Number</th>
+                    <th class="pb-3">Login Time</th>
+                    <th class="pb-3">Location</th>
+                    <th class="pb-3">Coordinates</th>
+                    <th class="pb-3">Device</th>
+                  </tr>
+                </thead>
+                <tbody id="userHistoryTableBody">
+                  <!-- User history will be populated here -->
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="flex justify-between items-center mt-6">
+              <p class="text-gray-600">Showing 1 to 3 of 142 records</p>
+              <div class="flex space-x-2">
+                <button class="action-btn bg-gray-200">Previous</button>
+                <button class="action-btn bg-gray-200">Next</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Map Visualization -->
+          <div class="card p-6">
+            <h3 class="text-xl font-bold text-dark mb-6">Customer Location Map</h3>
+            <div class="bg-gray-200 rounded-xl h-96 flex items-center justify-center">
+              <div class="text-center">
+                <i class="fas fa-map-marked-alt text-5xl text-gray-500 mb-4"></i>
+                <p class="text-gray-600">Interactive map showing customer locations</p>
+                <p class="text-sm text-gray-500 mt-2">(Integration with Google Maps API)</p>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <div class="bg-blue-50 p-4 rounded-lg">
+                <h4 class="font-bold text-blue-800 mb-2">Most Active Area</h4>
+                <p class="text-2xl font-bold">Vaishali Nagar</p>
+                <p class="text-sm text-gray-600">42% of customers</p>
+              </div>
+              
+              <div class="bg-green-50 p-4 rounded-lg">
+                <h4 class="font-bold text-green-800 mb-2">Average Distance</h4>
+                <p class="text-2xl font-bold">3.2 km</p>
+                <p class="text-sm text-gray-600">from cafe location</p>
+              </div>
+              
+              <div class="bg-purple-50 p-4 rounded-lg">
+                <h4 class="font-bold text-purple-800 mb-2">Peak Hours</h4>
+                <p class="text-2xl font-bold">12:00 PM - 2:00 PM</p>
+                <p class="text-sm text-gray-600">highest login activity</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Slide Management Section -->
+        <section id="slidesSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Slide Management</h2>
+            <p class="text-gray-600">Manage homepage carousel slides</p>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+              <div class="card p-6 mb-8">
+                <div class="flex justify-between items-center mb-6">
+                  <h3 class="text-xl font-bold text-dark">Current Slides</h3>
+                  <button class="action-btn btn-primary">
+                    <i class="fas fa-plus mr-2"></i> Add New Slide
+                  </button>
+                </div>
+                
+                <!-- Two items per slot grid for slides -->
+                <div class="two-col-grid gap-6">
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 1" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Summer Pizza Special</h4>
+                      <p class="text-sm">Fresh ingredients, amazing taste</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Active</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 2" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Burger Bonanza</h4>
+                      <p class="text-sm">Juicy burgers with crispy fries</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Active</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 3" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Healthy Sandwiches</h4>
+                      <p class="text-sm">Fresh ingredients, guilt-free pleasure</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Inactive</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="slide-preview">
+                    <img src="https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 4" class="slide-image">
+                    <div class="slide-overlay">
+                      <h4 class="font-bold">Chocolate Shake Madness</h4>
+                      <p class="text-sm">Irresistible chocolatey goodness</p>
+                      <div class="flex justify-between mt-2">
+                        <span class="text-xs">Active</span>
+                        <div class="flex space-x-2">
+                          <button class="text-white hover:text-blue-200">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button class="text-white hover:text-red-200">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="card p-6 sticky top-24">
+                <h3 class="text-xl font-bold text-dark mb-6">Add New Slide</h3>
+                
+                <form>
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Slide Title</label>
+                    <input type="text" placeholder="Enter slide title" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Description</label>
+                    <textarea placeholder="Enter description" class="w-full p-2 border rounded" rows="3"></textarea>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">CTA Text</label>
+                    <input type="text" placeholder="e.g. Order Now" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">CTA Link</label>
+                    <input type="text" placeholder="e.g. /menu#burgers" class="w-full p-2 border rounded">
+                  </div>
+                  
+                  <div class="mb-6">
+                    <label class="block text-gray-700 mb-2">Image</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                      <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                      <p class="text-gray-600">Drag & drop or click to upload</p>
+                      <input type="file" class="hidden" id="slideUpload">
+                      <label for="slideUpload" class="action-btn btn-primary mt-3 inline-block cursor-pointer">
+                        <i class="fas fa-upload mr-2"></i> Choose File
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="mb-4">
+                    <label class="flex items-center">
+                      <input type="checkbox" class="mr-2">
+                      <span>Active Slide</span>
+                    </label>
+                  </div>
+                  
+                  <button type="submit" class="action-btn btn-primary w-full">
+                    <i class="fas fa-save mr-2"></i> Save Slide
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Analytics Section -->
+        <section id="analyticsSection" class="hidden">
+          <div class="mb-8">
+            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Analytics Dashboard</h2>
+            <p class="text-gray-600">Comprehensive insights into your business performance</p>
+          </div>
+          
+          <!-- Key Metrics -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">1,240</p>
+                  <p class="text-gray-600">Total Orders</p>
+                </div>
+                <i class="fas fa-shopping-bag text-3xl text-gray-300"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">+12% from last month</p>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">₹3.2M</p>
+                  <p class="text-gray-600">Total Revenue</p>
+                </div>
+                <i class="fas fa-rupee-sign text-3xl text-gray-300"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">+18% from last month</p>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">4.8</p>
+                  <p class="text-gray-600">Avg. Rating</p>
+                </div>
+                <i class="fas fa-star text-3xl text-gray-300"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">+0.2 from last month</p>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="text-3xl font-bold text-primary">87%</p>
+                  <p class="text-gray-600">Repeat Customers</p>
+                </div>
+                <i class="fas fa-users text-3xl text-gray-300"></i>
+              </div>
+              <div class="mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">+3% from last month</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Charts -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="card p-6">
+              <h3 class="text-xl font-bold text-dark mb-6">Revenue Trends</h3>
+              <div class="h-64 flex items-end justify-between px-4">
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 60%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Jan</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 70%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Feb</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 50%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Mar</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 80%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Apr</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 90%"></div>
+                  <p class="text-xs mt-2 text-gray-600">May</p>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 100%"></div>
+                  <p class="text-xs mt-2 text-gray-600">Jun</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card p-6">
+              <h3 class="text-xl font-bold text-dark mb-6">Customer Demographics</h3>
+              <div class="h-64 flex items-center justify-center">
+                <div class="relative w-48 h-48">
+                  <div class="absolute inset-0 rounded-full border-8 border-blue-500"></div>
+                  <div class="absolute inset-0 rounded-full border-8 border-green-500 transform rotate-120"></div>
+                  <div class="absolute inset-0 rounded-full border-8 border-yellow-500 transform rotate-240"></div>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center">
+                      <p class="text-2xl font-bold">Age Groups</p>
+                      <p class="text-sm text-gray-600">18-35: 62%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Top Performing Items -->
+          <div class="card p-6">
+            <h3 class="text-xl font-bold text-dark mb-6">Top Performing Menu Items</h3>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-left text-gray-500 border-b">
+                    <th class="pb-3">Rank</th>
+                    <th class="pb-3">Item Name</th>
+                    <th class="pb-3">Category</th>
+                    <th class="pb-3">Orders</th>
+                    <th class="pb-3">Revenue</th>
+                    <th class="pb-3">Rating</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-bold text-primary">#1</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                        <span>Gourmet Cheeseburger</span>
+                      </div>
+                    </td>
+                    <td class="py-4">Burger</td>
+                    <td class="py-4">420</td>
+                    <td class="py-4 font-bold">₹75,180</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.8</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-bold text-primary">#2</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                        <span>Truffle Margherita</span>
+                      </div>
+                    </td>
+                    <td class="py-4">Pizza</td>
+                    <td class="py-4">380</td>
+                    <td class="py-4 font-bold">₹113,620</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.7</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="py-4 font-bold text-primary">#3</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                        <span>Club Sandwich</span>
+                      </div>
+                    </td>
+                    <td class="py-4">Sandwich</td>
+                    <td class="py-4">290</td>
+                    <td class="py-4 font-bold">₹57,710</td>
+                    <td class="py-4">
+                      <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>4.6</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Edit Menu Item Modal -->
+  <div id="editMenuItemModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+    <div class="bg-white w-11/12 md:w-2/3 lg:w-1/2 max-h-96 rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-6 bg-gradient-to-r from-primary to-accent text-white">
+        <h3 class="text-xl font-bold flex items-center">
+          <i class="fas fa-edit mr-2"></i> Edit Menu Item
+        </h3>
+      </div>
+      <div class="p-6 max-h-80 overflow-y-auto">
+        <form id="editMenuItemForm">
+          <input type="hidden" id="editItemId">
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Item Name</label>
+            <input type="text" id="editItemName" class="w-full p-2 border rounded" required>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Category</label>
+            <select id="editItemCategory" class="w-full p-2 border rounded" required>
+              <option value="Pizza">Pizza</option>
+              <option value="Burger">Burger</option>
+              <option value="Sandwich">Sandwich</option>
+              <option value="Shakes">Shakes</option>
+              <option value="Desserts">Desserts</option>
+            </select>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Price (₹)</label>
+            <input type="number" id="editItemPrice" class="w-full p-2 border rounded" min="1" required>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Description</label>
+            <textarea id="editItemDescription" class="w-full p-2 border rounded" rows="3"></textarea>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Image URL</label>
+            <input type="url" id="editItemImage" class="w-full p-2 border rounded" required>
+          </div>
+          
+          <div class="flex justify-end space-x-3">
+            <button type="button" onclick="closeEditModal()" class="action-btn bg-gray-300">Cancel</button>
+            <button type="submit" class="action-btn btn-primary">Update Item</button>
+          </div>
+        </form>
       </div>
     </div>
-  </footer>
-
+  </div>
+  
   <script>
     // Supabase Configuration
     const SUPABASE_URL = 'https://cfgjvbhfhfgskssopknn.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmZ2p2YmhmaGZnc2tzc29wa25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMDQ1MzQsImV4cCI6MjA2OTc4MDUzNH0.uAsDR4Vj7fSQ7q5Qz859WPzj7qlJIsHpF23Rl7dmj7w';
+    
+    // Initialize Supabase
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // Mock data for demonstration
-    let userPhone = null;
-    let userLocation = null;
-    let cart = [];
+    
+    // DOM Elements
+    const adminLoginModal = document.getElementById('adminLoginModal');
+    const customerLoginModal = document.getElementById('customerLoginModal');
+    const adminDashboard = document.getElementById('adminDashboard');
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    const customerLoginForm = document.getElementById('customerLoginForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const editMenuItemModal = document.getElementById('editMenuItemModal');
+    
+    // Sections
+    const sections = {
+      dashboard: document.getElementById('dashboardSection'),
+      orders: document.getElementById('ordersSection'),
+      menu: document.getElementById('menuSection'),
+      users: document.getElementById('usersSection'),
+      slides: document.getElementById('slidesSection'),
+      analytics: document.getElementById('analyticsSection')
+    };
+    
+    // Menu items array
     let menuItems = [];
-    let orderHistory = [];
-    let favoriteOrders = [
-      { name: "Burger Feast", items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], price: 209 },
-      { name: "Pizza Night", items: [{name: "Truffle Margherita", qty: 1}, {name: "Belgian Chocolate Shake", qty: 1}], price: 448 },
-      { name: "Healthy Combo", items: [{name: "Avocado Club Sandwich", qty: 1}, {name: "Belgian Chocolate Shake", qty: 1}], price: 348 }
-    ];
-
-    // Initialize the app
-    async function initApp() {
-      await loadMenu();
-      displayRecentOrders();
-      displayFavoriteOrders();
-      animateCounters();
+    let orders = [];
+    let userHistory = [];
+    let favoriteOrders = [];
+    let customerPhone = null;
+    let customerLocation = null;
+    
+    // Show toast notification
+    function showtoast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
     }
-
-    // Load menu items from Supabase
-    async function loadMenu() {
+    
+    // Admin Login Form Handler
+    adminLoginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+      
+      // Validate credentials (Simple validation without Supabase)
+      if (username === 'Sanu' && password === 'Sanu.0000') {
+        adminLoginModal.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        showtoast('Welcome to MIRDHUNA Admin!');
+        
+        // Reset form
+        document.getElementById('adminUsername').value = '';
+        document.getElementById('adminPassword').value = '';
+        
+        // Initialize dashboard
+        initDashboard();
+      } else {
+        showtoast('Invalid credentials. Please try again.');
+      }
+    });
+    
+    // Customer Login Form Handler
+    customerLoginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const num = document.getElementById('mobileInput').value.trim();
+      
+      if (!num || num.length !== 10) {
+        showtoast('Please enter a valid 10-digit mobile number');
+        return;
+      }
+      
+      // Format phone number
+      customerPhone = '+91' + num;
+      
+      // Get customer location
+      getCustomerLocation()
+        .then(location => {
+          customerLocation = location;
+          customerLoginModal.classList.add('hidden');
+          showtoast(`Welcome back, customer! Location detected.`);
+          
+          // Reset form
+          document.getElementById('mobileInput').value = '';
+          
+          // Initialize customer dashboard (this would be in a separate file)
+          initCustomerDashboard();
+        })
+        .catch(error => {
+          showtoast('Location access denied. You can still order.');
+          customerLoginModal.classList.add('hidden');
+          
+          // Reset form
+          document.getElementById('mobileInput').value = '';
+          
+          // Initialize customer dashboard
+          initCustomerDashboard();
+        });
+    });
+    
+    // Get customer location
+    function getCustomerLocation() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Geolocation not supported'));
+        } else {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const crd = position.coords;
+              resolve({
+                lat: crd.latitude,
+                lng: crd.longitude
+              });
+            },
+            error => {
+              reject(error);
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 60000
+            }
+          );
+        }
+      });
+    }
+    
+    // Logout Handler
+    logoutBtn.addEventListener('click', function() {
+      adminDashboard.classList.add('hidden');
+      adminLoginModal.classList.remove('hidden');
+      showtoast('You have been logged out.');
+    });
+    
+    // Navigation
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Update active state
+        document.querySelectorAll('.sidebar-item').forEach(i => {
+          i.classList.remove('active');
+          i.classList.add('text-gray-300');
+        });
+        this.classList.add('active');
+        this.classList.remove('text-gray-300');
+        this.classList.add('text-white');
+        
+        // Show selected section
+        const section = this.getAttribute('data-section');
+        Object.values(sections).forEach(sec => sec.classList.add('hidden'));
+        sections[section].classList.remove('hidden');
+        
+        // Load section data if needed
+        if (section === 'menu') {
+          loadMenuItems();
+        } else if (section === 'orders') {
+          loadOrders();
+        } else if (section === 'users') {
+          loadUserHistory();
+        } else if (section === 'slides') {
+          loadSlides();
+        } else if (section === 'analytics') {
+          loadAnalytics();
+        }
+      });
+    });
+    
+    // Initialize the dashboard
+    function initDashboard() {
+      // Subscribe to real-time updates
+      subscribeToRealtimeUpdates();
+      
+      // Load initial data
+      loadMenuItems();
+      loadOrders();
+      loadUserHistory();
+      loadSlides();
+      loadAnalytics();
+    }
+    
+    // Real-time Updates
+    function subscribeToRealtimeUpdates() {
+      // Subscribe to menu items
+      supabase
+        .channel('menu_items')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'menu_items'
+          },
+          (payload) => {
+            console.log('Menu item change:', payload);
+            loadMenuItems(); // Reload menu items
+          }
+        )
+        .subscribe();
+      
+      // Subscribe to orders
+      supabase
+        .channel('orders')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'orders'
+          },
+          (payload) => {
+            console.log('Order change:', payload);
+            loadOrders(); // Reload orders
+          }
+        )
+        .subscribe();
+      
+      // Subscribe to login logs
+      supabase
+        .channel('login_logs')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'login_logs'
+          },
+          (payload) => {
+            console.log('Login log change:', payload);
+            loadUserHistory(); // Reload user history
+          }
+        )
+        .subscribe();
+    }
+    
+    // Load Menu Items
+    async function loadMenuItems() {
       try {
-        const { data, error } = await supabase.from('menu_items').select('*').order('category');
+        const { data, error } = await supabase
+          .from('menu_items')
+          .select('*')
+          .order('id');
+        
         if (error) throw error;
+        
         menuItems = data;
-        displayMenu(data);
+        displayMenuItems();
       } catch (error) {
-        console.error("Error loading menu:", error);
+        console.error('Error loading menu items:', error);
+        showtoast('Failed to load menu items');
+        
         // Fallback to mock data
         menuItems = [
           { id: 1, name: "Truffle Margherita", category: "Pizza", price: 299, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
@@ -731,304 +1638,359 @@
           { id: 3, name: "Avocado Club Sandwich", category: "Sandwich", price: 199, image_path: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
           { id: 4, name: "Belgian Chocolate Shake", category: "Shakes", price: 149, image_path: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
           { id: 5, name: "Spicy Pepperoni Feast", category: "Pizza", price: 349, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 6, name: "Vegan Power Burger", category: "Burger", price: 189, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 7, name: "Grilled Veg Sandwich", category: "Sandwich", price: 159, image_path: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 8, name: "Mango Shake", category: "Shakes", price: 129, image_path: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
+          { id: 6, name: "Vegan Power Burger", category: "Burger", price: 189, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
         ];
-        displayMenu(menuItems);
+        displayMenuItems();
       }
     }
-
-    // Display menu with two items per slot
-    function displayMenu(items) {
-      const container = document.getElementById('menuList');
+    
+    // Display Menu Items (2 items per slot)
+    function displayMenuItems() {
+      const container = document.getElementById('menuItemsContainer');
       container.innerHTML = '';
-      items.forEach((item, i) => {
-        setTimeout(() => {
-          const div = document.createElement('div');
-          div.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
-          div.style.animation = `fadeInUp 0.5s ease-out ${i * 0.1}s both`;
-          div.innerHTML = `
-            <img src="${item.image_path}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
-            <div class="p-6">
+      
+      if (menuItems.length === 0) {
+        container.innerHTML = '<p class="col-span-2 text-center py-8 text-gray-500">No menu items found</p>';
+        return;
+      }
+      
+      // Group items in pairs for two-column layout
+      for (let i = 0; i < menuItems.length; i += 2) {
+        const pair = menuItems.slice(i, i + 2);
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
+        
+        pair.forEach(item => {
+          const colDiv = document.createElement('div');
+          colDiv.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
+          colDiv.innerHTML = `
+            <img src="${item.image_path}" alt="${item.name}" class="menu-image">
+            <div class="p-4">
               <h3 class="font-bold text-lg">${item.name}</h3>
               <p class="text-primary font-semibold">₹${item.price}</p>
-              <button onclick="addToCart(${item.id})" class="btn-primary mt-3 w-full py-2 rounded-lg font-bold text-white shadow hover:shadow-lg transition">
-                <i class="fas fa-plus mr-2"></i> Add to Cart
-              </button>
+              <p class="text-gray-600 text-sm mb-3">${item.description || 'No description'}</p>
+              <div class="flex justify-between items-center">
+                <button onclick="openEditModal(${item.id})" class="text-blue-500 hover:text-blue-700">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="deleteMenuItem(${item.id})" class="text-red-500 hover:text-red-700">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button onclick="addToCart(${item.id})" class="btn-primary px-4 py-2 rounded-full font-bold text-white shadow hover:shadow-lg transition">
+                  <i class="fas fa-plus mr-2"></i> Add to Cart
+                </button>
+              </div>
             </div>
           `;
-          container.appendChild(div);
-        }, i * 100);
-      });
-    }
-
-    // Filter menu by category
-    function filterCategory(category) {
-      const filtered = category === 'all' ? menuItems : menuItems.filter(i => i.category === category);
-      document.getElementById('menuList').innerHTML = '<p class="col-span-full text-center py-8 text-gray-500">Loading...</p>';
-      setTimeout(() => displayMenu(filtered), 200);
-    }
-
-    // Add to cart
-    function addToCart(id) {
-      if (!userPhone) return openLoginModal();
-      const item = menuItems.find(i => i.id === id);
-      const existing = cart.find(c => c.id === id);
-      if (existing) existing.qty += 1;
-      else cart.push({ ...item, qty: 1 });
-      updateCartUI();
-      showtoast("Added to cart!");
-    }
-
-    // Quick add buttons (Feature 13)
-    function quickAdd(id) {
-      if (!userPhone) return openLoginModal();
-      const item = menuItems.find(i => i.id === id);
-      cart.push({ ...item, qty: 1 });
-      updateCartUI();
-      showtoast("${item.name} added to cart!");
-    }
-
-    // Update cart UI
-    function updateCartUI() {
-      document.getElementById('cartCount').textContent = cart.reduce((sum, i) => sum + i.qty, 0);
-    }
-
-    // Show toast notification
-    function showtoast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    // Detect location
-    async function detectLocation() {
-      return new Promise(resolve => {
-        if (!navigator.geolocation) resolve({ lat: 0, lng: 0 });
-        else {
-          navigator.geolocation.getCurrentPosition(
-            pos => {
-              const crd = pos.coords;
-              resolve({ lat: crd.latitude, lng: crd.longitude });
-            },
-            () => {
-              alert("Please enable location to continue.");
-              resolve({ lat: 0, lng: 0 });
-            }
-          );
-        }
-      });
-    }
-
-    // User login (without Supabase)
-    async function loginUser() {
-      const num = document.getElementById('mobileInput').value.trim();
-      if (!num || num.length !== 10) return alert("Enter valid 10-digit number");
-      userPhone = '91' + num;
-      userLocation = await detectLocation();
-
-      document.getElementById('loginBtn').textContent = 'Hi, ' + num.slice(-4);
-      document.getElementById('loginModal').classList.add('hidden');
-      showtoast("Logged in successfully!");
-    }
-
-    // Place order with Supabase
-    async function placeOrder() {
-      if (cart.length === 0) return showtoast("Cart is empty");
-
-      const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      const { data, error } = await supabase.from('orders').insert({
-        user_phone: userPhone,
-        items: cart,
-        total: total,
-        status: 'pending',
-        user_location: userLocation,
-        ordered_at: new Date().toISOString()
-      }).select();
-
-      if (error) {
-        showtoast("Failed to place order");
-        console.error(error);
-      } else {
-        showtoast("Order placed successfully!");
-        cart = [];
-        updateCartUI();
-        closeCart();
-      }
-    }
-
-    // Display recent orders
-    function displayRecentOrders() {
-      const container = document.getElementById('recentOrders');
-      container.innerHTML = '';
-      orderHistory = [
-        { id: 1001, items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], total: 209, date: "2023-06-15", status: "delivered" },
-        { id: 1002, items: [{name: "Truffle Margherita", qty: 1}], total: 299, date: "2023-06-12", status: "delivered" },
-        { id: 1003, items: [{name: "Avocado Club Sandwich", qty: 2}], total: 398, date: "2023-06-10", status: "delivered" }
-      ];
-
-      orderHistory.forEach(order => {
-        const div = document.createElement('div');
-        div.className = 'history-item bg-white p-4 rounded-lg shadow';
-        div.innerHTML = `
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="font-bold text-dark">Order #${order.id.toString().slice(-4)}</p>
-              <p class="text-sm text-gray-600 mt-1">${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
-              <p class="text-xs text-gray-500 mt-2">${order.date}</p>
-            </div>
-            <div class="text-right">
-              <p class="font-bold text-primary">₹${order.total}</p>
-              <button onclick="reorder(${order.id})" class="mt-2 bg-primary text-white px-3 py-1 rounded-full text-xs font-medium">
-                Reorder
-              </button>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    // Display favorite orders
-    function displayFavoriteOrders() {
-      const container = document.getElementById('favoriteOrders');
-      container.innerHTML = '';
-
-      favoriteOrders.forEach((order, index) => {
-        const div = document.createElement('div');
-        div.className = 'history-item bg-white p-4 rounded-lg shadow';
-        div.innerHTML = `
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="font-bold text-dark">${order.name}</p>
-              <p class="text-sm text-gray-600 mt-1">${order.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
-            </div>
-            <div class="text-right">
-              <p class="font-bold text-primary">₹${order.price}</p>
-              <button onclick="orderFavorite(${index})" class="mt-2 bg-gradient-to-r from-accent to-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                Order Now
-              </button>
-            </div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    // Reorder function
-    function reorder(orderId) {
-      if (!userPhone) return openLoginModal();
-      const order = orderHistory.find(o => o.id === orderId);
-      if (!order) return;
-      cart = [];
-      order.items.forEach(item => {
-        const menuItem = menuItems.find(m => m.name === item.name);
-        if (menuItem) cart.push({ ...menuItem, qty: item.qty });
-      });
-      updateCartUI();
-      openCart();
-      showtoast("Order added to cart!");
-    }
-
-    // Order favorite combination
-    function orderFavorite(index) {
-      if (!userPhone) return openLoginModal();
-      const favorite = favoriteOrders[index];
-      if (!favorite) return;
-      cart = [];
-      favorite.items.forEach(item => {
-        const menuItem = menuItems.find(m => m.name === item.name);
-        if (menuItem) cart.push({ ...menuItem, qty: item.qty });
-      });
-      updateCartUI();
-      openCart();
-      showtoast("${favorite.name} added to cart!");
-    }
-
-    // Submit feedback
-    function submitFeedback(feedback) {
-      const feedbacks = {
-        sad: "We're sorry to hear that. We'll work to improve!",
-        neutral: "Thank you for your feedback. We appreciate it!",
-        happy: "Wonderful! We're thrilled you enjoyed your experience!",
-        excited: "Absolutely thrilled! Thank you for the love! 🎉"
-      };
-      showtoast(feedbacks[feedback]);
-    }
-
-    // Animate counters (Feature 16)
-    function animateCounters() {
-      const counters = document.querySelectorAll('.counter');
-      counters.forEach(counter => {
-        const target = +counter.getAttribute('data-target');
-        const increment = target / 100;
-        let current = 0;
-        const updateCounter = () => {
-          if (current < target) {
-            current += increment;
-            counter.innerText = Math.ceil(current);
-            setTimeout(updateCounter, 20);
-          } else {
-            counter.innerText = target;
-          }
-        };
-        updateCounter();
-      });
-    }
-
-    // Search functionality (Feature 6)
-    document.getElementById('searchInput').addEventListener('input', function() {
-      const searchTerm = this.value.toLowerCase();
-      const menuCards = document.querySelectorAll('#menuList .menu-card');
-      menuCards.forEach(card => {
-        const itemName = card.querySelector('h3').textContent.toLowerCase();
-        if (itemName.includes(searchTerm)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    });
-
-    // Show section
-    function showSection(id) {
-      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-      if (id === 'menu') document.querySelectorAll('.nav-item')[0].classList.add('active');
-      else if (id === 'history') document.querySelectorAll('.nav-item')[1].classList.add('active');
-    }
-
-    // Open/close modals
-    function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
-    function closeCart() { document.getElementById('cartModal').classList.add('hidden'); }
-    function openCart() {
-      const container = document.getElementById('cartItems');
-      container.innerHTML = '';
-      let total = 0;
-      if (cart.length === 0) {
-        container.innerHTML = '<p class="text-center py-8 text-gray-500">Your cart is empty</p>';
-      } else {
-        cart.forEach(item => {
-          const itemTotal = item.price * item.qty;
-          total += itemTotal;
-          const div = document.createElement('div');
-          div.className = 'flex justify-between py-1 border-b';
-          div.innerHTML = `
-            <span>${item.name} x${item.qty}</span>
-            <span>₹${itemTotal}</span>
-          `;
-          container.appendChild(div);
+          rowDiv.appendChild(colDiv);
         });
+        
+        // Fill empty slot if odd number of items
+        if (pair.length === 1) {
+          const emptyDiv = document.createElement('div');
+          emptyDiv.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
+          emptyDiv.innerHTML = `
+            <div class="bg-gray-200 h-48 flex items-center justify-center">
+              <i class="fas fa-plus text-gray-400 text-3xl"></i>
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-lg">Add New Item</h3>
+              <p class="text-gray-600 text-sm mb-3">Click to add a new menu item</p>
+              <button onclick="openAddMenuItemModal()" class="btn-primary w-full py-2 rounded-full font-bold text-white shadow hover:shadow-lg transition">
+                <i class="fas fa-plus mr-2"></i> Add Item
+              </button>
+            </div>
+          `;
+          rowDiv.appendChild(emptyDiv);
+        }
+        
+        container.appendChild(rowDiv);
       }
-      document.getElementById('cartTotal').textContent = total;
-      document.getElementById('cartModal').classList.remove('hidden');
     }
-
+    
+    // Open Add Menu Item Modal
+    function openAddMenuItemModal() {
+      document.getElementById('addMenuItemForm').reset();
+    }
+    
+    // Add Menu Item Form Handler
+    document.getElementById('addMenuItemForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const newItem = {
+        name: document.getElementById('menuItemName').value,
+        category: document.getElementById('menuItemCategory').value,
+        price: parseInt(document.getElementById('menuItemPrice').value),
+        description: document.getElementById('menuItemDescription').value,
+        image_path: document.getElementById('menuItemImageUrl').value
+      };
+      
+      try {
+        const { data, error } = await supabase
+          .from('menu_items')
+          .insert([newItem])
+          .select();
+        
+        if (error) throw error;
+        
+        showtoast('Menu item added successfully!');
+        document.getElementById('addMenuItemForm').reset();
+        loadMenuItems(); // Reload menu items
+      } catch (error) {
+        console.error('Error adding menu item:', error);
+        showtoast('Failed to add menu item');
+      }
+    });
+    
+    // Open Edit Modal
+    function openEditModal(itemId) {
+      const item = menuItems.find(i => i.id === itemId);
+      if (!item) return;
+      
+      document.getElementById('editItemId').value = item.id;
+      document.getElementById('editItemName').value = item.name;
+      document.getElementById('editItemCategory').value = item.category;
+      document.getElementById('editItemPrice').value = item.price;
+      document.getElementById('editItemDescription').value = item.description || '';
+      document.getElementById('editItemImage').value = item.image_path;
+      
+      editMenuItemModal.classList.remove('hidden');
+    }
+    
+    // Close Edit Modal
+    function closeEditModal() {
+      editMenuItemModal.classList.add('hidden');
+    }
+    
+    // Edit Menu Item Form Handler
+    document.getElementById('editMenuItemForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const itemId = document.getElementById('editItemId').value;
+      const updatedItem = {
+        name: document.getElementById('editItemName').value,
+        category: document.getElementById('editItemCategory').value,
+        price: parseInt(document.getElementById('editItemPrice').value),
+        description: document.getElementById('editItemDescription').value,
+        image_path: document.getElementById('editItemImage').value
+      };
+      
+      try {
+        const { data, error } = await supabase
+          .from('menu_items')
+          .update(updatedItem)
+          .eq('id', itemId)
+          .select();
+        
+        if (error) throw error;
+        
+        showtoast('Menu item updated successfully!');
+        closeEditModal();
+        loadMenuItems(); // Reload menu items
+      } catch (error) {
+        console.error('Error updating menu item:', error);
+        showtoast('Failed to update menu item');
+      }
+    });
+    
+    // Delete Menu Item
+    async function deleteMenuItem(itemId) {
+      if (!confirm('Are you sure you want to delete this menu item?')) return;
+      
+      try {
+        const { error } = await supabase
+          .from('menu_items')
+          .delete()
+          .eq('id', itemId);
+        
+        if (error) throw error;
+        
+        showtoast('Menu item deleted successfully!');
+        loadMenuItems(); // Reload menu items
+      } catch (error) {
+        console.error('Error deleting menu item:', error);
+        showtoast('Failed to delete menu item');
+      }
+    }
+    
+    // Load Orders
+    async function loadOrders() {
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .order('ordered_at', { ascending: false })
+          .limit(10);
+        
+        if (error) throw error;
+        
+        orders = data;
+        displayOrders();
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        showtoast('Failed to load orders');
+        
+        // Fallback to mock data
+        orders = [
+          { id: 1001, user_phone: "+91 9835124772", items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], total: 209, status: "pending", user_location: {lat: 26.8467, lng: 75.8158}, ordered_at: "2023-06-15T10:23:00Z" },
+          { id: 1002, user_phone: "+91 9876543210", items: [{name: "Truffle Margherita", qty: 1}], total: 299, status: "preparing", user_location: {lat: 26.8523, lng: 75.8210}, ordered_at: "2023-06-15T09:45:00Z" },
+          { id: 1003, user_phone: "+91 9123456789", items: [{name: "Avocado Club Sandwich", qty: 2}], total: 398, status: "ready", user_location: {lat: 26.8391, lng: 75.8082}, ordered_at: "2023-06-15T08:30:00Z" }
+        ];
+        displayOrders();
+      }
+    }
+    
+    // Display Orders
+    function displayOrders() {
+      const container = document.getElementById('ordersTableBody');
+      container.innerHTML = '';
+      
+      if (orders.length === 0) {
+        container.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No orders found</td></tr>';
+        return;
+      }
+      
+      orders.slice(0, 5).forEach(order => {
+        const orderRow = document.createElement('tr');
+        orderRow.className = 'border-b hover:bg-gray-50';
+        orderRow.innerHTML = `
+          <td class="py-4 font-medium">#${order.id.toString().slice(-4)}</td>
+          <td class="py-4">
+            <div class="flex items-center">
+              <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                <i class="fas fa-user text-gray-600 text-xs"></i>
+              </div>
+              <div>
+                <p>${order.user_phone}</p>
+                <p class="text-xs text-gray-500">Lat: ${order.user_location?.lat || 'N/A'}, Lng: ${order.user_location?.lng || 'N/A'}</p>
+              </div>
+            </div>
+          </td>
+          <td class="py-4">
+            <ul class="space-y-1">
+              ${order.items.map(item => `<li>${item.name} x${item.qty}</li>`).join('')}
+            </ul>
+          </td>
+          <td class="py-4 font-bold">₹${order.total}</td>
+          <td class="py-4">
+            <span class="status-badge ${
+              order.status === 'pending' ? 'status-pending' :
+              order.status === 'preparing' ? 'status-preparing' :
+              order.status === 'ready' ? 'status-ready' : 'status-delivered'
+            }">${order.status}</span>
+          </td>
+          <td class="py-4">
+            <div class="flex space-x-2">
+              <button class="action-btn btn-primary text-sm">Process</button>
+              <button class="action-btn btn-danger text-sm">Cancel</button>
+            </div>
+          </td>
+        `;
+        container.appendChild(orderRow);
+      });
+    }
+    
+    // Load User History
+    async function loadUserHistory() {
+      try {
+        const { data, error } = await supabase
+          .from('login_logs')
+          .select('*')
+          .order('timestamp', { ascending: false })
+          .limit(10);
+        
+        if (error) throw error;
+        
+        userHistory = data;
+        displayUserHistory();
+      } catch (error) {
+        console.error('Error loading user history:', error);
+        showtoast('Failed to load user history');
+        
+        // Fallback to mock data
+        userHistory = [
+          { phone: "+91 9835124772", timestamp: "2023-06-15T10:20:00Z", location_lat: 26.8467, location_lng: 75.8158 },
+          { phone: "+91 9876543210", timestamp: "2023-06-15T09:40:00Z", location_lat: 26.8523, location_lng: 75.8210 },
+          { phone: "+91 9123456789", timestamp: "2023-06-15T08:25:00Z", location_lat: 26.8391, location_lng: 75.8082 }
+        ];
+        displayUserHistory();
+      }
+    }
+    
+    // Display User History
+    function displayUserHistory() {
+      const container = document.getElementById('userHistoryTableBody');
+      container.innerHTML = '';
+      
+      if (userHistory.length === 0) {
+        container.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">No user history found</td></tr>';
+        return;
+      }
+      
+      userHistory.slice(0, 5).forEach(log => {
+        const logRow = document.createElement('tr');
+        logRow.className = 'border-b hover:bg-gray-50';
+        logRow.innerHTML = `
+          <td class="py-4 font-medium">${log.phone}</td>
+          <td class="py-4">${new Date(log.timestamp).toLocaleString()}</td>
+          <td class="py-4">Jaipur, Rajasthan</td>
+          <td class="py-4">${log.location_lat || 'N/A'}, ${log.location_lng || 'N/A'}</td>
+          <td class="py-4">Samsung Galaxy S21</td>
+        `;
+        container.appendChild(logRow);
+      });
+    }
+    
+    // Load Slides
+    async function loadSlides() {
+      try {
+        const { data, error } = await supabase
+          .from('slides')
+          .select('*')
+          .order('id');
+        
+        if (error) throw error;
+        
+        // Slides are already handled in HTML
+        console.log('Slides loaded:', data);
+      } catch (error) {
+        console.error('Error loading slides:', error);
+        showtoast('Failed to load slides');
+      }
+    }
+    
+    // Load Analytics
+    async function loadAnalytics() {
+      try {
+        const { data, error } = await supabase
+          .from('analytics')
+          .select('*');
+        
+        if (error) throw error;
+        
+        // Analytics are already handled in HTML
+        console.log('Analytics loaded:', data);
+      } catch (error) {
+        console.error('Error loading analytics:', error);
+        showtoast('Failed to load analytics');
+      }
+    }
+    
+    // Initialize customer dashboard (would be in separate file)
+    function initCustomerDashboard() {
+      // This would initialize the customer-facing dashboard
+      console.log('Customer dashboard initialized for:', customerPhone);
+      console.log('Customer location:', customerLocation);
+    }
+    
     // Initialize the app when page loads
-    window.onload = initApp;
+    window.onload = function() {
+      // Set initial active section
+      document.querySelector('.sidebar-item[data-section="dashboard"]').click();
+      
+      // Show admin login modal
+      adminLoginModal.classList.remove('hidden');
+    };
   </script>
 </body>
-</html>
+  </html>
