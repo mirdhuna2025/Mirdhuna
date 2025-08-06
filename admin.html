@@ -23,17 +23,6 @@
             accent: '#f97316',
             dark: '#1e293b',
             light: '#f8fafc'
-          },
-          animation: {
-            'float': 'float 3s ease-in-out infinite',
-            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'bounce-slow': 'bounce 3s infinite'
-          },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-10px)' }
-            }
           }
         }
       }
@@ -287,6 +276,90 @@
       height: 180px;
       object-fit: cover;
     }
+    
+    /* Login modal styles */
+    .login-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .login-content {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .login-header h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .login-form .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .login-form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #374151;
+      font-weight: 500;
+    }
+    
+    .login-form input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+    
+    .login-form input:focus {
+      outline: none;
+      border-color: #e11d48;
+      box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+    }
+    
+    .login-form button {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    
+    .login-form .btn-primary {
+      background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
+      color: white;
+    }
+    
+    .login-form .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+    }
+    
+    .login-footer {
+      text-align: center;
+      margin-top: 1rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -294,36 +367,65 @@
   <!-- Toast Notification -->
   <div id="toast" class="toast">Item added to cart!</div>
 
-  <!-- Login Screen -->
-  <div id="loginScreen" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-    <div class="bg-white rounded-2xl w-11/12 max-w-md shadow-2xl relative overflow-hidden">
-      <div class="p-8">
-        <div class="text-center mb-6">
-          <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-lock text-white text-2xl"></i>
-          </div>
-          <h3 class="text-2xl font-bold text-dark">MIRDHUNA ADMIN</h3>
-          <p class="text-gray-600 mt-2">Secure Management Portal</p>
+  <!-- Admin Login Modal -->
+  <div id="adminLoginModal" class="login-modal">
+    <div class="login-content">
+      <div class="login-header">
+        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-lock text-white text-2xl"></i>
+        </div>
+        <h3>MIRDHUNA ADMIN</h3>
+        <p class="text-gray-600">Secure Management Portal</p>
+      </div>
+      
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="adminUsername" placeholder="Enter username" autocomplete="off">
         </div>
         
-        <form id="loginForm">
-          <div class="mb-6">
-            <label class="block text-gray-700 mb-2 font-medium">Username</label>
-            <input type="text" id="username" placeholder="Enter username" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" autocomplete="off">
-          </div>
-          
-          <div class="mb-6">
-            <label class="block text-gray-700 mb-2 font-medium">Password</label>
-            <input type="password" id="password" placeholder="Enter password" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" autocomplete="off">
-          </div>
-          
-          <button type="submit" class="btn-primary w-full py-3 rounded-lg font-bold text-white shadow-lg hover:shadow-xl transition">
-            <i class="fas fa-sign-in-alt mr-2"></i> Login to Dashboard
-          </button>
-          
-          <p class="text-xs text-gray-500 mt-4 text-center">Protected with advanced security protocols</p>
-        </form>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="adminPassword" placeholder="Enter password" autocomplete="off">
+        </div>
+        
+        <button type="submit" class="btn-primary">
+          <i class="fas fa-sign-in-alt mr-2"></i> Login to Dashboard
+        </button>
+        
+        <p class="login-footer">Protected with advanced security protocols</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Customer Login Modal -->
+  <div id="customerLoginModal" class="login-modal hidden">
+    <div class="login-content">
+      <div class="login-header">
+        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-user text-white text-2xl"></i>
+        </div>
+        <h3>Welcome Back</h3>
+        <p class="text-gray-600">Sign in to continue your culinary journey</p>
       </div>
+      
+      <form id="customerLoginForm">
+        <div class="form-group">
+          <label>Mobile Number</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500">+91</span>
+            </div>
+            <input type="tel" id="mobileInput" placeholder="9835124772" maxlength="10">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-primary">
+          <i class="fas fa-sign-in-alt mr-2"></i> Continue to MIRDHUNA
+        </button>
+        
+        <p class="login-footer">We'll detect your location automatically for faster delivery</p>
+      </form>
     </div>
   </div>
 
@@ -370,40 +472,40 @@
         <nav>
           <ul class="space-y-2">
             <li>
-              <button onclick="showSection('dashboard')" class="sidebar-item active flex items-center p-3 text-white" data-section="dashboard">
+              <a href="#" class="sidebar-item active flex items-center p-3 text-white" data-section="dashboard">
                 <i class="fas fa-home mr-3 text-lg"></i>
                 <span>Dashboard</span>
-              </button>
+              </a>
             </li>
             <li>
-              <button onclick="showSection('orders')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="orders">
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="orders">
                 <i class="fas fa-shopping-cart mr-3 text-lg"></i>
                 <span>Orders</span>
-              </button>
+              </a>
             </li>
             <li>
-              <button onclick="showSection('menu')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="menu">
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="menu">
                 <i class="fas fa-utensils mr-3 text-lg"></i>
                 <span>Menu Management</span>
-              </button>
+              </a>
             </li>
             <li>
-              <button onclick="showSection('users')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="users">
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="users">
                 <i class="fas fa-users mr-3 text-lg"></i>
                 <span>User History</span>
-              </button>
+              </a>
             </li>
             <li>
-              <button onclick="showSection('slides')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="slides">
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="slides">
                 <i class="fas fa-images mr-3 text-lg"></i>
                 <span>Slide Management</span>
-              </button>
+              </a>
             </li>
             <li>
-              <button onclick="showSection('analytics')" class="sidebar-item flex items-center p-3 text-gray-300" data-section="analytics">
+              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="analytics">
                 <i class="fas fa-chart-line mr-3 text-lg"></i>
                 <span>Analytics</span>
-              </button>
+              </a>
             </li>
           </ul>
         </nav>
@@ -1280,9 +1382,11 @@
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
     // DOM Elements
-    const loginScreen = document.getElementById('loginScreen');
+    const adminLoginModal = document.getElementById('adminLoginModal');
+    const customerLoginModal = document.getElementById('customerLoginModal');
     const adminDashboard = document.getElementById('adminDashboard');
-    const loginForm = document.getElementById('loginForm');
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    const customerLoginForm = document.getElementById('customerLoginForm');
     const logoutBtn = document.getElementById('logoutBtn');
     const editMenuItemModal = document.getElementById('editMenuItemModal');
     
@@ -1301,22 +1405,35 @@
     let orders = [];
     let userHistory = [];
     let favoriteOrders = [];
+    let customerPhone = null;
+    let customerLocation = null;
     
-    // Login Form Handler
-    loginForm.addEventListener('submit', function(e) {
+    // Show toast notification
+    function showtoast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Admin Login Form Handler
+    adminLoginForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
       
       // Validate credentials (Simple validation without Supabase)
       if (username === 'Sanu' && password === 'Sanu.0000') {
-        loginScreen.classList.add('hidden');
+        adminLoginModal.classList.add('hidden');
         adminDashboard.classList.remove('hidden');
         showtoast('Welcome to MIRDHUNA Admin!');
         
         // Reset form
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
+        document.getElementById('adminUsername').value = '';
+        document.getElementById('adminPassword').value = '';
         
         // Initialize dashboard
         initDashboard();
@@ -1325,10 +1442,75 @@
       }
     });
     
+    // Customer Login Form Handler
+    customerLoginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const num = document.getElementById('mobileInput').value.trim();
+      
+      if (!num || num.length !== 10) {
+        showtoast('Please enter a valid 10-digit mobile number');
+        return;
+      }
+      
+      // Format phone number
+      customerPhone = '+91' + num;
+      
+      // Get customer location
+      getCustomerLocation()
+        .then(location => {
+          customerLocation = location;
+          customerLoginModal.classList.add('hidden');
+          showtoast(`Welcome back, customer! Location detected.`);
+          
+          // Reset form
+          document.getElementById('mobileInput').value = '';
+          
+          // Initialize customer dashboard (this would be in a separate file)
+          initCustomerDashboard();
+        })
+        .catch(error => {
+          showtoast('Location access denied. You can still order.');
+          customerLoginModal.classList.add('hidden');
+          
+          // Reset form
+          document.getElementById('mobileInput').value = '';
+          
+          // Initialize customer dashboard
+          initCustomerDashboard();
+        });
+    });
+    
+    // Get customer location
+    function getCustomerLocation() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Geolocation not supported'));
+        } else {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const crd = position.coords;
+              resolve({
+                lat: crd.latitude,
+                lng: crd.longitude
+              });
+            },
+            error => {
+              reject(error);
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 60000
+            }
+          );
+        }
+      });
+    }
+    
     // Logout Handler
     logoutBtn.addEventListener('click', function() {
       adminDashboard.classList.add('hidden');
-      loginScreen.classList.remove('hidden');
+      adminLoginModal.classList.remove('hidden');
       showtoast('You have been logged out.');
     });
     
@@ -1365,19 +1547,6 @@
         }
       });
     });
-    
-    // Toast Notification
-    function showtoast(message) {
-      // Create toast element
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
-      
-      // Remove after delay
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 3000);
-    }
     
     // Initialize the dashboard
     function initDashboard() {
@@ -1807,120 +1976,11 @@
       }
     }
     
-    // Add to Cart
-    function addToCart(id) {
-      const item = menuItems.find(i => i.id === id);
-      const existing = cart.find(c => c.id === id);
-      if (existing) existing.qty += 1;
-      else cart.push({ ...item, qty: 1 });
-      updateCartUI();
-      showtoast("Added to cart!");
-    }
-    
-    // Update Cart UI
-    function updateCartUI() {
-      document.getElementById('cartCount').textContent = cart.reduce((sum, i) => sum + i.qty, 0);
-    }
-    
-    // Show Section
-    function showSection(id) {
-      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-      
-      // Update nav active state
-      document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
-      if (id === 'menu') {
-        document.querySelectorAll('.nav-item')[0].classList.add('active');
-      } else if (id === 'history') {
-        document.querySelectorAll('.nav-item')[1].classList.add('active');
-      }
-    }
-    
-    // User Login
-    async function loginUser() {
-      const num = document.getElementById('mobileInput').value.trim();
-      if (!num || num.length !== 10) return showtoast("Enter valid 10-digit number");
-      userPhone = '91' + num;
-      userLocation = await detectLocation();
-
-      document.getElementById('loginModal').classList.add('hidden');
-      showtoast("Welcome back! Happy ordering");
-    }
-    
-    // Detect Location
-    async function detectLocation() {
-      return new Promise(resolve => {
-        if (!navigator.geolocation) resolve({ lat: 0, lng: 0 });
-        else {
-          navigator.geolocation.getCurrentPosition(
-            pos => {
-              const crd = pos.coords;
-              resolve({ lat: crd.latitude, lng: crd.longitude });
-            },
-            () => {
-              showtoast("Location access denied. Using default location");
-              resolve({ lat: 0, lng: 0 });
-            }
-          );
-        }
-      });
-    }
-    
-    // Place Order
-    async function placeOrder() {
-      if (cart.length === 0) return showtoast("Cart is empty");
-      
-      let total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      
-      // Add to order history
-      const newOrder = {
-        user_phone: userPhone,
-        items: cart,
-        total: total,
-        status: 'pending',
-        user_location: userLocation,
-        ordered_at: new Date().toISOString()
-      };
-      
-      try {
-        const { data, error } = await supabase
-          .from('orders')
-          .insert([newOrder])
-          .select();
-        
-        if (error) throw error;
-        
-        showtoast("Order placed successfully! 🎉");
-        cart = [];
-        updateCartUI();
-        closeCart();
-        sendWhatsAppConfirmation();
-      } catch (error) {
-        console.error('Error placing order:', error);
-        showtoast("Failed to place order");
-      }
-    }
-    
-    // Send WhatsApp Confirmation
-    function sendWhatsAppConfirmation() {
-      const msg = `✅ *MIRDHUNA*: Your order of ₹${document.getElementById('cartTotal').textContent} is confirmed! We'll prepare it soon.`;
-      const url = `https://wa.me/919835124772?text=${encodeURIComponent(msg)}`;
-      fetch(url).catch(() => {}); // Just trigger
-    }
-    
-    // Submit Feedback
-    function submitFeedback(feedback) {
-      const feedbacks = {
-        sad: "We're sorry to hear that. We'll work to improve!",
-        neutral: "Thank you for your feedback. We appreciate it!",
-        happy: "Wonderful! We're thrilled you enjoyed your experience!",
-        excited: "Absolutely thrilled! Thank you for the love! 🎉"
-      };
-      
-      showtoast(feedbacks[feedback]);
+    // Initialize customer dashboard (would be in separate file)
+    function initCustomerDashboard() {
+      // This would initialize the customer-facing dashboard
+      console.log('Customer dashboard initialized for:', customerPhone);
+      console.log('Customer location:', customerLocation);
     }
     
     // Initialize the app when page loads
@@ -1928,46 +1988,9 @@
       // Set initial active section
       document.querySelector('.sidebar-item[data-section="dashboard"]').click();
       
-      // Animate counters
-      animateCounters();
+      // Show admin login modal
+      adminLoginModal.classList.remove('hidden');
     };
-    
-    // Animate counters (Feature 16)
-    function animateCounters() {
-      const counters = document.querySelectorAll('.counter');
-      counters.forEach(counter => {
-        const target = +counter.getAttribute('data-target');
-        const increment = target / 100;
-        let current = 0;
-        
-        const updateCounter = () => {
-          if (current < target) {
-            current += increment;
-            counter.innerText = Math.ceil(current);
-            setTimeout(updateCounter, 20);
-          } else {
-            counter.innerText = target;
-          }
-        };
-        
-        updateCounter();
-      });
-    }
-    
-    // Search functionality (Feature 6)
-    document.getElementById('searchInput').addEventListener('input', function() {
-      const searchTerm = this.value.toLowerCase();
-      const menuCards = document.querySelectorAll('#menuItemsContainer .menu-card');
-      
-      menuCards.forEach(card => {
-        const itemName = card.querySelector('h3').textContent.toLowerCase();
-        if (itemName.includes(searchTerm)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    });
   </script>
 </body>
-</html>
+  </html>
