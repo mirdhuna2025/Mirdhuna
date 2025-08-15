@@ -67,7 +67,7 @@
 
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Poppins', 'sans-serif';
       background: linear-gradient(135deg, #fff9f0 0%, #fff1f2 100%);
       overflow-x: hidden;
     }
@@ -200,6 +200,25 @@
     @keyframes spin {
         to { transform: rotate(360deg); }
     }
+
+    /* --- Add these CSS rules for colorful social icons --- */
+    .social-facebook:hover {
+        background-color: #1877f2; /* Facebook Blue */
+        color: white;
+    }
+    .social-instagram:hover {
+        background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); /* Instagram Gradient */
+        color: white;
+    }
+    .social-whatsapp:hover {
+        background-color: #25d366; /* WhatsApp Green */
+        color: white;
+    }
+    .social-telegram:hover {
+        background-color: #0088cc; /* Telegram Blue */
+        color: white;
+    }
+    /* --- End of Social Icon Colors --- */
 
 
   </style>
@@ -358,18 +377,18 @@
   <footer class="bg-dark text-white py-8 px-4">
     <div class="container mx-auto text-center">
       <p>&copy; 2024 MIRDHUNA Cafe. All rights reserved.</p>
-      <!-- Social Media Icons in 2x2 Grid -->
+      <!-- Social Media Icons in 2x2 Grid (Updated for Color) -->
       <div class="mt-6 grid grid-cols-2 gap-4 max-w-xs mx-auto">
-        <a href="https://www.facebook.com/yourpage" target="_blank" class="bg-gray-800 hover:bg-primary p-3 rounded-lg flex items-center justify-center transition-colors">
+        <a href="https://www.facebook.com/yourpage" target="_blank" class="bg-gray-800 hover:bg-primary p-3 rounded-lg flex items-center justify-center transition-colors social-facebook">
           <i class="fab fa-facebook-f text-2xl"></i>
         </a>
-        <a href="https://www.instagram.com/yourprofile" target="_blank" class="bg-gray-800 hover:bg-primary p-3 rounded-lg flex items-center justify-center transition-colors">
+        <a href="https://www.instagram.com/yourprofile" target="_blank" class="bg-gray-800 hover:bg-primary p-3 rounded-lg flex items-center justify-center transition-colors social-instagram">
           <i class="fab fa-instagram text-2xl"></i>
         </a>
-        <a href="https://wa.me/9835124772" target="_blank" class="bg-gray-800 hover:bg-primary p-3 rounded-lg flex items-center justify-center transition-colors">
+        <a href="https://wa.me/9835124772" target="_blank" class="bg-gray-800 hover:bg-primary p-3 rounded-lg flex items-center justify-center transition-colors social-whatsapp">
           <i class="fab fa-whatsapp text-2xl"></i>
         </a>
-        <a href="https://t.me/yourusername" target="_blank" class="bg-gray-800 hover:bg-primary p-3 rounded-lg flex items-center justify-center transition-colors">
+        <a href="https://t.me/yourusername" target="_blank" class="bg-gray-800 hover:bg-primary p-3 rounded-lg flex items-center justify-center transition-colors social-telegram">
           <i class="fab fa-telegram-plane text-2xl"></i>
         </a>
       </div>
@@ -532,6 +551,7 @@
         message.textContent = '';
 
         // --- Automatically detect location upon login submission ---
+        console.log("Requesting location for user:", mobile);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -539,28 +559,36 @@
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
-                    finishLogin(mobile, location);
+                    console.log("Location obtained:", location);
+                    finishLogin(mobile, location); // Pass the obtained location
                 },
                 (error) => {
                     console.warn("Location access denied or error:", error);
-                    spinner.style.display = 'none';
-                    // Alert user to enable location
-                    alert("Location access is required or denied. Please check your device settings and try again.");
-                    // Optionally, you could still login without location if strictly required
-                    // finishLogin(mobile, null);
+                    // Crucially, we still log the user in even if location fails
+                    // We pass null for location
+                    finishLogin(mobile, null);
+                    // Optionally alert the user
+                    // alert("Location access was denied or failed. You can still use the app, but location won't be saved.");
+                },
+                { // Options for better accuracy/user experience
+                    enableHighAccuracy: true,
+                    timeout: 10000, // 10 seconds
+                    maximumAge: 300000 // 5 minutes
                 }
             );
         } else {
             console.warn("Geolocation is not supported by this browser.");
-            spinner.style.display = 'none';
-            message.textContent = 'Geolocation is not supported by your browser.';
+            // Still log in if geolocation isn't supported
+            finishLogin(mobile, null);
+            message.textContent = 'Location not supported, but login proceeding.';
         }
     }
 
     function finishLogin(mobile, location) {
          const spinner = document.getElementById('loginSpinner');
          // Store user info (mobile and potentially location) in localStorage
-         currentUser = { mobile: mobile, location: location };
+         // Even if location is null, we store the user data
+         currentUser = { mobile: mobile, location: location }; // location can be {lat, lng} or null
          localStorage.setItem('mirdhunaUser', JSON.stringify(currentUser));
          console.log("User logged in:", currentUser);
          updateUIForLogin(); // Update UI elements
@@ -592,7 +620,7 @@
         updateCartBadge(); // Ensure badge reflects state
     }
 
-    // --- Order Placement (without WhatsApp) ---
+    // --- Order Placement (without WhatsApp, without location in order data) ---
     function openOrderModal() {
         if (!currentUser) {
             openLoginModal();
@@ -625,61 +653,75 @@
     }
 
     function placeOrder() {
-        if (!currentUser || cart.length === 0) return;
+        if (!currentUser) {
+            openLoginModal();
+            return;
+        }
+        if (cart.length === 0) {
+            showToast("Your cart is empty!");
+            return;
+        }
 
         const spinner = document.getElementById('orderSpinner');
         const message = document.getElementById('orderMessage');
         spinner.style.display = 'block';
         message.textContent = '';
 
-        // Use the location stored during login
-        const locationToUse = currentUser.location;
+        // --- Location is NOT requested here anymore ---
+        // It was obtained during login and is available in currentUser.location if successful
 
-        // Ensure location is detected at time of order placement as well
-        // let locationToUse = currentUser.location; // Start with login location
-        // if (navigator.geolocation) {
-        //     navigator.geolocation.getCurrentPosition(
-        //         (position) => {
-        //             // Use the freshest location
-        //             locationToUse = {
-        //                 lat: position.coords.latitude,
-        //                 lng: position.coords.longitude
-        //             };
-        //              finalizeOrder(locationToUse);
-        //         },
-        //         (error) => {
-        //             console.warn("Location error during order placement:", error);
-        //             // Proceed with previously known location or none
-        //              finalizeOrder(locationToUse);
-        //         }
-        //     );
-        // } else {
-        //      finalizeOrder(locationToUse); // Proceed with login location or none
-        // }
-
-        // For now, just use the login location
-        finalizeOrder(locationToUse);
+        // Proceed directly to finalize the order
+        finalizeOrder();
     }
 
-    function finalizeOrder(location) {
+    function finalizeOrder() { // Remove location parameter
         const spinner = document.getElementById('orderSpinner');
         const message = document.getElementById('orderMessage');
 
+        // Basic validation
+        if (!currentUser || !cart || cart.length === 0) {
+            console.error("Order placement failed: Invalid state (no user or empty cart)");
+            spinner.style.display = 'none';
+            message.textContent = 'Order failed: Invalid state. Please try again.';
+            return;
+        }
+
+        // Prepare order data WITHOUT location
         const orderData = {
             userId: currentUser.mobile, // Using mobile as identifier
             items: cart,
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             status: 'pending',
-            location: location ? new firebase.firestore.GeoPoint(location.lat, location.lng) : null,
             userMobile: currentUser.mobile // Store mobile explicitly
+            // location: ... is intentionally omitted
         };
+
+        // Optional: If you *really* want to store the login-time location, you can add it back here
+        // But based on your request, we are removing it from orders.
+        // If you uncomment the lines below, it will add it back IF it was obtained during login.
+        /*
+        const loginLocation = currentUser.location; // Get location stored during login
+        if (loginLocation && typeof loginLocation.lat === 'number' && typeof loginLocation.lng === 'number') {
+            try {
+                orderData.location = new firebase.firestore.GeoPoint(loginLocation.lat, loginLocation.lng);
+                console.log("Login-time location added to order ", loginLocation.lat, loginLocation.lng);
+            } catch (geoError) {
+                console.error("Error creating GeoPoint from login location:", geoError);
+                // Proceed without location if GeoPoint creation fails
+            }
+        } else {
+            console.log("No valid login-time location available to add to order.");
+        }
+        */
+
+        console.log("Attempting to save order to Firestore (without location):", orderData);
 
         db.collection('orders').add(orderData)
             .then(docRef => {
-                console.log("Order placed with ID:", docRef.id);
+                console.log("Order placed successfully with ID:", docRef.id);
                 // --- Removed WhatsApp Integration ---
 
-                // Clear cart
+                // Clear cart on success
                 cart = [];
                 localStorage.removeItem('mirdhunaCart');
                 updateCartBadge();
@@ -688,9 +730,15 @@
                 showToast('Order placed successfully!');
             })
             .catch(error => {
-                console.error("Error placing order:", error);
+                console.error("Critical Error placing order in Firestore:", error);
                 spinner.style.display = 'none';
-                message.textContent = 'Failed to place order. Please try again.';
+                if (error.code === 'permission-denied') {
+                    message.textContent = 'Order failed: Permission denied. Please contact support.';
+                } else if (error.code === 'unavailable') {
+                     message.textContent = 'Order failed: Service unavailable. Please try again later.';
+                } else {
+                    message.textContent = 'Failed to place order. Please try again. (Error: ' + (error.message || 'Unknown') + ')';
+                }
             });
     }
 
@@ -811,4 +859,4 @@
   </script>
 
 </body>
-  </html>
+            </html>
