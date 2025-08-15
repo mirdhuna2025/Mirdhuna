@@ -3,13 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIRDHUNA | Food Ordering</title>
+  <title>MIRDHUNA | Premium Food Experience</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase-js.min.js"></script>
-  
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <!-- Firebase Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase Storage (for potential future image uploads if needed by admin) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+
   <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+      authDomain: "mirdhuna-25542.firebaseapp.com",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+      projectId: "mirdhuna-25542",
+      storageBucket: "mirdhuna-25542.firebasestorage.app",
+      messagingSenderId: "575924409876",
+      appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+      measurementId: "G-YB7LDKHBPV"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
     tailwind.config = {
       theme: {
         extend: {
@@ -39,80 +61,100 @@
       }
     }
   </script>
-  
+
   <style>
-    body { 
-      font-family: 'Poppins', sans-serif; 
+    body {
+      font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #fff9f0 0%, #fff1f2 100%);
       overflow-x: hidden;
     }
-    
+
     .hero-gradient {
       background: linear-gradient(135deg, rgba(225, 29, 72, 0.9) 0%, rgba(249, 115, 22, 0.85) 100%);
     }
-    
+
     .menu-card {
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
-    
+
     .menu-card:hover {
       transform: translateY(-10px) scale(1.02);
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
-    
+
     .glass-card {
       background: rgba(255, 255, 255, 0.75);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.18);
     }
-    
+
     .btn-primary {
       background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
     }
-    
+
     .btn-primary:hover {
       transform: translateY(-3px);
       box-shadow: 0 7px 20px rgba(225, 29, 72, 0.4);
     }
-    
+
     .history-item {
       border-left: 4px solid #e11d48;
       transition: all 0.3s ease;
     }
-    
+
     .history-item:hover {
       transform: translateX(5px);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     }
-    
-    .toast { 
-      position: fixed; top: 20px; right: 20px; 
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      color: white; padding: 15px 25px;
-      border-radius: 12px; z-index: 50; opacity: 0; 
-      transform: translateY(-50px); transition: all 0.4s; 
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-50px);
+      transition: all 0.4s;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      pointer-events: none;
     }
-    
-    .toast.show { opacity: 1; transform: translateY(0); }
-    
-    .cart-badge { 
-      position: absolute; top: -8px; right: -8px; 
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
       background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-      color: white; font-weight: bold; width: 24px; height: 24px;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 12px; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
+      color: white;
+      font-weight: bold;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
     }
-    
+
     .nav-item.active {
       color: #e11d48;
       font-weight: 600;
       position: relative;
     }
-    
+
     .nav-item.active::after {
       content: '';
       position: absolute;
@@ -124,39 +166,117 @@
       background: #e11d48;
       border-radius: 3px;
     }
-    
+
     .floating-element {
       animation: float 3s ease-in-out infinite;
     }
-    
+
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
-    /* Counter animation */
-    .counter {
-      transition: all 1s ease-in-out;
-    }
-    
-    /* Two items per slot grid */
+
     .two-col-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
     }
-    
+
     @media (max-width: 768px) {
       .two-col-grid {
         grid-template-columns: 1fr;
       }
     }
+
+    /* Modals */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 10px;
+        animation: modalopen 0.4s;
+    }
+
+    @keyframes modalopen {
+        from {opacity: 0; transform: translateY(-60px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: #e11d48;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+        display: none;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
   </style>
 </head>
 <body class="min-h-screen">
 
   <!-- Toast Notification -->
   <div id="toast" class="toast">Item added to cart!</div>
+
+  <!-- Login Modal -->
+<div id="loginModal" class="modal">
+  <div class="modal-content glass-card">
+    <span class="close" onclick="closeLoginModal()">&times;</span>
+    <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+    <input type="text" id="userMobile" placeholder="Enter your mobile number (e.g., 9835124772)" class="w-full p-2 mb-4 border rounded">
+    <button onclick="performLogin()" class="btn-primary w-full px-4 py-2 rounded font-bold">Login</button>
+    <div id="loginSpinner" class="spinner"></div>
+    <p id="loginMessage" class="text-red-500 text-center mt-2"></p>
+  </div>
+</div>
+
+ <!-- Order Confirmation Modal -->
+<div id="orderModal" class="modal">
+  <div class="modal-content glass-card">
+    <span class="close" onclick="closeOrderModal()">&times;</span>
+    <h2 class="text-2xl font-bold mb-4 text-center">Confirm Order</h2>
+    <div id="orderDetails"></div>
+    <p class="mt-4 text-sm text-gray-600"><i class="fas fa-info-circle mr-2"></i> Your location will be detected.</p>
+    <button onclick="placeOrder()" class="btn-primary w-full mt-4 px-4 py-2 rounded font-bold">Place Order</button>
+    <div id="orderSpinner" class="spinner"></div>
+    <p id="orderMessage" class="text-red-500 text-center mt-2"></p>
+  </div>
+</div>
 
   <!-- Header -->
   <header class="hero-gradient text-white py-16 px-4 relative overflow-hidden">
@@ -165,7 +285,7 @@
       <div class="absolute top-10 right-10 w-64 h-64 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
       <div class="absolute bottom-10 left-1/2 w-64 h-64 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
     </div>
-    
+
     <!-- Floating food elements -->
     <div class="absolute bottom-20 left-10 floating-element">
       <div class="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
@@ -182,7 +302,7 @@
         <i class="fas fa-martini-glass text-white"></i>
       </div>
     </div>
-    
+
     <div class="container mx-auto relative z-10 text-center">
       <h1 class="text-5xl md:text-7xl font-heading font-bold mb-4 tracking-tight">MIRDHUNA</h1>
       <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">Experience Culinary Excellence with Every Bite</p>
@@ -190,653 +310,468 @@
         <button onclick="showSection('menu')" class="btn-primary px-8 py-3 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all">
           <i class="fas fa-utensils mr-2"></i> Order Now
         </button>
-        <button onclick="openLoginModal()" class="bg-white bg-opacity-20 backdrop-blur-sm px-8 py-3 rounded-full font-bold text-lg hover:bg-opacity-30 transition-all">
+        <button onclick="openLoginModal()" id="loginButton" class="bg-white bg-opacity-20 backdrop-blur-sm px-8 py-3 rounded-full font-bold text-lg hover:bg-opacity-30 transition-all">
           <i class="fas fa-user mr-2"></i> Login
         </button>
+         <!-- Cart Icon with Badge -->
+        <div class="relative">
+            <button onclick="openOrderModal()" class="bg-white bg-opacity-20 backdrop-blur-sm p-3 rounded-full hover:bg-opacity-30 transition-all">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                 <span id="cartBadge" class="cart-badge">0</span>
+            </button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Navigation -->
-  <nav class="bg-white shadow-lg sticky top-0 z-20">
-    <div class="container mx-auto px-4">
-      <div class="flex justify-between py-4">
-        <div class="flex space-x-8">
-          <button onclick="showSection('menu')" class="nav-item active flex flex-col items-center px-3 py-2">
-            <i class="fas fa-utensils text-xl mb-1"></i>
-            <span class="text-xs">Menu</span>
-          </button>
-          <button onclick="showSection('history')" class="nav-item flex flex-col items-center px-3 py-2">
-            <i class="fas fa-history text-xl mb-1"></i>
-            <span class="text-xs">History</span>
-          </button>
-        </div>
-        <div class="relative">
-          <button onclick="openCart()" class="bg-primary text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all relative">
-            <i class="fas fa-shopping-cart text-xl"></i>
-            <span id="cartCount" class="cart-badge">0</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </nav>
-
   <!-- Menu Section -->
-  <section id="menu" class="py-12 px-4">
+  <section id="menu" class="py-16 px-4">
     <div class="container mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Our Signature Menu</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Handcrafted with passion, served with love. Each dish tells a story of culinary artistry.</p>
-      </div>
-      
-      <!-- Search -->
-      <div class="mb-8 max-w-2xl mx-auto">
-        <div class="relative">
-          <input type="text" id="searchInput" placeholder="Search menu items..." class="w-full p-4 pl-12 rounded-xl border shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent">
-          <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+      <h2 class="text-4xl font-heading font-bold text-center mb-12 text-dark">Our Delicious Menu</h2>
+
+      <!-- Menu Categories -->
+      <div class="mb-12">
+        <div class="flex flex-wrap justify-center gap-4 mb-8">
+          <button onclick="filterMenu('all')" class="px-6 py-2 rounded-full bg-primary text-white font-medium hover:bg-secondary transition-colors active-category">All Items</button>
+          <button onclick="filterMenu('Pizza')" class="px-6 py-2 rounded-full bg-light text-dark font-medium hover:bg-gray-200 transition-colors">Pizza</button>
+          <button onclick="filterMenu('Burger')" class="px-6 py-2 rounded-full bg-light text-dark font-medium hover:bg-gray-200 transition-colors">Burger</button>
+          <button onclick="filterMenu('Sandwich')" class="px-6 py-2 rounded-full bg-light text-dark font-medium hover:bg-gray-200 transition-colors">Sandwich</button>
+          <button onclick="filterMenu('Shakes')" class="px-6 py-2 rounded-full bg-light text-dark font-medium hover:bg-gray-200 transition-colors">Shakes</button>
         </div>
-      </div>
-      
-      <div class="flex flex-wrap justify-center gap-3 mb-8">
-        <button onclick="filterCategory('all')" class="btn-primary px-5 py-2 rounded-full text-sm font-medium">All Items</button>
-        <button onclick="filterCategory('Pizza')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Pizza</button>
-        <button onclick="filterCategory('Burger')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Burger</button>
-        <button onclick="filterCategory('Sandwich')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Sandwich</button>
-        <button onclick="filterCategory('Shakes')" class="bg-white shadow px-5 py-2 rounded-full text-sm font-medium hover:shadow-md transition">Shakes</button>
-      </div>
-      
-      <!-- Menu Items -->
-      <div id="menuList" class="two-col-grid">
-        <!-- Menu items will be populated here via JavaScript -->
+
+        <!-- Menu Items Grid -->
+        <div id="menuGrid" class="two-col-grid">
+          <!-- Menu items will be dynamically inserted here -->
+        </div>
+         <div id="menuSpinner" class="spinner"></div>
       </div>
     </div>
   </section>
 
-  <!-- Order History Section -->
-  <section id="history" class="py-12 px-4 hidden">
-    <div class="container mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Your Culinary Journey</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Relive your favorite moments and discover new favorites</p>
+  <!-- Contact Section -->
+<section id="contact" class="py-16 px-4 bg-light">
+  <div class="container mx-auto">
+    <h2 class="text-4xl font-heading font-bold text-center mb-12 text-dark">Visit Us</h2>
+    <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+      <div class="text-center md:text-left">
+        <h3 class="text-2xl font-bold mb-4 text-dark">MIRDHUNA Cafe</h3>
+        <p class="mb-2 flex items-center justify-center md:justify-start">
+          <i class="fas fa-map-marker-alt mr-3 text-primary"></i>
+          <a href="https://maps.app.goo.gl/kotovw4g7chuqy5J8" target="_blank" class="hover:text-primary transition-colors">
+              Find us on Google Maps
+          </a>
+        </p>
+        <p class="mb-2 flex items-center justify-center md:justify-start">
+          <i class="fas fa-phone mr-3 text-primary"></i>
+          <a href="tel:9835124772" class="hover:text-primary transition-colors">9835124772</a>
+        </p>
+        <p class="flex items-center justify-center md:justify-start">
+          <i class="fab fa-whatsapp mr-3 text-primary"></i>
+          <a href="https://wa.me/9835124772" target="_blank" class="hover:text-primary transition-colors">WhatsApp Us</a>
+        </p>
       </div>
-      
-      <div class="two-col-grid gap-8">
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
-            <i class="fas fa-history text-primary mr-3"></i> Recent Orders
-          </h3>
-          <div id="recentOrders" class="space-y-4">
-            <!-- Recent orders will be populated here -->
-          </div>
-        </div>
-        
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6">Your Information</h3>
-          <div class="space-y-4">
-            <div class="flex justify-between py-2 border-b border-gray-200">
-              <span>Phone Number:</span>
-              <span id="userPhone" class="font-medium">Not logged in</span>
-            </div>
-            <div class="flex justify-between py-2 border-b border-gray-200">
-              <span>Location:</span>
-              <span id="userLocation" class="font-medium">Not detected</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact Information -->
-  <section class="py-12 px-4">
-    <div class="container mx-auto">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-heading font-bold text-dark mb-4">Get In Touch</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">We'd love to hear from you. Visit us or connect online!</p>
-      </div>
-      
-      <div class="two-col-grid">
-        <!-- Location and Map -->
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6 flex items-center">
-            <i class="fas fa-map-marker-alt text-primary mr-3"></i> Our Location
-          </h3>
-          <div class="bg-gray-200 rounded-xl h-48 mb-6 flex items-center justify-center">
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3529.87050048481!2d75.815857!3d26.846693!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4adf4c5d0d9f%3A0x1a0b2b0e0b0b0b0b!2sJaipur%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
-              width="100%" 
-              height="100%" 
-              style="border:0; border-radius: 12px;" 
-              allowfullscreen="" 
-              loading="lazy">
-            </iframe>
-          </div>
-          <p class="text-gray-700 mb-4">
-            <i class="fas fa-map-marker-alt text-primary mr-2"></i>
-            <a href="https://maps.app.goo.gl/kotovw4g7chuqy5J8" target="_blank">Visit our location</a>
-          </p>
-          <p class="text-gray-700">
-            <i class="fas fa-phone-alt text-primary mr-2"></i>
-            <a href="tel:9835124772">9835124772</a>
-          </p>
-        </div>
-        
-        <!-- Social Media and Contact -->
-        <div class="glass-card rounded-2xl p-6 shadow-xl">
-          <h3 class="text-2xl font-bold text-dark mb-6">Connect With Us</h3>
-          
-          <!-- Social Media Links -->
-          <div class="space-y-4 mb-8">
-            <a href="https://wa.me/919835124772" target="_blank" class="bg-green-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-green-600 transition transform hover:scale-105">
-              <i class="fab fa-whatsapp text-2xl mr-3"></i>
-              <span class="font-bold">WhatsApp</span>
-            </a>
-            <a href="https://facebook.com" target="_blank" class="bg-blue-600 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-blue-700 transition transform hover:scale-105">
-              <i class="fab fa-facebook-f text-2xl mr-3"></i>
-              <span class="font-bold">Facebook</span>
-            </a>
-            <a href="https://instagram.com" target="_blank" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:from-purple-600 hover:to-pink-600 transition transform hover:scale-105">
-              <i class="fab fa-instagram text-2xl mr-3"></i>
-              <span class="font-bold">Instagram</span>
-            </a>
-            <a href="tel:9835124772" class="bg-red-500 text-white rounded-xl p-4 text-center flex items-center justify-center hover:bg-red-600 transition transform hover:scale-105">
-              <i class="fas fa-phone-alt text-2xl mr-3"></i>
-              <span class="font-bold">Call Us: 9835124772</span>
-            </a>
-          </div>
-          
-          <!-- Opening Hours -->
-          <h4 class="text-xl font-bold text-dark mb-4">Opening Hours</h4>
-          <div class="space-y-2">
-            <div class="flex justify-between py-2 border-b border-gray-200">
-              <span>Monday - Friday</span>
-              <span class="font-medium">10:00 AM - 10:00 PM</span>
-            </div>
-            <div class="flex justify-between py-2 border-b border-gray-200">
-              <span>Saturday</span>
-              <span class="font-medium">10:00 AM - 11:00 PM</span>
-            </div>
-            <div class="flex justify-between py-2">
-              <span>Sunday</span>
-              <span class="font-medium">11:00 AM - 9:00 PM</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Cart Modal -->
-  <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-    <div class="bg-white w-11/12 md:w-2/3 lg:w-1/2 max-h-96 rounded-2xl shadow-2xl overflow-hidden">
-      <div class="p-6 bg-gradient-to-r from-primary to-accent text-white">
-        <h3 class="text-xl font-bold flex items-center">
-          <i class="fas fa-shopping-cart mr-2"></i> Your Order
-        </h3>
-      </div>
-      <div id="cartItems" class="p-4 max-h-60 overflow-y-auto"></div>
-      
-      <div class="p-4 border-t flex justify-between font-bold text-lg">
-        <span>Total:</span>
-        <span>₹<span id="cartTotal">0</span></span>
-      </div>
-      <div class="p-4 bg-gray-50 flex">
-        <button onclick="closeCart()" class="flex-1 py-2 mr-2 bg-gray-400 text-white rounded-full font-medium">Cancel</button>
-        <button onclick="placeOrder()" class="flex-1 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full font-medium shadow-lg hover:shadow-xl transition">Place Order</button>
+       <div class="w-full md:w-1/2 h-64 md:h-80 rounded-xl overflow-hidden shadow-lg">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.428106995!2d74.24191583056642!3d19.997458000000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bddeb44b491e88f%3A0x6c747e368e1b758b!2sMirdhuna%20Cafe!5e0!3m2!1sen!2sin!5m2!1sen!2sin" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl w-11/12 max-w-md shadow-2xl relative overflow-hidden">
-      <div class="p-8">
-        <div class="text-center mb-6">
-          <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-user text-white text-2xl"></i>
-          </div>
-          <h3 class="text-2xl font-bold text-dark">Welcome to MIRDHUNA</h3>
-          <p class="text-gray-600 mt-2">Enter your mobile number to continue</p>
-        </div>
-        
-        <div class="mb-6">
-          <label class="block text-gray-700 mb-2 font-medium">Mobile Number</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">+91</span>
-            </div>
-            <input type="tel" id="mobileInput" placeholder="9835124772" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" maxlength="10"/>
-          </div>
-        </div>
-        
-        <button onclick="loginUser()" class="btn-primary w-full py-3 rounded-lg font-bold text-white shadow-lg hover:shadow-xl transition w-full">
-          Continue
-        </button>
-        
-        <p class="text-xs text-gray-500 mt-4 text-center">We'll detect your location automatically for faster delivery</p>
-      </div>
-    </div>
-  </div>
-
-  <footer class="bg-dark text-white py-12 px-4">
-    <div class="container mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div>
-          <h3 class="text-2xl font-heading font-bold mb-4">MIRDHUNA</h3>
-          <p class="text-gray-400 mb-4">Crafting unforgettable culinary experiences since 2020</p>
-          <div class="flex space-x-4">
-            <a href="https://facebook.com" target="_blank" class="text-gray-400 hover:text-white transition">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://instagram.com" target="_blank" class="text-gray-400 hover:text-white transition">
-              <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://wa.me/919835124772" target="_blank" class="text-gray-400 hover:text-white transition">
-              <i class="fab fa-whatsapp"></i>
-            </a>
-          </div>
-        </div>
-        
-        <div>
-          <h4 class="text-lg font-bold mb-4">Quick Links</h4>
-          <ul class="space-y-2">
-            <li><a href="#" class="text-gray-400 hover:text-white transition">Menu</a></li>
-            <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
-          </ul>
-        </div>
-        
-        <div>
-          <h4 class="text-lg font-bold mb-4">Contact</h4>
-          <ul class="space-y-2 text-gray-400">
-            <li class="flex items-start">
-              <i class="fas fa-map-marker-alt mt-1 mr-3"></i>
-              <span>Visit our Google Maps location</span>
-            </li>
-            <li class="flex items-center">
-              <i class="fas fa-phone-alt mr-3"></i>
-              <span>9835124772</span>
-            </li>
-          </ul>
-        </div>
-        
-        <div>
-          <h4 class="text-lg font-bold mb-4">Opening Hours</h4>
-          <ul class="space-y-2 text-gray-400">
-            <li class="flex justify-between">
-              <span>Monday - Friday</span>
-              <span class="font-medium">10:00 AM - 10:00 PM</span>
-            </li>
-            <li class="flex justify-between">
-              <span>Saturday</span>
-              <span class="font-medium">10:00 AM - 11:00 PM</span>
-            </li>
-            <li class="flex justify-between">
-              <span>Sunday</span>
-              <span class="font-medium">11:00 AM - 9:00 PM</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-      
-      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
-        <p>© 2025 MIRDHUNA Café. All rights reserved.</p>
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-8 px-4">
+    <div class="container mx-auto text-center">
+      <p>&copy; 2024 MIRDHUNA Cafe. All rights reserved.</p>
+      <div class="mt-4 flex justify-center space-x-6">
+        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://wa.me/9835124772" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+          <i class="fab fa-whatsapp"></i>
+        </a>
       </div>
     </div>
   </footer>
 
   <script>
-    // Supabase Configuration
-    const SUPABASE_URL = 'https://cfgjvbhfhfgskssopknn.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmZ2p2YmhmaGZnc2tzc29wa25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMDQ1MzQsImV4cCI6MjA2OTc4MDUzNH0.uAsDR4Vj7fSQ7q5Qz859WPzj7qlJIsHpF23Rl7dmj7w';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // --- State Management ---
+    let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || [];
+    let currentUser = JSON.parse(localStorage.getItem('mirdhunaUser')) || null; // { mobile: '...', location: { lat, lng } }
 
-    // App state
-    let userPhone = null;
-    let userLocation = null;
-    let cart = [];
-    let menuItems = [];
+    // --- Firebase Firestore Menu Listener ---
+    function loadMenu() {
+        const spinner = document.getElementById('menuSpinner');
+        spinner.style.display = 'block';
+        const menuGrid = document.getElementById('menuGrid');
+        menuGrid.innerHTML = '';
 
-    // Initialize the app
-    async function initApp() {
-      await loadMenu();
-      updateNavActive('menu');
-      
-      // Check if user is already logged in (from localStorage)
-      const savedPhone = localStorage.getItem('mirdhuna_user_phone');
-      if (savedPhone) {
-        userPhone = savedPhone;
-        document.getElementById('userPhone').textContent = userPhone;
-        await detectLocation();
-      }
+        db.collection('menuItems')
+            .orderBy('category')
+            .onSnapshot(snapshot => {
+                spinner.style.display = 'none';
+                menuGrid.innerHTML = '';
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === "added" || change.type === "modified") {
+                        const item = { id: change.doc.id, ...change.doc.data() };
+                        renderMenuItem(item);
+                    }
+                    if (change.type === "removed") {
+                        const itemElement = document.getElementById(`item-${change.doc.id}`);
+                        if(itemElement) itemElement.remove();
+                    }
+                });
+                filterMenu('all'); // Initially show all items
+            }, error => {
+                spinner.style.display = 'none';
+                console.error("Error loading menu:", error);
+                showToast("Failed to load menu.");
+            });
     }
 
-    // Load menu items from Supabase
-    async function loadMenu() {
-      try {
-        const { data, error } = await supabase.from('menu_items').select('*').order('category');
-        if (error) throw error;
-        menuItems = data;
-        displayMenu(data);
-      } catch (error) {
-        console.error("Error loading menu:", error);
-        // Fallback to mock data
-        menuItems = [
-          { id: 1, name: "Margherita Pizza", category: "Pizza", price: 299, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 2, name: "Cheeseburger", category: "Burger", price: 179, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 3, name: "Club Sandwich", category: "Sandwich", price: 199, image_path: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 4, name: "Chocolate Shake", category: "Shakes", price: 149, image_path: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 5, name: "Pepperoni Pizza", category: "Pizza", price: 349, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 6, name: "Veggie Burger", category: "Burger", price: 189, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 7, name: "Grilled Sandwich", category: "Sandwich", price: 159, image_path: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 8, name: "Strawberry Shake", category: "Shakes", price: 129, image_path: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
-        ];
-        displayMenu(menuItems);
-      }
-    }
-
-    // Display menu items
-    function displayMenu(items) {
-      const container = document.getElementById('menuList');
-      container.innerHTML = '';
-      
-      if (items.length === 0) {
-        container.innerHTML = '<p class="col-span-full text-center py-8 text-gray-500">No items available</p>';
-        return;
-      }
-      
-      items.forEach((item, i) => {
-        setTimeout(() => {
-          const div = document.createElement('div');
-          div.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
-          div.style.animation = `fadeInUp 0.5s ease-out ${i * 0.1}s both`;
-          div.innerHTML = `
-            <img src="${item.image_path}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
-            <div class="p-6">
-              <h3 class="font-bold text-lg">${item.name}</h3>
-              <p class="text-primary font-semibold">₹${item.price}</p>
-              <button onclick="addToCart(${item.id})" class="btn-primary mt-3 w-full py-2 rounded-lg font-bold text-white shadow hover:shadow-lg transition">
-                <i class="fas fa-plus mr-2"></i> Add to Cart
-              </button>
+    function renderMenuItem(item) {
+        const menuGrid = document.getElementById('menuGrid');
+        const menuItemHTML = `
+            <div id="item-${item.id}" class="menu-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl">
+                <img src="${item.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${item.name}" class="w-full h-48 object-cover" onerror="this.src='https://via.placeholder.com/300x200?text=Image+Error';">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark">${item.name}</h3>
+                        <span class="text-lg font-bold text-primary">₹${item.price.toFixed(2)}</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">${item.category}</p>
+                    <button onclick="addToCart('${item.id}')" class="w-full btn-primary py-2 rounded-lg font-medium flex items-center justify-center">
+                        <i class="fas fa-plus mr-2"></i> Add to Cart
+                    </button>
+                </div>
             </div>
-          `;
-          container.appendChild(div);
-        }, i * 100);
-      });
+        `;
+        menuGrid.innerHTML += menuItemHTML;
     }
 
-    // Filter menu by category
-    function filterCategory(category) {
-      const filtered = category === 'all' ? menuItems : menuItems.filter(i => i.category === category);
-      const container = document.getElementById('menuList');
-      container.innerHTML = '<p class="col-span-full text-center py-8 text-gray-500">Loading...</p>';
-      
-      setTimeout(() => {
-        displayMenu(filtered);
-        
-        // Update active state on buttons
-        document.querySelectorAll('.flex-wrap button').forEach(btn => {
-          if (btn.textContent.toLowerCase().includes(category.toLowerCase())) {
-            btn.classList.remove('bg-white', 'shadow');
-            btn.classList.add('btn-primary');
-          } else {
-            btn.classList.remove('btn-primary');
-            btn.classList.add('bg-white', 'shadow');
-          }
-        });
-      }, 300);
+    // --- Cart Functionality ---
+    function updateCartBadge() {
+        const badge = document.getElementById('cartBadge');
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        badge.textContent = totalItems;
+        badge.style.display = totalItems > 0 ? 'flex' : 'none';
     }
 
-    // Add to cart
-    function addToCart(id) {
-      if (!userPhone) {
-        openLoginModal();
-        return;
-      }
-      
-      const item = menuItems.find(i => i.id === id);
-      if (!item) return;
-      
-      const existing = cart.find(c => c.id === id);
-      if (existing) {
-        existing.qty += 1;
-      } else {
-        cart.push({ ...item, qty: 1 });
-      }
-      
-      updateCartUI();
-      showtoast(`${item.name} added to cart!`);
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
     }
 
-    // Update cart UI
-    function updateCartUI() {
-      const cartCount = document.getElementById('cartCount');
-      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
-      cartCount.textContent = totalCount;
-      
-      // Update cart modal
-      const cartItems = document.getElementById('cartItems');
-      const cartTotal = document.getElementById('cartTotal');
-      
-      if (cart.length === 0) {
-        cartItems.innerHTML = '<p class="text-center text-gray-500 py-4">Your cart is empty</p>';
-        cartTotal.textContent = '0';
-        return;
-      }
-      
-      cartItems.innerHTML = cart.map(item => `
-        <div class="flex justify-between items-center py-2 border-b border-gray-200">
-          <div>
-            <p class="font-medium">${item.name}</p>
-            <p class="text-sm text-gray-500">₹${item.price} × ${item.qty}</p>
-          </div>
-          <div class="flex items-center">
-            <button onclick="updateCartItem(${item.id}, ${item.qty - 1})" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-2">
-              <i class="fas fa-minus text-xs"></i>
-            </button>
-            <span class="font-medium">${item.qty}</span>
-            <button onclick="updateCartItem(${item.id}, ${item.qty + 1})" class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center ml-2">
-              <i class="fas fa-plus text-xs"></i>
-            </button>
-            <button onclick="removeFromCart(${item.id})" class="ml-4 text-red-500">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-        </div>
-      `).join('');
-      
-      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      cartTotal.textContent = total;
-    }
-
-    // Update cart item quantity
-    function updateCartItem(id, qty) {
-      if (qty <= 0) {
-        removeFromCart(id);
-        return;
-      }
-      
-      const item = cart.find(c => c.id === id);
-      if (item) {
-        item.qty = qty;
-        updateCartUI();
-      }
-    }
-
-    // Remove item from cart
-    function removeFromCart(id) {
-      cart = cart.filter(item => item.id !== id);
-      updateCartUI();
-    }
-
-    // Show toast notification
-    function showtoast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    // Detect user location
-    async function detectLocation() {
-      return new Promise((resolve) => {
-        if (!navigator.geolocation) {
-          showtoast("Geolocation is not supported by your browser");
-          resolve({ lat: 0, lng: 0 });
-          return;
+    function addToCart(itemId) {
+        if (!currentUser) {
+            openLoginModal();
+            return;
         }
-        
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            userLocation = { lat, lng };
-            
-            // Update UI
-            document.getElementById('userLocation').textContent = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
-            
-            showtoast("Location detected!");
-            resolve({ lat, lng });
-          },
-          (error) => {
-            console.error("Error getting location:", error);
-            showtoast("Please enable location to continue");
-            resolve({ lat: 0, lng: 0 });
-          },
-          { 
-            enableHighAccuracy: true, 
-            timeout: 10000, 
-            maximumAge: 60000 
-          }
-        );
-      });
+
+        db.collection('menuItems').doc(itemId).get().then(doc => {
+            if (doc.exists) {
+                const itemData = doc.data();
+                const item = { id: doc.id, ...itemData };
+
+                const existingItemIndex = cart.findIndex(i => i.id === itemId);
+                if (existingItemIndex > -1) {
+                    cart[existingItemIndex].quantity += 1;
+                } else {
+                    cart.push({ ...item, quantity: 1 });
+                }
+                localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                updateCartBadge();
+                showToast(`${item.name} added to cart!`);
+            } else {
+                showToast("Item not found.");
+            }
+        }).catch(error => {
+            console.error("Error fetching item:", error);
+            showToast("Could not add item.");
+        });
     }
 
-    // User login
-    async function loginUser() {
-      const input = document.getElementById('mobileInput');
-      const num = input.value.trim();
-      
-      if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
-        showtoast("Please enter a valid 10-digit mobile number");
-        return;
-      }
-      
-      userPhone = '+91' + num;
-      
-      // Save to localStorage
-      localStorage.setItem('mirdhuna_user_phone', userPhone);
-      
-      // Close modal
-      document.getElementById('loginModal').classList.add('hidden');
-      input.value = '';
-      
-      // Update UI
-      document.getElementById('userPhone').textContent = userPhone;
-      
-      // Detect location
-      await detectLocation();
-      
-      showtoast("Logged in successfully!");
+    // --- Menu Filtering ---
+    function filterMenu(category) {
+        const buttons = document.querySelectorAll('#menu .flex-wrap button');
+        buttons.forEach(btn => {
+            if (btn.textContent.trim() === (category === 'all' ? 'All Items' : category)) {
+                btn.classList.add('bg-primary', 'text-white');
+                btn.classList.remove('bg-light', 'text-dark', 'hover:bg-gray-200');
+            } else {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-light', 'text-dark', 'hover:bg-gray-200');
+            }
+        });
+
+        const items = document.querySelectorAll('#menuGrid > div');
+        items.forEach(item => {
+            const itemCategory = item.querySelector('p').textContent; // Assumes category is in the <p> tag
+            if (category === 'all' || itemCategory === category) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
     }
 
-    // Open login modal
+    // --- Simplified Login ---
     function openLoginModal() {
-      document.getElementById('loginModal').classList.remove('hidden');
+        document.getElementById('loginMessage').textContent = '';
+        document.getElementById('userMobile').value = currentUser ? currentUser.mobile : '';
+        document.getElementById('loginSpinner').style.display = 'none';
+        document.getElementById('loginModal').style.display = 'block';
     }
 
-    // Open cart
-    function openCart() {
-      if (!userPhone) {
-        openLoginModal();
-        return;
-      }
-      
-      updateCartUI();
-      document.getElementById('cartModal').classList.remove('hidden');
+    function closeLoginModal() {
+        document.getElementById('loginModal').style.display = 'none';
     }
 
-    // Close cart
-    function closeCart() {
-      document.getElementById('cartModal').classList.add('hidden');
+    function performLogin() {
+        const mobile = document.getElementById('userMobile').value.trim();
+        const spinner = document.getElementById('loginSpinner');
+        const message = document.getElementById('loginMessage');
+
+        if (!mobile) {
+            message.textContent = 'Please enter a mobile number.';
+            return;
+        }
+        // Basic validation (you might want more robust validation)
+        if (mobile.length < 10 || isNaN(mobile)) {
+             message.textContent = 'Please enter a valid mobile number.';
+             return;
+        }
+
+        spinner.style.display = 'block';
+        message.textContent = '';
+
+        // --- Automatically detect location upon login ---
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const location = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    finishLogin(mobile, location);
+                },
+                (error) => {
+                    console.warn("Location access denied or error:", error);
+                    // Proceed with login even without location
+                    finishLogin(mobile, null);
+                    // Optionally, you could show a message or prompt again
+                    // message.textContent = 'Location access denied. Proceeding without location.';
+                    // spinner.style.display = 'none';
+                }
+            );
+        } else {
+            console.warn("Geolocation is not supported by this browser.");
+            finishLogin(mobile, null); // Proceed without location
+        }
     }
 
-    // Place order
-    async function placeOrder() {
-      if (cart.length === 0) {
-        showtoast("Your cart is empty");
-        return;
-      }
-      
-      if (!userPhone || !userLocation) {
-        openLoginModal();
-        return;
-      }
-      
-      try {
-        // Create order object
-        const order = {
-          user_phone: userPhone,
-          user_location: userLocation,
-          items: cart.map(item => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            qty: item.qty
-          })),
-          total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0),
-          status: 'pending',
-          created_at: new Date().toISOString()
+    function finishLogin(mobile, location) {
+         const spinner = document.getElementById('loginSpinner');
+         // Store user info (mobile and potentially location) in localStorage
+         currentUser = { mobile: mobile, location: location };
+         localStorage.setItem('mirdhunaUser', JSON.stringify(currentUser));
+         console.log("User logged in:", currentUser);
+         updateUIForLogin(); // Update UI elements
+         spinner.style.display = 'none';
+         closeLoginModal();
+         showToast('Login successful!');
+    }
+
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('mirdhunaUser');
+        // Optional: Clear cart on logout
+        // cart = [];
+        // localStorage.removeItem('mirdhunaCart');
+        // updateCartBadge();
+        updateUIForLogin();
+        showToast('Logged out.');
+    }
+
+    function updateUIForLogin() {
+        const loginButton = document.getElementById('loginButton');
+        if (currentUser) {
+            loginButton.innerHTML = '<i class="fas fa-user mr-2"></i> Logout';
+            loginButton.onclick = logout;
+        } else {
+            loginButton.innerHTML = '<i class="fas fa-user mr-2"></i> Login';
+            loginButton.onclick = openLoginModal;
+        }
+        updateCartBadge(); // Ensure badge reflects state
+    }
+
+    // --- Order Placement with WhatsApp ---
+    function openOrderModal() {
+        if (!currentUser) {
+            openLoginModal();
+            return;
+        }
+        if (cart.length === 0) {
+            showToast("Your cart is empty!");
+            return;
+        }
+
+        const orderDetails = document.getElementById('orderDetails');
+        let detailsHTML = '<ul class="mb-4">';
+        let totalPrice = 0;
+        cart.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            totalPrice += itemTotal;
+            detailsHTML += `<li class="flex justify-between py-1"><span>${item.name} x ${item.quantity}</span><span>₹${itemTotal.toFixed(2)}</span></li>`;
+        });
+        detailsHTML += `<li class="flex justify-between font-bold border-t pt-2 mt-2"><span>Total:</span><span>₹${totalPrice.toFixed(2)}</span></li>`;
+        detailsHTML += '</ul>';
+        orderDetails.innerHTML = detailsHTML;
+
+        document.getElementById('orderMessage').textContent = '';
+        document.getElementById('orderSpinner').style.display = 'none';
+        document.getElementById('orderModal').style.display = 'block';
+    }
+
+    function closeOrderModal() {
+        document.getElementById('orderModal').style.display = 'none';
+    }
+
+    function placeOrder() {
+        if (!currentUser || cart.length === 0) return;
+
+        const spinner = document.getElementById('orderSpinner');
+        const message = document.getElementById('orderMessage');
+        spinner.style.display = 'block';
+        message.textContent = '';
+
+        // Ensure location is detected at time of order placement as well
+        let locationToUse = currentUser.location; // Start with login location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    // Use the freshest location
+                    locationToUse = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                     finalizeOrder(locationToUse);
+                },
+                (error) => {
+                    console.warn("Location error during order placement:", error);
+                    // Proceed with previously known location or none
+                     finalizeOrder(locationToUse);
+                }
+            );
+        } else {
+             finalizeOrder(locationToUse); // Proceed with login location or none
+        }
+    }
+
+    function finalizeOrder(location) {
+        const spinner = document.getElementById('orderSpinner');
+        const message = document.getElementById('orderMessage');
+
+        const orderData = {
+            userId: currentUser.mobile, // Using mobile as identifier
+            items: cart,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            status: 'pending',
+            location: location ? new firebase.firestore.GeoPoint(location.lat, location.lng) : null,
+            userMobile: currentUser.mobile // Store mobile explicitly
         };
-        
-        // Save to Supabase
-        const { data, error } = await supabase
-          .from('orders')
-          .insert([order]);
-          
-        if (error) throw error;
-        
-        // Clear cart
-        cart = [];
-        updateCartUI();
-        closeCart();
-        
-        showtoast("Order placed successfully!");
-        
-      } catch (error) {
-        console.error("Error placing order:", error);
-        showtoast("Error placing order. Please try again.");
-      }
+
+        db.collection('orders').add(orderData)
+            .then(docRef => {
+                console.log("Order placed with ID:", docRef.id);
+                // --- WhatsApp Integration ---
+                sendWhatsAppNotification(orderData);
+
+                // Clear cart
+                cart = [];
+                localStorage.removeItem('mirdhunaCart');
+                updateCartBadge();
+                spinner.style.display = 'none';
+                closeOrderModal();
+                showToast('Order placed successfully!');
+            })
+            .catch(error => {
+                console.error("Error placing order:", error);
+                spinner.style.display = 'none';
+                message.textContent = 'Failed to place order. Please try again.';
+            });
     }
 
-    // Show section
+    function sendWhatsAppNotification(orderData) {
+        // Admin WhatsApp Number
+        const adminNumber = '9835124772'; // Your provided number
+        // Format order details for WhatsApp message
+        let messageBody = `*New Order from MIRDHUNA Cafe*\n\n`;
+        messageBody += `*Customer Mobile:* ${orderData.userMobile}\n`;
+        if (orderData.location) {
+            messageBody += `*Location:* https://maps.google.com/?q=${orderData.location.latitude},${orderData.location.longitude}\n`;
+        }
+        messageBody += `\n*Order Items:*\n`;
+        let total = 0;
+        orderData.items.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            messageBody += `- ${item.name} x ${item.quantity} = ₹${itemTotal.toFixed(2)}\n`;
+        });
+        messageBody += `\n*Total Amount:* ₹${total.toFixed(2)}\n`;
+        messageBody += `\n*Status:* ${orderData.status}\n`;
+
+        // Encode message for URL
+        const encodedMessage = encodeURIComponent(messageBody);
+
+        // Create WhatsApp links (these open the WhatsApp app/web if installed)
+        const userLink = `https://wa.me/${orderData.userMobile}?text=${encodedMessage}`;
+        const adminLink = `https://wa.me/${adminNumber}?text=${encodedMessage}`;
+
+        // Open links in new tabs/windows
+        // Note: Browsers might block multiple popups. Consider opening one or using a backend service.
+        // window.open(userLink, '_blank');
+        window.open(adminLink, '_blank');
+
+        console.log("WhatsApp message prepared:", messageBody);
+        console.log("Admin WhatsApp Link:", adminLink);
+        // console.log("User WhatsApp Link:", userLink);
+    }
+
+
+    // --- Section Navigation ---
     function showSection(sectionId) {
-      // Hide all sections
-      document.querySelectorAll('section').forEach(section => {
-        section.classList.add('hidden');
-      });
-      
-      // Show selected section
-      document.getElementById(sectionId).classList.remove('hidden');
-      
-      // Update navigation active state
-      updateNavActive(sectionId);
+        if (sectionId === 'menu') {
+            document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+        }
+        if (sectionId === 'contact') {
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+        }
     }
 
-    // Update navigation active state
-    function updateNavActive(sectionId) {
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-      });
-      
-      // Find the button that corresponds to the section
-      const button = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
-      if (button) {
-        button.classList.add('active');
-      }
+    // Close modals if clicked outside
+    window.onclick = function(event) {
+        if (event.target.id === 'loginModal') {
+            closeLoginModal();
+        }
+        if (event.target.id === 'orderModal') {
+            closeOrderModal();
+        }
     }
 
-    // Initialize app when page loads
-    document.addEventListener('DOMContentLoaded', initApp);
+    // --- Initialize ---
+    window.onload = function() {
+        updateUIForLogin(); // Set initial login button state
+        updateCartBadge();
+        loadMenu();
+    };
+
   </script>
+
 </body>
-  </html>
+</html>
