@@ -3,13 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIRDHUNA Admin | Management System</title>
+  <title>MIRDHUNA Admin Panel</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase-js.min.js"></script>
-  
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <!-- Firebase Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase Auth -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <!-- Firebase Storage -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+
   <script>
+    // Your web app's Firebase configuration (SAME as index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+      authDomain: "mirdhuna-25542.firebaseapp.com",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+      projectId: "mirdhuna-25542",
+      storageBucket: "mirdhuna-25542.firebasestorage.app",
+      messagingSenderId: "575924409876",
+      appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+      measurementId: "G-YB7LDKHBPV"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const storage = firebase.storage();
+
     tailwind.config = {
       theme: {
         extend: {
@@ -28,1969 +53,957 @@
       }
     }
   </script>
-  
+
   <style>
-    body { 
-      font-family: 'Poppins', sans-serif; 
-      background: linear-gradient(135deg, #fff9f0 0%, #fff1f2 100%);
-      overflow-x: hidden;
+    body {
+      font-family: 'Poppins', 'sans-serif';
+      background-color: #f0f2f5;
     }
-    
-    .admin-header {
-      background: linear-gradient(135deg, rgba(225, 29, 72, 0.9) 0%, rgba(249, 115, 22, 0.85) 100%);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
     .sidebar {
-      background: #1e293b;
-      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-      height: calc(100vh - 80px);
-      position: sticky;
-      top: 80px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      padding-top: 20px;
+      overflow-y: auto;
       z-index: 100;
     }
-    
-    .sidebar-item {
-      transition: all 0.3s ease;
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .nav-item {
+      padding: 15px 20px;
+      display: block;
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: all 0.3s;
       border-left: 3px solid transparent;
     }
-    
-    .sidebar-item:hover {
-      background: rgba(255, 255, 255, 0.1);
+    .nav-item:hover, .nav-item.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-left: 3px solid #e11d48;
     }
-    
-    .sidebar-item.active {
-      background: rgba(255, 255, 255, 0.15);
-      border-left: 3px solid #3b82f6;
-    }
-    
     .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      transition: all 0.3s ease;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
     }
-    
-    .card:hover {
-      transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    
-    .glass-card {
-      background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-    }
-    
     .btn-primary {
       background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: opacity 0.2s;
     }
-    
     .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 7px 20px rgba(225, 29, 72, 0.4);
+      opacity: 0.9;
     }
-    
-    .history-item {
-      border-left: 4px solid #e11d48;
-      transition: all 0.3s ease;
+    .btn-secondary {
+      background-color: #94a3b8;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
-    
-    .history-item:hover {
-      transform: translateX(5px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    .btn-secondary:hover {
+      background-color: #64748b;
     }
-    
-    .toast { 
-      position: fixed; top: 20px; right: 20px; 
+    .btn-danger {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .status-pending { background-color: #fef3c7; color: #92400e; }
+    .status-preparing { background-color: #dbeafe; color: #1e40af; }
+    .status-ready { background-color: #d1fae5; color: #065f46; }
+    .status-delivered { background-color: #e5e7eb; color: #374151; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    th {
+        background-color: #f9fafb;
+        font-weight: 600;
+    }
+    tr:hover {
+        background-color: #f9fafb;
+    }
+    .menu-image-preview {
+        width: 80px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+    .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: #e11d48;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: none;
+        margin: 10px auto;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      color: white; padding: 15px 25px;
-      border-radius: 12px; z-index: 1000; opacity: 0; 
-      transform: translateY(-50px); transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      pointer-events: none;
     }
-    
-    .toast.show { opacity: 1; transform: translateY(0); }
-    
-    .cart-badge {
-      position: absolute; top: -8px; right: -8px; 
-      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-      color: white; font-weight: bold; width: 24px; height: 24px;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 12px; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
-    
-    .nav-item.active {
-      color: #e11d48;
-      font-weight: 600;
-      position: relative;
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.5);
     }
-    
-    .nav-item.active::after {
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 30px;
-      height: 3px;
-      background: #e11d48;
-      border-radius: 3px;
+    .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 90%;
+        max-width: 600px;
+        border-radius: 8px;
     }
-    
-    .floating-element {
-      animation: float 3s ease-in-out infinite;
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
     }
-    
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
     }
-    
-    /* Counter animation */
-    .counter {
-      transition: all 1s ease-in-out;
+    .form-group {
+        margin-bottom: 15px;
     }
-    
-    /* Two items per slot grid - ONLY for menu */
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
     .two-col-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
     }
-    
     @media (max-width: 768px) {
       .two-col-grid {
         grid-template-columns: 1fr;
       }
-    }
-    
-    /* Status badges */
-    .status-badge {
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-    
-    .status-pending { background: #fef3c7; color: #92400e; }
-    .status-preparing { background: #dbeafe; color: #1e40af; }
-    .status-ready { background: #dcfce7; color: #166534; }
-    .status-delivered { background: #ede9fe; color: #5b21b6; }
-    
-    /* Action buttons */
-    .action-btn {
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      border: none;
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 7px 20px rgba(225, 29, 72, 0.4);
-    }
-    
-    .btn-success {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: white;
-    }
-    
-    .btn-success:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 7px 20px rgba(16, 185, 129, 0.4);
-    }
-    
-    .btn-danger {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      color: white;
-    }
-    
-    .btn-danger:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 7px 20px rgba(239, 68, 68, 0.4);
-    }
-    
-    .btn-warning {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: white;
-    }
-    
-    .btn-warning:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 7px 20px rgba(245, 158, 11, 0.4);
-    }
-    
-    /* Slide preview */
-    .slide-preview {
-      position: relative;
-      overflow: hidden;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .slide-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-    
-    .slide-preview:hover .slide-image {
-      transform: scale(1.05);
-    }
-    
-    .slide-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-      color: white;
-      padding: 1rem;
-    }
-    
-    /* Menu card */
-    .menu-card {
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    
-    .menu-card:hover {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    
-    .menu-image {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-    
-    /* Login modal styles */
-    .login-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    
-    .login-content {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-      width: 100%;
-      max-width: 400px;
-      padding: 2rem;
-    }
-    
-    .login-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    
-    .login-header h3 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #1e293b;
-    }
-    
-    .login-form .form-group {
-      margin-bottom: 1rem;
-    }
-    
-    .login-form label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #374151;
-      font-weight: 500;
-    }
-    
-    .login-form input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-    }
-    
-    .login-form input:focus {
-      outline: none;
-      border-color: #e11d48;
-      box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
-    }
-    
-    .login-form button {
-      width: 100%;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-    
-    .login-form .btn-primary {
-      background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
-      color: white;
-    }
-    
-    .login-form .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
-    }
-    
-    .login-footer {
-      text-align: center;
-      margin-top: 1rem;
-      color: #6b7280;
-      font-size: 0.875rem;
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .content {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
-<body class="min-h-screen">
+<body>
 
   <!-- Toast Notification -->
-  <div id="toast" class="toast">Item added to cart!</div>
+  <div id="toast" class="toast"></div>
 
-  <!-- Admin Login Modal -->
-  <div id="adminLoginModal" class="login-modal">
-    <div class="login-content">
-      <div class="login-header">
-        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="fas fa-lock text-white text-2xl"></i>
-        </div>
-        <h3>MIRDHUNA ADMIN</h3>
-        <p class="text-gray-600">Secure Management Portal</p>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="flex items-center justify-center min-h-screen bg-gray-100" style="display:block;">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <h2 class="text-2xl font-bold text-center mb-6 text-dark">MIRDHUNA Admin Login</h2>
+      <div class="mb-4">
+        <label for="adminEmail" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+        <input type="email" id="adminEmail" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your email">
       </div>
-      
-      <form id="adminLoginForm">
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" id="adminUsername" placeholder="Enter username" autocomplete="off">
-        </div>
-        
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="adminPassword" placeholder="Enter password" autocomplete="off">
-        </div>
-        
-        <button type="submit" class="btn-primary">
-          <i class="fas fa-sign-in-alt mr-2"></i> Login to Dashboard
-        </button>
-        
-        <p class="login-footer">Protected with advanced security protocols</p>
-      </form>
+      <div class="mb-6">
+        <label for="adminPassword" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+        <input type="password" id="adminPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your password">
+      </div>
+      <button onclick="adminLogin()" class="btn-primary w-full">Login</button>
+      <div id="loginSpinner" class="spinner mt-4"></div>
+      <p id="loginMessage" class="text-red-500 text-center mt-2"></p>
     </div>
   </div>
 
-  <!-- Customer Login Modal -->
-  <div id="customerLoginModal" class="login-modal hidden">
-    <div class="login-content">
-      <div class="login-header">
-        <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="fas fa-user text-white text-2xl"></i>
-        </div>
-        <h3>Welcome Back</h3>
-        <p class="text-gray-600">Sign in to continue your culinary journey</p>
-      </div>
-      
-      <form id="customerLoginForm">
-        <div class="form-group">
-          <label>Mobile Number</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span class="text-gray-500">+91</span>
-            </div>
-            <input type="tel" id="mobileInput" placeholder="9835124772" maxlength="10">
-          </div>
-        </div>
-        
-        <button type="submit" class="btn-primary">
-          <i class="fas fa-sign-in-alt mr-2"></i> Continue to MIRDHUNA
-        </button>
-        
-        <p class="login-footer">We'll detect your location automatically for faster delivery</p>
-      </form>
+  <!-- Main Admin Dashboard (Initially Hidden) -->
+  <div id="adminDashboard" style="display:none;">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+      <h2 class="text-xl font-heading font-bold text-center mb-6">MIRDHUNA Admin</h2>
+      <a href="#" class="nav-item active" onclick="showPanel('dashboard'); return false;"><i class="fas fa-tachometer-alt mr-2"></i> Dashboard</a>
+      <a href="#" class="nav-item" onclick="showPanel('menu'); return false;"><i class="fas fa-utensils mr-2"></i> Menu Management</a>
+      <a href="#" class="nav-item" onclick="showPanel('orders'); return false;"><i class="fas fa-receipt mr-2"></i> Order Management</a>
+      <a href="#" class="nav-item" onclick="showPanel('users'); return false;"><i class="fas fa-users mr-2"></i> User Login History</a>
+      <a href="#" class="nav-item" onclick="showPanel('settings'); return false;"><i class="fas fa-cog mr-2"></i> Settings</a>
+      <a href="#" class="nav-item mt-10" onclick="adminLogout(); return false;"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
     </div>
-  </div>
 
-  <!-- Main Admin Dashboard -->
-  <div id="adminDashboard" class="hidden">
-    <!-- Header -->
-    <header class="admin-header text-white py-4 px-6">
-      <div class="container mx-auto flex justify-between items-center">
-        <div class="flex items-center">
-          <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3">
-            <i class="fas fa-utensils text-primary text-xl"></i>
+    <!-- Main Content Area -->
+    <div class="content">
+      <!-- Dashboard Panel -->
+      <div id="dashboardPanel" class="panel">
+        <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div class="card bg-blue-50 border-l-4 border-blue-500">
+            <h3 class="text-lg font-semibold text-blue-800">Total Orders</h3>
+            <p id="totalOrders" class="text-3xl font-bold text-blue-600">0</p>
           </div>
-          <h1 class="text-2xl font-heading font-bold">MIRDHUNA ADMIN</h1>
+          <div class="card bg-green-50 border-l-4 border-green-500">
+            <h3 class="text-lg font-semibold text-green-800">Pending Orders</h3>
+            <p id="pendingOrders" class="text-3xl font-bold text-green-600">0</p>
+          </div>
+          <div class="card bg-yellow-50 border-l-4 border-yellow-500">
+            <h3 class="text-lg font-semibold text-yellow-800">Menu Items</h3>
+            <p id="totalMenuItems" class="text-3xl font-bold text-yellow-600">0</p>
+          </div>
         </div>
-        
-        <div class="flex items-center space-x-6">
-          <div class="relative">
-            <button class="bg-white bg-opacity-20 p-2 rounded-full">
-              <i class="fas fa-bell text-xl"></i>
-              <span class="absolute top-0 right-0 bg-danger text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
-            </button>
-          </div>
-          
-          <div class="flex items-center">
-            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-              <i class="fas fa-user text-gray-600"></i>
-            </div>
-            <div>
-              <p class="font-medium">Admin User</p>
-              <p class="text-xs text-blue-200">Online</p>
-            </div>
-          </div>
-          
-          <button id="logoutBtn" class="bg-danger p-2 rounded-full">
-            <i class="fas fa-sign-out-alt"></i>
-          </button>
+        <div class="card">
+            <h2 class="text-xl font-semibold mb-4">Recent Orders</h2>
+            <div id="recentOrdersList">Loading...</div>
         </div>
       </div>
-    </header>
-    
-    <div class="flex">
-      <!-- Sidebar -->
-      <aside class="sidebar w-64 p-4">
-        <nav>
-          <ul class="space-y-2">
-            <li>
-              <a href="#" class="sidebar-item active flex items-center p-3 text-white" data-section="dashboard">
-                <i class="fas fa-home mr-3 text-lg"></i>
-                <span>Dashboard</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="orders">
-                <i class="fas fa-shopping-cart mr-3 text-lg"></i>
-                <span>Orders</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="menu">
-                <i class="fas fa-utensils mr-3 text-lg"></i>
-                <span>Menu Management</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="users">
-                <i class="fas fa-users mr-3 text-lg"></i>
-                <span>User History</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="slides">
-                <i class="fas fa-images mr-3 text-lg"></i>
-                <span>Slide Management</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="sidebar-item flex items-center p-3 text-gray-300" data-section="analytics">
-                <i class="fas fa-chart-line mr-3 text-lg"></i>
-                <span>Analytics</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-        
-        <div class="mt-8 p-4 bg-dark rounded-lg">
-          <h3 class="text-white font-bold mb-3">System Status</h3>
-          <div class="space-y-3">
-            <div>
-              <div class="flex justify-between text-xs text-gray-400 mb-1">
-                <span>Database</span>
-                <span>Operational</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-success h-2 rounded-full" style="width: 100%"></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between text-xs text-gray-400 mb-1">
-                <span>Storage</span>
-                <span>85%</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-warning h-2 rounded-full" style="width: 85%"></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between text-xs text-gray-400 mb-1">
-                <span>API</span>
-                <span>99.9%</span>
-              </div>
-              <div class="w-full bg-gray-700 rounded-full h-2">
-                <div class="bg-success h-2 rounded-full" style="width: 99.9%"></div>
-              </div>
-            </div>
-          </div>
+
+      <!-- Menu Management Panel -->
+      <div id="menuPanel" class="panel" style="display:none;">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold">Menu Management</h1>
+            <button onclick="openAddMenuItemModal()" class="btn-primary"><i class="fas fa-plus mr-2"></i> Add New Item</button>
         </div>
-      </aside>
-      
-      <!-- Main Content -->
-      <main class="flex-1 p-6">
-        <!-- Dashboard Section -->
-        <section id="dashboardSection">
-          <div class="mb-8">
-            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Dashboard Overview</h2>
-            <p class="text-gray-600">Welcome back! Here's what's happening today.</p>
-          </div>
-          
-          <!-- Stats Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="card p-6">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="text-3xl font-bold text-primary">₹24.5K</p>
-                  <p class="text-gray-600">Today's Revenue</p>
-                </div>
-                <i class="fas fa-rupee-sign text-3xl opacity-30"></i>
-              </div>
-              <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">12% increase from yesterday</p>
-              </div>
+        <div class="card">
+            <h2 class="text-xl font-semibold mb-4">Menu Items</h2>
+            <div id="menuItemsList">Loading menu items...</div>
+        </div>
+      </div>
+
+      <!-- Order Management Panel -->
+      <div id="ordersPanel" class="panel" style="display:none;">
+        <h1 class="text-3xl font-bold mb-6">Order Management</h1>
+        <div class="card">
+            <h2 class="text-xl font-semibold mb-4">All Orders</h2>
+            <div id="ordersList">Loading orders...</div>
+        </div>
+      </div>
+
+       <!-- User Login History Panel -->
+      <div id="usersPanel" class="panel" style="display:none;">
+        <h1 class="text-3xl font-bold mb-6">User Login History</h1>
+        <div class="card">
+            <h2 class="text-xl font-semibold mb-4">Logged In Users</h2>
+            <!-- Note: This assumes you have a way to track user logins, e.g., storing in Firestore on login -->
+            <!-- For this example, we'll simulate it or note it's not directly available via Auth alone -->
+            <p class="text-gray-600 mb-4"><i class="fas fa-info-circle mr-2"></i> User login history tracking requires storing user data (mobile number) in Firestore upon login. This panel will display that data.</p>
+            <div id="usersList">Loading user data...</div>
+        </div>
+      </div>
+
+      <!-- Settings Panel -->
+      <div id="settingsPanel" class="panel" style="display:none;">
+        <h1 class="text-3xl font-bold mb-6">Admin Settings</h1>
+        <div class="card">
+            <h2 class="text-xl font-semibold mb-4">Change Password</h2>
+            <p class="text-gray-600 mb-4"><i class="fas fa-exclamation-triangle mr-2 text-yellow-500"></i> Password change functionality requires implementation in Firebase Authentication. This is a simulation for UI demonstration.</p>
+            <div class="mb-4">
+                <label for="currentPassword" class="block text-gray-700 text-sm font-bold mb-2">Current Password</label>
+                <input type="password" id="currentPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
-            
-            <div class="card p-6">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="text-3xl font-bold text-primary">142</p>
-                  <p class="text-gray-600">Orders Today</p>
-                </div>
-                <i class="fas fa-shopping-bag text-3xl opacity-30"></i>
-              </div>
-              <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">18% increase from yesterday</p>
-              </div>
+            <div class="mb-4">
+                <label for="newPassword" class="block text-gray-700 text-sm font-bold mb-2">New Password</label>
+                <input type="password" id="newPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
-            
-            <div class="card p-6">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="text-3xl font-bold text-primary">4.8★</p>
-                  <p class="text-gray-600">Avg Rating</p>
-                </div>
-                <i class="fas fa-star text-3xl opacity-30"></i>
-              </div>
-              <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">Excellent feedback</p>
-              </div>
+            <div class="mb-4">
+                <label for="confirmNewPassword" class="block text-gray-700 text-sm font-bold mb-2">Confirm New Password</label>
+                <input type="password" id="confirmNewPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
-            
-            <div class="card p-6">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="text-3xl font-bold text-primary">87%</p>
-                  <p class="text-gray-600">Repeat Customers</p>
-                </div>
-                <i class="fas fa-users text-3xl opacity-30"></i>
-              </div>
-              <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">Loyal customer base</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Recent Orders -->
-          <div class="card p-6 mb-8">
-            <div class="flex justify-between items-center mb-6">
-              <h3 class="text-xl font-bold text-dark">Recent Orders</h3>
-              <button class="text-primary font-medium">View All</button>
-            </div>
-            
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead>
-                  <tr class="text-left text-gray-500 border-b">
-                    <th class="pb-3">Order ID</th>
-                    <th class="pb-3">Customer</th>
-                    <th class="pb-3">Items</th>
-                    <th class="pb-3">Amount</th>
-                    <th class="pb-3">Status</th>
-                    <th class="pb-3">Action</th>
-                  </tr>
-                </thead>
-                <tbody id="ordersTableBody">
-                  <!-- Orders will be populated here -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-          
-          <!-- Analytics Chart -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="card p-6">
-              <h3 class="text-xl font-bold text-dark mb-6">Sales Overview</h3>
-              <div class="h-64 flex items-end justify-between px-4">
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 60%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Mon</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 80%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Tue</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 40%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Wed</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 90%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Thu</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 70%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Fri</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 100%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Sat</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 50%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Sun</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card p-6">
-              <h3 class="text-xl font-bold text-dark mb-6">Popular Menu Items</h3>
-              <div class="space-y-4" id="popularItemsContainer">
-                <!-- Popular items will be populated here -->
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Orders Section -->
-        <section id="ordersSection" class="hidden">
-          <div class="mb-8">
-            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Order Management</h2>
-            <p class="text-gray-600">Manage all customer orders in real-time</p>
-          </div>
-          
-          <div class="card p-6 mb-8">
-            <div class="flex justify-between items-center mb-6">
-              <h3 class="text-xl font-bold text-dark">All Orders</h3>
-              <div class="flex space-x-3">
-                <select class="border p-2 rounded-lg">
-                  <option>All Statuses</option>
-                  <option>Pending</option>
-                  <option>Preparing</option>
-                  <option>Ready</option>
-                  <option>Delivered</option>
-                </select>
-                <input type="text" placeholder="Search orders..." class="border p-2 rounded-lg">
-              </div>
-            </div>
-            
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead>
-                  <tr class="text-left text-gray-500 border-b">
-                    <th class="pb-3">Order ID</th>
-                    <th class="pb-3">Customer</th>
-                    <th class="pb-3">Items</th>
-                    <th class="pb-3">Amount</th>
-                    <th class="pb-3">Time</th>
-                    <th class="pb-3">Status</th>
-                    <th class="pb-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="allOrdersTableBody">
-                  <!-- All orders will be populated here -->
-                </tbody>
-              </table>
-            </div>
-            
-            <div class="flex justify-between items-center mt-6">
-              <p class="text-gray-600">Showing 1 to 3 of 120 orders</p>
-              <div class="flex space-x-2">
-                <button class="action-btn bg-gray-200">Previous</button>
-                <button class="action-btn bg-gray-200">Next</button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Thermal Printer Receipt -->
-          <div class="card p-6">
-            <h3 class="text-xl font-bold text-dark mb-6">Thermal Printer Receipt</h3>
-            
-            <div class="flex flex-col md:flex-row gap-8">
-              <div class="flex-1">
-                <div class="print-area">
-                  <div class="print-header">
-                    <h2 class="font-bold text-lg">MIRDHUNA CAFE</h2>
-                    <p class="text-xs">123 Food Street, Culinary District</p>
-                    <p class="text-xs">Jaipur, Rajasthan</p>
-                  </div>
-                  
-                  <div class="mb-2">
-                    <p class="text-xs">Order ID: #ORD-1023</p>
-                    <p class="text-xs">Date: 2023-06-15 10:23 AM</p>
-                    <p class="text-xs">Customer: +91 9835124772</p>
-                  </div>
-                  
-                  <div class="mb-3">
-                    <div class="print-item">
-                      <span>Gourmet Cheeseburger x2</span>
-                      <span>₹358</span>
-                    </div>
-                    <div class="print-item">
-                      <span>Truffle Fries x1</span>
-                      <span>₹29</span>
-                    </div>
-                  </div>
-                  
-                  <div class="print-total">
-                    <span>TOTAL</span>
-                    <span>₹387</span>
-                  </div>
-                  
-                  <div class="text-center mt-4 text-xs">
-                    <p>Thank you for your order!</p>
-                    <p>Visit us again at mirdhuna.com</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="flex-1 thermal-print">
-                <h4 class="font-bold mb-4">Printer Controls</h4>
-                <div class="space-y-4">
-                  <div>
-                    <label class="block text-gray-700 mb-2">Printer IP Address</label>
-                    <input type="text" placeholder="192.168.1.100" class="w-full p-2 border rounded">
-                  </div>
-                  
-                  <div>
-                    <label class="block text-gray-700 mb-2">Port</label>
-                    <input type="text" placeholder="9100" class="w-full p-2 border rounded" value="9100">
-                  </div>
-                  
-                  <div class="flex space-x-3">
-                    <button class="thermal-print-btn flex-1">
-                      <i class="fas fa-print mr-2"></i> Print Receipt
-                    </button>
-                    <button class="thermal-print-btn flex-1">
-                      <i class="fas fa-file-pdf mr-2"></i> Download PDF
-                    </button>
-                  </div>
-                  
-                  <div class="mt-6">
-                    <h5 class="font-bold mb-2">Print Test</h5>
-                    <button class="thermal-print-btn w-full">
-                      <i class="fas fa-print mr-2"></i> Print Test Page
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Menu Management Section -->
-        <section id="menuSection" class="hidden">
-          <div class="mb-8">
-            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Menu Management</h2>
-            <p class="text-gray-600">Add, edit, or remove menu items</p>
-          </div>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2">
-              <div class="card p-6 mb-8">
-                <div class="flex justify-between items-center mb-6">
-                  <h3 class="text-xl font-bold text-dark">Menu Items</h3>
-                  <button class="action-btn btn-primary" onclick="openAddMenuItemModal()">
-                    <i class="fas fa-plus mr-2"></i> Add New Item
-                  </button>
-                </div>
-                
-                <!-- Two items per slot grid -->
-                <div id="menuItemsContainer" class="two-col-grid gap-6">
-                  <!-- Menu items will be populated here -->
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <div class="card p-6 sticky top-24">
-                <h3 class="text-xl font-bold text-dark mb-6">Add New Menu Item</h3>
-                
-                <form id="addMenuItemForm">
-                  <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Item Name</label>
-                    <input type="text" id="menuItemName" placeholder="Enter item name" class="w-full p-2 border rounded" required>
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Category</label>
-                    <select id="menuItemCategory" class="w-full p-2 border rounded" required>
-                      <option value="">Select Category</option>
-                      <option value="Pizza">Pizza</option>
-                      <option value="Burger">Burger</option>
-                      <option value="Sandwich">Sandwich</option>
-                      <option value="Shakes">Shakes</option>
-                      <option value="Desserts">Desserts</option>
-                    </select>
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Price (₹)</label>
-                    <input type="number" id="menuItemPrice" placeholder="Enter price" class="w-full p-2 border rounded" min="1" required>
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Description</label>
-                    <textarea id="menuItemDescription" placeholder="Enter description" class="w-full p-2 border rounded" rows="3"></textarea>
-                  </div>
-                  
-                  <div class="mb-6">
-                    <label class="block text-gray-700 mb-2">Image URL</label>
-                    <input type="url" id="menuItemImageUrl" placeholder="Enter image URL" class="w-full p-2 border rounded" required>
-                  </div>
-                  
-                  <button type="submit" class="action-btn btn-primary w-full">
-                    <i class="fas fa-save mr-2"></i> Save Menu Item
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- User History Section -->
-        <section id="usersSection" class="hidden">
-          <div class="mb-8">
-            <h2 class="text-3xl font-heading font-bold text-dark mb-2">User Login History</h2>
-            <p class="text-gray-600">Track customer logins with location data</p>
-          </div>
-          
-          <div class="card p-6 mb-8">
-            <div class="flex justify-between items-center mb-6">
-              <h3 class="text-xl font-bold text-dark">Login Records</h3>
-              <div class="flex space-x-3">
-                <input type="text" placeholder="Search by phone..." class="border p-2 rounded-lg">
-                <select class="border p-2 rounded-lg">
-                  <option>Last 24 Hours</option>
-                  <option>Last 7 Days</option>
-                  <option>Last 30 Days</option>
-                  <option>All Time</option>
-                </select>
-              </div>
-            </div>
-            
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead>
-                  <tr class="text-left text-gray-500 border-b">
-                    <th class="pb-3">Phone Number</th>
-                    <th class="pb-3">Login Time</th>
-                    <th class="pb-3">Location</th>
-                    <th class="pb-3">Coordinates</th>
-                    <th class="pb-3">Device</th>
-                  </tr>
-                </thead>
-                <tbody id="userHistoryTableBody">
-                  <!-- User history will be populated here -->
-                </tbody>
-              </table>
-            </div>
-            
-            <div class="flex justify-between items-center mt-6">
-              <p class="text-gray-600">Showing 1 to 3 of 142 records</p>
-              <div class="flex space-x-2">
-                <button class="action-btn bg-gray-200">Previous</button>
-                <button class="action-btn bg-gray-200">Next</button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Map Visualization -->
-          <div class="card p-6">
-            <h3 class="text-xl font-bold text-dark mb-6">Customer Location Map</h3>
-            <div class="bg-gray-200 rounded-xl h-96 flex items-center justify-center">
-              <div class="text-center">
-                <i class="fas fa-map-marked-alt text-5xl text-gray-500 mb-4"></i>
-                <p class="text-gray-600">Interactive map showing customer locations</p>
-                <p class="text-sm text-gray-500 mt-2">(Integration with Google Maps API)</p>
-              </div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-              <div class="bg-blue-50 p-4 rounded-lg">
-                <h4 class="font-bold text-blue-800 mb-2">Most Active Area</h4>
-                <p class="text-2xl font-bold">Vaishali Nagar</p>
-                <p class="text-sm text-gray-600">42% of customers</p>
-              </div>
-              
-              <div class="bg-green-50 p-4 rounded-lg">
-                <h4 class="font-bold text-green-800 mb-2">Average Distance</h4>
-                <p class="text-2xl font-bold">3.2 km</p>
-                <p class="text-sm text-gray-600">from cafe location</p>
-              </div>
-              
-              <div class="bg-purple-50 p-4 rounded-lg">
-                <h4 class="font-bold text-purple-800 mb-2">Peak Hours</h4>
-                <p class="text-2xl font-bold">12:00 PM - 2:00 PM</p>
-                <p class="text-sm text-gray-600">highest login activity</p>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Slide Management Section -->
-        <section id="slidesSection" class="hidden">
-          <div class="mb-8">
-            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Slide Management</h2>
-            <p class="text-gray-600">Manage homepage carousel slides</p>
-          </div>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2">
-              <div class="card p-6 mb-8">
-                <div class="flex justify-between items-center mb-6">
-                  <h3 class="text-xl font-bold text-dark">Current Slides</h3>
-                  <button class="action-btn btn-primary">
-                    <i class="fas fa-plus mr-2"></i> Add New Slide
-                  </button>
-                </div>
-                
-                <!-- Two items per slot grid for slides -->
-                <div class="two-col-grid gap-6">
-                  <div class="slide-preview">
-                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 1" class="slide-image">
-                    <div class="slide-overlay">
-                      <h4 class="font-bold">Summer Pizza Special</h4>
-                      <p class="text-sm">Fresh ingredients, amazing taste</p>
-                      <div class="flex justify-between mt-2">
-                        <span class="text-xs">Active</span>
-                        <div class="flex space-x-2">
-                          <button class="text-white hover:text-blue-200">
-                            <i class="fas fa-edit"></i>
-                          </button>
-                          <button class="text-white hover:text-red-200">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="slide-preview">
-                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 2" class="slide-image">
-                    <div class="slide-overlay">
-                      <h4 class="font-bold">Burger Bonanza</h4>
-                      <p class="text-sm">Juicy burgers with crispy fries</p>
-                      <div class="flex justify-between mt-2">
-                        <span class="text-xs">Active</span>
-                        <div class="flex space-x-2">
-                          <button class="text-white hover:text-blue-200">
-                            <i class="fas fa-edit"></i>
-                          </button>
-                          <button class="text-white hover:text-red-200">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="slide-preview">
-                    <img src="https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 3" class="slide-image">
-                    <div class="slide-overlay">
-                      <h4 class="font-bold">Healthy Sandwiches</h4>
-                      <p class="text-sm">Fresh ingredients, guilt-free pleasure</p>
-                      <div class="flex justify-between mt-2">
-                        <span class="text-xs">Inactive</span>
-                        <div class="flex space-x-2">
-                          <button class="text-white hover:text-blue-200">
-                            <i class="fas fa-edit"></i>
-                          </button>
-                          <button class="text-white hover:text-red-200">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="slide-preview">
-                    <img src="https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Slide 4" class="slide-image">
-                    <div class="slide-overlay">
-                      <h4 class="font-bold">Chocolate Shake Madness</h4>
-                      <p class="text-sm">Irresistible chocolatey goodness</p>
-                      <div class="flex justify-between mt-2">
-                        <span class="text-xs">Active</span>
-                        <div class="flex space-x-2">
-                          <button class="text-white hover:text-blue-200">
-                            <i class="fas fa-edit"></i>
-                          </button>
-                          <button class="text-white hover:text-red-200">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <div class="card p-6 sticky top-24">
-                <h3 class="text-xl font-bold text-dark mb-6">Add New Slide</h3>
-                
-                <form>
-                  <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Slide Title</label>
-                    <input type="text" placeholder="Enter slide title" class="w-full p-2 border rounded">
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">Description</label>
-                    <textarea placeholder="Enter description" class="w-full p-2 border rounded" rows="3"></textarea>
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">CTA Text</label>
-                    <input type="text" placeholder="e.g. Order Now" class="w-full p-2 border rounded">
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="block text-gray-700 mb-2">CTA Link</label>
-                    <input type="text" placeholder="e.g. /menu#burgers" class="w-full p-2 border rounded">
-                  </div>
-                  
-                  <div class="mb-6">
-                    <label class="block text-gray-700 mb-2">Image</label>
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                      <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                      <p class="text-gray-600">Drag & drop or click to upload</p>
-                      <input type="file" class="hidden" id="slideUpload">
-                      <label for="slideUpload" class="action-btn btn-primary mt-3 inline-block cursor-pointer">
-                        <i class="fas fa-upload mr-2"></i> Choose File
-                      </label>
-                    </div>
-                  </div>
-                  
-                  <div class="mb-4">
-                    <label class="flex items-center">
-                      <input type="checkbox" class="mr-2">
-                      <span>Active Slide</span>
-                    </label>
-                  </div>
-                  
-                  <button type="submit" class="action-btn btn-primary w-full">
-                    <i class="fas fa-save mr-2"></i> Save Slide
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <!-- Analytics Section -->
-        <section id="analyticsSection" class="hidden">
-          <div class="mb-8">
-            <h2 class="text-3xl font-heading font-bold text-dark mb-2">Analytics Dashboard</h2>
-            <p class="text-gray-600">Comprehensive insights into your business performance</p>
-          </div>
-          
-          <!-- Key Metrics -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="card p-6">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="text-3xl font-bold text-primary">1,240</p>
-                  <p class="text-gray-600">Total Orders</p>
-                </div>
-                <i class="fas fa-shopping-bag text-3xl text-gray-300"></i>
-              </div>
-              <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">+12% from last month</p>
-              </div>
-            </div>
-            
-            <div class="card p-6">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="text-3xl font-bold text-primary">₹3.2M</p>
-                  <p class="text-gray-600">Total Revenue</p>
-                </div>
-                <i class="fas fa-rupee-sign text-3xl text-gray-300"></i>
-              </div>
-              <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">+18% from last month</p>
-              </div>
-            </div>
-            
-            <div class="card p-6">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="text-3xl font-bold text-primary">4.8</p>
-                  <p class="text-gray-600">Avg. Rating</p>
-                </div>
-                <i class="fas fa-star text-3xl text-gray-300"></i>
-              </div>
-              <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 95%"></div>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">+0.2 from last month</p>
-              </div>
-            </div>
-            
-            <div class="card p-6">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="text-3xl font-bold text-primary">87%</p>
-                  <p class="text-gray-600">Repeat Customers</p>
-                </div>
-                <i class="fas fa-users text-3xl text-gray-300"></i>
-              </div>
-              <div class="mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-primary h-2 rounded-full" style="width: 87%"></div>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">+3% from last month</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Charts -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <div class="card p-6">
-              <h3 class="text-xl font-bold text-dark mb-6">Revenue Trends</h3>
-              <div class="h-64 flex items-end justify-between px-4">
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 60%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Jan</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 70%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Feb</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 50%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Mar</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 80%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Apr</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 90%"></div>
-                  <p class="text-xs mt-2 text-gray-600">May</p>
-                </div>
-                <div class="flex flex-col items-center">
-                  <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: 100%"></div>
-                  <p class="text-xs mt-2 text-gray-600">Jun</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card p-6">
-              <h3 class="text-xl font-bold text-dark mb-6">Customer Demographics</h3>
-              <div class="h-64 flex items-center justify-center">
-                <div class="relative w-48 h-48">
-                  <div class="absolute inset-0 rounded-full border-8 border-blue-500"></div>
-                  <div class="absolute inset-0 rounded-full border-8 border-green-500 transform rotate-120"></div>
-                  <div class="absolute inset-0 rounded-full border-8 border-yellow-500 transform rotate-240"></div>
-                  <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="text-center">
-                      <p class="text-2xl font-bold">Age Groups</p>
-                      <p class="text-sm text-gray-600">18-35: 62%</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Top Performing Items -->
-          <div class="card p-6">
-            <h3 class="text-xl font-bold text-dark mb-6">Top Performing Menu Items</h3>
-            
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead>
-                  <tr class="text-left text-gray-500 border-b">
-                    <th class="pb-3">Rank</th>
-                    <th class="pb-3">Item Name</th>
-                    <th class="pb-3">Category</th>
-                    <th class="pb-3">Orders</th>
-                    <th class="pb-3">Revenue</th>
-                    <th class="pb-3">Rating</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="border-b hover:bg-gray-50">
-                    <td class="py-4 font-bold text-primary">#1</td>
-                    <td class="py-4">
-                      <div class="flex items-center">
-                        <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
-                        <span>Gourmet Cheeseburger</span>
-                      </div>
-                    </td>
-                    <td class="py-4">Burger</td>
-                    <td class="py-4">420</td>
-                    <td class="py-4 font-bold">₹75,180</td>
-                    <td class="py-4">
-                      <div class="flex items-center">
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <span>4.8</span>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="border-b hover:bg-gray-50">
-                    <td class="py-4 font-bold text-primary">#2</td>
-                    <td class="py-4">
-                      <div class="flex items-center">
-                        <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
-                        <span>Truffle Margherita</span>
-                      </div>
-                    </td>
-                    <td class="py-4">Pizza</td>
-                    <td class="py-4">380</td>
-                    <td class="py-4 font-bold">₹113,620</td>
-                    <td class="py-4">
-                      <div class="flex items-center">
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <span>4.7</span>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="border-b hover:bg-gray-50">
-                    <td class="py-4 font-bold text-primary">#3</td>
-                    <td class="py-4">
-                      <div class="flex items-center">
-                        <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
-                        <span>Club Sandwich</span>
-                      </div>
-                    </td>
-                    <td class="py-4">Sandwich</td>
-                    <td class="py-4">290</td>
-                    <td class="py-4 font-bold">₹57,710</td>
-                    <td class="py-4">
-                      <div class="flex items-center">
-                        <i class="fas fa-star text-yellow-400 mr-1"></i>
-                        <span>4.6</span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-      </main>
+            <button onclick="changeAdminPassword()" class="btn-primary">Change Password</button>
+            <div id="settingsSpinner" class="spinner mt-4"></div>
+            <p id="settingsMessage" class="text-green-500 mt-2"></p>
+        </div>
+      </div>
     </div>
-  </div>
-  
-  <!-- Edit Menu Item Modal -->
-  <div id="editMenuItemModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-    <div class="bg-white w-11/12 md:w-2/3 lg:w-1/2 max-h-96 rounded-2xl shadow-2xl overflow-hidden">
-      <div class="p-6 bg-gradient-to-r from-primary to-accent text-white">
-        <h3 class="text-xl font-bold flex items-center">
-          <i class="fas fa-edit mr-2"></i> Edit Menu Item
-        </h3>
-      </div>
-      <div class="p-6 max-h-80 overflow-y-auto">
-        <form id="editMenuItemForm">
-          <input type="hidden" id="editItemId">
-          <div class="mb-4">
-            <label class="block text-gray-700 mb-2">Item Name</label>
-            <input type="text" id="editItemName" class="w-full p-2 border rounded" required>
-          </div>
-          
-          <div class="mb-4">
-            <label class="block text-gray-700 mb-2">Category</label>
-            <select id="editItemCategory" class="w-full p-2 border rounded" required>
-              <option value="Pizza">Pizza</option>
-              <option value="Burger">Burger</option>
-              <option value="Sandwich">Sandwich</option>
-              <option value="Shakes">Shakes</option>
-              <option value="Desserts">Desserts</option>
+  </div> <!-- End Admin Dashboard -->
+
+  <!-- Modals -->
+  <!-- Add/Edit Menu Item Modal -->
+<div id="menuItemModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeMenuItemModal()">&times;</span>
+    <h2 id="modalTitle" class="text-2xl font-bold mb-4">Add New Menu Item</h2>
+    <form id="menuItemForm">
+        <input type="hidden" id="editItemId">
+        <div class="form-group">
+            <label for="itemName">Item Name</label>
+            <input type="text" id="itemName" required>
+        </div>
+        <div class="form-group">
+            <label for="itemCategory">Category</label>
+            <select id="itemCategory" required>
+                <option value="">Select Category</option>
+                <option value="Pizza">Pizza</option>
+                <option value="Burger">Burger</option>
+                <option value="Sandwich">Sandwich</option>
+                <option value="Shakes">Shakes</option>
             </select>
-          </div>
-          
-          <div class="mb-4">
-            <label class="block text-gray-700 mb-2">Price (₹)</label>
-            <input type="number" id="editItemPrice" class="w-full p-2 border rounded" min="1" required>
-          </div>
-          
-          <div class="mb-4">
-            <label class="block text-gray-700 mb-2">Description</label>
-            <textarea id="editItemDescription" class="w-full p-2 border rounded" rows="3"></textarea>
-          </div>
-          
-          <div class="mb-4">
-            <label class="block text-gray-700 mb-2">Image URL</label>
-            <input type="url" id="editItemImage" class="w-full p-2 border rounded" required>
-          </div>
-          
-          <div class="flex justify-end space-x-3">
-            <button type="button" onclick="closeEditModal()" class="action-btn bg-gray-300">Cancel</button>
-            <button type="submit" class="action-btn btn-primary">Update Item</button>
-          </div>
-        </form>
-      </div>
-    </div>
+        </div>
+        <div class="form-group">
+            <label for="itemPrice">Price (₹)</label>
+            <input type="number" id="itemPrice" step="0.01" min="0" required>
+        </div>
+        <div class="form-group">
+            <label for="itemImage">Image</label>
+            <input type="file" id="itemImage" accept="image/*">
+            <img id="imagePreview" src="" alt="Image Preview" class="menu-image-preview mt-2" style="display:none;">
+        </div>
+        <button type="submit" class="btn-primary">Save Item</button>
+        <div id="menuModalSpinner" class="spinner"></div>
+        <p id="menuModalMessage" class="text-red-500 mt-2"></p>
+    </form>
   </div>
-  
+</div>
+
   <script>
-    // Supabase Configuration
-    const SUPABASE_URL = 'https://cfgjvbhfhfgskssopknn.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmZ2p2YmhmaGZnc2tzc29wa25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMDQ1MzQsImV4cCI6MjA2OTc4MDUzNH0.uAsDR4Vj7fSQ7q5Qz859WPzj7qlJIsHpF23Rl7dmj7w';
-    
-    // Initialize Supabase
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-    // DOM Elements
-    const adminLoginModal = document.getElementById('adminLoginModal');
-    const customerLoginModal = document.getElementById('customerLoginModal');
-    const adminDashboard = document.getElementById('adminDashboard');
-    const adminLoginForm = document.getElementById('adminLoginForm');
-    const customerLoginForm = document.getElementById('customerLoginForm');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const editMenuItemModal = document.getElementById('editMenuItemModal');
-    
-    // Sections
-    const sections = {
-      dashboard: document.getElementById('dashboardSection'),
-      orders: document.getElementById('ordersSection'),
-      menu: document.getElementById('menuSection'),
-      users: document.getElementById('usersSection'),
-      slides: document.getElementById('slidesSection'),
-      analytics: document.getElementById('analyticsSection')
-    };
-    
-    // Menu items array
-    let menuItems = [];
-    let orders = [];
-    let userHistory = [];
-    let favoriteOrders = [];
-    let customerPhone = null;
-    let customerLocation = null;
-    
-    // Show toast notification
-    function showtoast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
-      
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 3000);
-    }
-    
-    // Admin Login Form Handler
-    adminLoginForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const username = document.getElementById('adminUsername').value;
-      const password = document.getElementById('adminPassword').value;
-      
-      // Validate credentials (Simple validation without Supabase)
-      if (username === 'Sanu' && password === 'Sanu.0000') {
-        adminLoginModal.classList.add('hidden');
-        adminDashboard.classList.remove('hidden');
-        showtoast('Welcome to MIRDHUNA Admin!');
-        
-        // Reset form
-        document.getElementById('adminUsername').value = '';
-        document.getElementById('adminPassword').value = '';
-        
-        // Initialize dashboard
-        initDashboard();
-      } else {
-        showtoast('Invalid credentials. Please try again.');
-      }
-    });
-    
-    // Customer Login Form Handler
-    customerLoginForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const num = document.getElementById('mobileInput').value.trim();
-      
-      if (!num || num.length !== 10) {
-        showtoast('Please enter a valid 10-digit mobile number');
-        return;
-      }
-      
-      // Format phone number
-      customerPhone = '+91' + num;
-      
-      // Get customer location
-      getCustomerLocation()
-        .then(location => {
-          customerLocation = location;
-          customerLoginModal.classList.add('hidden');
-          showtoast(`Welcome back, customer! Location detected.`);
-          
-          // Reset form
-          document.getElementById('mobileInput').value = '';
-          
-          // Initialize customer dashboard (this would be in a separate file)
-          initCustomerDashboard();
-        })
-        .catch(error => {
-          showtoast('Location access denied. You can still order.');
-          customerLoginModal.classList.add('hidden');
-          
-          // Reset form
-          document.getElementById('mobileInput').value = '';
-          
-          // Initialize customer dashboard
-          initCustomerDashboard();
-        });
-    });
-    
-    // Get customer location
-    function getCustomerLocation() {
-      return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-          reject(new Error('Geolocation not supported'));
+    // --- State & Authentication ---
+    let currentAdmin = null;
+
+    // Auth State Listener
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            // Check if user is admin (you might want a more robust check, e.g., custom claims)
+            // For simplicity, we assume any logged-in user is an admin for this panel
+            currentAdmin = user;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            loadDashboardData();
+            loadMenuItems();
+            loadOrders();
+            loadUsers(); // This will depend on how you track users
         } else {
-          navigator.geolocation.getCurrentPosition(
-            position => {
-              const crd = position.coords;
-              resolve({
-                lat: crd.latitude,
-                lng: crd.longitude
-              });
-            },
-            error => {
-              reject(error);
-            },
-            {
-              enableHighAccuracy: true,
-              timeout: 10000,
-              maximumAge: 60000
+            currentAdmin = null;
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'none';
+            // Clear panels
+            document.getElementById('menuItemsList').innerHTML = 'Loading menu items...';
+            document.getElementById('ordersList').innerHTML = 'Loading orders...';
+            document.getElementById('usersList').innerHTML = 'Loading user data...';
+        }
+    });
+
+    // --- Admin Login/Logout ---
+    function adminLogin() {
+        const email = document.getElementById('adminEmail').value;
+        const password = document.getElementById('adminPassword').value;
+        const spinner = document.getElementById('loginSpinner');
+        const message = document.getElementById('loginMessage');
+
+        if (!email || !password) {
+            message.textContent = 'Please enter email and password.';
+            return;
+        }
+
+        spinner.style.display = 'block';
+        message.textContent = '';
+
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Signed in
+                const user = userCredential.user;
+                console.log("Admin logged in:", user.uid);
+                spinner.style.display = 'none';
+                // UI update is handled by onAuthStateChanged
+            })
+            .catch((error) => {
+                spinner.style.display = 'none';
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error("Login error:", errorCode, errorMessage);
+                if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password') {
+                    message.textContent = 'Invalid email or password.';
+                } else {
+                    message.textContent = 'Login failed: ' + errorMessage;
+                }
+            });
+    }
+
+    function adminLogout() {
+        auth.signOut().then(() => {
+            console.log("Admin logged out");
+            showToast('Logged out successfully.');
+            // UI update is handled by onAuthStateChanged
+        }).catch((error) => {
+            console.error("Logout error:", error);
+            showToast('Logout failed.');
+        });
+    }
+
+    // --- UI Navigation ---
+    function showPanel(panelName) {
+        // Hide all panels
+        document.querySelectorAll('.panel').forEach(panel => {
+            panel.style.display = 'none';
+        });
+        // Remove active class from nav items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Show the selected panel
+        document.getElementById(panelName + 'Panel').style.display = 'block';
+        // Add active class to the clicked nav item
+        event.target.classList.add('active');
+
+        // Refresh data if needed
+        if (panelName === 'menu') loadMenuItems();
+        if (panelName === 'orders') loadOrders();
+        if (panelName === 'users') loadUsers();
+    }
+
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast'; // Reset classes
+        if (isError) {
+            toast.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+        } else {
+            toast.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
+        }
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // --- Dashboard Data ---
+    function loadDashboardData() {
+        // Total Orders
+        db.collection('orders').onSnapshot(snapshot => {
+            document.getElementById('totalOrders').textContent = snapshot.size;
+            // Pending Orders
+            const pendingCount = snapshot.docs.filter(doc => doc.data().status === 'pending').length;
+            document.getElementById('pendingOrders').textContent = pendingCount;
+        }, err => {
+            console.error("Error loading orders for dashboard:", err);
+            document.getElementById('totalOrders').textContent = 'Error';
+            document.getElementById('pendingOrders').textContent = 'Error';
+        });
+
+        // Total Menu Items
+        db.collection('menuItems').onSnapshot(snapshot => {
+            document.getElementById('totalMenuItems').textContent = snapshot.size;
+        }, err => {
+            console.error("Error loading menu items for dashboard:", err);
+            document.getElementById('totalMenuItems').textContent = 'Error';
+        });
+
+        // Recent Orders (last 5)
+        db.collection('orders').orderBy('timestamp', 'desc').limit(5).onSnapshot(snapshot => {
+            const list = document.getElementById('recentOrdersList');
+            list.innerHTML = '';
+            if (snapshot.empty) {
+                list.innerHTML = '<p>No recent orders.</p>';
+                return;
             }
-          );
-        }
-      });
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <thead>
+                    <tr><th>Order ID</th><th>User</th><th>Items</th><th>Status</th></tr>
+                </thead>
+                <tbody id="recentOrdersTableBody"></tbody>
+            `;
+            const tbody = table.querySelector('#recentOrdersTableBody');
+            snapshot.forEach(doc => {
+                const order = doc.data();
+                const row = document.createElement('tr');
+                const itemsCount = order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
+                row.innerHTML = `
+                    <td>${doc.id.substring(0, 6)}...</td>
+                    <td>${order.userMobile || 'N/A'}</td>
+                    <td>${itemsCount} items</td>
+                    <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+            list.appendChild(table);
+        }, err => {
+            console.error("Error loading recent orders:", err);
+            document.getElementById('recentOrdersList').innerHTML = '<p>Error loading orders.</p>';
+        });
     }
-    
-    // Logout Handler
-    logoutBtn.addEventListener('click', function() {
-      adminDashboard.classList.add('hidden');
-      adminLoginModal.classList.remove('hidden');
-      showtoast('You have been logged out.');
+
+    // --- Menu Management ---
+    function loadMenuItems() {
+        const list = document.getElementById('menuItemsList');
+        list.innerHTML = '<div class="spinner" style="display:block;"></div>';
+
+        db.collection('menuItems').onSnapshot(snapshot => {
+            list.innerHTML = '';
+            if (snapshot.empty) {
+                list.innerHTML = '<p>No menu items found.</p>';
+                return;
+            }
+            const grid = document.createElement('div');
+            grid.className = 'two-col-grid';
+            snapshot.forEach(doc => {
+                const item = doc.data();
+                const itemCard = document.createElement('div');
+                itemCard.className = 'card flex items-center justify-between';
+                itemCard.innerHTML = `
+                    <div class="flex items-center">
+                        <img src="${item.imageUrl || 'https://via.placeholder.com/60x40?text=No+Img'}" alt="${item.name}" class="menu-image-preview mr-4" onerror="this.src='https://via.placeholder.com/60x40?text=Error';">
+                        <div>
+                            <h3 class="font-semibold">${item.name}</h3>
+                            <p class="text-sm text-gray-600">${item.category} - ₹${item.price.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button onclick="openEditMenuItemModal('${doc.id}')" class="btn-secondary text-sm mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteMenuItem('${doc.id}')" class="btn-danger text-sm"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                grid.appendChild(itemCard);
+            });
+            list.appendChild(grid);
+        }, err => {
+            console.error("Error loading menu items:", err);
+            list.innerHTML = '<p class="text-red-500">Error loading menu items.</p>';
+        });
+    }
+
+    // Menu Item Modal Logic
+    document.getElementById('itemImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
     });
-    
-    // Navigation
-    document.querySelectorAll('.sidebar-item').forEach(item => {
-      item.addEventListener('click', function(e) {
+
+    document.getElementById('menuItemForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        // Update active state
-        document.querySelectorAll('.sidebar-item').forEach(i => {
-          i.classList.remove('active');
-          i.classList.add('text-gray-300');
-        });
-        this.classList.add('active');
-        this.classList.remove('text-gray-300');
-        this.classList.add('text-white');
-        
-        // Show selected section
-        const section = this.getAttribute('data-section');
-        Object.values(sections).forEach(sec => sec.classList.add('hidden'));
-        sections[section].classList.remove('hidden');
-        
-        // Load section data if needed
-        if (section === 'menu') {
-          loadMenuItems();
-        } else if (section === 'orders') {
-          loadOrders();
-        } else if (section === 'users') {
-          loadUserHistory();
-        } else if (section === 'slides') {
-          loadSlides();
-        } else if (section === 'analytics') {
-          loadAnalytics();
-        }
-      });
+        saveMenuItem();
     });
-    
-    // Initialize the dashboard
-    function initDashboard() {
-      // Subscribe to real-time updates
-      subscribeToRealtimeUpdates();
-      
-      // Load initial data
-      loadMenuItems();
-      loadOrders();
-      loadUserHistory();
-      loadSlides();
-      loadAnalytics();
-    }
-    
-    // Real-time Updates
-    function subscribeToRealtimeUpdates() {
-      // Subscribe to menu items
-      supabase
-        .channel('menu_items')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'menu_items'
-          },
-          (payload) => {
-            console.log('Menu item change:', payload);
-            loadMenuItems(); // Reload menu items
-          }
-        )
-        .subscribe();
-      
-      // Subscribe to orders
-      supabase
-        .channel('orders')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'orders'
-          },
-          (payload) => {
-            console.log('Order change:', payload);
-            loadOrders(); // Reload orders
-          }
-        )
-        .subscribe();
-      
-      // Subscribe to login logs
-      supabase
-        .channel('login_logs')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'login_logs'
-          },
-          (payload) => {
-            console.log('Login log change:', payload);
-            loadUserHistory(); // Reload user history
-          }
-        )
-        .subscribe();
-    }
-    
-    // Load Menu Items
-    async function loadMenuItems() {
-      try {
-        const { data, error } = await supabase
-          .from('menu_items')
-          .select('*')
-          .order('id');
-        
-        if (error) throw error;
-        
-        menuItems = data;
-        displayMenuItems();
-      } catch (error) {
-        console.error('Error loading menu items:', error);
-        showtoast('Failed to load menu items');
-        
-        // Fallback to mock data
-        menuItems = [
-          { id: 1, name: "Truffle Margherita", category: "Pizza", price: 299, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 2, name: "Gourmet Cheeseburger", category: "Burger", price: 179, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 3, name: "Avocado Club Sandwich", category: "Sandwich", price: 199, image_path: "https://images.unsplash.com/photo-1550547660-9be81d82d5c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 4, name: "Belgian Chocolate Shake", category: "Shakes", price: 149, image_path: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 5, name: "Spicy Pepperoni Feast", category: "Pizza", price: 349, image_path: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
-          { id: 6, name: "Vegan Power Burger", category: "Burger", price: 189, image_path: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
-        ];
-        displayMenuItems();
-      }
-    }
-    
-    // Display Menu Items (2 items per slot)
-    function displayMenuItems() {
-      const container = document.getElementById('menuItemsContainer');
-      container.innerHTML = '';
-      
-      if (menuItems.length === 0) {
-        container.innerHTML = '<p class="col-span-2 text-center py-8 text-gray-500">No menu items found</p>';
-        return;
-      }
-      
-      // Group items in pairs for two-column layout
-      for (let i = 0; i < menuItems.length; i += 2) {
-        const pair = menuItems.slice(i, i + 2);
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
-        
-        pair.forEach(item => {
-          const colDiv = document.createElement('div');
-          colDiv.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
-          colDiv.innerHTML = `
-            <img src="${item.image_path}" alt="${item.name}" class="menu-image">
-            <div class="p-4">
-              <h3 class="font-bold text-lg">${item.name}</h3>
-              <p class="text-primary font-semibold">₹${item.price}</p>
-              <p class="text-gray-600 text-sm mb-3">${item.description || 'No description'}</p>
-              <div class="flex justify-between items-center">
-                <button onclick="openEditModal(${item.id})" class="text-blue-500 hover:text-blue-700">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button onclick="deleteMenuItem(${item.id})" class="text-red-500 hover:text-red-700">
-                  <i class="fas fa-trash"></i>
-                </button>
-                <button onclick="addToCart(${item.id})" class="btn-primary px-4 py-2 rounded-full font-bold text-white shadow hover:shadow-lg transition">
-                  <i class="fas fa-plus mr-2"></i> Add to Cart
-                </button>
-              </div>
-            </div>
-          `;
-          rowDiv.appendChild(colDiv);
-        });
-        
-        // Fill empty slot if odd number of items
-        if (pair.length === 1) {
-          const emptyDiv = document.createElement('div');
-          emptyDiv.className = 'menu-card bg-white rounded-2xl overflow-hidden shadow-lg';
-          emptyDiv.innerHTML = `
-            <div class="bg-gray-200 h-48 flex items-center justify-center">
-              <i class="fas fa-plus text-gray-400 text-3xl"></i>
-            </div>
-            <div class="p-4">
-              <h3 class="font-bold text-lg">Add New Item</h3>
-              <p class="text-gray-600 text-sm mb-3">Click to add a new menu item</p>
-              <button onclick="openAddMenuItemModal()" class="btn-primary w-full py-2 rounded-full font-bold text-white shadow hover:shadow-lg transition">
-                <i class="fas fa-plus mr-2"></i> Add Item
-              </button>
-            </div>
-          `;
-          rowDiv.appendChild(emptyDiv);
-        }
-        
-        container.appendChild(rowDiv);
-      }
-    }
-    
-    // Open Add Menu Item Modal
+
     function openAddMenuItemModal() {
-      document.getElementById('addMenuItemForm').reset();
+        document.getElementById('modalTitle').textContent = 'Add New Menu Item';
+        document.getElementById('menuItemForm').reset();
+        document.getElementById('editItemId').value = '';
+        document.getElementById('imagePreview').style.display = 'none';
+        document.getElementById('imagePreview').src = '';
+        document.getElementById('menuModalMessage').textContent = '';
+        document.getElementById('menuModalSpinner').style.display = 'none';
+        document.getElementById('menuItemModal').style.display = 'block';
     }
-    
-    // Add Menu Item Form Handler
-    document.getElementById('addMenuItemForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const newItem = {
-        name: document.getElementById('menuItemName').value,
-        category: document.getElementById('menuItemCategory').value,
-        price: parseInt(document.getElementById('menuItemPrice').value),
-        description: document.getElementById('menuItemDescription').value,
-        image_path: document.getElementById('menuItemImageUrl').value
-      };
-      
-      try {
-        const { data, error } = await supabase
-          .from('menu_items')
-          .insert([newItem])
-          .select();
-        
-        if (error) throw error;
-        
-        showtoast('Menu item added successfully!');
-        document.getElementById('addMenuItemForm').reset();
-        loadMenuItems(); // Reload menu items
-      } catch (error) {
-        console.error('Error adding menu item:', error);
-        showtoast('Failed to add menu item');
-      }
-    });
-    
-    // Open Edit Modal
-    function openEditModal(itemId) {
-      const item = menuItems.find(i => i.id === itemId);
-      if (!item) return;
-      
-      document.getElementById('editItemId').value = item.id;
-      document.getElementById('editItemName').value = item.name;
-      document.getElementById('editItemCategory').value = item.category;
-      document.getElementById('editItemPrice').value = item.price;
-      document.getElementById('editItemDescription').value = item.description || '';
-      document.getElementById('editItemImage').value = item.image_path;
-      
-      editMenuItemModal.classList.remove('hidden');
+
+    function openEditMenuItemModal(itemId) {
+        db.collection('menuItems').doc(itemId).get().then(doc => {
+            if (doc.exists) {
+                const item = doc.data();
+                document.getElementById('modalTitle').textContent = 'Edit Menu Item';
+                document.getElementById('editItemId').value = doc.id;
+                document.getElementById('itemName').value = item.name;
+                document.getElementById('itemCategory').value = item.category;
+                document.getElementById('itemPrice').value = item.price;
+                document.getElementById('imagePreview').src = item.imageUrl || '';
+                document.getElementById('imagePreview').style.display = item.imageUrl ? 'block' : 'none';
+                document.getElementById('menuModalMessage').textContent = '';
+                document.getElementById('menuModalSpinner').style.display = 'none';
+                document.getElementById('menuItemModal').style.display = 'block';
+            } else {
+                showToast('Item not found.', true);
+            }
+        }).catch(error => {
+            console.error("Error fetching item for edit:", error);
+            showToast('Error fetching item.', true);
+        });
     }
-    
-    // Close Edit Modal
-    function closeEditModal() {
-      editMenuItemModal.classList.add('hidden');
+
+    function closeMenuItemModal() {
+        document.getElementById('menuItemModal').style.display = 'none';
     }
-    
-    // Edit Menu Item Form Handler
-    document.getElementById('editMenuItemForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const itemId = document.getElementById('editItemId').value;
-      const updatedItem = {
-        name: document.getElementById('editItemName').value,
-        category: document.getElementById('editItemCategory').value,
-        price: parseInt(document.getElementById('editItemPrice').value),
-        description: document.getElementById('editItemDescription').value,
-        image_path: document.getElementById('editItemImage').value
-      };
-      
-      try {
-        const { data, error } = await supabase
-          .from('menu_items')
-          .update(updatedItem)
-          .eq('id', itemId)
-          .select();
-        
-        if (error) throw error;
-        
-        showtoast('Menu item updated successfully!');
-        closeEditModal();
-        loadMenuItems(); // Reload menu items
-      } catch (error) {
-        console.error('Error updating menu item:', error);
-        showtoast('Failed to update menu item');
-      }
-    });
-    
-    // Delete Menu Item
-    async function deleteMenuItem(itemId) {
-      if (!confirm('Are you sure you want to delete this menu item?')) return;
-      
-      try {
-        const { error } = await supabase
-          .from('menu_items')
-          .delete()
-          .eq('id', itemId);
-        
-        if (error) throw error;
-        
-        showtoast('Menu item deleted successfully!');
-        loadMenuItems(); // Reload menu items
-      } catch (error) {
-        console.error('Error deleting menu item:', error);
-        showtoast('Failed to delete menu item');
-      }
+
+    function saveMenuItem() {
+        const itemId = document.getElementById('editItemId').value;
+        const name = document.getElementById('itemName').value;
+        const category = document.getElementById('itemCategory').value;
+        const price = parseFloat(document.getElementById('itemPrice').value);
+        const imageFile = document.getElementById('itemImage').files[0];
+        const spinner = document.getElementById('menuModalSpinner');
+        const message = document.getElementById('menuModalMessage');
+
+        if (!name || !category || isNaN(price) || price < 0) {
+            message.textContent = 'Please fill all fields correctly.';
+            return;
+        }
+
+        spinner.style.display = 'block';
+        message.textContent = '';
+
+        let savePromise;
+        if (itemId) {
+            // Edit existing item
+            const updateData = { name, category, price };
+            if (imageFile) {
+                // If a new image is uploaded, upload it first
+                const storageRef = storage.ref();
+                const imageRef = storageRef.child(`menu_images/${itemId}_${Date.now()}_${imageFile.name}`);
+                imageRef.put(imageFile).then(snapshot => snapshot.ref.getDownloadURL())
+                    .then(url => {
+                        updateData.imageUrl = url;
+                        return db.collection('menuItems').doc(itemId).update(updateData);
+                    })
+                    .then(() => {
+                        spinner.style.display = 'none';
+                        closeMenuItemModal();
+                        showToast('Item updated successfully!');
+                    })
+                    .catch(error => {
+                        spinner.style.display = 'none';
+                        console.error("Error updating item:", error);
+                        message.textContent = 'Error updating item: ' + error.message;
+                    });
+            } else {
+                // No new image, just update data
+                savePromise = db.collection('menuItems').doc(itemId).update(updateData);
+            }
+        } else {
+            // Add new item
+            const newItem = { name, category, price, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
+            savePromise = db.collection('menuItems').add(newItem).then(docRef => {
+                if (imageFile) {
+                    const storageRef = storage.ref();
+                    const imageRef = storageRef.child(`menu_images/${docRef.id}_${Date.now()}_${imageFile.name}`);
+                    return imageRef.put(imageFile).then(snapshot => snapshot.ref.getDownloadURL())
+                        .then(url => {
+                            return db.collection('menuItems').doc(docRef.id).update({ imageUrl: url });
+                        });
+                }
+            });
+        }
+
+        if (savePromise && !itemId) { // Only for new items without image upload in this path
+             savePromise.then(() => {
+                spinner.style.display = 'none';
+                closeMenuItemModal();
+                showToast('Item added successfully!');
+            }).catch(error => {
+                spinner.style.display = 'none';
+                console.error("Error adding item:", error);
+                message.textContent = 'Error adding item: ' + error.message;
+            });
+        } else if(savePromise && itemId) { // For edit without new image
+             savePromise.then(() => {
+                spinner.style.display = 'none';
+                closeMenuItemModal();
+                showToast('Item updated successfully!');
+            }).catch(error => {
+                spinner.style.display = 'none';
+                console.error("Error updating item:", error);
+                message.textContent = 'Error updating item: ' + error.message;
+            });
+        }
+        // If itemId and imageFile, the promise chain handles it above
     }
-    
-    // Load Orders
-    async function loadOrders() {
-      try {
-        const { data, error } = await supabase
-          .from('orders')
-          .select('*')
-          .order('ordered_at', { ascending: false })
-          .limit(10);
-        
-        if (error) throw error;
-        
-        orders = data;
-        displayOrders();
-      } catch (error) {
-        console.error('Error loading orders:', error);
-        showtoast('Failed to load orders');
-        
-        // Fallback to mock data
-        orders = [
-          { id: 1001, user_phone: "+91 9835124772", items: [{name: "Gourmet Cheeseburger", qty: 1}, {name: "Truffle Fries", qty: 1}], total: 209, status: "pending", user_location: {lat: 26.8467, lng: 75.8158}, ordered_at: "2023-06-15T10:23:00Z" },
-          { id: 1002, user_phone: "+91 9876543210", items: [{name: "Truffle Margherita", qty: 1}], total: 299, status: "preparing", user_location: {lat: 26.8523, lng: 75.8210}, ordered_at: "2023-06-15T09:45:00Z" },
-          { id: 1003, user_phone: "+91 9123456789", items: [{name: "Avocado Club Sandwich", qty: 2}], total: 398, status: "ready", user_location: {lat: 26.8391, lng: 75.8082}, ordered_at: "2023-06-15T08:30:00Z" }
-        ];
-        displayOrders();
-      }
+
+    function deleteMenuItem(itemId) {
+        if (confirm('Are you sure you want to delete this menu item?')) {
+            // Optional: Delete image from Storage first
+            db.collection('menuItems').doc(itemId).delete()
+                .then(() => {
+                    showToast('Item deleted successfully!');
+                    // Image deletion from Storage is more complex and requires knowing the URL
+                    // It's often left as is or handled by a cloud function
+                })
+                .catch(error => {
+                    console.error("Error deleting item:", error);
+                    showToast('Error deleting item.', true);
+                });
+        }
     }
-    
-    // Display Orders
-    function displayOrders() {
-      const container = document.getElementById('ordersTableBody');
-      container.innerHTML = '';
-      
-      if (orders.length === 0) {
-        container.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No orders found</td></tr>';
-        return;
-      }
-      
-      orders.slice(0, 5).forEach(order => {
-        const orderRow = document.createElement('tr');
-        orderRow.className = 'border-b hover:bg-gray-50';
-        orderRow.innerHTML = `
-          <td class="py-4 font-medium">#${order.id.toString().slice(-4)}</td>
-          <td class="py-4">
-            <div class="flex items-center">
-              <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-2">
-                <i class="fas fa-user text-gray-600 text-xs"></i>
-              </div>
-              <div>
-                <p>${order.user_phone}</p>
-                <p class="text-xs text-gray-500">Lat: ${order.user_location?.lat || 'N/A'}, Lng: ${order.user_location?.lng || 'N/A'}</p>
-              </div>
-            </div>
-          </td>
-          <td class="py-4">
-            <ul class="space-y-1">
-              ${order.items.map(item => `<li>${item.name} x${item.qty}</li>`).join('')}
-            </ul>
-          </td>
-          <td class="py-4 font-bold">₹${order.total}</td>
-          <td class="py-4">
-            <span class="status-badge ${
-              order.status === 'pending' ? 'status-pending' :
-              order.status === 'preparing' ? 'status-preparing' :
-              order.status === 'ready' ? 'status-ready' : 'status-delivered'
-            }">${order.status}</span>
-          </td>
-          <td class="py-4">
-            <div class="flex space-x-2">
-              <button class="action-btn btn-primary text-sm">Process</button>
-              <button class="action-btn btn-danger text-sm">Cancel</button>
-            </div>
-          </td>
-        `;
-        container.appendChild(orderRow);
-      });
+
+    // --- Order Management ---
+    function loadOrders() {
+        const list = document.getElementById('ordersList');
+        list.innerHTML = '<div class="spinner" style="display:block;"></div>';
+
+        db.collection('orders').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+            list.innerHTML = '';
+            if (snapshot.empty) {
+                list.innerHTML = '<p>No orders found.</p>';
+                return;
+            }
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <thead>
+                    <tr><th>Order ID</th><th>User Mobile</th><th>Items</th><th>Total</th><th>Location</th><th>Time</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="ordersTableBody"></tbody>
+            `;
+            const tbody = table.querySelector('#ordersTableBody');
+            snapshot.forEach(doc => {
+                const order = doc.data();
+                const row = document.createElement('tr');
+                const orderId = doc.id;
+                const itemsHtml = order.items ? order.items.map(i => `${i.name} (x${i.quantity})`).join('<br>') : 'N/A';
+                let total = 0;
+                if (order.items) {
+                    total = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                }
+                const locationLink = order.location ? `<a href="https://maps.google.com/?q=${order.location.latitude},${order.location.longitude}" target="_blank" class="text-blue-500 hover:underline">View Map</a>` : 'N/A';
+                const timestamp = order.timestamp ? new Date(order.timestamp.toDate()).toLocaleString() : 'N/A';
+
+                row.innerHTML = `
+                    <td>${orderId.substring(0, 6)}...</td>
+                    <td>${order.userMobile || 'N/A'}</td>
+                    <td>${itemsHtml}</td>
+                    <td>₹${total.toFixed(2)}</td>
+                    <td>${locationLink}</td>
+                    <td>${timestamp}</td>
+                    <td>
+                        <select onchange="updateOrderStatus('${orderId}', this.value)" class="status-badge status-${order.status}">
+                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>Preparing</option>
+                            <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>Ready</option>
+                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button onclick="deleteOrder('${orderId}')" class="btn-danger text-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            list.appendChild(table);
+        }, err => {
+            console.error("Error loading orders:", err);
+            list.innerHTML = '<p class="text-red-500">Error loading orders.</p>';
+        });
     }
-    
-    // Load User History
-    async function loadUserHistory() {
-      try {
-        const { data, error } = await supabase
-          .from('login_logs')
-          .select('*')
-          .order('timestamp', { ascending: false })
-          .limit(10);
-        
-        if (error) throw error;
-        
-        userHistory = data;
-        displayUserHistory();
-      } catch (error) {
-        console.error('Error loading user history:', error);
-        showtoast('Failed to load user history');
-        
-        // Fallback to mock data
-        userHistory = [
-          { phone: "+91 9835124772", timestamp: "2023-06-15T10:20:00Z", location_lat: 26.8467, location_lng: 75.8158 },
-          { phone: "+91 9876543210", timestamp: "2023-06-15T09:40:00Z", location_lat: 26.8523, location_lng: 75.8210 },
-          { phone: "+91 9123456789", timestamp: "2023-06-15T08:25:00Z", location_lat: 26.8391, location_lng: 75.8082 }
-        ];
-        displayUserHistory();
-      }
+
+    function updateOrderStatus(orderId, newStatus) {
+        db.collection('orders').doc(orderId).update({ status: newStatus })
+            .then(() => {
+                console.log("Order status updated");
+                showToast(`Order status updated to ${newStatus}.`);
+                 // Trigger WhatsApp notification to user if status changes to 'ready'
+                if (newStatus === 'ready') {
+                     db.collection('orders').doc(orderId).get().then(doc => {
+                        if (doc.exists) {
+                            const orderData = doc.data();
+                            sendOrderReadyWhatsApp(orderData.userMobile, orderId, orderData.items);
+                        }
+                     });
+                }
+            })
+            .catch(error => {
+                console.error("Error updating order status:", error);
+                showToast('Error updating status.', true);
+                 // Revert select box on error (basic UX)
+                 loadOrders(); // Reload to revert
+            });
     }
-    
-    // Display User History
-    function displayUserHistory() {
-      const container = document.getElementById('userHistoryTableBody');
-      container.innerHTML = '';
-      
-      if (userHistory.length === 0) {
-        container.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">No user history found</td></tr>';
-        return;
-      }
-      
-      userHistory.slice(0, 5).forEach(log => {
-        const logRow = document.createElement('tr');
-        logRow.className = 'border-b hover:bg-gray-50';
-        logRow.innerHTML = `
-          <td class="py-4 font-medium">${log.phone}</td>
-          <td class="py-4">${new Date(log.timestamp).toLocaleString()}</td>
-          <td class="py-4">Jaipur, Rajasthan</td>
-          <td class="py-4">${log.location_lat || 'N/A'}, ${log.location_lng || 'N/A'}</td>
-          <td class="py-4">Samsung Galaxy S21</td>
-        `;
-        container.appendChild(logRow);
-      });
+
+    function deleteOrder(orderId) {
+        if (confirm('Are you sure you want to delete this order?')) {
+            db.collection('orders').doc(orderId).delete()
+                .then(() => {
+                    showToast('Order deleted successfully!');
+                })
+                .catch(error => {
+                    console.error("Error deleting order:", error);
+                    showToast('Error deleting order.', true);
+                });
+        }
     }
-    
-    // Load Slides
-    async function loadSlides() {
-      try {
-        const { data, error } = await supabase
-          .from('slides')
-          .select('*')
-          .order('id');
-        
-        if (error) throw error;
-        
-        // Slides are already handled in HTML
-        console.log('Slides loaded:', data);
-      } catch (error) {
-        console.error('Error loading slides:', error);
-        showtoast('Failed to load slides');
-      }
+
+     function sendOrderReadyWhatsApp(userMobile, orderId, items) {
+        if (!userMobile) {
+            console.warn("No user mobile number to send WhatsApp notification.");
+            return;
+        }
+        let messageBody = `*Hello from MIRDHUNA Cafe!*\n\n`;
+        messageBody += `Your order (ID: ...${orderId.substring(orderId.length - 6)}) is now *Ready for Pickup*!\n\n`;
+        messageBody += `*Order Summary:*\n`;
+        let total = 0;
+        items.forEach(item => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            messageBody += `- ${item.name} x ${item.quantity} = ₹${itemTotal.toFixed(2)}\n`;
+        });
+        messageBody += `\n*Total:* ₹${total.toFixed(2)}\n`;
+        messageBody += `\nPlease come and collect your order. Thank you!`;
+
+        const encodedMessage = encodeURIComponent(messageBody);
+        const userLink = `https://wa.me/${userMobile}?text=${encodedMessage}`;
+        // Open link to send message (user needs to send it)
+        // For automated sending, a backend service is recommended.
+        window.open(userLink, '_blank');
+        console.log("Order ready WhatsApp link generated for user:", userLink);
+     }
+
+
+    // --- User Login History ---
+    // This assumes you have a 'users' collection in Firestore where you store user data (mobile) upon login.
+    // If you only rely on Authentication, you can't easily get a history without custom logic.
+    function loadUsers() {
+        const list = document.getElementById('usersList');
+        // Placeholder: Indicate dependency
+        list.innerHTML = '<p class="text-gray-600"><i class="fas fa-info-circle mr-2"></i> This feature requires storing user login data (mobile number) in a Firestore collection (e.g., `users`) when they log in via the main site. The structure would be like: { mobile: "9835124772", lastLogin: Timestamp }.</p><p>Simulating data...</p>';
+
+        // Simulate loading user data from a hypothetical 'users' collection
+        // In a real scenario, this would be .onSnapshot like other collections
+        setTimeout(() => {
+             list.innerHTML = '<div class="spinner" style="display:block;"></div>';
+             // Simulate fetching data
+             setTimeout(() => {
+                  list.innerHTML = '';
+                  // Example simulated data structure
+                  const simulatedUsers = [
+                      { id: 'sim1', mobile: '9835124772', lastLogin: new Date(Date.now() - 2 * 60 * 60 * 1000) }, // 2 hours ago
+                      { id: 'sim2', mobile: '9998887776', lastLogin: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) }, // 1 day ago
+                      { id: 'sim3', mobile: '8887776665', lastLogin: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) }, // 3 days ago
+                  ];
+
+                  if (simulatedUsers.length === 0) {
+                      list.innerHTML = '<p>No user login data found.</p>';
+                      return;
+                  }
+                  const table = document.createElement('table');
+                  table.innerHTML = `
+                      <thead>
+                          <tr><th>User ID</th><th>Mobile Number</th><th>Last Login</th></tr>
+                      </thead>
+                      <tbody id="usersTableBody"></tbody>
+                  `;
+                  const tbody = table.querySelector('#usersTableBody');
+                  simulatedUsers.forEach(user => {
+                      const row = document.createElement('tr');
+                      row.innerHTML = `
+                          <td>${user.id}</td>
+                          <td>${user.mobile}</td>
+                          <td>${user.lastLogin.toLocaleString()}</td>
+                      `;
+                      tbody.appendChild(row);
+                  });
+                  list.appendChild(table);
+             }, 1000); // Simulate network delay
+        }, 500); // Simulate initial delay
     }
-    
-    // Load Analytics
-    async function loadAnalytics() {
-      try {
-        const { data, error } = await supabase
-          .from('analytics')
-          .select('*');
-        
-        if (error) throw error;
-        
-        // Analytics are already handled in HTML
-        console.log('Analytics loaded:', data);
-      } catch (error) {
-        console.error('Error loading analytics:', error);
-        showtoast('Failed to load analytics');
-      }
+
+    // --- Settings ---
+    function changeAdminPassword() {
+        // This is a SIMULATION. Actual password change requires Firebase Auth methods
+        // like re-authentication and updatePassword, which is more complex.
+        const currentPass = document.getElementById('currentPassword').value;
+        const newPass = document.getElementById('newPassword').value;
+        const confirmPass = document.getElementById('confirmNewPassword').value;
+        const spinner = document.getElementById('settingsSpinner');
+        const message = document.getElementById('settingsMessage');
+
+        if (!currentPass || !newPass || !confirmPass) {
+            message.textContent = 'Please fill in all fields.';
+            message.className = 'text-red-500 mt-2';
+            return;
+        }
+        if (newPass !== confirmPass) {
+            message.textContent = 'New passwords do not match.';
+            message.className = 'text-red-500 mt-2';
+            return;
+        }
+        if (newPass.length < 6) {
+             message.textContent = 'New password must be at least 6 characters.';
+             message.className = 'text-red-500 mt-2';
+             return;
+        }
+
+        spinner.style.display = 'block';
+        message.textContent = '';
+
+        // Simulate API call delay
+        setTimeout(() => {
+            spinner.style.display = 'none';
+            // Simulate success
+            message.textContent = 'Password changed successfully (simulated)!';
+            message.className = 'text-green-500 mt-2';
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+            showToast('Password change simulated.');
+        }, 1500);
     }
-    
-    // Initialize customer dashboard (would be in separate file)
-    function initCustomerDashboard() {
-      // This would initialize the customer-facing dashboard
-      console.log('Customer dashboard initialized for:', customerPhone);
-      console.log('Customer location:', customerLocation);
+
+    // Close modals if clicked outside
+    window.onclick = function(event) {
+        if (event.target.id === 'menuItemModal') {
+            closeMenuItemModal();
+        }
     }
-    
-    // Initialize the app when page loads
-    window.onload = function() {
-      // Set initial active section
-      document.querySelector('.sidebar-item[data-section="dashboard"]').click();
-      
-      // Show admin login modal
-      adminLoginModal.classList.remove('hidden');
-    };
+
   </script>
+
 </body>
-  </html>
+</html>
