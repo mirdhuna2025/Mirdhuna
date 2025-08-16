@@ -9,19 +9,21 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Firebase App (the core Firebase SDK) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-  <!-- Firebase Firestore -->
+  <!-- Firebase Firestore (for Menu Management) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-  <!-- Firebase Auth -->
+  <!-- Firebase Auth (for Admin Login) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-  <!-- Firebase Storage -->
+  <!-- Firebase Storage (for Menu Image Uploads) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+  <!-- Firebase Realtime Database (for Orders) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 
   <script>
     // Your web app's Firebase configuration (SAME as index.html)
     const firebaseConfig = {
       apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
       authDomain: "mirdhuna-25542.firebaseapp.com",
-      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com", // RTDB URL
       projectId: "mirdhuna-25542",
       storageBucket: "mirdhuna-25542.firebasestorage.app",
       messagingSenderId: "575924409876",
@@ -31,9 +33,10 @@
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    const storage = firebase.storage();
+    const db = firebase.firestore(); // For Menu Items
+    const auth = firebase.auth();     // For Admin Auth
+    const storage = firebase.storage(); // For Image Storage
+    const database = firebase.database(); // For Orders (RTDB)
 
     tailwind.config = {
       theme: {
@@ -326,7 +329,7 @@
         </div>
       </div>
 
-      <!-- Menu Management Panel -->
+      <!-- Menu Management Panel (Uses Firestore) -->
       <div id="menuPanel" class="panel" style="display:none;">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold">Menu Management</h1>
@@ -338,7 +341,7 @@
         </div>
       </div>
 
-      <!-- Order Management Panel -->
+      <!-- Order Management Panel (Uses RTDB) -->
       <div id="ordersPanel" class="panel" style="display:none;">
         <h1 class="text-3xl font-bold mb-6">Order Management</h1>
         <div class="card">
@@ -347,19 +350,17 @@
         </div>
       </div>
 
-       <!-- User Login History Panel -->
+       <!-- User Login History Panel (Placeholder) -->
       <div id="usersPanel" class="panel" style="display:none;">
         <h1 class="text-3xl font-bold mb-6">User Login History</h1>
         <div class="card">
             <h2 class="text-xl font-semibold mb-4">Logged In Users</h2>
-            <!-- Note: This assumes you have a way to track user logins, e.g., storing in Firestore on login -->
-            <!-- For this example, we'll simulate it or note it's not directly available via Auth alone -->
-            <p class="text-gray-600 mb-4"><i class="fas fa-info-circle mr-2"></i> User login history tracking requires storing user data (mobile number) in Firestore upon login. This panel will display that data.</p>
+            <p class="text-gray-600 mb-4"><i class="fas fa-info-circle mr-2"></i> User login history tracking requires storing user data (mobile number) in Firestore or RTDB upon login. This panel will display that data.</p>
             <div id="usersList">Loading user data...</div>
         </div>
       </div>
 
-      <!-- Settings Panel -->
+      <!-- Settings Panel (Placeholder) -->
       <div id="settingsPanel" class="panel" style="display:none;">
         <h1 class="text-3xl font-bold mb-6">Admin Settings</h1>
         <div class="card">
@@ -386,7 +387,7 @@
   </div> <!-- End Admin Dashboard -->
 
   <!-- Modals -->
-  <!-- Add/Edit Menu Item Modal -->
+  <!-- Add/Edit Menu Item Modal (Uses Firestore) -->
 <div id="menuItemModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeMenuItemModal()">&times;</span>
@@ -426,19 +427,18 @@
   <script>
     // --- State & Authentication ---
     let currentAdmin = null;
+    let ordersUnsubscribe = null; // To hold the RTDB orders listener
 
     // Auth State Listener
     auth.onAuthStateChanged(user => {
         if (user) {
-            // Check if user is admin (you might want a more robust check, e.g., custom claims)
-            // For simplicity, we assume any logged-in user is an admin for this panel
             currentAdmin = user;
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
             loadDashboardData();
-            loadMenuItems();
-            loadOrders();
-            loadUsers(); // This will depend on how you track users
+            loadMenuItems(); // Uses Firestore
+            loadOrders(); // Uses RTDB
+            loadUsers(); // Placeholder
         } else {
             currentAdmin = null;
             document.getElementById('loginScreen').style.display = 'block';
@@ -447,6 +447,12 @@
             document.getElementById('menuItemsList').innerHTML = 'Loading menu items...';
             document.getElementById('ordersList').innerHTML = 'Loading orders...';
             document.getElementById('usersList').innerHTML = 'Loading user data...';
+            // Unsubscribe from RTDB listeners
+            if (ordersUnsubscribe) {
+                const ordersRef = database.ref('orders');
+                ordersRef.off('value', ordersUnsubscribe);
+                ordersUnsubscribe = null;
+            }
         }
     });
 
@@ -467,7 +473,6 @@
 
         auth.signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                // Signed in
                 const user = userCredential.user;
                 console.log("Admin logged in:", user.uid);
                 spinner.style.display = 'none';
@@ -499,21 +504,16 @@
 
     // --- UI Navigation ---
     function showPanel(panelName) {
-        // Hide all panels
         document.querySelectorAll('.panel').forEach(panel => {
             panel.style.display = 'none';
         });
-        // Remove active class from nav items
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
         });
 
-        // Show the selected panel
         document.getElementById(panelName + 'Panel').style.display = 'block';
-        // Add active class to the clicked nav item
         event.target.classList.add('active');
 
-        // Refresh data if needed
         if (panelName === 'menu') loadMenuItems();
         if (panelName === 'orders') loadOrders();
         if (panelName === 'users') loadUsers();
@@ -522,7 +522,7 @@
     function showToast(message, isError = false) {
         const toast = document.getElementById('toast');
         toast.textContent = message;
-        toast.className = 'toast'; // Reset classes
+        toast.className = 'toast';
         if (isError) {
             toast.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
         } else {
@@ -534,21 +534,9 @@
         }, 3000);
     }
 
-    // --- Dashboard Data ---
+    // --- Dashboard Data (Uses RTDB for orders, Firestore for menu items) ---
     function loadDashboardData() {
-        // Total Orders
-        db.collection('orders').onSnapshot(snapshot => {
-            document.getElementById('totalOrders').textContent = snapshot.size;
-            // Pending Orders
-            const pendingCount = snapshot.docs.filter(doc => doc.data().status === 'pending').length;
-            document.getElementById('pendingOrders').textContent = pendingCount;
-        }, err => {
-            console.error("Error loading orders for dashboard:", err);
-            document.getElementById('totalOrders').textContent = 'Error';
-            document.getElementById('pendingOrders').textContent = 'Error';
-        });
-
-        // Total Menu Items
+        // Total Menu Items (Firestore)
         db.collection('menuItems').onSnapshot(snapshot => {
             document.getElementById('totalMenuItems').textContent = snapshot.size;
         }, err => {
@@ -556,42 +544,73 @@
             document.getElementById('totalMenuItems').textContent = 'Error';
         });
 
-        // Recent Orders (last 5)
-        db.collection('orders').orderBy('timestamp', 'desc').limit(5).onSnapshot(snapshot => {
-            const list = document.getElementById('recentOrdersList');
-            list.innerHTML = '';
-            if (snapshot.empty) {
-                list.innerHTML = '<p>No recent orders.</p>';
-                return;
-            }
-            const table = document.createElement('table');
-            table.innerHTML = `
-                <thead>
-                    <tr><th>Order ID</th><th>User</th><th>Items</th><th>Status</th></tr>
-                </thead>
-                <tbody id="recentOrdersTableBody"></tbody>
-            `;
-            const tbody = table.querySelector('#recentOrdersTableBody');
-            snapshot.forEach(doc => {
-                const order = doc.data();
-                const row = document.createElement('tr');
-                const itemsCount = order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
-                row.innerHTML = `
-                    <td>${doc.id.substring(0, 6)}...</td>
-                    <td>${order.userMobile || 'N/A'}</td>
-                    <td>${itemsCount} items</td>
-                    <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+        // Orders Data (RTDB)
+        const ordersRef = database.ref('orders');
+        ordersUnsubscribe = ordersRef.on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                const allOrders = snapshot.val();
+                const orderIds = Object.keys(allOrders);
+                const totalOrders = orderIds.length;
+
+                let pendingCount = 0;
+                orderIds.forEach(id => {
+                    if (allOrders[id].status === 'pending') {
+                        pendingCount++;
+                    }
+                });
+
+                document.getElementById('totalOrders').textContent = totalOrders;
+                document.getElementById('pendingOrders').textContent = pendingCount;
+
+                // Recent Orders (last 5)
+                const recentOrdersList = document.getElementById('recentOrdersList');
+                recentOrdersList.innerHTML = '';
+
+                // Convert to array and sort by timestamp (newest first)
+                const ordersArray = orderIds.map(id => ({ id, ...allOrders[id] }));
+                ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                const recentOrders = ordersArray.slice(0, 5);
+
+                if (recentOrders.length === 0) {
+                    recentOrdersList.innerHTML = '<p>No recent orders.</p>';
+                    return;
+                }
+
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <thead>
+                        <tr><th>Order ID</th><th>User</th><th>Items</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="recentOrdersTableBody"></tbody>
                 `;
-                tbody.appendChild(row);
-            });
-            list.appendChild(table);
-        }, err => {
-            console.error("Error loading recent orders:", err);
+                const tbody = table.querySelector('#recentOrdersTableBody');
+                recentOrders.forEach(order => {
+                    const row = document.createElement('tr');
+                    const itemsCount = order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
+                    row.innerHTML = `
+                        <td>${order.id.substring(0, 6)}...</td>
+                        <td>${order.userMobile || 'N/A'}</td>
+                        <td>${itemsCount} items</td>
+                        <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                recentOrdersList.appendChild(table);
+
+            } else {
+                document.getElementById('totalOrders').textContent = '0';
+                document.getElementById('pendingOrders').textContent = '0';
+                document.getElementById('recentOrdersList').innerHTML = '<p>No recent orders.</p>';
+            }
+        }, (error) => {
+            console.error("Error loading orders for dashboard from RTDB:", error);
+            document.getElementById('totalOrders').textContent = 'Error';
+            document.getElementById('pendingOrders').textContent = 'Error';
             document.getElementById('recentOrdersList').innerHTML = '<p>Error loading orders.</p>';
         });
     }
 
-    // --- Menu Management ---
+    // --- Menu Management (Uses Firestore) ---
     function loadMenuItems() {
         const list = document.getElementById('menuItemsList');
         list.innerHTML = '<div class="spinner" style="display:block;"></div>';
@@ -625,12 +644,12 @@
             });
             list.appendChild(grid);
         }, err => {
-            console.error("Error loading menu items:", err);
+            console.error("Error loading menu items from Firestore:", err);
             list.innerHTML = '<p class="text-red-500">Error loading menu items.</p>';
         });
     }
 
-    // Menu Item Modal Logic
+    // Menu Item Modal Logic (Firestore)
     document.getElementById('itemImage').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -645,7 +664,7 @@
 
     document.getElementById('menuItemForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        saveMenuItem();
+        saveMenuItem(); // Uses Firestore
     });
 
     function openAddMenuItemModal() {
@@ -677,7 +696,7 @@
                 showToast('Item not found.', true);
             }
         }).catch(error => {
-            console.error("Error fetching item for edit:", error);
+            console.error("Error fetching item for edit from Firestore:", error);
             showToast('Error fetching item.', true);
         });
     }
@@ -686,7 +705,7 @@
         document.getElementById('menuItemModal').style.display = 'none';
     }
 
-    function saveMenuItem() {
+    function saveMenuItem() { // Uses Firestore
         const itemId = document.getElementById('editItemId').value;
         const name = document.getElementById('itemName').value;
         const category = document.getElementById('itemCategory').value;
@@ -705,10 +724,8 @@
 
         let savePromise;
         if (itemId) {
-            // Edit existing item
             const updateData = { name, category, price };
             if (imageFile) {
-                // If a new image is uploaded, upload it first
                 const storageRef = storage.ref();
                 const imageRef = storageRef.child(`menu_images/${itemId}_${Date.now()}_${imageFile.name}`);
                 imageRef.put(imageFile).then(snapshot => snapshot.ref.getDownloadURL())
@@ -723,15 +740,13 @@
                     })
                     .catch(error => {
                         spinner.style.display = 'none';
-                        console.error("Error updating item:", error);
+                        console.error("Error updating item in Firestore:", error);
                         message.textContent = 'Error updating item: ' + error.message;
                     });
             } else {
-                // No new image, just update data
                 savePromise = db.collection('menuItems').doc(itemId).update(updateData);
             }
         } else {
-            // Add new item
             const newItem = { name, category, price, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
             savePromise = db.collection('menuItems').add(newItem).then(docRef => {
                 if (imageFile) {
@@ -745,84 +760,111 @@
             });
         }
 
-        if (savePromise && !itemId) { // Only for new items without image upload in this path
+        if (savePromise && !itemId) {
              savePromise.then(() => {
                 spinner.style.display = 'none';
                 closeMenuItemModal();
                 showToast('Item added successfully!');
             }).catch(error => {
                 spinner.style.display = 'none';
-                console.error("Error adding item:", error);
+                console.error("Error adding item to Firestore:", error);
                 message.textContent = 'Error adding item: ' + error.message;
             });
-        } else if(savePromise && itemId) { // For edit without new image
+        } else if(savePromise && itemId) {
              savePromise.then(() => {
                 spinner.style.display = 'none';
                 closeMenuItemModal();
                 showToast('Item updated successfully!');
             }).catch(error => {
                 spinner.style.display = 'none';
-                console.error("Error updating item:", error);
+                console.error("Error updating item in Firestore:", error);
                 message.textContent = 'Error updating item: ' + error.message;
             });
         }
-        // If itemId and imageFile, the promise chain handles it above
     }
 
-    function deleteMenuItem(itemId) {
+    function deleteMenuItem(itemId) { // Uses Firestore
         if (confirm('Are you sure you want to delete this menu item?')) {
-            // Optional: Delete image from Storage first
             db.collection('menuItems').doc(itemId).delete()
                 .then(() => {
                     showToast('Item deleted successfully!');
-                    // Image deletion from Storage is more complex and requires knowing the URL
-                    // It's often left as is or handled by a cloud function
                 })
                 .catch(error => {
-                    console.error("Error deleting item:", error);
+                    console.error("Error deleting item from Firestore:", error);
                     showToast('Error deleting item.', true);
                 });
         }
     }
 
-    // --- Order Management ---
+    // --- Order Management (Uses RTDB) ---
     function loadOrders() {
         const list = document.getElementById('ordersList');
         list.innerHTML = '<div class="spinner" style="display:block;"></div>';
 
-        db.collection('orders').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+        // Close any existing listener
+        if (ordersUnsubscribe) {
+             const ordersRef = database.ref('orders');
+             ordersRef.off('value', ordersUnsubscribe);
+             ordersUnsubscribe = null;
+        }
+
+        const ordersRef = database.ref('orders');
+        ordersUnsubscribe = ordersRef.on('value', (snapshot) => {
             list.innerHTML = '';
-            if (snapshot.empty) {
+            if (!snapshot.exists()) {
                 list.innerHTML = '<p>No orders found.</p>';
                 return;
             }
+
+            const allOrders = snapshot.val();
+            const orderIds = Object.keys(allOrders);
+
+            if (orderIds.length === 0) {
+                list.innerHTML = '<p>No orders found.</p>';
+                return;
+            }
+
+            // Convert to array and sort by timestamp (newest first)
+            const ordersArray = orderIds.map(id => ({ id, ...allOrders[id] }));
+            ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
             const table = document.createElement('table');
             table.innerHTML = `
                 <thead>
-                    <tr><th>Order ID</th><th>User Mobile</th><th>Items</th><th>Total</th><th>Location</th><th>Time</th><th>Status</th><th>Actions</th></tr>
+                    <tr><th>Order ID</th><th>User Mobile</th><th>Items</th><th>Total</th><th>Time</th><th>Status</th><th>Actions</th></tr>
                 </thead>
                 <tbody id="ordersTableBody"></tbody>
             `;
             const tbody = table.querySelector('#ordersTableBody');
-            snapshot.forEach(doc => {
-                const order = doc.data();
+            ordersArray.forEach(order => {
                 const row = document.createElement('tr');
-                const orderId = doc.id;
+                const orderId = order.id;
                 const itemsHtml = order.items ? order.items.map(i => `${i.name} (x${i.quantity})`).join('<br>') : 'N/A';
                 let total = 0;
                 if (order.items) {
                     total = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 }
-                const locationLink = order.location ? `<a href="https://maps.google.com/?q=${order.location.latitude},${order.location.longitude}" target="_blank" class="text-blue-500 hover:underline">View Map</a>` : 'N/A';
-                const timestamp = order.timestamp ? new Date(order.timestamp.toDate()).toLocaleString() : 'N/A';
+                // Timestamp handling
+                const timestampRaw = order.timestamp;
+                let timestampDisplay = 'N/A';
+                if (typeof timestampRaw === 'number') {
+                    timestampDisplay = new Date(timestampRaw).toLocaleString();
+                } else if (timestampRaw && typeof timestampRaw === 'object' && timestampRaw['.sv'] === 'timestamp') {
+                    timestampDisplay = 'Just now';
+                } else if (timestampRaw) {
+                     try {
+                         timestampDisplay = new Date(timestampRaw).toLocaleString();
+                     } catch (e) {
+                         timestampDisplay = String(timestampRaw);
+                     }
+                }
 
                 row.innerHTML = `
                     <td>${orderId.substring(0, 6)}...</td>
                     <td>${order.userMobile || 'N/A'}</td>
                     <td>${itemsHtml}</td>
                     <td>₹${total.toFixed(2)}</td>
-                    <td>${locationLink}</td>
-                    <td>${timestamp}</td>
+                    <td>${timestampDisplay}</td>
                     <td>
                         <select onchange="updateOrderStatus('${orderId}', this.value)" class="status-badge status-${order.status}">
                             <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
@@ -838,126 +880,67 @@
                 tbody.appendChild(row);
             });
             list.appendChild(table);
-        }, err => {
-            console.error("Error loading orders:", err);
+        }, (error) => {
+            list.innerHTML = '';
+            console.error("Error loading orders from RTDB:", error);
             list.innerHTML = '<p class="text-red-500">Error loading orders.</p>';
         });
     }
 
-    function updateOrderStatus(orderId, newStatus) {
-        db.collection('orders').doc(orderId).update({ status: newStatus })
+    function updateOrderStatus(orderId, newStatus) { // Uses RTDB
+        const statusRef = database.ref('orders/' + orderId + '/status');
+        statusRef.set(newStatus)
             .then(() => {
-                console.log("Order status updated");
+                console.log("Order status updated in RTDB");
                 showToast(`Order status updated to ${newStatus}.`);
-                 // Trigger WhatsApp notification to user if status changes to 'ready'
+                 // Trigger notification if status changes to 'ready'
                 if (newStatus === 'ready') {
-                     db.collection('orders').doc(orderId).get().then(doc => {
-                        if (doc.exists) {
-                            const orderData = doc.data();
-                            sendOrderReadyWhatsApp(orderData.userMobile, orderId, orderData.items);
-                        }
+                     const orderRef = database.ref('orders/' + orderId);
+                     orderRef.once('value').then(snapshot => {
+                         if (snapshot.exists()) {
+                             const orderData = snapshot.val();
+                             sendOrderReadyNotification(orderData.userMobile, orderId, orderData.items);
+                         }
                      });
                 }
             })
             .catch(error => {
-                console.error("Error updating order status:", error);
+                console.error("Error updating order status in RTDB:", error);
                 showToast('Error updating status.', true);
-                 // Revert select box on error (basic UX)
                  loadOrders(); // Reload to revert
             });
     }
 
-    function deleteOrder(orderId) {
+    function deleteOrder(orderId) { // Uses RTDB
         if (confirm('Are you sure you want to delete this order?')) {
-            db.collection('orders').doc(orderId).delete()
+            const orderRef = database.ref('orders/' + orderId);
+            orderRef.remove()
                 .then(() => {
                     showToast('Order deleted successfully!');
                 })
                 .catch(error => {
-                    console.error("Error deleting order:", error);
+                    console.error("Error deleting order from RTDB:", error);
                     showToast('Error deleting order.', true);
                 });
         }
     }
 
-     function sendOrderReadyWhatsApp(userMobile, orderId, items) {
-        if (!userMobile) {
-            console.warn("No user mobile number to send WhatsApp notification.");
-            return;
-        }
-        let messageBody = `*Hello from MIRDHUNA Cafe!*\n\n`;
-        messageBody += `Your order (ID: ...${orderId.substring(orderId.length - 6)}) is now *Ready for Pickup*!\n\n`;
-        messageBody += `*Order Summary:*\n`;
-        let total = 0;
-        items.forEach(item => {
-            const itemTotal = item.price * item.quantity;
-            total += itemTotal;
-            messageBody += `- ${item.name} x ${item.quantity} = ₹${itemTotal.toFixed(2)}\n`;
-        });
-        messageBody += `\n*Total:* ₹${total.toFixed(2)}\n`;
-        messageBody += `\nPlease come and collect your order. Thank you!`;
-
-        const encodedMessage = encodeURIComponent(messageBody);
-        const userLink = `https://wa.me/${userMobile}?text=${encodedMessage}`;
-        // Open link to send message (user needs to send it)
-        // For automated sending, a backend service is recommended.
-        window.open(userLink, '_blank');
-        console.log("Order ready WhatsApp link generated for user:", userLink);
+     function sendOrderReadyNotification(userMobile, orderId, items) {
+        // This is a placeholder. Implement actual notification logic (e.g., SMS, Email, or push)
+        // For now, just log it or show a toast
+        console.log(`Notification: Order ${orderId} is ready for user ${userMobile}`);
+        // showToast(`Notification sent for order ${orderId.substring(orderId.length - 6)}`);
      }
 
 
-    // --- User Login History ---
-    // This assumes you have a 'users' collection in Firestore where you store user data (mobile) upon login.
-    // If you only rely on Authentication, you can't easily get a history without custom logic.
+    // --- User Login History (Placeholder) ---
     function loadUsers() {
         const list = document.getElementById('usersList');
-        // Placeholder: Indicate dependency
-        list.innerHTML = '<p class="text-gray-600"><i class="fas fa-info-circle mr-2"></i> This feature requires storing user login data (mobile number) in a Firestore collection (e.g., `users`) when they log in via the main site. The structure would be like: { mobile: "9835124772", lastLogin: Timestamp }.</p><p>Simulating data...</p>';
-
-        // Simulate loading user data from a hypothetical 'users' collection
-        // In a real scenario, this would be .onSnapshot like other collections
-        setTimeout(() => {
-             list.innerHTML = '<div class="spinner" style="display:block;"></div>';
-             // Simulate fetching data
-             setTimeout(() => {
-                  list.innerHTML = '';
-                  // Example simulated data structure
-                  const simulatedUsers = [
-                      { id: 'sim1', mobile: '9835124772', lastLogin: new Date(Date.now() - 2 * 60 * 60 * 1000) }, // 2 hours ago
-                      { id: 'sim2', mobile: '9998887776', lastLogin: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) }, // 1 day ago
-                      { id: 'sim3', mobile: '8887776665', lastLogin: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) }, // 3 days ago
-                  ];
-
-                  if (simulatedUsers.length === 0) {
-                      list.innerHTML = '<p>No user login data found.</p>';
-                      return;
-                  }
-                  const table = document.createElement('table');
-                  table.innerHTML = `
-                      <thead>
-                          <tr><th>User ID</th><th>Mobile Number</th><th>Last Login</th></tr>
-                      </thead>
-                      <tbody id="usersTableBody"></tbody>
-                  `;
-                  const tbody = table.querySelector('#usersTableBody');
-                  simulatedUsers.forEach(user => {
-                      const row = document.createElement('tr');
-                      row.innerHTML = `
-                          <td>${user.id}</td>
-                          <td>${user.mobile}</td>
-                          <td>${user.lastLogin.toLocaleString()}</td>
-                      `;
-                      tbody.appendChild(row);
-                  });
-                  list.appendChild(table);
-             }, 1000); // Simulate network delay
-        }, 500); // Simulate initial delay
+        list.innerHTML = '<p class="text-gray-600"><i class="fas fa-info-circle mr-2"></i> This feature requires storing user login data in Firestore or RTDB. Implementation depends on how/where you store this data.</p>';
     }
 
-    // --- Settings ---
+    // --- Settings (Placeholder) ---
     function changeAdminPassword() {
-        // This is a SIMULATION. Actual password change requires Firebase Auth methods
-        // like re-authentication and updatePassword, which is more complex.
         const currentPass = document.getElementById('currentPassword').value;
         const newPass = document.getElementById('newPassword').value;
         const confirmPass = document.getElementById('confirmNewPassword').value;
@@ -983,11 +966,9 @@
         spinner.style.display = 'block';
         message.textContent = '';
 
-        // Simulate API call delay
         setTimeout(() => {
             spinner.style.display = 'none';
-            // Simulate success
-            message.textContent = 'Password changed successfully (simulated)!';
+            message.textContent = 'Password change simulated!';
             message.className = 'text-green-500 mt-2';
             document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
