@@ -9,8 +9,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Firebase App (the core Firebase SDK) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-  <!-- Firebase Firestore -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase Realtime Database -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
   <!-- Firebase Auth (if needed for future features) -->
   <!-- <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script> -->
   <!-- Firebase Storage (if needed for future features) -->
@@ -21,7 +21,7 @@
     const firebaseConfig = {
       apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
       authDomain: "mirdhuna-25542.firebaseapp.com",
-      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com", // RTDB URL
       projectId: "mirdhuna-25542",
       storageBucket: "mirdhuna-25542.firebasestorage.app",
       messagingSenderId: "575924409876",
@@ -31,7 +31,8 @@
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    // Initialize Realtime Database
+    const database = firebase.database();
     // const auth = firebase.auth(); // Not used in current simplified login
     // const storage = firebase.storage(); // Not used in current setup
 
@@ -246,7 +247,7 @@
     <span class="close absolute top-4 right-4 text-gray-500 hover:text-gray-800 cursor-pointer text-2xl" onclick="closeOrderModal()">&times;</span>
     <h2 class="text-2xl font-bold mb-4 text-center">Confirm Order</h2>
     <div id="orderDetails"></div>
-    <p class="mt-4 text-sm text-gray-600"><i class="fas fa-info-circle mr-2"></i> Your location will be detected.</p>
+    <p class="mt-4 text-sm text-gray-600"><i class="fas fa-info-circle mr-2"></i> Your location was detected during login.</p>
     <button onclick="placeOrder()" class="btn-primary w-full mt-4 px-4 py-3 rounded-lg font-bold text-lg">Place Order</button>
     <div id="orderSpinner" class="spinner mt-4"></div>
     <p id="orderMessage" class="text-red-500 text-center mt-2"></p>
@@ -319,7 +320,7 @@
     </div>
   </header>
 
-  <!-- Menu Section -->
+  <!-- Menu Section (Still uses Firestore for menu items) -->
   <section id="menu" class="py-16 px-4">
     <div class="container mx-auto">
       <h2 class="text-4xl font-heading font-bold text-center mb-12 text-dark">Our Delicious Menu</h2>
@@ -400,13 +401,15 @@
     let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || [];
     let currentUser = JSON.parse(localStorage.getItem('mirdhunaUser')) || null; // { mobile: '...', location: { lat, lng } }
 
-    // --- Firebase Firestore Menu Listener ---
+    // --- Firestore Menu Listener (Menu still comes from Firestore) ---
     function loadMenu() {
         const spinner = document.getElementById('menuSpinner');
         spinner.style.display = 'block';
         const menuGrid = document.getElementById('menuGrid');
         menuGrid.innerHTML = '';
 
+        // Using Firestore for menu items (as before)
+        const db = firebase.firestore();
         db.collection('menuItems')
             .orderBy('category')
             .onSnapshot(snapshot => {
@@ -425,7 +428,7 @@
                 filterMenu('all'); // Initially show all items
             }, error => {
                 spinner.style.display = 'none';
-                console.error("Error loading menu:", error);
+                console.error("Error loading menu from Firestore:", error);
                 showToast("Failed to load menu.");
             });
     }
@@ -473,6 +476,8 @@
             return;
         }
 
+        // Using Firestore to fetch item details
+        const db = firebase.firestore();
         db.collection('menuItems').doc(itemId).get().then(doc => {
             if (doc.exists) {
                 const itemData = doc.data();
@@ -491,12 +496,12 @@
                 showToast("Item not found.");
             }
         }).catch(error => {
-            console.error("Error fetching item:", error);
+            console.error("Error fetching item from Firestore:", error);
             showToast("Could not add item.");
         });
     }
 
-    // --- Menu Filtering ---
+    // --- Menu Filtering (for Firestore menu) ---
     function filterMenu(category) {
         const buttons = document.querySelectorAll('#menu .flex-wrap button');
         buttons.forEach(btn => {
@@ -520,7 +525,7 @@
         });
     }
 
-    // --- Simplified Login with Location ---
+    // --- Simplified Login with Location (Unchanged) ---
     function openLoginModal() {
         document.getElementById('loginMessage').textContent = '';
         document.getElementById('userMobile').value = currentUser ? currentUser.mobile : '';
@@ -541,7 +546,6 @@
             message.textContent = 'Please enter a mobile number.';
             return;
         }
-        // Basic validation (you might want more robust validation)
         if (mobile.length < 10 || isNaN(mobile)) {
              message.textContent = 'Please enter a valid mobile number.';
              return;
@@ -550,7 +554,6 @@
         spinner.style.display = 'block';
         message.textContent = '';
 
-        // --- Automatically detect location upon login submission ---
         console.log("Requesting location for user:", mobile);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -560,25 +563,20 @@
                         lng: position.coords.longitude
                     };
                     console.log("Location obtained:", location);
-                    finishLogin(mobile, location); // Pass the obtained location
+                    finishLogin(mobile, location);
                 },
                 (error) => {
                     console.warn("Location access denied or error:", error);
-                    // Crucially, we still log the user in even if location fails
-                    // We pass null for location
-                    finishLogin(mobile, null);
-                    // Optionally alert the user
-                    // alert("Location access was denied or failed. You can still use the app, but location won't be saved.");
+                    finishLogin(mobile, null); // Login without location
                 },
-                { // Options for better accuracy/user experience
+                {
                     enableHighAccuracy: true,
-                    timeout: 10000, // 10 seconds
-                    maximumAge: 300000 // 5 minutes
+                    timeout: 10000,
+                    maximumAge: 300000
                 }
             );
         } else {
             console.warn("Geolocation is not supported by this browser.");
-            // Still log in if geolocation isn't supported
             finishLogin(mobile, null);
             message.textContent = 'Location not supported, but login proceeding.';
         }
@@ -586,12 +584,10 @@
 
     function finishLogin(mobile, location) {
          const spinner = document.getElementById('loginSpinner');
-         // Store user info (mobile and potentially location) in localStorage
-         // Even if location is null, we store the user data
-         currentUser = { mobile: mobile, location: location }; // location can be {lat, lng} or null
+         currentUser = { mobile: mobile, location: location };
          localStorage.setItem('mirdhunaUser', JSON.stringify(currentUser));
          console.log("User logged in:", currentUser);
-         updateUIForLogin(); // Update UI elements
+         updateUIForLogin();
          spinner.style.display = 'none';
          closeLoginModal();
          showToast('Login successful!');
@@ -600,10 +596,6 @@
     function logout() {
         currentUser = null;
         localStorage.removeItem('mirdhunaUser');
-        // Optional: Clear cart on logout
-        // cart = [];
-        // localStorage.removeItem('mirdhunaCart');
-        // updateCartBadge();
         updateUIForLogin();
         showToast('Logged out.');
     }
@@ -617,10 +609,10 @@
             loginButton.innerHTML = '<i class="fas fa-user mr-2"></i> Login';
             loginButton.onclick = openLoginModal;
         }
-        updateCartBadge(); // Ensure badge reflects state
+        updateCartBadge();
     }
 
-    // --- Order Placement (without WhatsApp, without location in order data) ---
+    // --- Order Placement (Now uses Realtime Database, no location in order data) ---
     function openOrderModal() {
         if (!currentUser) {
             openLoginModal();
@@ -645,11 +637,11 @@
 
         document.getElementById('orderMessage').textContent = '';
         document.getElementById('orderSpinner').style.display = 'none';
-        document.getElementById('orderModal').classList.remove('hidden'); // Show modal
+        document.getElementById('orderModal').classList.remove('hidden');
     }
 
     function closeOrderModal() {
-        document.getElementById('orderModal').classList.add('hidden'); // Hide modal
+        document.getElementById('orderModal').classList.add('hidden');
     }
 
     function placeOrder() {
@@ -667,83 +659,61 @@
         spinner.style.display = 'block';
         message.textContent = '';
 
-        // --- Location is NOT requested here anymore ---
-        // It was obtained during login and is available in currentUser.location if successful
-
-        // Proceed directly to finalize the order
+        // Proceed directly to finalize the order (location not requested here)
         finalizeOrder();
     }
 
-    function finalizeOrder() { // Remove location parameter
+    function finalizeOrder() {
         const spinner = document.getElementById('orderSpinner');
         const message = document.getElementById('orderMessage');
 
-        // Basic validation
         if (!currentUser || !cart || cart.length === 0) {
-            console.error("Order placement failed: Invalid state (no user or empty cart)");
+            console.error("Order placement failed: Invalid state");
             spinner.style.display = 'none';
             message.textContent = 'Order failed: Invalid state. Please try again.';
             return;
         }
 
-        // Prepare order data WITHOUT location
+        // Prepare order data for Realtime Database (NO location field)
         const orderData = {
-            userId: currentUser.mobile, // Using mobile as identifier
+            userId: currentUser.mobile,
             items: cart,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            // timestamp: firebase.database.ServerValue.TIMESTAMP, // Use RTDB server timestamp
+            timestamp: { '.sv': 'timestamp' }, // Alternative syntax for ServerValue.TIMESTAMP
             status: 'pending',
-            userMobile: currentUser.mobile // Store mobile explicitly
+            userMobile: currentUser.mobile
             // location: ... is intentionally omitted
         };
 
-        // Optional: If you *really* want to store the login-time location, you can add it back here
-        // But based on your request, we are removing it from orders.
-        // If you uncomment the lines below, it will add it back IF it was obtained during login.
-        /*
-        const loginLocation = currentUser.location; // Get location stored during login
-        if (loginLocation && typeof loginLocation.lat === 'number' && typeof loginLocation.lng === 'number') {
-            try {
-                orderData.location = new firebase.firestore.GeoPoint(loginLocation.lat, loginLocation.lng);
-                console.log("Login-time location added to order ", loginLocation.lat, loginLocation.lng);
-            } catch (geoError) {
-                console.error("Error creating GeoPoint from login location:", geoError);
-                // Proceed without location if GeoPoint creation fails
-            }
-        } else {
-            console.log("No valid login-time location available to add to order.");
-        }
-        */
+        console.log("Attempting to save order to Realtime Database:", orderData);
 
-        console.log("Attempting to save order to Firestore (without location):", orderData);
+        // Get a reference to the 'orders' node in RTDB
+        const ordersRef = database.ref('orders');
 
-        db.collection('orders').add(orderData)
-            .then(docRef => {
-                console.log("Order placed successfully with ID:", docRef.id);
-                // --- Removed WhatsApp Integration ---
+        // Push the new order data (generates a unique key)
+        const newOrderRef = ordersRef.push(orderData);
 
-                // Clear cart on success
-                cart = [];
-                localStorage.removeItem('mirdhunaCart');
-                updateCartBadge();
-                spinner.style.display = 'none';
-                closeOrderModal();
-                showToast('Order placed successfully!');
-            })
-            .catch(error => {
-                console.error("Critical Error placing order in Firestore:", error);
-                spinner.style.display = 'none';
-                if (error.code === 'permission-denied') {
-                    message.textContent = 'Order failed: Permission denied. Please contact support.';
-                } else if (error.code === 'unavailable') {
-                     message.textContent = 'Order failed: Service unavailable. Please try again later.';
-                } else {
-                    message.textContent = 'Failed to place order. Please try again. (Error: ' + (error.message || 'Unknown') + ')';
-                }
-            });
+        newOrderRef.then(() => {
+             console.log("Order placed successfully with key:", newOrderRef.key);
+             // Clear cart on success
+             cart = [];
+             localStorage.removeItem('mirdhunaCart');
+             updateCartBadge();
+             spinner.style.display = 'none';
+             closeOrderModal();
+             showToast('Order placed successfully!');
+         })
+         .catch((error) => {
+             console.error("Critical Error placing order in RTDB:", error);
+             spinner.style.display = 'none';
+             message.textContent = 'Failed to place order. Please try again. (Error: ' + (error.message || 'Unknown') + ')';
+         });
     }
 
 
-    // --- Order History ---
+    // --- Order History (Now uses Realtime Database) ---
+    let orderHistoryUnsubscribe = null; // To hold the RTDB listener
+
     function openOrderHistoryModal() {
         if (!currentUser) {
             openLoginModal();
@@ -754,75 +724,120 @@
         const spinner = document.getElementById('orderHistorySpinner');
         const message = document.getElementById('orderHistoryMessage');
 
-        list.innerHTML = ''; // Clear previous content
+        list.innerHTML = '';
         spinner.style.display = 'block';
         message.textContent = '';
-        document.getElementById('orderHistoryModal').classList.remove('hidden'); // Show modal
+        document.getElementById('orderHistoryModal').classList.remove('hidden');
 
-        // Fetch orders for the current user's mobile number
-        db.collection('orders')
-            .where('userMobile', '==', currentUser.mobile)
-            .orderBy('timestamp', 'desc') // Newest first
-            .get()
-            .then(snapshot => {
-                spinner.style.display = 'none';
-                if (snapshot.empty) {
-                    message.textContent = 'No orders found.';
-                    return;
+        // Close any existing listener to prevent duplicates
+        if (orderHistoryUnsubscribe) {
+            orderHistoryUnsubscribe();
+            orderHistoryUnsubscribe = null;
+        }
+
+        // Get a reference to the 'orders' node in RTDB
+        const ordersRef = database.ref('orders');
+
+        // Set up a real-time listener for all orders
+        orderHistoryUnsubscribe = ordersRef.on('value', (snapshot) => {
+            spinner.style.display = 'none';
+            list.innerHTML = ''; // Clear previous content
+
+            if (!snapshot.exists()) {
+                message.textContent = 'No orders found.';
+                return;
+            }
+
+            const allOrders = snapshot.val();
+            const userOrders = [];
+
+            // Filter orders client-side by userMobile
+            for (const orderId in allOrders) {
+                if (allOrders[orderId].userMobile === currentUser.mobile) {
+                    userOrders.push({ id: orderId, ...allOrders[orderId] });
+                }
+            }
+
+            if (userOrders.length === 0) {
+                message.textContent = 'No orders found.';
+                return;
+            }
+
+            // Sort orders by timestamp (newest first) - assuming timestamp is numeric
+            userOrders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            userOrders.forEach(order => {
+                const orderId = order.id;
+                // Timestamp might be an object from ServerValue, or a number
+                const timestampRaw = order.timestamp;
+                let timestampDisplay = 'N/A';
+                if (typeof timestampRaw === 'number') {
+                    timestampDisplay = new Date(timestampRaw).toLocaleString();
+                } else if (timestampRaw && typeof timestampRaw === 'object' && timestampRaw['.sv'] === 'timestamp') {
+                    // This was the placeholder, actual timestamp will be a number when retrieved
+                    timestampDisplay = 'Just now';
+                } else if (timestampRaw) {
+                     // If it's already a date string or object, try to format it
+                     try {
+                         timestampDisplay = new Date(timestampRaw).toLocaleString();
+                     } catch (e) {
+                         timestampDisplay = String(timestampRaw);
+                     }
                 }
 
-                snapshot.forEach(doc => {
-                    const order = doc.data();
-                    const orderId = doc.id;
-                    const timestamp = order.timestamp ? new Date(order.timestamp.toDate()).toLocaleString() : 'N/A';
+                const orderElement = document.createElement('div');
+                orderElement.className = 'history-item bg-white rounded-lg p-4 mb-4 shadow';
 
-                    const orderElement = document.createElement('div');
-                    orderElement.className = 'history-item bg-white rounded-lg p-4 mb-4 shadow';
+                let itemsHtml = '<ul class="mb-2">';
+                let total = 0;
+                if (order.items && Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                         const itemTotal = item.price * item.quantity;
+                         total += itemTotal;
+                         itemsHtml += `<li class="text-sm">${item.name} x ${item.quantity} = ₹${itemTotal.toFixed(2)}</li>`;
+                    });
+                } else {
+                    itemsHtml += '<li class="text-sm">No items found</li>';
+                }
+                itemsHtml += '</ul>';
 
-                    let itemsHtml = '<ul class="mb-2">';
-                    let total = 0;
-                    if (order.items && Array.isArray(order.items)) {
-                        order.items.forEach(item => {
-                             const itemTotal = item.price * item.quantity;
-                             total += itemTotal;
-                             itemsHtml += `<li class="text-sm">${item.name} x ${item.quantity} = ₹${itemTotal.toFixed(2)}</li>`;
-                        });
-                    } else {
-                        itemsHtml += '<li class="text-sm">No items found</li>';
-                    }
-                    itemsHtml += '</ul>';
-
-                    orderElement.innerHTML = `
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-bold">Order ID: ${orderId.substring(0, 6)}...</h3>
-                            <span class="text-sm text-gray-500">${timestamp}</span>
-                        </div>
-                        ${itemsHtml}
-                        <div class="flex justify-between font-semibold">
-                            <span>Total:</span>
-                            <span>₹${total.toFixed(2)}</span>
-                        </div>
-                        <div class="mt-2 text-sm">
-                            <span class="inline-block px-2 py-1 rounded ${
-                                order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                order.status === 'preparing' ? 'bg-blue-100 text-blue-800' :
-                                order.status === 'ready' ? 'bg-green-100 text-green-800' :
-                                order.status === 'delivered' ? 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800'
-                            }">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
-                        </div>
-                    `;
-                    list.appendChild(orderElement);
-                });
-            })
-            .catch(error => {
-                spinner.style.display = 'none';
-                console.error("Error loading order history:", error);
-                message.textContent = 'Failed to load order history.';
+                orderElement.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold">Order ID: ${orderId.substring(0, 6)}...</h3>
+                        <span class="text-sm text-gray-500">${timestampDisplay}</span>
+                    </div>
+                    ${itemsHtml}
+                    <div class="flex justify-between font-semibold">
+                        <span>Total:</span>
+                        <span>₹${total.toFixed(2)}</span>
+                    </div>
+                    <div class="mt-2 text-sm">
+                        <span class="inline-block px-2 py-1 rounded ${
+                            order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            order.status === 'preparing' ? 'bg-blue-100 text-blue-800' :
+                            order.status === 'ready' ? 'bg-green-100 text-green-800' :
+                            order.status === 'delivered' ? 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800'
+                        }">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+                    </div>
+                `;
+                list.appendChild(orderElement);
             });
+
+        }, (error) => {
+            spinner.style.display = 'none';
+            console.error("Error loading order history from RTDB:", error);
+            message.textContent = 'Failed to load order history.';
+        });
     }
 
     function closeOrderHistoryModal() {
-        document.getElementById('orderHistoryModal').classList.add('hidden'); // Hide modal
+        document.getElementById('orderHistoryModal').classList.add('hidden');
+        // Unsubscribe from the RTDB listener when closing the modal
+        if (orderHistoryUnsubscribe) {
+            const ordersRef = database.ref('orders');
+            ordersRef.off('value', orderHistoryUnsubscribe);
+            orderHistoryUnsubscribe = null;
+        }
     }
 
 
@@ -836,7 +851,7 @@
         }
     }
 
-    // Close modals if clicked outside (basic implementation)
+    // Close modals if clicked outside
     window.onclick = function(event) {
         if (event.target.id === 'loginModal') {
             closeLoginModal();
@@ -851,7 +866,7 @@
 
     // --- Initialize ---
     window.onload = function() {
-        updateUIForLogin(); // Set initial login button state
+        updateUIForLogin();
         updateCartBadge();
         loadMenu();
     };
@@ -859,4 +874,4 @@
   </script>
 
 </body>
-            </html>
+</html>
