@@ -1,990 +1,982 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIRDHUNA Admin Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase App (the core Firebase SDK) -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-  <!-- Firebase Firestore (for Menu Management) -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-  <!-- Firebase Auth (for Admin Login) -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
-  <!-- Firebase Storage (for Menu Image Uploads) -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
-  <!-- Firebase Realtime Database (for Orders) -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
-
-  <script>
-    // Your web app's Firebase configuration (SAME as index.html)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
-      authDomain: "mirdhuna-25542.firebaseapp.com",
-      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com", // RTDB URL
-      projectId: "mirdhuna-25542",
-      storageBucket: "mirdhuna-25542.firebasestorage.app",
-      messagingSenderId: "575924409876",
-      appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
-      measurementId: "G-YB7LDKHBPV"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(); // For Menu Items
-    const auth = firebase.auth();     // For Admin Auth
-    const storage = firebase.storage(); // For Image Storage
-    const database = firebase.database(); // For Orders (RTDB)
-
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Poppins', 'sans-serif'],
-            heading: ['Playfair Display', 'serif']
-          },
-          colors: {
-            primary: '#e11d48',
-            secondary: '#f43f5e',
-            accent: '#f97316',
-            dark: '#1e293b',
-            light: '#f8fafc'
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirdhuna Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --light-bg: #ecf0f1;
+            --dark-text: #2c3e50;
+            --light-text: #ffffff;
+            --border-color: #bdc3c7;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
-      }
-    }
-  </script>
 
-  <style>
-    body {
-      font-family: 'Poppins', 'sans-serif';
-      background-color: #f0f2f5;
-    }
-    .sidebar {
-      height: 100vh;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 250px;
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      color: white;
-      padding-top: 20px;
-      overflow-y: auto;
-      z-index: 100;
-    }
-    .content {
-      margin-left: 250px;
-      padding: 20px;
-    }
-    .nav-item {
-      padding: 15px 20px;
-      display: block;
-      color: #cbd5e1;
-      text-decoration: none;
-      transition: all 0.3s;
-      border-left: 3px solid transparent;
-    }
-    .nav-item:hover, .nav-item.active {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: white;
-      border-left: 3px solid #e11d48;
-    }
-    .card {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #e11d48 0%, #f97316 100%);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .btn-primary:hover {
-      opacity: 0.9;
-    }
-    .btn-secondary {
-      background-color: #94a3b8;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .btn-secondary:hover {
-      background-color: #64748b;
-    }
-    .btn-danger {
-      background-color: #ef4444;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .btn-danger:hover {
-      background-color: #dc2626;
-    }
-    .status-badge {
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-    .status-pending { background-color: #fef3c7; color: #92400e; }
-    .status-preparing { background-color: #dbeafe; color: #1e40af; }
-    .status-ready { background-color: #d1fae5; color: #065f46; }
-    .status-delivered { background-color: #e5e7eb; color: #374151; }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
-    th, td {
-        text-align: left;
-        padding: 12px;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    th {
-        background-color: #f9fafb;
-        font-weight: 600;
-    }
-    tr:hover {
-        background-color: #f9fafb;
-    }
-    .menu-image-preview {
-        width: 80px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-    }
-    .spinner {
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        border-left-color: #e11d48;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        animation: spin 1s linear infinite;
-        display: none;
-        margin: 10px auto;
-    }
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      color: white;
-      padding: 15px 25px;
-      border-radius: 8px;
-      z-index: 1000;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.3s;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      pointer-events: none;
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1001;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.5);
-    }
-    .modal-content {
-        background-color: #fefefe;
-        margin: 10% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 90%;
-        max-width: 600px;
-        border-radius: 8px;
-    }
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-    .close:hover,
-    .close:focus {
-        color: black;
-        text-decoration: none;
-    }
-    .form-group {
-        margin-bottom: 15px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
-    }
-    .form-group input, .form-group select, .form-group textarea {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    .two-col-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-    }
-    @media (max-width: 768px) {
-      .two-col-grid {
-        grid-template-columns: 1fr;
-      }
-      .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-      }
-      .content {
-        margin-left: 0;
-      }
-    }
-  </style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-text);
+        }
+
+        /* Login Styles */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 152, 219, 0.85));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        #login-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #login-container h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        #admin-password {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #login-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        #login-btn:hover {
+            background-color: #2980b9;
+        }
+
+        #login-message {
+            margin-top: 15px;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Main Content Styles */
+        #admin-content {
+            display: none; /* Hidden until login */
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        nav {
+            background-color: #34495e;
+            padding: 0;
+            box-shadow: var(--card-shadow);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav li {
+            margin: 0;
+        }
+
+        nav a {
+            display: block;
+            padding: 15px 20px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: var(--secondary-color);
+        }
+
+        .main-content {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .admin-section {
+            display: none; /* Hidden by default, shown by JS */
+            background-color: white;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .admin-section:hover {
+             transform: translateY(-5px);
+             box-shadow: var(--hover-shadow);
+        }
+
+        .section-header {
+            background-color: var(--light-bg);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--light-bg);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 8px 12px;
+            margin: 2px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.3s, transform 0.2s;
+            display: inline-flex; /* For icon alignment */
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .btn-primary { background-color: var(--secondary-color); color: white; }
+        .btn-success { background-color: var(--success-color); color: white; }
+        .btn-warning { background-color: var(--warning-color); color: white; }
+        .btn-danger { background-color: var(--accent-color); color: white; }
+        .btn-info { background-color: #9b59b6; color: white; }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 200px; /* Prevent too narrow on small screens */
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--secondary-color), #1d6fa5);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-card:hover {
+             transform: translateY(-5px);
+             box-shadow: var(--hover-shadow);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+        }
+
+        /* Map Placeholder */
+        #map-placeholder {
+            height: 120px;
+            background-color: #e0e7ee;
+            border: 1px dashed #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        #map-placeholder i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-preparing { background-color: #cce5ff; color: #004085; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+            }
+            .form-row {
+                flex-direction: column;
+            }
+            .stats-container {
+                flex-direction: column;
+            }
+            .stat-card {
+                min-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="toast"></div>
-
-  <!-- Login Screen -->
-  <div id="loginScreen" class="flex items-center justify-center min-h-screen bg-gray-100" style="display:block;">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-      <h2 class="text-2xl font-bold text-center mb-6 text-dark">MIRDHUNA Admin Login</h2>
-      <div class="mb-4">
-        <label for="adminEmail" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
-        <input type="email" id="adminEmail" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your email">
-      </div>
-      <div class="mb-6">
-        <label for="adminPassword" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-        <input type="password" id="adminPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your password">
-      </div>
-      <button onclick="adminLogin()" class="btn-primary w-full">Login</button>
-      <div id="loginSpinner" class="spinner mt-4"></div>
-      <p id="loginMessage" class="text-red-500 text-center mt-2"></p>
-    </div>
-  </div>
-
-  <!-- Main Admin Dashboard (Initially Hidden) -->
-  <div id="adminDashboard" style="display:none;">
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
-      <h2 class="text-xl font-heading font-bold text-center mb-6">MIRDHUNA Admin</h2>
-      <a href="#" class="nav-item active" onclick="showPanel('dashboard'); return false;"><i class="fas fa-tachometer-alt mr-2"></i> Dashboard</a>
-      <a href="#" class="nav-item" onclick="showPanel('menu'); return false;"><i class="fas fa-utensils mr-2"></i> Menu Management</a>
-      <a href="#" class="nav-item" onclick="showPanel('orders'); return false;"><i class="fas fa-receipt mr-2"></i> Order Management</a>
-      <a href="#" class="nav-item" onclick="showPanel('users'); return false;"><i class="fas fa-users mr-2"></i> User Login History</a>
-      <a href="#" class="nav-item" onclick="showPanel('settings'); return false;"><i class="fas fa-cog mr-2"></i> Settings</a>
-      <a href="#" class="nav-item mt-10" onclick="adminLogout(); return false;"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+    <!-- Login Overlay -->
+    <div id="login-overlay">
+        <div id="login-container">
+            <h2><i class="fas fa-lock"></i> Admin Login</h2>
+            <input type="password" id="admin-password" placeholder="Enter password (Sanu00)" />
+            <button id="login-btn"><i class="fas fa-sign-in-alt"></i> Login</button>
+            <p id="login-message"></p>
+        </div>
     </div>
 
-    <!-- Main Content Area -->
-    <div class="content">
-      <!-- Dashboard Panel -->
-      <div id="dashboardPanel" class="panel">
-        <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div class="card bg-blue-50 border-l-4 border-blue-500">
-            <h3 class="text-lg font-semibold text-blue-800">Total Orders</h3>
-            <p id="totalOrders" class="text-3xl font-bold text-blue-600">0</p>
-          </div>
-          <div class="card bg-green-50 border-l-4 border-green-500">
-            <h3 class="text-lg font-semibold text-green-800">Pending Orders</h3>
-            <p id="pendingOrders" class="text-3xl font-bold text-green-600">0</p>
-          </div>
-          <div class="card bg-yellow-50 border-l-4 border-yellow-500">
-            <h3 class="text-lg font-semibold text-yellow-800">Menu Items</h3>
-            <p id="totalMenuItems" class="text-3xl font-bold text-yellow-600">0</p>
-          </div>
-        </div>
-        <div class="card">
-            <h2 class="text-xl font-semibold mb-4">Recent Orders</h2>
-            <div id="recentOrdersList">Loading...</div>
-        </div>
-      </div>
+    <!-- Main Admin Panel Content (Initially Hidden) -->
+    <div id="admin-content">
 
-      <!-- Menu Management Panel (Uses Firestore) -->
-      <div id="menuPanel" class="panel" style="display:none;">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">Menu Management</h1>
-            <button onclick="openAddMenuItemModal()" class="btn-primary"><i class="fas fa-plus mr-2"></i> Add New Item</button>
-        </div>
-        <div class="card">
-            <h2 class="text-xl font-semibold mb-4">Menu Items</h2>
-            <div id="menuItemsList">Loading menu items...</div>
-        </div>
-      </div>
+        <header>
+            <h1><i class="fas fa-cogs"></i> Mirdhuna Admin Dashboard</h1>
+        </header>
 
-      <!-- Order Management Panel (Uses RTDB) -->
-      <div id="ordersPanel" class="panel" style="display:none;">
-        <h1 class="text-3xl font-bold mb-6">Order Management</h1>
-        <div class="card">
-            <h2 class="text-xl font-semibold mb-4">All Orders</h2>
-            <div id="ordersList">Loading orders...</div>
-        </div>
-      </div>
+        <nav>
+            <ul>
+                <li><a href="#" class="nav-link active" data-target="dashboard-section"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-target="orders-section"><i class="fas fa-receipt"></i> Orders</a></li>
+                <li><a href="#" class="nav-link" data-target="menu-section"><i class="fas fa-utensils"></i> Menu</a></li>
+                <li><a href="#" class="nav-link" data-target="slider-section"><i class="fas fa-images"></i> Slider</a></li>
+                <li><a href="#" class="nav-link" data-target="activity-section"><i class="fas fa-history"></i> User Activity</a></li>
+            </ul>
+        </nav>
 
-       <!-- User Login History Panel (Placeholder) -->
-      <div id="usersPanel" class="panel" style="display:none;">
-        <h1 class="text-3xl font-bold mb-6">User Login History</h1>
-        <div class="card">
-            <h2 class="text-xl font-semibold mb-4">Logged In Users</h2>
-            <p class="text-gray-600 mb-4"><i class="fas fa-info-circle mr-2"></i> User login history tracking requires storing user data (mobile number) in Firestore or RTDB upon login. This panel will display that data.</p>
-            <div id="usersList">Loading user data...</div>
-        </div>
-      </div>
+        <div class="main-content">
 
-      <!-- Settings Panel (Placeholder) -->
-      <div id="settingsPanel" class="panel" style="display:none;">
-        <h1 class="text-3xl font-bold mb-6">Admin Settings</h1>
-        <div class="card">
-            <h2 class="text-xl font-semibold mb-4">Change Password</h2>
-            <p class="text-gray-600 mb-4"><i class="fas fa-exclamation-triangle mr-2 text-yellow-500"></i> Password change functionality requires implementation in Firebase Authentication. This is a simulation for UI demonstration.</p>
-            <div class="mb-4">
-                <label for="currentPassword" class="block text-gray-700 text-sm font-bold mb-2">Current Password</label>
-                <input type="password" id="currentPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <!-- Dashboard Section -->
+            <div class="admin-section" id="dashboard-section" style="display: block;">
+                 <div class="section-header">
+                     <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+                 </div>
+                 <div class="section-content">
+                     <div class="stats-container">
+                         <div class="stat-card">
+                             <i class="fas fa-eye fa-2x"></i>
+                             <div class="stat-label">Total Website Views</div>
+                             <div class="stat-value" id="total-views">0</div>
+                         </div>
+                         <div class="stat-card">
+                             <i class="fas fa-calendar-day fa-2x"></i>
+                             <div class="stat-label">Views Today</div>
+                             <div class="stat-value" id="today-views">0</div>
+                         </div>
+                         <div class="stat-card">
+                             <i class="fas fa-shopping-cart fa-2x"></i>
+                             <div class="stat-label">Total Orders</div>
+                             <div class="stat-value" id="total-orders">0</div>
+                         </div>
+                         <div class="stat-card">
+                             <i class="fas fa-users fa-2x"></i>
+                             <div class="stat-label">Users Online</div>
+                             <div class="stat-value" id="users-online">0</div>
+                         </div>
+                     </div>
+                 </div>
             </div>
-            <div class="mb-4">
-                <label for="newPassword" class="block text-gray-700 text-sm font-bold mb-2">New Password</label>
-                <input type="password" id="newPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+
+            <!-- Orders Management Section -->
+            <div class="admin-section" id="orders-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-receipt"></i> Orders Management</h2>
+                </div>
+                <div class="section-content">
+                    <table id="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID (Mobile)</th>
+                                <th>User Location</th>
+                                <th>Total Value</th>
+                                <th>Items Ordered</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Orders will be populated here by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="confirmNewPassword" class="block text-gray-700 text-sm font-bold mb-2">Confirm New Password</label>
-                <input type="password" id="confirmNewPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+
+            <!-- Menu Management Section -->
+            <div class="admin-section" id="menu-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-utensils"></i> Menu Management</h2>
+                </div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <h3><i class="fas fa-plus-circle"></i> Add New Menu Item</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-item-name">Name:</label>
+                                <input type="text" id="new-item-name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-item-price">Price (₹):</label>
+                                <input type="number" id="new-item-price" class="form-control" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-item-image">Image URL:</label>
+                            <input type="text" id="new-item-image" class="form-control" required placeholder="https://example.com/image.jpg">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-item-description">Description:</label>
+                            <textarea id="new-item-description" class="form-control"></textarea>
+                        </div>
+                        <button class="btn btn-success" id="add-menu-item-btn"><i class="fas fa-save"></i> Add Item</button>
+                    </div>
+                    <hr>
+                    <h3><i class="fas fa-list"></i> Existing Menu Items</h3>
+                    <table id="menu-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Image</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Menu items will be populated here by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <button onclick="changeAdminPassword()" class="btn-primary">Change Password</button>
-            <div id="settingsSpinner" class="spinner mt-4"></div>
-            <p id="settingsMessage" class="text-green-500 mt-2"></p>
-        </div>
-      </div>
-    </div>
-  </div> <!-- End Admin Dashboard -->
 
-  <!-- Modals -->
-  <!-- Add/Edit Menu Item Modal (Uses Firestore) -->
-<div id="menuItemModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeMenuItemModal()">&times;</span>
-    <h2 id="modalTitle" class="text-2xl font-bold mb-4">Add New Menu Item</h2>
-    <form id="menuItemForm">
-        <input type="hidden" id="editItemId">
-        <div class="form-group">
-            <label for="itemName">Item Name</label>
-            <input type="text" id="itemName" required>
-        </div>
-        <div class="form-group">
-            <label for="itemCategory">Category</label>
-            <select id="itemCategory" required>
-                <option value="">Select Category</option>
-                <option value="Pizza">Pizza</option>
-                <option value="Burger">Burger</option>
-                <option value="Sandwich">Sandwich</option>
-                <option value="Shakes">Shakes</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="itemPrice">Price (₹)</label>
-            <input type="number" id="itemPrice" step="0.01" min="0" required>
-        </div>
-        <div class="form-group">
-            <label for="itemImage">Image</label>
-            <input type="file" id="itemImage" accept="image/*">
-            <img id="imagePreview" src="" alt="Image Preview" class="menu-image-preview mt-2" style="display:none;">
-        </div>
-        <button type="submit" class="btn-primary">Save Item</button>
-        <div id="menuModalSpinner" class="spinner"></div>
-        <p id="menuModalMessage" class="text-red-500 mt-2"></p>
-    </form>
-  </div>
-</div>
+            <!-- Slider Management Section -->
+            <div class="admin-section" id="slider-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-images"></i> Slider Management</h2>
+                </div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <h3><i class="fas fa-plus-circle"></i> Add New Slider Image</h3>
+                        <div class="form-group">
+                            <label for="new-slider-image">Image URL:</label>
+                            <input type="text" id="new-slider-image" class="form-control" placeholder="https://example.com/slider-image.jpg" required>
+                            <!-- In a real app, you'd use <input type="file"> and Firebase Storage -->
+                        </div>
+                        <button class="btn btn-success" id="add-slider-image-btn"><i class="fas fa-save"></i> Add Image</button>
+                    </div>
+                    <hr>
+                    <h3><i class="fas fa-th-large"></i> Existing Slider Images</h3>
+                    <table id="slider-table">
+                        <thead>
+                            <tr>
+                                <th>Image Preview</th>
+                                <th>Image URL</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Slider images will be populated here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-  <script>
-    // --- State & Authentication ---
-    let currentAdmin = null;
-    let ordersUnsubscribe = null; // To hold the RTDB orders listener
+            <!-- User Activity Section -->
+            <div class="admin-section" id="activity-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> User Activity</h2>
+                </div>
+                <div class="section-content">
+                    <table id="activity-table">
+                        <thead>
+                            <tr>
+                                <th>Mobile Number</th>
+                                <th>Login Timestamp</th>
+                                <th>Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                             <!-- Activity will be populated here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    // Auth State Listener
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            currentAdmin = user;
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
-            loadDashboardData();
-            loadMenuItems(); // Uses Firestore
-            loadOrders(); // Uses RTDB
-            loadUsers(); // Placeholder
-        } else {
-            currentAdmin = null;
-            document.getElementById('loginScreen').style.display = 'block';
-            document.getElementById('adminDashboard').style.display = 'none';
-            // Clear panels
-            document.getElementById('menuItemsList').innerHTML = 'Loading menu items...';
-            document.getElementById('ordersList').innerHTML = 'Loading orders...';
-            document.getElementById('usersList').innerHTML = 'Loading user data...';
-            // Unsubscribe from RTDB listeners
-            if (ordersUnsubscribe) {
-                const ordersRef = database.ref('orders');
-                ordersRef.off('value', ordersUnsubscribe);
-                ordersUnsubscribe = null;
+        </div> <!-- End of main-content -->
+    </div> <!-- End of admin-content -->
+
+    <script>
+        // --- IMPORTANT: REPLACE WITH YOUR ACTUAL FIREBASE CONFIG ---
+        // Ensure this matches the config used in your index.html
+        const firebaseConfig = {
+            apiKey: "AIzaSyB0sVoG5VdOxmk4ZM5m837pN2uQ3XfRwZw",
+            authDomain: "mirdhuna-25542.firebaseapp.com",
+            databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+            projectId: "mirdhuna-25542",
+            storageBucket: "mirdhuna-25542.appspot.com",
+            messagingSenderId: "1078913123456", // Replace with actual
+            appId: "1:1078913123456:web:placeholder", // Replace with actual
+            measurementId: "G-XXXXXXXXXX" // Replace with actual if using Analytics
+        };
+
+        // --- Initialize Firebase ---
+        if (!firebase.apps.length) {
+             firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        // --- Admin Login Logic ---
+        document.getElementById('login-btn').addEventListener('click', checkPassword);
+        document.getElementById('admin-password').addEventListener('keypress', function(e) {
+             if (e.key === 'Enter') {
+                 checkPassword();
+             }
+        });
+
+        function checkPassword() {
+            const password = document.getElementById('admin-password').value;
+            const messageElement = document.getElementById('login-message');
+            if (password === 'Sanu.0000') {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+                fetchData(); // Start fetching data once logged in
+            } else {
+                messageElement.textContent = 'Incorrect password.';
+                messageElement.style.color = 'var(--accent-color)';
             }
         }
-    });
 
-    // --- Admin Login/Logout ---
-    function adminLogin() {
-        const email = document.getElementById('adminEmail').value;
-        const password = document.getElementById('adminPassword').value;
-        const spinner = document.getElementById('loginSpinner');
-        const message = document.getElementById('loginMessage');
+        // --- Navigation ---
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Remove active class from all links
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                // Add active class to clicked link
+                this.classList.add('active');
 
-        if (!email || !password) {
-            message.textContent = 'Please enter email and password.';
-            return;
-        }
-
-        spinner.style.display = 'block';
-        message.textContent = '';
-
-        auth.signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log("Admin logged in:", user.uid);
-                spinner.style.display = 'none';
-                // UI update is handled by onAuthStateChanged
-            })
-            .catch((error) => {
-                spinner.style.display = 'none';
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.error("Login error:", errorCode, errorMessage);
-                if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password') {
-                    message.textContent = 'Invalid email or password.';
-                } else {
-                    message.textContent = 'Login failed: ' + errorMessage;
-                }
-            });
-    }
-
-    function adminLogout() {
-        auth.signOut().then(() => {
-            console.log("Admin logged out");
-            showToast('Logged out successfully.');
-            // UI update is handled by onAuthStateChanged
-        }).catch((error) => {
-            console.error("Logout error:", error);
-            showToast('Logout failed.');
-        });
-    }
-
-    // --- UI Navigation ---
-    function showPanel(panelName) {
-        document.querySelectorAll('.panel').forEach(panel => {
-            panel.style.display = 'none';
-        });
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
-        });
-
-        document.getElementById(panelName + 'Panel').style.display = 'block';
-        event.target.classList.add('active');
-
-        if (panelName === 'menu') loadMenuItems();
-        if (panelName === 'orders') loadOrders();
-        if (panelName === 'users') loadUsers();
-    }
-
-    function showToast(message, isError = false) {
-        const toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.className = 'toast';
-        if (isError) {
-            toast.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
-        } else {
-            toast.style.background = 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)';
-        }
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
-    }
-
-    // --- Dashboard Data (Uses RTDB for orders, Firestore for menu items) ---
-    function loadDashboardData() {
-        // Total Menu Items (Firestore)
-        db.collection('menuItems').onSnapshot(snapshot => {
-            document.getElementById('totalMenuItems').textContent = snapshot.size;
-        }, err => {
-            console.error("Error loading menu items for dashboard:", err);
-            document.getElementById('totalMenuItems').textContent = 'Error';
-        });
-
-        // Orders Data (RTDB)
-        const ordersRef = database.ref('orders');
-        ordersUnsubscribe = ordersRef.on('value', (snapshot) => {
-            if (snapshot.exists()) {
-                const allOrders = snapshot.val();
-                const orderIds = Object.keys(allOrders);
-                const totalOrders = orderIds.length;
-
-                let pendingCount = 0;
-                orderIds.forEach(id => {
-                    if (allOrders[id].status === 'pending') {
-                        pendingCount++;
-                    }
+                // Hide all sections
+                document.querySelectorAll('.admin-section').forEach(section => {
+                    section.style.display = 'none';
                 });
 
-                document.getElementById('totalOrders').textContent = totalOrders;
-                document.getElementById('pendingOrders').textContent = pendingCount;
+                // Show the target section
+                const targetId = this.getAttribute('data-target');
+                document.getElementById(targetId).style.display = 'block';
+            });
+        });
 
-                // Recent Orders (last 5)
-                const recentOrdersList = document.getElementById('recentOrdersList');
-                recentOrdersList.innerHTML = '';
+        // --- Data Fetching and Display Functions ---
+        let ordersData = {}; // Store orders data for calculations
 
-                // Convert to array and sort by timestamp (newest first)
-                const ordersArray = orderIds.map(id => ({ id, ...allOrders[id] }));
-                ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                const recentOrders = ordersArray.slice(0, 5);
+        function fetchData() {
+            fetchOrders();
+            fetchMenu();
+            fetchSlider();
+            fetchAnalytics();
+            fetchUserActivity();
+        }
 
-                if (recentOrders.length === 0) {
-                    recentOrdersList.innerHTML = '<p>No recent orders.</p>';
+        function fetchOrders() {
+            const ordersRef = database.ref('orders');
+            ordersRef.on('value', (snapshot) => {
+                ordersData = snapshot.val() || {};
+                const tableBody = document.querySelector('#orders-table tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                if (!ordersData || Object.keys(ordersData).length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No orders found.</td></tr>';
+                    updateDashboardStats(); // Update stats even if no orders
                     return;
                 }
 
-                const table = document.createElement('table');
-                table.innerHTML = `
-                    <thead>
-                        <tr><th>Order ID</th><th>User</th><th>Items</th><th>Status</th></tr>
-                    </thead>
-                    <tbody id="recentOrdersTableBody"></tbody>
-                `;
-                const tbody = table.querySelector('#recentOrdersTableBody');
-                recentOrders.forEach(order => {
-                    const row = document.createElement('tr');
-                    const itemsCount = order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
-                    row.innerHTML = `
-                        <td>${order.id.substring(0, 6)}...</td>
-                        <td>${order.userMobile || 'N/A'}</td>
-                        <td>${itemsCount} items</td>
-                        <td><span class="status-badge status-${order.status}">${order.status}</span></td>
-                    `;
-                    tbody.appendChild(row);
-                });
-                recentOrdersList.appendChild(table);
+                // Update Dashboard Stats
+                updateDashboardStats();
 
-            } else {
-                document.getElementById('totalOrders').textContent = '0';
-                document.getElementById('pendingOrders').textContent = '0';
-                document.getElementById('recentOrdersList').innerHTML = '<p>No recent orders.</p>';
-            }
-        }, (error) => {
-            console.error("Error loading orders for dashboard from RTDB:", error);
-            document.getElementById('totalOrders').textContent = 'Error';
-            document.getElementById('pendingOrders').textContent = 'Error';
-            document.getElementById('recentOrdersList').innerHTML = '<p>Error loading orders.</p>';
-        });
-    }
+                for (const orderId in ordersData) {
+                    if (ordersData.hasOwnProperty(orderId)) {
+                        const order = ordersData[orderId];
+                        const row = document.createElement('tr');
 
-    // --- Menu Management (Uses Firestore) ---
-    function loadMenuItems() {
-        const list = document.getElementById('menuItemsList');
-        list.innerHTML = '<div class="spinner" style="display:block;"></div>';
+                        // Calculate total value
+                        let totalValue = 0;
+                        let itemsList = [];
+                        if (order.items) {
+                            for (const itemId in order.items) {
+                                const item = order.items[itemId];
+                                const itemTotal = (item.price || 0) * (item.quantity || 0);
+                                totalValue += itemTotal;
+                                itemsList.push(`${item.name || 'N/A'} x ${item.quantity || 0}`);
+                            }
+                        }
 
-        db.collection('menuItems').onSnapshot(snapshot => {
-            list.innerHTML = '';
-            if (snapshot.empty) {
-                list.innerHTML = '<p>No menu items found.</p>';
-                return;
-            }
-            const grid = document.createElement('div');
-            grid.className = 'two-col-grid';
-            snapshot.forEach(doc => {
-                const item = doc.data();
-                const itemCard = document.createElement('div');
-                itemCard.className = 'card flex items-center justify-between';
-                itemCard.innerHTML = `
-                    <div class="flex items-center">
-                        <img src="${item.imageUrl || 'https://via.placeholder.com/60x40?text=No+Img'}" alt="${item.name}" class="menu-image-preview mr-4" onerror="this.src='https://via.placeholder.com/60x40?text=Error';">
-                        <div>
-                            <h3 class="font-semibold">${item.name}</h3>
-                            <p class="text-sm text-gray-600">${item.category} - ₹${item.price.toFixed(2)}</p>
-                        </div>
-                    </div>
-                    <div>
-                        <button onclick="openEditMenuItemModal('${doc.id}')" class="btn-secondary text-sm mr-2"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteMenuItem('${doc.id}')" class="btn-danger text-sm"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
-                grid.appendChild(itemCard);
-            });
-            list.appendChild(grid);
-        }, err => {
-            console.error("Error loading menu items from Firestore:", err);
-            list.innerHTML = '<p class="text-red-500">Error loading menu items.</p>';
-        });
-    }
+                        // Determine status badge class
+                        let statusBadgeClass = 'status-pending';
+                        if (order.status === 'Preparing') statusBadgeClass = 'status-preparing';
+                        if (order.status === 'Completed') statusBadgeClass = 'status-completed';
 
-    // Menu Item Modal Logic (Firestore)
-    document.getElementById('itemImage').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('imagePreview').src = e.target.result;
-                document.getElementById('imagePreview').style.display = 'block';
-            }
-            reader.readAsDataURL(file);
-        }
-    });
+                        row.innerHTML = `
+                            <td>${orderId}</td>
+                            <td>
+                                <div id="map-placeholder">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Map View</span>
+                                </div>
+                                <small>${order.location?.latitude?.toFixed(4) || 'N/A'}, ${order.location?.longitude?.toFixed(4) || 'N/A'}</small>
+                            </td>
+                            <td><strong>₹${totalValue.toFixed(2)}</strong></td>
+                            <td>${itemsList.join('<br>')}</td>
+                            <td><span class="status-badge ${statusBadgeClass}">${order.status || 'Pending'}</span></td>
+                            <td>
+                                <select class="status-select form-control" data-order-id="${orderId}" style="width: auto; display: inline-block; margin-right: 5px;">
+                                    <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Preparing" ${order.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
+                                    <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                </select>
+                                <button class="btn btn-warning update-status-btn" data-order-id="${orderId}"><i class="fas fa-sync"></i></button>
+                                <button class="btn btn-info print-btn" data-order-id="${orderId}"><i class="fas fa-print"></i></button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    }
+                }
 
-    document.getElementById('menuItemForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveMenuItem(); // Uses Firestore
-    });
-
-    function openAddMenuItemModal() {
-        document.getElementById('modalTitle').textContent = 'Add New Menu Item';
-        document.getElementById('menuItemForm').reset();
-        document.getElementById('editItemId').value = '';
-        document.getElementById('imagePreview').style.display = 'none';
-        document.getElementById('imagePreview').src = '';
-        document.getElementById('menuModalMessage').textContent = '';
-        document.getElementById('menuModalSpinner').style.display = 'none';
-        document.getElementById('menuItemModal').style.display = 'block';
-    }
-
-    function openEditMenuItemModal(itemId) {
-        db.collection('menuItems').doc(itemId).get().then(doc => {
-            if (doc.exists) {
-                const item = doc.data();
-                document.getElementById('modalTitle').textContent = 'Edit Menu Item';
-                document.getElementById('editItemId').value = doc.id;
-                document.getElementById('itemName').value = item.name;
-                document.getElementById('itemCategory').value = item.category;
-                document.getElementById('itemPrice').value = item.price;
-                document.getElementById('imagePreview').src = item.imageUrl || '';
-                document.getElementById('imagePreview').style.display = item.imageUrl ? 'block' : 'none';
-                document.getElementById('menuModalMessage').textContent = '';
-                document.getElementById('menuModalSpinner').style.display = 'none';
-                document.getElementById('menuItemModal').style.display = 'block';
-            } else {
-                showToast('Item not found.', true);
-            }
-        }).catch(error => {
-            console.error("Error fetching item for edit from Firestore:", error);
-            showToast('Error fetching item.', true);
-        });
-    }
-
-    function closeMenuItemModal() {
-        document.getElementById('menuItemModal').style.display = 'none';
-    }
-
-    function saveMenuItem() { // Uses Firestore
-        const itemId = document.getElementById('editItemId').value;
-        const name = document.getElementById('itemName').value;
-        const category = document.getElementById('itemCategory').value;
-        const price = parseFloat(document.getElementById('itemPrice').value);
-        const imageFile = document.getElementById('itemImage').files[0];
-        const spinner = document.getElementById('menuModalSpinner');
-        const message = document.getElementById('menuModalMessage');
-
-        if (!name || !category || isNaN(price) || price < 0) {
-            message.textContent = 'Please fill all fields correctly.';
-            return;
-        }
-
-        spinner.style.display = 'block';
-        message.textContent = '';
-
-        let savePromise;
-        if (itemId) {
-            const updateData = { name, category, price };
-            if (imageFile) {
-                const storageRef = storage.ref();
-                const imageRef = storageRef.child(`menu_images/${itemId}_${Date.now()}_${imageFile.name}`);
-                imageRef.put(imageFile).then(snapshot => snapshot.ref.getDownloadURL())
-                    .then(url => {
-                        updateData.imageUrl = url;
-                        return db.collection('menuItems').doc(itemId).update(updateData);
-                    })
-                    .then(() => {
-                        spinner.style.display = 'none';
-                        closeMenuItemModal();
-                        showToast('Item updated successfully!');
-                    })
-                    .catch(error => {
-                        spinner.style.display = 'none';
-                        console.error("Error updating item in Firestore:", error);
-                        message.textContent = 'Error updating item: ' + error.message;
+                // Add event listeners to the newly created buttons
+                document.querySelectorAll('.update-status-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const orderId = this.getAttribute('data-order-id');
+                        updateOrderStatus(orderId);
                     });
-            } else {
-                savePromise = db.collection('menuItems').doc(itemId).update(updateData);
-            }
-        } else {
-            const newItem = { name, category, price, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
-            savePromise = db.collection('menuItems').add(newItem).then(docRef => {
-                if (imageFile) {
-                    const storageRef = storage.ref();
-                    const imageRef = storageRef.child(`menu_images/${docRef.id}_${Date.now()}_${imageFile.name}`);
-                    return imageRef.put(imageFile).then(snapshot => snapshot.ref.getDownloadURL())
-                        .then(url => {
-                            return db.collection('menuItems').doc(docRef.id).update({ imageUrl: url });
-                        });
-                }
-            });
-        }
-
-        if (savePromise && !itemId) {
-             savePromise.then(() => {
-                spinner.style.display = 'none';
-                closeMenuItemModal();
-                showToast('Item added successfully!');
-            }).catch(error => {
-                spinner.style.display = 'none';
-                console.error("Error adding item to Firestore:", error);
-                message.textContent = 'Error adding item: ' + error.message;
-            });
-        } else if(savePromise && itemId) {
-             savePromise.then(() => {
-                spinner.style.display = 'none';
-                closeMenuItemModal();
-                showToast('Item updated successfully!');
-            }).catch(error => {
-                spinner.style.display = 'none';
-                console.error("Error updating item in Firestore:", error);
-                message.textContent = 'Error updating item: ' + error.message;
-            });
-        }
-    }
-
-    function deleteMenuItem(itemId) { // Uses Firestore
-        if (confirm('Are you sure you want to delete this menu item?')) {
-            db.collection('menuItems').doc(itemId).delete()
-                .then(() => {
-                    showToast('Item deleted successfully!');
-                })
-                .catch(error => {
-                    console.error("Error deleting item from Firestore:", error);
-                    showToast('Error deleting item.', true);
                 });
-        }
-    }
-
-    // --- Order Management (Uses RTDB) ---
-    function loadOrders() {
-        const list = document.getElementById('ordersList');
-        list.innerHTML = '<div class="spinner" style="display:block;"></div>';
-
-        // Close any existing listener
-        if (ordersUnsubscribe) {
-             const ordersRef = database.ref('orders');
-             ordersRef.off('value', ordersUnsubscribe);
-             ordersUnsubscribe = null;
-        }
-
-        const ordersRef = database.ref('orders');
-        ordersUnsubscribe = ordersRef.on('value', (snapshot) => {
-            list.innerHTML = '';
-            if (!snapshot.exists()) {
-                list.innerHTML = '<p>No orders found.</p>';
-                return;
-            }
-
-            const allOrders = snapshot.val();
-            const orderIds = Object.keys(allOrders);
-
-            if (orderIds.length === 0) {
-                list.innerHTML = '<p>No orders found.</p>';
-                return;
-            }
-
-            // Convert to array and sort by timestamp (newest first)
-            const ordersArray = orderIds.map(id => ({ id, ...allOrders[id] }));
-            ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-            const table = document.createElement('table');
-            table.innerHTML = `
-                <thead>
-                    <tr><th>Order ID</th><th>User Mobile</th><th>Items</th><th>Total</th><th>Time</th><th>Status</th><th>Actions</th></tr>
-                </thead>
-                <tbody id="ordersTableBody"></tbody>
-            `;
-            const tbody = table.querySelector('#ordersTableBody');
-            ordersArray.forEach(order => {
-                const row = document.createElement('tr');
-                const orderId = order.id;
-                const itemsHtml = order.items ? order.items.map(i => `${i.name} (x${i.quantity})`).join('<br>') : 'N/A';
-                let total = 0;
-                if (order.items) {
-                    total = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                }
-                // Timestamp handling
-                const timestampRaw = order.timestamp;
-                let timestampDisplay = 'N/A';
-                if (typeof timestampRaw === 'number') {
-                    timestampDisplay = new Date(timestampRaw).toLocaleString();
-                } else if (timestampRaw && typeof timestampRaw === 'object' && timestampRaw['.sv'] === 'timestamp') {
-                    timestampDisplay = 'Just now';
-                } else if (timestampRaw) {
-                     try {
-                         timestampDisplay = new Date(timestampRaw).toLocaleString();
-                     } catch (e) {
-                         timestampDisplay = String(timestampRaw);
-                     }
-                }
-
-                row.innerHTML = `
-                    <td>${orderId.substring(0, 6)}...</td>
-                    <td>${order.userMobile || 'N/A'}</td>
-                    <td>${itemsHtml}</td>
-                    <td>₹${total.toFixed(2)}</td>
-                    <td>${timestampDisplay}</td>
-                    <td>
-                        <select onchange="updateOrderStatus('${orderId}', this.value)" class="status-badge status-${order.status}">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>Preparing</option>
-                            <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>Ready</option>
-                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
-                        </select>
-                    </td>
-                    <td>
-                        <button onclick="deleteOrder('${orderId}')" class="btn-danger text-sm"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-            list.appendChild(table);
-        }, (error) => {
-            list.innerHTML = '';
-            console.error("Error loading orders from RTDB:", error);
-            list.innerHTML = '<p class="text-red-500">Error loading orders.</p>';
-        });
-    }
-
-    function updateOrderStatus(orderId, newStatus) { // Uses RTDB
-        const statusRef = database.ref('orders/' + orderId + '/status');
-        statusRef.set(newStatus)
-            .then(() => {
-                console.log("Order status updated in RTDB");
-                showToast(`Order status updated to ${newStatus}.`);
-                 // Trigger notification if status changes to 'ready'
-                if (newStatus === 'ready') {
-                     const orderRef = database.ref('orders/' + orderId);
-                     orderRef.once('value').then(snapshot => {
-                         if (snapshot.exists()) {
-                             const orderData = snapshot.val();
-                             sendOrderReadyNotification(orderData.userMobile, orderId, orderData.items);
-                         }
+                document.querySelectorAll('.print-btn').forEach(button => {
+                     button.addEventListener('click', function() {
+                         const orderId = this.getAttribute('data-order-id');
+                         printOrder(orderId);
                      });
-                }
-            })
-            .catch(error => {
-                console.error("Error updating order status in RTDB:", error);
-                showToast('Error updating status.', true);
-                 loadOrders(); // Reload to revert
-            });
-    }
+                });
 
-    function deleteOrder(orderId) { // Uses RTDB
-        if (confirm('Are you sure you want to delete this order?')) {
-            const orderRef = database.ref('orders/' + orderId);
-            orderRef.remove()
+            }, (error) => {
+                console.error("Error fetching orders:", error);
+                document.querySelector('#orders-table tbody').innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--accent-color);">Error loading orders: ${error.message}</td></tr>`;
+            });
+        }
+
+        function updateDashboardStats() {
+             // Update Total Orders
+             const totalOrders = ordersData ? Object.keys(ordersData).length : 0;
+             document.getElementById('total-orders').textContent = totalOrders;
+
+             // Users Online is a placeholder, as it's not in the spec
+             document.getElementById('users-online').textContent = 'N/A';
+        }
+
+        function fetchMenu() {
+            const menuRef = database.ref('menu');
+            menuRef.on('value', (snapshot) => {
+                const menu = snapshot.val();
+                const tableBody = document.querySelector('#menu-table tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                if (!menu || Object.keys(menu).length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No menu items found.</td></tr>';
+                    return;
+                }
+
+                for (const itemId in menu) {
+                    if (menu.hasOwnProperty(itemId)) {
+                        const item = menu[itemId];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.name || 'N/A'}</td>
+                            <td><strong>₹${item.price ? parseFloat(item.price).toFixed(2) : '0.00'}</strong></td>
+                            <td><img src="${item.image || ''}" alt="${item.name || 'Image'}" style="width: 80px; height: auto; border-radius: 4px;"></td>
+                            <td>${item.description || ''}</td>
+                            <td><button class="btn btn-danger delete-menu-item-btn" data-item-id="${itemId}"><i class="fas fa-trash"></i> Delete</button></td>
+                        `;
+                        tableBody.appendChild(row);
+                    }
+                }
+
+                 // Add event listeners to the newly created delete buttons
+                 document.querySelectorAll('.delete-menu-item-btn').forEach(button => {
+                     button.addEventListener('click', function() {
+                         const itemId = this.getAttribute('data-item-id');
+                         deleteMenuItem(itemId);
+                     });
+                 });
+
+            }, (error) => {
+                console.error("Error fetching menu:", error);
+                document.querySelector('#menu-table tbody').innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--accent-color);">Error loading menu: ${error.message}</td></tr>`;
+            });
+        }
+
+        function fetchSlider() {
+            const sliderRef = database.ref('slider');
+            sliderRef.on('value', (snapshot) => {
+                const slider = snapshot.val();
+                const tableBody = document.querySelector('#slider-table tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                if (!slider || Object.keys(slider).length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No slider images found.</td></tr>';
+                    return;
+                }
+
+                for (const imageId in slider) {
+                    if (slider.hasOwnProperty(imageId)) {
+                        const image = slider[imageId];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><img src="${image.url || ''}" alt="Slider Image" style="width: 120px; height: auto; border-radius: 4px;"></td>
+                            <td><a href="${image.url || '#'}" target="_blank">${image.url ? image.url.substring(0, 30) + '...' : ''}</a></td>
+                            <td><button class="btn btn-danger delete-slider-image-btn" data-image-id="${imageId}"><i class="fas fa-trash"></i> Delete</button></td>
+                        `;
+                        tableBody.appendChild(row);
+                    }
+                }
+
+                 // Add event listeners to the newly created delete buttons
+                 document.querySelectorAll('.delete-slider-image-btn').forEach(button => {
+                     button.addEventListener('click', function() {
+                         const imageId = this.getAttribute('data-image-id');
+                         deleteSliderImage(imageId);
+                     });
+                 });
+
+            }, (error) => {
+                 console.error("Error fetching slider:", error);
+                 document.querySelector('#slider-table tbody').innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--accent-color);">Error loading slider: ${error.message}</td></tr>`;
+            });
+        }
+
+        function fetchAnalytics() {
+            const analyticsRef = database.ref('analytics');
+            analyticsRef.on('value', (snapshot) => {
+                const analytics = snapshot.val();
+                const today = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD
+
+                let totalViews = 0;
+                let todayViews = 0;
+
+                if (analytics && analytics.views) {
+                    totalViews = analytics.views.total || 0;
+
+                    // Count today's views
+                    if (analytics.views.daily && analytics.views.daily[today]) {
+                         todayViews = analytics.views.daily[today];
+                    }
+                }
+
+                document.getElementById('total-views').textContent = totalViews;
+                document.getElementById('today-views').textContent = todayViews;
+
+            }, (error) => {
+                console.error("Error fetching analytics:", error);
+                document.getElementById('total-views').textContent = 'Error';
+                document.getElementById('today-views').textContent = 'Error';
+            });
+        }
+
+        function fetchUserActivity() {
+            const activityRef = database.ref('userActivity');
+            activityRef.on('value', (snapshot) => {
+                const activities = snapshot.val();
+                const tableBody = document.querySelector('#activity-table tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                if (!activities || Object.keys(activities).length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No user activity found.</td></tr>';
+                    return;
+                }
+
+                // Convert object to array and sort by timestamp (newest first)
+                const activityArray = Object.entries(activities).map(([key, data]) => ({ key, ...data }));
+                activityArray.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                activityArray.forEach(activity => {
+                     const row = document.createElement('tr');
+                     // Format timestamp for display
+                     const formattedTime = activity.timestamp ? new Date(activity.timestamp).toLocaleString('en-IN') : 'N/A';
+                     row.innerHTML = `
+                         <td>${activity.mobile || 'N/A'}</td>
+                         <td>${formattedTime}</td>
+                         <td>${activity.location || 'N/A'}</td>
+                     `;
+                     tableBody.appendChild(row);
+                });
+            }, (error) => {
+                 console.error("Error fetching user activity:", error);
+                 document.querySelector('#activity-table tbody').innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--accent-color);">Error loading activity: ${error.message}</td></tr>`;
+            });
+        }
+
+        // --- CRUD Functions ---
+
+        function updateOrderStatus(orderId) {
+            const selectElement = document.querySelector(`.status-select[data-order-id="${orderId}"]`);
+            const newStatus = selectElement.value;
+
+            const orderRef = database.ref(`orders/${orderId}`);
+            orderRef.update({ status: newStatus })
                 .then(() => {
-                    showToast('Order deleted successfully!');
+                    console.log(`Order ${orderId} status updated to ${newStatus}`);
+                    // UI update is handled by real-time listener
+                    // Optionally, show a brief confirmation
+                     const statusCell = selectElement.closest('tr').querySelector('td:nth-child(5) .status-badge');
+                     statusCell.textContent = newStatus;
+                     statusCell.className = 'status-badge'; // Reset classes
+                     if (newStatus === 'Pending') statusCell.classList.add('status-pending');
+                     if (newStatus === 'Preparing') statusCell.classList.add('status-preparing');
+                     if (newStatus === 'Completed') statusCell.classList.add('status-completed');
+
                 })
-                .catch(error => {
-                    console.error("Error deleting order from RTDB:", error);
-                    showToast('Error deleting order.', true);
+                .catch((error) => {
+                    console.error("Error updating order status:", error);
+                    alert("Failed to update order status.");
                 });
         }
-    }
 
-     function sendOrderReadyNotification(userMobile, orderId, items) {
-        // This is a placeholder. Implement actual notification logic (e.g., SMS, Email, or push)
-        // For now, just log it or show a toast
-        console.log(`Notification: Order ${orderId} is ready for user ${userMobile}`);
-        // showToast(`Notification sent for order ${orderId.substring(orderId.length - 6)}`);
-     }
-
-
-    // --- User Login History (Placeholder) ---
-    function loadUsers() {
-        const list = document.getElementById('usersList');
-        list.innerHTML = '<p class="text-gray-600"><i class="fas fa-info-circle mr-2"></i> This feature requires storing user login data in Firestore or RTDB. Implementation depends on how/where you store this data.</p>';
-    }
-
-    // --- Settings (Placeholder) ---
-    function changeAdminPassword() {
-        const currentPass = document.getElementById('currentPassword').value;
-        const newPass = document.getElementById('newPassword').value;
-        const confirmPass = document.getElementById('confirmNewPassword').value;
-        const spinner = document.getElementById('settingsSpinner');
-        const message = document.getElementById('settingsMessage');
-
-        if (!currentPass || !newPass || !confirmPass) {
-            message.textContent = 'Please fill in all fields.';
-            message.className = 'text-red-500 mt-2';
-            return;
-        }
-        if (newPass !== confirmPass) {
-            message.textContent = 'New passwords do not match.';
-            message.className = 'text-red-500 mt-2';
-            return;
-        }
-        if (newPass.length < 6) {
-             message.textContent = 'New password must be at least 6 characters.';
-             message.className = 'text-red-500 mt-2';
-             return;
+        function printOrder(orderId) {
+             console.log(`Print action triggered for order: ${orderId}`);
+             // TODO: Implement actual print logic (e.g., open a new window with order details)
+             alert(`Print function for Order ID: ${orderId} would be triggered here. In a full implementation, this would generate a printable invoice.`);
+             // Example of data you could print:
+             // const orderData = ordersData[orderId];
+             // console.log("Order Data to Print:", orderData);
         }
 
-        spinner.style.display = 'block';
-        message.textContent = '';
+        // --- Menu Item CRUD ---
+        document.getElementById('add-menu-item-btn').addEventListener('click', addMenuItem);
 
-        setTimeout(() => {
-            spinner.style.display = 'none';
-            message.textContent = 'Password change simulated!';
-            message.className = 'text-green-500 mt-2';
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmNewPassword').value = '';
-            showToast('Password change simulated.');
-        }, 1500);
-    }
+        function addMenuItem() {
+            const name = document.getElementById('new-item-name').value.trim();
+            const price = document.getElementById('new-item-price').value;
+            const image = document.getElementById('new-item-image').value.trim();
+            const description = document.getElementById('new-item-description').value.trim();
 
-    // Close modals if clicked outside
-    window.onclick = function(event) {
-        if (event.target.id === 'menuItemModal') {
-            closeMenuItemModal();
+            if (!name || !price || !image) {
+                alert("Please fill in Name, Price, and Image URL.");
+                return;
+            }
+
+            const newItem = {
+                name: name,
+                price: parseFloat(price),
+                image: image,
+                description: description
+            };
+
+            const newMenuItemRef = database.ref('menu').push();
+            newMenuItemRef.set(newItem)
+                .then(() => {
+                    console.log("Menu item added.");
+                    // Clear form
+                    document.getElementById('new-item-name').value = '';
+                    document.getElementById('new-item-price').value = '';
+                    document.getElementById('new-item-image').value = '';
+                    document.getElementById('new-item-description').value = '';
+                    // UI update is handled by real-time listener
+                })
+                .catch((error) => {
+                    console.error("Error adding menu item:", error);
+                    alert("Failed to add menu item.");
+                });
         }
-    }
 
-  </script>
+        function deleteMenuItem(itemId) {
+            if (!confirm("Are you sure you want to delete this menu item?")) {
+                return;
+            }
+
+            const itemRef = database.ref(`menu/${itemId}`);
+            itemRef.remove()
+                .then(() => {
+                    console.log(`Menu item ${itemId} deleted.`);
+                    // UI update is handled by real-time listener
+                })
+                .catch((error) => {
+                    console.error("Error deleting menu item:", error);
+                    alert("Failed to delete menu item.");
+                });
+        }
+
+        // --- Slider Image CRUD ---
+        document.getElementById('add-slider-image-btn').addEventListener('click', addSliderImage);
+
+        function addSliderImage() {
+            const imageUrl = document.getElementById('new-slider-image').value.trim();
+
+            if (!imageUrl) {
+                alert("Please enter an image URL.");
+                return;
+            }
+
+            const newImage = {
+                url: imageUrl
+            };
+
+            const newSliderImageRef = database.ref('slider').push();
+            newSliderImageRef.set(newImage)
+                .then(() => {
+                    console.log("Slider image added.");
+                    // Clear form
+                    document.getElementById('new-slider-image').value = '';
+                    // UI update is handled by real-time listener
+                })
+                .catch((error) => {
+                    console.error("Error adding slider image:", error);
+                    alert("Failed to add slider image.");
+                });
+
+        }
+
+        function deleteSliderImage(imageId) {
+             if (!confirm("Are you sure you want to delete this slider image?")) {
+                 return;
+             }
+
+             const imageRef = database.ref(`slider/${imageId}`);
+             imageRef.remove()
+                 .then(() => {
+                     console.log(`Slider image ${imageId} deleted.`);
+                     // UI update is handled by real-time listener
+                 })
+                 .catch((error) => {
+                     console.error("Error deleting slider image:", error);
+                     alert("Failed to delete slider image.");
+                 });
+        }
+
+    </script>
 
 </body>
-</html>
+  </html>
