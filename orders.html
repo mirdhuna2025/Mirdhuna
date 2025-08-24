@@ -420,7 +420,7 @@
 
              filteredOrders = {};
 
-             for (const orderId in allOrders) {
+             for (const orderId in allOrders) { // orderId IS the mobile number
                  if (allOrders.hasOwnProperty(orderId)) {
                      const order = allOrders[orderId];
                      let includeOrder = true;
@@ -497,13 +497,17 @@
                         valueA = 0;
                         if (orderA.items) {
                             for (const itemId in orderA.items) {
-                                valueA += (parseFloat(orderA.items[itemId].price) || 0) * (parseInt(orderA.items[itemId].quantity) || 0);
+                                if (orderA.items.hasOwnProperty(itemId)){
+                                    valueA += (parseFloat(orderA.items[itemId].price) || 0) * (parseInt(orderA.items[itemId].quantity) || 0);
+                                }
                             }
                         }
                         valueB = 0;
                         if (orderB.items) {
                             for (const itemId in orderB.items) {
-                                valueB += (parseFloat(orderB.items[itemId].price) || 0) * (parseInt(orderB.items[itemId].quantity) || 0);
+                                 if (orderB.items.hasOwnProperty(itemId)){
+                                    valueB += (parseFloat(orderB.items[itemId].price) || 0) * (parseInt(orderB.items[itemId].quantity) || 0);
+                                }
                             }
                         }
                         break;
@@ -567,12 +571,12 @@
                 return;
             }
 
-            orderIds.forEach(orderId => {
+            orderIds.forEach(orderId => { // orderId IS the mobile number
                  const order = filteredOrders[orderId];
                  const row = document.createElement('tr');
                  row.setAttribute('data-order-id', orderId); // Add data attribute for easy lookup
 
-                 // Calculate total value and list items
+                 // --- Calculate Total Value and List Items ---
                  let totalValue = 0;
                  let itemsListShort = [];
                  let itemsListFull = [];
@@ -581,13 +585,15 @@
                      const displayCount = Math.min(itemKeys.length, 3); // Show max 3 items in main table
                      for (let i = 0; i < displayCount; i++) {
                          const itemId = itemKeys[i];
-                         const item = order.items[itemId];
-                         const quantity = parseInt(item.quantity) || 0;
-                         const price = parseFloat(item.price) || 0;
-                         const itemTotal = (price * quantity);
-                         totalValue += itemTotal;
-                         itemsListShort.push(`${item.name || 'N/A'} x ${quantity}`);
-                         itemsListFull.push({name: item.name, quantity, price, total: itemTotal});
+                         if (order.items.hasOwnProperty(itemId)) {
+                             const item = order.items[itemId];
+                             const quantity = parseInt(item.quantity) || 0;
+                             const price = parseFloat(item.price) || 0;
+                             const itemTotal = (price * quantity);
+                             totalValue += itemTotal;
+                             itemsListShort.push(`${item.name || 'N/A'} x ${quantity}`);
+                             itemsListFull.push({name: item.name, quantity, price, total: itemTotal});
+                         }
                      }
                      if (itemKeys.length > 3) {
                          itemsListShort.push(`...and ${itemKeys.length - 3} more`);
@@ -595,22 +601,46 @@
                      // Calculate total for remaining items if not already included in the loop
                      for (let i = displayCount; i < itemKeys.length; i++) {
                           const itemId = itemKeys[i];
-                          const item = order.items[itemId];
-                          const quantity = parseInt(item.quantity) || 0;
-                          const price = parseFloat(item.price) || 0;
-                          const itemTotal = (price * quantity);
-                          totalValue += itemTotal;
-                          itemsListFull.push({name: item.name, quantity, price, total: itemTotal});
+                          if (order.items.hasOwnProperty(itemId)) {
+                              const item = order.items[itemId];
+                              const quantity = parseInt(item.quantity) || 0;
+                              const price = parseFloat(item.price) || 0;
+                              const itemTotal = (price * quantity);
+                              totalValue += itemTotal;
+                              itemsListFull.push({name: item.name, quantity, price, total: itemTotal});
+                          }
                      }
                  } else {
                       itemsListShort.push('No items');
+                 }
+
+                 // --- Format Location Data for Table ---
+                 let locationDisplay = 'N/A';
+                 if (order.location) {
+                     // Check if location is an object with lat/lng (from coordinates)
+                     if (typeof order.location === 'object' &&
+                         order.location.latitude !== undefined &&
+                         order.location.longitude !== undefined) {
+                         locationDisplay = `
+                             <div id="map-placeholder">Map View</div>
+                             <small>Lat: ${parseFloat(order.location.latitude).toFixed(4)}, Lng: ${parseFloat(order.location.longitude).toFixed(4)}</small>
+                         `;
+                     }
+                     // Check if location is a string (e.g., address)
+                     else if (typeof order.location === 'string') {
+                         locationDisplay = `<small>${order.location}</small>`;
+                     }
+                     // Handle other potential formats or just show the raw data
+                     else {
+                         locationDisplay = `<small>${JSON.stringify(order.location)}</small>`;
+                     }
                  }
 
                  const formattedTime = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
 
                  row.innerHTML = `
                     <td><input type="checkbox" class="order-checkbox" data-order-id="${orderId}"></td>
-                    <td>${orderId}</td>
+                    <td>${orderId}</td> <!-- orderId is the mobile number -->
                     <td>${formattedTime}</td>
                     <td>₹${totalValue.toFixed(2)}</td>
                     <td>
@@ -636,25 +666,25 @@
             // Add event listeners to the newly created buttons/checkboxes
             document.querySelectorAll('.update-status-btn').forEach(button => {
                 button.addEventListener('click', function() {
-                    const orderId = this.getAttribute('data-order-id');
+                    const orderId = this.getAttribute('data-order-id'); // orderId is the mobile number
                     updateOrderStatus(orderId);
                 });
             });
             document.querySelectorAll('.print-btn').forEach(button => {
                  button.addEventListener('click', function() {
-                     const orderId = this.getAttribute('data-order-id');
+                     const orderId = this.getAttribute('data-order-id'); // orderId is the mobile number
                      printOrder(orderId);
                  });
             });
             document.querySelectorAll('.delete-order-btn').forEach(button => {
                 button.addEventListener('click', function() {
-                    const orderId = this.getAttribute('data-order-id');
+                    const orderId = this.getAttribute('data-order-id'); // orderId is the mobile number
                     deleteOrder(orderId);
                 });
             });
             document.querySelectorAll('.view-details-btn').forEach(button => {
                  button.addEventListener('click', function() {
-                     const orderId = this.getAttribute('data-order-id');
+                     const orderId = this.getAttribute('data-order-id'); // orderId is the mobile number
                      showOrderDetails(orderId);
                  });
             });
@@ -669,11 +699,15 @@
         }
 
         // --- CRUD Functions ---
-        function updateOrderStatus(orderId) {
+        function updateOrderStatus(orderId) { // orderId is the mobile number
             const selectElement = document.querySelector(`.status-select[data-order-id="${orderId}"]`);
-            if (!selectElement) return;
+            if (!selectElement) {
+                 console.error("Status select element not found for order:", orderId);
+                 return;
+            }
             const newStatus = selectElement.value;
 
+            // Update the database using the mobile number (orderId) as the key
             database.ref(`orders/${orderId}`).update({ status: newStatus })
                 .then(() => {
                      console.log(`Order ${orderId} status updated to ${newStatus}`);
@@ -687,47 +721,61 @@
                      // alert(`Order ${orderId} status updated to ${newStatus}`);
                 })
                 .catch((error) => {
-                    console.error("Error updating order status:", error);
-                    alert("Failed to update order status.");
+                    console.error("Error updating order status:", orderId, error);
+                    alert(`Failed to update status for order ${orderId}.`);
                 });
         }
 
-        function printOrder(orderId) {
-            // Fetch the specific order data from the database
+        function printOrder(orderId) { // orderId is the mobile number
+            // Fetch the specific order data using the mobile number (orderId)
             const orderRef = database.ref('orders/' + orderId);
             orderRef.once('value')
                 .then((snapshot) => {
-                    const order = snapshot.val();
+                    const orderData = snapshot.val(); // Use orderData for clarity
 
-                    if (!order) {
-                        alert("Order data not found.");
+                    if (!orderData) {
+                        alert(`Order data for ${orderId} not found.`);
                         return;
                     }
 
                     // --- Format the order data for printing ---
                     let itemsHtml = '';
                     let totalValue = 0;
-                    if (order.items) {
-                        for (const itemId in order.items) {
-                            const item = order.items[itemId];
-                            const quantity = parseInt(item.quantity) || 0;
-                            const price = parseFloat(item.price) || 0;
-                            const itemTotal = (price * quantity);
-                            totalValue += itemTotal;
-                            itemsHtml += `
-                                <tr>
-                                    <td>${item.name || 'N/A'}</td>
-                                    <td style="text-align:right;">${quantity}</td>
-                                    <td style="text-align:right;">₹${price.toFixed(2)}</td>
-                                    <td style="text-align:right;">₹${itemTotal.toFixed(2)}</td>
-                                </tr>
-                            `;
+                    if (orderData.items) {
+                        for (const itemId in orderData.items) {
+                            if (orderData.items.hasOwnProperty(itemId)) {
+                                const item = orderData.items[itemId];
+                                const quantity = parseInt(item.quantity) || 0;
+                                const price = parseFloat(item.price) || 0;
+                                const itemTotal = (price * quantity);
+                                totalValue += itemTotal;
+                                itemsHtml += `
+                                    <tr>
+                                        <td>${item.name || 'N/A'}</td>
+                                        <td style="text-align:right;">${quantity}</td>
+                                        <td style="text-align:right;">₹${price.toFixed(2)}</td>
+                                        <td style="text-align:right;">₹${itemTotal.toFixed(2)}</td>
+                                    </tr>
+                                `;
+                            }
                         }
                     }
 
-                    const formattedTime = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
-                    const userLocation = order.location ? `Lat: ${order.location.latitude?.toFixed(4) || 'N/A'}, Lng: ${order.location.longitude?.toFixed(4) || 'N/A'}` : 'N/A';
-                    const status = order.status || 'N/A';
+                    const formattedTime = orderData.timestamp ? new Date(orderData.timestamp).toLocaleString() : 'N/A';
+                    // Format location for print receipt
+                    let userLocation = 'N/A';
+                    if (orderData.location) {
+                        if (typeof orderData.location === 'object' &&
+                            orderData.location.latitude !== undefined &&
+                            orderData.location.longitude !== undefined) {
+                            userLocation = `Lat: ${parseFloat(orderData.location.latitude).toFixed(4)}, Lng: ${parseFloat(orderData.location.longitude).toFixed(4)}`;
+                        } else if (typeof orderData.location === 'string') {
+                            userLocation = orderData.location;
+                        } else {
+                            userLocation = JSON.stringify(orderData.location);
+                        }
+                    }
+                    const status = orderData.status || 'N/A';
 
                     const printContent = `
                     <!DOCTYPE html>
@@ -793,16 +841,17 @@
 
                 })
                 .catch((error) => {
-                    console.error("Error fetching order data for printing:", error);
-                    alert("Failed to fetch order details for printing.");
+                    console.error("Error fetching order data for printing:", orderId, error);
+                    alert(`Failed to fetch order details for ${orderId}.`);
                 });
         }
 
-        function deleteOrder(orderId) {
+        function deleteOrder(orderId) { // orderId is the mobile number
              if (!confirm(`Are you sure you want to permanently delete Order ID: ${orderId}?`)) {
                 return;
             }
 
+            // Reference the specific order in the database using the mobile number (orderId)
             const orderRef = database.ref(`orders/${orderId}`);
             orderRef.remove()
                 .then(() => {
@@ -814,14 +863,14 @@
                     applyFilters();
                 })
                 .catch((error) => {
-                    console.error("Error deleting order:", error);
-                    alert("Failed to delete order. Please try again.");
+                    console.error("Error deleting order:", orderId, error);
+                    alert(`Failed to delete order ${orderId}. Please try again.`);
                 });
         }
 
         // --- Order Details Modal ---
-        function showOrderDetails(orderId) {
-            const order = allOrders[orderId]; // Get from full data
+        function showOrderDetails(orderId) { // orderId is the mobile number
+            const order = allOrders[orderId]; // Get from full data using mobile number
             if (!order) {
                 alert("Order details not found.");
                 return;
@@ -830,7 +879,7 @@
             const modal = document.getElementById("orderDetailModal");
             const modalContent = document.getElementById("order-detail-content");
 
-            // Calculate total value and prepare items list
+            // --- Calculate total value and prepare items list ---
             let totalValue = 0;
             let itemsHtml = '';
             if (order.items) {
@@ -847,19 +896,21 @@
                         <tbody>
                 `;
                 for (const itemId in order.items) {
-                    const item = order.items[itemId];
-                    const quantity = parseInt(item.quantity) || 0;
-                    const price = parseFloat(item.price) || 0;
-                    const itemTotal = (price * quantity);
-                    totalValue += itemTotal;
-                    itemsHtml += `
-                        <tr>
-                            <td>${item.name || 'N/A'}</td>
-                            <td>${quantity}</td>
-                            <td>₹${price.toFixed(2)}</td>
-                            <td>₹${itemTotal.toFixed(2)}</td>
-                        </tr>
-                    `;
+                    if (order.items.hasOwnProperty(itemId)) {
+                        const item = order.items[itemId];
+                        const quantity = parseInt(item.quantity) || 0;
+                        const price = parseFloat(item.price) || 0;
+                        const itemTotal = (price * quantity);
+                        totalValue += itemTotal;
+                        itemsHtml += `
+                            <tr>
+                                <td>${item.name || 'N/A'}</td>
+                                <td>${quantity}</td>
+                                <td>₹${price.toFixed(2)}</td>
+                                <td>₹${itemTotal.toFixed(2)}</td>
+                            </tr>
+                        `;
+                    }
                 }
                 itemsHtml += `
                         <tr style="font-weight:bold;">
@@ -873,8 +924,21 @@
                 itemsHtml = "<p>No items found for this order.</p>";
             }
 
+            // --- Format location for modal ---
+            let userLocation = 'N/A';
+            if (order.location) {
+                if (typeof order.location === 'object' &&
+                    order.location.latitude !== undefined &&
+                    order.location.longitude !== undefined) {
+                    userLocation = `Lat: ${parseFloat(order.location.latitude).toFixed(4)}, Lng: ${parseFloat(order.location.longitude).toFixed(4)}`;
+                } else if (typeof order.location === 'string') {
+                    userLocation = order.location;
+                } else {
+                    userLocation = JSON.stringify(order.location);
+                }
+            }
+
             const formattedTime = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
-            const userLocation = order.location ? `Lat: ${order.location.latitude?.toFixed(4) || 'N/A'}, Lng: ${order.location.longitude?.toFixed(4) || 'N/A'}` : 'N/A';
             const status = order.status || 'N/A';
 
             modalContent.innerHTML = `
@@ -893,10 +957,10 @@
             modal.style.display = "block";
 
             // Add event listeners for buttons inside the modal
-            modalContent.querySelector('.print-btn-modal').addEventListener('click', () => printOrder(orderId));
+            modalContent.querySelector('.print-btn-modal').addEventListener('click', () => printOrder(orderId)); // Use mobile number
             modalContent.querySelector('.delete-order-btn-modal').addEventListener('click', () => {
                  modal.style.display = "none"; // Close modal first
-                 setTimeout(() => deleteOrder(orderId), 100); // Slight delay to ensure modal closes
+                 setTimeout(() => deleteOrder(orderId), 100); // Slight delay to ensure modal closes, use mobile number
             });
         }
 
@@ -929,7 +993,7 @@
 
         function bulkDeleteOrders() {
              const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
-             const orderIdsToDelete = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-order-id'));
+             const orderIdsToDelete = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-order-id')); // These are mobile numbers
 
              if (orderIdsToDelete.length === 0) {
                  alert("No orders selected for deletion.");
@@ -942,9 +1006,9 @@
 
              // Use a Promise chain or batch to handle multiple deletes
              const deletePromises = orderIdsToDelete.map(orderId =>
-                 database.ref(`orders/${orderId}`).remove().then(() => {
+                 database.ref(`orders/${orderId}`).remove().then(() => { // Use mobile number
                      console.log(`Order ${orderId} deleted (bulk).`);
-                     delete allOrders[orderId]; // Remove from local cache
+                     delete allOrders[orderId]; // Remove from local cache using mobile number
                  }).catch(err => {
                      console.error(`Error deleting order ${orderId} (bulk):`, err);
                      throw err; // Re-throw to catch in final .catch
@@ -982,22 +1046,37 @@
             // Add CSV header
             csvContent += "Order ID (Mobile),Timestamp,Total Value,Status,Items\n";
 
-            orderIds.forEach(orderId => {
+            orderIds.forEach(orderId => { // orderId is the mobile number
                 const order = filteredOrders[orderId];
                 let totalValue = 0;
                 let itemsList = [];
                 if (order.items) {
                     for (const itemId in order.items) {
-                        const item = order.items[itemId];
-                        const quantity = parseInt(item.quantity) || 0;
-                        const price = parseFloat(item.price) || 0;
-                        const itemTotal = (price * quantity);
-                        totalValue += itemTotal;
-                        itemsList.push(`${item.name || 'N/A'} (x${quantity}) @ ₹${price.toFixed(2)} = ₹${itemTotal.toFixed(2)}`);
+                        if(order.items.hasOwnProperty(itemId)){
+                            const item = order.items[itemId];
+                            const quantity = parseInt(item.quantity) || 0;
+                            const price = parseFloat(item.price) || 0;
+                            const itemTotal = (price * quantity);
+                            totalValue += itemTotal;
+                            itemsList.push(`${item.name || 'N/A'} (x${quantity}) @ ₹${price.toFixed(2)} = ₹${itemTotal.toFixed(2)}`);
+                        }
                     }
                 }
                 const formattedTime = order.timestamp ? `"${new Date(order.timestamp).toLocaleString()}"` : 'N/A'; // Quote timestamp
-                const itemsString = `"${itemsList.join(' | ')}"`; // Quote items list to handle commas
+                // Format location for CSV export
+                let locationString = 'N/A';
+                 if (order.location) {
+                     if (typeof order.location === 'object' &&
+                         order.location.latitude !== undefined &&
+                         order.location.longitude !== undefined) {
+                         locationString = `Lat: ${parseFloat(order.location.latitude).toFixed(4)}, Lng: ${parseFloat(order.location.longitude).toFixed(4)}`;
+                     } else if (typeof order.location === 'string') {
+                         locationString = order.location;
+                     } else {
+                         locationString = JSON.stringify(order.location);
+                     }
+                 }
+                 const itemsString = `"${itemsList.join(' | ')} | Location: ${locationString}"`; // Quote items list to handle commas
 
                 // Add data row
                 csvContent += `${orderId},${formattedTime},${totalValue.toFixed(2)},${order.status || 'N/A'},${itemsString}\n`;
@@ -1016,4 +1095,4 @@
 
     </script>
 </body>
-              </html>
+</html>
