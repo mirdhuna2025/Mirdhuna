@@ -678,6 +678,7 @@
         document.getElementById('add-menu-item-btn').addEventListener('click', addMenuItemWithUpload);
 
         function addMenuItemWithUpload() {
+            alert("Menu Upload function started!"); // <-- Alert for Menu Upload
             console.log("Add Menu Item button clicked.");
             const nameInput = document.getElementById('new-item-name');
             const priceInput = document.getElementById('new-item-price');
@@ -792,6 +793,7 @@
         document.getElementById('add-slider-image-btn').addEventListener('click', addSliderImageWithUpload);
 
         function addSliderImageWithUpload() {
+            alert("Slider Upload function started!"); // <-- Alert for Slider Upload
             console.log("Add Slider Image button clicked.");
             const fileInput = document.getElementById('new-slider-image-file');
             const file = fileInput.files[0];
