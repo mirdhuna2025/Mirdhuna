@@ -1022,14 +1022,38 @@
                     
                     // Add slides to the container
                     slidesArray.forEach(slide => {
+                        // Log the image URL for debugging
+                        console.log("Loading slide image from URL:", slide.url);
+                        
                         const slideElement = document.createElement('div');
                         slideElement.className = 'hero-slide';
-                        slideElement.style.backgroundImage = `url('${slide.image}')`;
+                        
+                        // Set background image using the URL from Firebase
+                        if (slide.url) {
+                            slideElement.style.backgroundImage = `url('${slide.url}')`;
+                            
+                            // Check if the image loaded successfully by listening for errors
+                            const img = new Image();
+                            img.src = slide.url;
+                            img.onload = function() {
+                                console.log("Image loaded successfully:", slide.url);
+                            };
+                            img.onerror = function() {
+                                console.error("Failed to load image from URL:", slide.url);
+                                // Fallback to a placeholder or default image
+                                slideElement.style.backgroundImage = 'url("https://via.placeholder.com/1920x1080?text=Image+Error")';
+                                slideElement.style.backgroundColor = '#ccc'; // Light gray background
+                            };
+                        } else {
+                            // Fallback if no image URL is provided
+                            slideElement.style.backgroundColor = '#ccc'; // Light gray background
+                            console.warn("No image URL provided for slide:", slide.text || slide.id);
+                        }
                         
                         const overlayElement = document.createElement('div');
                         overlayElement.className = 'slide-overlay';
                         overlayElement.innerHTML = `
-                            <h2 class="slide-title">${slide.title || ''}</h2>
+                            <h2 class="slide-title">${slide.text || ''}</h2>
                             <p class="slide-text">${slide.text || ''}</p>
                         `;
                         
@@ -1542,4 +1566,4 @@
     <!-- ==================== END FIREBASE INTEGRATION ==================== -->
 
 </body>
-</html>
+                                                   </html>
