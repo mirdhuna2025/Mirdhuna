@@ -922,6 +922,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <!-- Firebase Realtime Database -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <!-- Firebase Authentication (for sign-in state) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <!-- (Optional) Firebase Analytics -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics-compat.js"></script>
 
@@ -941,6 +943,7 @@
         // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        const auth = firebase.auth(); // Initialize Authentication
 
         console.log("Firebase initialized successfully.");
 
@@ -948,7 +951,24 @@
         const locationInput = document.getElementById('locationInput');
         const locationStatus = document.getElementById('locationStatus');
         const getLocationBtn = document.getElementById('getLocationBtn');
-        let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || [];
+        let currentCart = []; // Cart is now managed in memory, not localStorage
+        let currentUser = null; // To hold the Firebase user object
+
+        // --- Firebase Auth State Listener ---
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                console.log("User is signed in:", user.uid);
+                // Optionally, load user-specific data (like cart) from Firebase here if needed
+                // For now, we'll keep the cart in memory per session.
+            } else {
+                currentUser = null;
+                console.log("No user is signed in.");
+                // Clear cart if user logs out
+                currentCart = [];
+                updateCartCount();
+            }
+        });
 
         // --- Basic Interactions ---
 
@@ -998,10 +1018,10 @@
 
         // Update cart count
         function updateCartCount() {
-            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            const count = currentCart.reduce((total, item) => total + item.quantity, 0);
             document.getElementById('cartCountHeader').innerText = count;
         }
-        updateCartCount();
+        updateCartCount(); // Initial update
 
         document.getElementById('mapLink').addEventListener('click', function(e) {
              e.preventDefault();
@@ -1059,7 +1079,7 @@
 
         getLocationBtn.addEventListener('click', getLocationCoordinates);
 
-        // --- Login Form Submission ---
+        // --- Login Form Submission (Simplified) ---
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const mobile = document.getElementById('mobileNumber').value.trim();
@@ -1074,18 +1094,26 @@
                 return;
             }
 
-            const userRef = firebase.database().ref('users/' + mobile);
-            const userData = {
-                mobile: mobile,
-                location: location,
-                lastLogin: firebase.database.ServerValue.TIMESTAMP
-            };
+            // --- Sign in Anonymously to get a UID ---
+            // This ensures we have a user context for database rules.
+            auth.signInAnonymously()
+                .then((userCredential) => {
+                    // Signed in..
+                    const user = userCredential.user;
+                    console.log("Anonymous user signed in:", user.uid);
 
-            userRef.set(userData)
+                    // --- Save user data to Firebase using the anonymous UID ---
+                    const userRef = firebase.database().ref('users/' + user.uid); // Use Firebase UID
+                    const userData = {
+                        mobile: mobile,
+                        location: location,
+                        lastLogin: firebase.database.ServerValue.TIMESTAMP
+                    };
+
+                    return userRef.set(userData); // Return the promise for chaining
+                })
                 .then(() => {
-                    console.log("User data saved to Firebase successfully.");
-                    localStorage.setItem('mirdhuna_user_mobile', mobile);
-                    localStorage.setItem('mirdhuna_user_location', location);
+                    console.log("User data saved to Firebase successfully using UID.");
                     alert(`Successfully logged in!\nMobile: ${mobile}\nLocation (Coords): ${location}`);
                     loginModal.style.display = "none";
                     document.getElementById('loginForm').reset();
@@ -1094,9 +1122,11 @@
                     locationStatus.style.color = "initial";
                 })
                 .catch((error) => {
-                    console.error("Error saving user data to Firebase:", error);
-                    alert("Login successful locally, but there was an error saving your data.");
-                    loginModal.style.display = "none";
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error("Error during login/sign-in:", errorCode, errorMessage);
+                    alert("Login failed. Please try again. Error: " + errorMessage);
+                    loginModal.style.display = "none"; // Close modal on error
                 });
         });
 
@@ -1140,23 +1170,28 @@
 
                     document.querySelectorAll('.add-to-cart').forEach(button => {
                         button.addEventListener('click', function() {
+                            if (!currentUser) {
+                                alert("Please log in first.");
+                                loginModal.style.display = "flex";
+                                return;
+                            }
+
                             const itemId = this.getAttribute('data-id');
                             const itemName = this.getAttribute('data-name');
                             const itemPrice = parseFloat(this.getAttribute('data-price'));
 
-                            let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || [];
-                            const existingItemIndex = cart.findIndex(cartItem => cartItem.id === itemId);
+                            // Manage cart in memory
+                            const existingItemIndex = currentCart.findIndex(cartItem => cartItem.id === itemId);
 
                             if (existingItemIndex > -1) {
-                                cart[existingItemIndex].quantity += 1;
+                                currentCart[existingItemIndex].quantity += 1;
                             } else {
-                                cart.push({ id: itemId, name: itemName, price: itemPrice, quantity: 1 });
+                                currentCart.push({ id: itemId, name: itemName, price: itemPrice, quantity: 1 });
                             }
 
-                            localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
                             updateCartCount();
                             alert(`"${itemName}" added to cart!`);
-                            console.log("Cart updated:", cart);
+                            console.log("Cart updated in memory:", currentCart);
                         });
                     });
 
@@ -1167,20 +1202,20 @@
                 });
         }
 
-        // --- Cart Display & Management ---
+        // --- Cart Display & Management (in memory) ---
         function displayCart() {
              const cartItemsTable = document.querySelector('#cartItems tbody');
              const cartTotalElement = document.getElementById('cartTotal');
              cartItemsTable.innerHTML = '';
 
              let total = 0;
-             if (cart.length === 0) {
+             if (currentCart.length === 0) {
                  cartItemsTable.innerHTML = '<tr><td colspan="5" style="text-align:center;">Your cart is empty.</td></tr>';
                  cartTotalElement.textContent = 'Total: ₹0.00';
                  return;
              }
 
-             cart.forEach((item, index) => {
+             currentCart.forEach((item, index) => {
                  const itemTotal = item.price * item.quantity;
                  total += itemTotal;
                  const row = document.createElement('tr');
@@ -1203,11 +1238,10 @@
              document.querySelectorAll('.decrease-qty').forEach(button => {
                  button.addEventListener('click', function() {
                      const index = parseInt(this.getAttribute('data-index'));
-                     if (cart[index].quantity > 1) {
-                         cart[index].quantity--;
-                         localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                     if (currentCart[index].quantity > 1) {
+                         currentCart[index].quantity--;
                          updateCartCount();
-                         displayCart();
+                         displayCart(); // Re-render
                      }
                  });
              });
@@ -1215,10 +1249,9 @@
              document.querySelectorAll('.increase-qty').forEach(button => {
                  button.addEventListener('click', function() {
                      const index = parseInt(this.getAttribute('data-index'));
-                     cart[index].quantity++;
-                     localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                     currentCart[index].quantity++;
                      updateCartCount();
-                     displayCart();
+                     displayCart(); // Re-render
                  });
              });
 
@@ -1227,12 +1260,11 @@
                      const index = parseInt(this.getAttribute('data-index'));
                      const newQty = parseInt(this.value);
                      if (!isNaN(newQty) && newQty > 0) {
-                         cart[index].quantity = newQty;
-                         localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                         currentCart[index].quantity = newQty;
                          updateCartCount();
-                         displayCart();
+                         displayCart(); // Re-render
                      } else {
-                         this.value = cart[index].quantity;
+                         this.value = currentCart[index].quantity; // Revert if invalid
                      }
                  });
              });
@@ -1240,76 +1272,76 @@
              document.querySelectorAll('.remove-item').forEach(button => {
                  button.addEventListener('click', function() {
                      const index = parseInt(this.getAttribute('data-index'));
-                     cart.splice(index, 1);
-                     localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                     currentCart.splice(index, 1);
                      updateCartCount();
-                     displayCart();
+                     displayCart(); // Re-render
                  });
              });
         }
 
-        // --- Order Placement Logic ---
+        // --- Order Placement Logic (Save to Firebase) ---
         function placeOrder() {
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            checkoutBtn.disabled = true; // Disable button to prevent double-clicks
-            checkoutBtn.textContent = "Placing Order...";
-
-            const userMobile = localStorage.getItem('mirdhuna_user_mobile');
-            if (!userMobile) {
+            if (!currentUser) {
                 alert("You need to be logged in to place an order.");
                 loginModal.style.display = "flex";
-                resetCheckoutButton();
                 return;
             }
 
-            let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || [];
-            if (cart.length === 0) {
+            if (currentCart.length === 0) {
                 alert("Your cart is empty!");
-                resetCheckoutButton();
                 return;
             }
 
-            const userLocation = localStorage.getItem('mirdhuna_user_location');
-            let totalValue = 0;
-            cart.forEach(item => {
-                totalValue += item.price * item.quantity;
-            });
-            totalValue = parseFloat(totalValue.toFixed(2));
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            checkoutBtn.disabled = true;
+            checkoutBtn.textContent = "Placing Order...";
 
-            const orderData = {
-                userId: userMobile,
-                userMobile: userMobile,
-                userLocation: userLocation || "Location not provided",
-                items: cart,
-                totalValue: totalValue,
-                orderStatus: "Pending",
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            };
+            // Get user data from Firebase using the current user's UID
+            const userRef = firebase.database().ref('users/' + currentUser.uid);
+            userRef.once('value')
+                .then((snapshot) => {
+                    const userData = snapshot.val();
+                    if (!userData) {
+                         throw new Error("User data not found in database.");
+                    }
 
-            const newOrderRef = firebase.database().ref('orders').push();
-            const orderId = newOrderRef.key;
+                    let totalValue = 0;
+                    currentCart.forEach(item => {
+                        totalValue += item.price * item.quantity;
+                    });
+                    totalValue = parseFloat(totalValue.toFixed(2));
 
-            newOrderRef.set(orderData)
+                    const orderData = {
+                        userId: currentUser.uid, // Use Firebase UID
+                        userMobile: userData.mobile, // Get mobile from user data
+                        userLocation: userData.location, // Get location from user data
+                        items: currentCart,
+                        totalValue: totalValue,
+                        orderStatus: "Pending",
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+
+                    // Save order to Firebase
+                    const newOrderRef = firebase.database().ref('orders').push();
+                    return newOrderRef.set(orderData); // Return promise for chaining
+                })
                 .then(() => {
-                    console.log("Order placed successfully with ID:", orderId);
-                    alert(`Order placed successfully!\nOrder ID: ${orderId}\nTotal: ₹${totalValue.toFixed(2)}\nStatus: Pending`);
-                    localStorage.removeItem('mirdhunaCart');
-                    cart = [];
+                    console.log("Order placed successfully.");
+                    alert(`Order placed successfully!\nTotal: ₹${currentCart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}\nStatus: Pending`);
+                    // Clear cart in memory
+                    currentCart = [];
                     updateCartCount();
                     cartModal.style.display = "none";
-                    resetCheckoutButton(); // Reset button state
                 })
                 .catch((error) => {
                     console.error("Error placing order:", error);
-                    alert("Failed to place order. Please try again.");
-                    resetCheckoutButton(); // Reset button state on error too
+                    alert("Failed to place order. Please try again. Error: " + error.message);
+                })
+                .finally(() => {
+                    // Reset button state
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.textContent = "Proceed to Checkout";
                 });
-        }
-
-        function resetCheckoutButton() {
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            checkoutBtn.disabled = false;
-            checkoutBtn.textContent = "Proceed to Checkout";
         }
 
         document.getElementById('checkoutBtn').addEventListener('click', function() {
@@ -1320,11 +1352,11 @@
         window.addEventListener('load', function() {
             console.log("Window loaded, initializing data...");
             loadMenuItemsFromFirebase();
-            updateCartCount();
+            // Cart count is updated on load and after login
         });
 
     </script>
     <!-- ==================== END FIREBASE INTEGRATION ==================== -->
 
 </body>
-</html>
+    </html>
