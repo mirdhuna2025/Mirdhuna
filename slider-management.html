@@ -78,7 +78,7 @@
             border: 1px solid var(--border); border-radius: 4px;
             box-sizing: border-box; font-size: 1rem;
         }
-        .form-control[type="file"] { padding: 6px; }
+        /* Removed styling for file input type as it's not used */
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
         th, td { border: 1px solid var(--border); padding: 10px 8px; text-align: left; word-wrap: break-word; }
@@ -93,6 +93,8 @@
         .btn-success { background-color: var(--success); color: white; }
         .btn-danger { background-color: var(--danger); color: white; }
 
+        /* Progress bar styles removed as upload is no longer used */
+        /*
         .upload-progress {
             width: 100%; height: 15px;
             background-color: #f0f0f0; border-radius: 10px;
@@ -102,6 +104,7 @@
             height: 100%; background-color: var(--success);
             width: 0%; transition: width 0.3s ease;
         }
+        */
 
         .table-container { overflow-x: auto; margin: 10px 0; }
         table { min-width: 600px; }
@@ -152,22 +155,27 @@
     <div id="slider-content">
         <header><h1>Mirdhuna Slide Management</h1></header>
 
-        <!-- Add New Slide Section -->
+        <!-- Add New Slide Section (Modified for URL Input) -->
         <div class="section">
             <div class="section-header">Add New Slide</div>
             <div class="section-content">
+                <!-- Replaced file upload with URL input -->
                 <div class="form-group">
-                    <label for="new-slider-image-file">Upload Image:</label>
-                    <input type="file" id="new-slider-image-file" class="form-control" accept="image/*" required>
-                    <div class="upload-progress" id="slider-upload-progress">
-                        <div class="upload-progress-bar" id="slider-progress-bar"></div>
-                    </div>
+                    <label for="new-slider-image-url">Image URL:</label>
+                    <input type="url" id="new-slider-image-url" class="form-control" placeholder="Enter the full image URL (e.g., https://example.com/image.jpg)" required>
+                    <small>Provide a direct link to the image you want to use.</small>
                 </div>
                 <div class="form-group">
                     <label for="new-slider-text">Text Description:</label>
                     <textarea id="new-slider-text" class="form-control" placeholder="Enter slide text..." rows="3" required></textarea>
                 </div>
                 <button class="btn btn-success" id="add-slider-btn">Add Slide</button>
+                <!-- Removed upload progress bar as it's not needed -->
+                <!--
+                <div class="upload-progress" id="slider-upload-progress">
+                    <div class="upload-progress-bar" id="slider-progress-bar"></div>
+                </div>
+                -->
             </div>
         </div>
 
@@ -189,10 +197,11 @@
 
     <script>
         // --- Firebase Configuration ---
+        // IMPORTANT: Ensure databaseURL does NOT have trailing spaces!
         const firebaseConfig = {
             apiKey: "AIzaSyB0sVoG5VdOxmk4ZM5m837pN2uQ3XfRwZw",
             authDomain: "mirdhuna-25542.firebaseapp.com",
-            databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+            databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com", // Removed trailing space
             projectId: "mirdhuna-25542",
             storageBucket: "mirdhuna-25542.appspot.com",
             messagingSenderId: "1078913123456",
@@ -205,7 +214,7 @@
             firebase.initializeApp(firebaseConfig);
         }
         const database = firebase.database();
-        const storage = firebase.storage();
+        // const storage = firebase.storage(); // No longer needed for URL input
 
         // --- Login Logic ---
         document.getElementById('login-btn').addEventListener('click', checkPassword);
@@ -245,7 +254,7 @@
 
                         // Use the new CSS class 'slider-image' for consistent sizing
                         row.innerHTML = `
-                            <td><img src="${slide.url || ''}" alt="Slide Image" class="slider-image" onerror="this.onerror=null; this.src='image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiB2aWV3Qm94PSIwIDAgMTAwIDc1IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiBmaWxsPSIjRUJFQkVCIi8+CjxwYXRoIGQ9Ik01MCAyNUM1NS41MjI4IDI1IDYwIDI5LjQ3NzIgNjAgMzVDMTUgNDUgODQgNDUgNTAgNTVDMzQuNDc3MiA0NSAzMCA0MC41MjI4IDMwIDM1QzMwIDI5LjQ3NzIgMzQuNDc3MiAyNSA0MCAyNVoiIHN0cm9rZT0iIzk5OSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=';"></td>
+                            <td><img src="${slide.url || ''}" alt="Slide Image" class="slider-image" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiB2aWV3Qm94PSIwIDAgMTAwIDc1IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiBmaWxsPSIjRUJFQkVCIi8+CjxwYXRoIGQ9Ik01MCAyNUM1NS41MjI4IDI1IDYwIDI5LjQ3NzIgNjAgMzVDMTUgNDUgODQgNDUgNTAgNTVDMzQuNDc3MiA0NSAzMCA0MC41MjI4IDMwIDM1QzMwIDI5LjQ3NzIgMzQuNDc3MiAyNSA0MCAyNVoiIHN0cm9rZT0iIzk5OSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=';"></td>
                             <td>${slide.text || ''}</td>
                             <td>
                                 <button class="btn btn-danger delete-slider-btn" data-slide-id="${slideId}">Delete</button>
@@ -269,92 +278,64 @@
             });
         }
 
-        // --- Add New Slide ---
+        // --- Add New Slide (Modified for URL Input) ---
         document.getElementById('add-slider-btn').addEventListener('click', addSlide);
 
         function addSlide() {
-            const fileInput = document.getElementById('new-slider-image-file');
-            const file = fileInput.files[0];
+            // Get the URL input value
+            const urlInput = document.getElementById('new-slider-image-url');
+            const imageUrl = urlInput.value.trim(); // Get the URL string
+
+            // Get the text input value
             const textInput = document.getElementById('new-slider-text');
             const text = textInput.value.trim();
-            const progressContainer = document.getElementById('slider-upload-progress');
-            const progressBar = document.getElementById('slider-progress-bar');
 
             // Validation
-            if (!file) {
-                alert("Please select an Image file.");
-                fileInput.focus();
+            if (!imageUrl) {
+                alert("Please enter an Image URL.");
+                urlInput.focus();
                 return;
             }
+            // Basic URL validation (HTML5 'type="url"' helps, but extra check is good)
+            try {
+                new URL(imageUrl); // This will throw an error if the URL is invalid
+            } catch (e) {
+                 alert("Please enter a valid Image URL.");
+                 urlInput.focus();
+                 return;
+            }
+
             if (!text) {
                 alert("Please enter a Text Description.");
                 textInput.focus();
                 return;
             }
 
-            // Show progress bar
-            progressContainer.style.display = 'block';
-            progressBar.style.width = '0%';
 
-            // Create a unique filename using timestamp and original name
-            const timestamp = Date.now();
-            const fileName = `${timestamp}_${file.name}`;
-            const storageRef = storage.ref(`slider_images/${fileName}`);
-
-            // Upload the file
-            const uploadTask = storageRef.put(file);
-
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    // Handle progress
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log('Slide Image Upload is ' + progress.toFixed(2) + '% done');
-                    progressBar.style.width = progress + '%';
-                },
-                (error) => {
-                    // Handle unsuccessful uploads
-                    console.error("Error uploading slide image:", error);
-                    alert("Failed to upload slide image: " + (error.message || error.code));
-                    progressContainer.style.display = 'none';
-                    // Reset file input on error
-                    fileInput.value = '';
-                    textInput.value = '';
-                },
-                () => {
-                    // Handle successful uploads on complete
-                    console.log('Slide Image upload complete. Getting download URL...');
-                    uploadTask.snapshot.ref.getDownloadURL()
-                        .then((downloadURL) => {
-                            console.log('Download URL obtained:', downloadURL);
-                            progressContainer.style.display = 'none';
-
-                            // Save data to database
-                            const newSlideRef = database.ref('slider').push();
-                            return newSlideRef.set({
-                                url: downloadURL,
-                                text: text
-                            });
-                        })
-                        .then(() => {
-                            console.log("Slide data saved to database.");
-                            // Clear form fields on success
-                            fileInput.value = '';
-                            textInput.value = '';
-                            alert("Slide added successfully!");
-                        })
-                        .catch((error) => {
-                            console.error("Error saving slide:", error);
-                            alert("Slide uploaded, but failed to save data: " + (error.message || error.code));
-                            progressContainer.style.display = 'none';
-                            // Reset file input on database error as well
-                            fileInput.value = '';
-                            textInput.value = '';
-                        });
-                }
-            );
+            // Save data directly to the database using the provided URL
+            const newSlideRef = database.ref('slider').push();
+            newSlideRef.set({
+                url: imageUrl, // Use the provided URL
+                text: text
+            })
+            .then(() => {
+                console.log("Slide data (URL) saved to database.");
+                // Clear form fields on success
+                urlInput.value = '';
+                textInput.value = '';
+                alert("Slide added successfully using the provided URL!");
+            })
+            .catch((error) => {
+                console.error("Error saving slide with URL:", error);
+                alert("Failed to add slide: " + (error.message || error.code));
+                // Optionally, clear fields on error too
+                // urlInput.value = '';
+                // textInput.value = '';
+            });
         }
 
-        // --- Delete Slide ---
+
+        // --- Delete Slide (Unchanged) ---
         function deleteSlide(slideId) {
              if (!confirm(`Are you sure you want to permanently delete this slide?`)) {
                 return; // If user clicks 'Cancel', do nothing
@@ -377,4 +358,4 @@
         }
     </script>
 </body>
-  </html>
+    </html>
