@@ -31,7 +31,7 @@
             background-size: 400% 400%;
             animation: gradientBG 20s ease infinite;
             color: var(--dark-text);
-            padding-bottom: 180px; /* Increased space for non-fixed footer */
+            padding-bottom: 180px; /* Space for non-fixed footer */
         }
 
         @keyframes gradientBG {
@@ -108,7 +108,7 @@
             font-size: 1.6rem;
             margin-left: 20px;
             transition: var(--transition);
-            color: white; /* Ensure icons are white */
+            color: white;
         }
 
         .cart-icon:hover, .user-icon:hover, .view-cart-icon:hover {
@@ -347,7 +347,7 @@
             align-items: center;
             font-weight: bold;
             margin-right: 15px;
-            flex-shrink: 0; /* Prevent avatar from shrinking */
+            flex-shrink: 0;
         }
 
         .reviewer-info h4 {
@@ -372,21 +372,21 @@
 
         /* Cart Modal */
         #cartModal {
-             display: none; /* Hidden by default */
+             display: none;
              position: fixed;
-             z-index: 1002; /* Higher than login modal */
+             z-index: 1002;
              left: 0;
              top: 0;
              width: 100%;
              height: 100%;
-             overflow: auto; /* Enable scroll if needed */
+             overflow: auto;
              background-color: rgba(0,0,0,0.6);
              backdrop-filter: blur(3px);
         }
 
         #cartModal .modal-content {
             background-color: #fefefe;
-            margin: 5% auto; /* 15% from the top and centered */
+            margin: 5% auto;
             padding: 0;
             border: 1px solid #888;
             border-radius: 10px;
@@ -437,7 +437,7 @@
 
         #cartModal .modal-body {
             padding: 20px;
-            overflow-y: auto; /* Scrollable content */
+            overflow-y: auto;
             flex-grow: 1;
         }
 
@@ -504,7 +504,12 @@
         }
 
         #checkoutBtn:hover {
-             background-color: #b71c1c; /* Darker red */
+             background-color: #b71c1c;
+        }
+
+        #checkoutBtn:disabled {
+             background-color: #cccccc;
+             cursor: not-allowed;
         }
 
         /* Modals */
@@ -615,10 +620,8 @@
             color: #555;
         }
 
-        /* Footer / Social Links - IMPROVED MOBILE */
+        /* Footer */
         footer {
-            /* position: fixed; REMOVED fixed positioning */
-            /* bottom: 0; */
             width: 100%;
             background: #1a1a1a;
             color: white;
@@ -626,11 +629,11 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            align-items: flex-start; /* Align items to the start */
+            align-items: flex-start;
             box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
             z-index: 99;
             font-family: 'Playfair Display', serif;
-            margin-top: 40px; /* Add some space above the footer */
+            margin-top: 40px;
         }
 
         .footer-section {
@@ -663,7 +666,7 @@
         .social-links {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center; /* Center social icons */
+            justify-content: center;
         }
 
         .social-links a {
@@ -703,7 +706,7 @@
             background-color: rgba(0, 0, 0, 0.2);
             font-size: 1rem;
             border-top: 1px solid #444;
-            margin-top: 10px; /* Space above tagline */
+            margin-top: 10px;
         }
 
         /* Responsive Design */
@@ -715,8 +718,8 @@
             nav a { margin-left: 10px; font-size: 0.9rem; padding: 6px 10px; }
             .logo { font-size: 1.8rem; }
             .cart-icon, .user-icon, .view-cart-icon { font-size: 1.4rem; margin-left: 15px; }
-            footer { flex-direction: column; align-items: center; padding: 20px 3%; text-align: center; } /* Stack and center footer on mobile */
-            .footer-section { min-width: 100%; margin: 15px 0; } /* Full width sections on mobile */
+            footer { flex-direction: column; align-items: center; padding: 20px 3%; text-align: center; }
+            .footer-section { min-width: 100%; margin: 15px 0; }
             .social-links { justify-content: center; }
             .tagline { font-size: 0.9rem; }
             .menu-header { flex-direction: column; align-items: flex-start; }
@@ -754,13 +757,12 @@
         </nav>
         <div class="header-icons">
              <div class="view-cart-icon" id="openCart">
-                <i class="fas fa-shopping-basket"></i> <!-- Changed icon for cart view -->
-                <span class="cart-count" id="cartCountHeader">0</span> <!-- Dedicated cart count for header icon -->
+                <i class="fas fa-shopping-basket"></i>
+                <span class="cart-count" id="cartCountHeader">0</span>
             </div>
             <div class="user-icon" id="openLogin">
                 <i class="fas fa-user"></i>
             </div>
-            <!-- Removed the old cart icon here -->
         </div>
     </header>
 
@@ -800,7 +802,6 @@
     <section class="reviews-section" id="reviewsSection">
         <h2 class="section-title">Customer Reviews</h2>
         <div class="reviews-grid" id="reviewsGrid">
-            <!-- Reviews will be populated dynamically -->
             <div class="review-card">
                 <div class="review-header">
                     <div class="reviewer-avatar">JD</div>
@@ -889,7 +890,7 @@
         </div>
     </div>
 
-    <!-- Footer with Social Links - IMPROVED MOBILE -->
+    <!-- Footer -->
     <footer>
         <div class="footer-section">
             <h3>Find Us</h3>
@@ -986,7 +987,6 @@
         closeCartSpan.onclick = function() {
             cartModal.style.display = "none";
         }
-        // Close modals if clicked outside
         window.onclick = function(event) {
             if (event.target == loginModal) {
                 loginModal.style.display = "none";
@@ -996,26 +996,22 @@
             }
         }
 
-        // Update cart count on page load and when cart changes
+        // Update cart count
         function updateCartCount() {
             const count = cart.reduce((total, item) => total + item.quantity, 0);
-            document.getElementById('cartCountHeader').innerText = count; // Update header icon
-            // document.getElementById('cartCount').innerText = count; // Update any other cart count elements if needed
+            document.getElementById('cartCountHeader').innerText = count;
         }
         updateCartCount();
 
-        // Placeholder for map link
         document.getElementById('mapLink').addEventListener('click', function(e) {
              e.preventDefault();
              alert('Opening Google Maps to our location...');
         });
 
-        // Scroll to reviews
         document.getElementById('reviewsLink').addEventListener('click', function(e) {
              e.preventDefault();
              document.getElementById('reviewsSection').scrollIntoView({ behavior: 'smooth' });
         });
-
 
         // --- Location Logic (Coordinates Only) ---
         function getLocationCoordinates() {
@@ -1036,7 +1032,6 @@
         function showCoordinates(position) {
             const lat = position.coords.latitude.toFixed(6);
             const lng = position.coords.longitude.toFixed(6);
-            // Display coordinates in the input field
             locationInput.value = `Lat: ${lat}, Lng: ${lng}`;
             locationStatus.textContent = "Coordinates fetched successfully!";
             locationStatus.style.color = "green";
@@ -1079,17 +1074,18 @@
                 return;
             }
 
-            // Save user data to Firebase
             const userRef = firebase.database().ref('users/' + mobile);
             const userData = {
                 mobile: mobile,
-                location: location, // This will now be coordinates
+                location: location,
                 lastLogin: firebase.database.ServerValue.TIMESTAMP
             };
 
             userRef.set(userData)
                 .then(() => {
                     console.log("User data saved to Firebase successfully.");
+                    localStorage.setItem('mirdhuna_user_mobile', mobile);
+                    localStorage.setItem('mirdhuna_user_location', location);
                     alert(`Successfully logged in!\nMobile: ${mobile}\nLocation (Coords): ${location}`);
                     loginModal.style.display = "none";
                     document.getElementById('loginForm').reset();
@@ -1100,10 +1096,9 @@
                 .catch((error) => {
                     console.error("Error saving user data to Firebase:", error);
                     alert("Login successful locally, but there was an error saving your data.");
-                    loginModal.style.display = "none"; // Close on client success
+                    loginModal.style.display = "none";
                 });
         });
-
 
         // --- Menu Items & Cart Logic ---
         function loadMenuItemsFromFirebase() {
@@ -1117,7 +1112,7 @@
                     const menuData = snapshot.val();
 
                     if (!menuData) {
-                        menuGrid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1;">Menu is currently unavailable.</p>';
+                        menuGrid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; color: orange;">Menu is currently unavailable. Admin needs to add items.</p>';
                         return;
                     }
 
@@ -1168,7 +1163,7 @@
                 })
                 .catch((error) => {
                     console.error("Error loading menu from Firebase:", error);
-                    menuGrid.innerHTML = '<p style="text-align:center; color:red; grid-column: 1 / -1;">Failed to load menu. Please try again later.</p>';
+                    menuGrid.innerHTML = '<p style="text-align:center; color:red; grid-column: 1 / -1;">Failed to load menu. Please check your connection or database setup.</p>';
                 });
         }
 
@@ -1176,7 +1171,7 @@
         function displayCart() {
              const cartItemsTable = document.querySelector('#cartItems tbody');
              const cartTotalElement = document.getElementById('cartTotal');
-             cartItemsTable.innerHTML = ''; // Clear existing items
+             cartItemsTable.innerHTML = '';
 
              let total = 0;
              if (cart.length === 0) {
@@ -1205,7 +1200,6 @@
 
              cartTotalElement.textContent = `Total: ₹${total.toFixed(2)}`;
 
-             // --- Attach event listeners for cart actions ---
              document.querySelectorAll('.decrease-qty').forEach(button => {
                  button.addEventListener('click', function() {
                      const index = parseInt(this.getAttribute('data-index'));
@@ -1213,7 +1207,7 @@
                          cart[index].quantity--;
                          localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
                          updateCartCount();
-                         displayCart(); // Re-render cart
+                         displayCart();
                      }
                  });
              });
@@ -1224,7 +1218,7 @@
                      cart[index].quantity++;
                      localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
                      updateCartCount();
-                     displayCart(); // Re-render cart
+                     displayCart();
                  });
              });
 
@@ -1236,9 +1230,9 @@
                          cart[index].quantity = newQty;
                          localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
                          updateCartCount();
-                         displayCart(); // Re-render cart
+                         displayCart();
                      } else {
-                         this.value = cart[index].quantity; // Revert if invalid
+                         this.value = cart[index].quantity;
                      }
                  });
              });
@@ -1249,14 +1243,77 @@
                      cart.splice(index, 1);
                      localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
                      updateCartCount();
-                     displayCart(); // Re-render cart
+                     displayCart();
                  });
              });
         }
 
+        // --- Order Placement Logic ---
+        function placeOrder() {
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            checkoutBtn.disabled = true; // Disable button to prevent double-clicks
+            checkoutBtn.textContent = "Placing Order...";
+
+            const userMobile = localStorage.getItem('mirdhuna_user_mobile');
+            if (!userMobile) {
+                alert("You need to be logged in to place an order.");
+                loginModal.style.display = "flex";
+                resetCheckoutButton();
+                return;
+            }
+
+            let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || [];
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                resetCheckoutButton();
+                return;
+            }
+
+            const userLocation = localStorage.getItem('mirdhuna_user_location');
+            let totalValue = 0;
+            cart.forEach(item => {
+                totalValue += item.price * item.quantity;
+            });
+            totalValue = parseFloat(totalValue.toFixed(2));
+
+            const orderData = {
+                userId: userMobile,
+                userMobile: userMobile,
+                userLocation: userLocation || "Location not provided",
+                items: cart,
+                totalValue: totalValue,
+                orderStatus: "Pending",
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            const newOrderRef = firebase.database().ref('orders').push();
+            const orderId = newOrderRef.key;
+
+            newOrderRef.set(orderData)
+                .then(() => {
+                    console.log("Order placed successfully with ID:", orderId);
+                    alert(`Order placed successfully!\nOrder ID: ${orderId}\nTotal: ₹${totalValue.toFixed(2)}\nStatus: Pending`);
+                    localStorage.removeItem('mirdhunaCart');
+                    cart = [];
+                    updateCartCount();
+                    cartModal.style.display = "none";
+                    resetCheckoutButton(); // Reset button state
+                })
+                .catch((error) => {
+                    console.error("Error placing order:", error);
+                    alert("Failed to place order. Please try again.");
+                    resetCheckoutButton(); // Reset button state on error too
+                });
+        }
+
+        function resetCheckoutButton() {
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = "Proceed to Checkout";
+        }
+
         document.getElementById('checkoutBtn').addEventListener('click', function() {
-             alert("Proceeding to checkout is not implemented in this static example.");
-             // Here you would typically redirect to a checkout page or initiate payment
+             placeOrder();
         });
 
         // --- Initialize Data Loading ---
