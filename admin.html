@@ -422,7 +422,7 @@
                         row.innerHTML = `
                             <td>${item.name || 'N/A'}</td>
                             <td>₹${parseFloat(item.price || 0).toFixed(2)}</td>
-                            <td><img src="${item.image || ''}" alt="Item Image" class="item-image" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA4MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRUJFQkVCIi8+CjxwYXRoIGQ9Ik00MCAyMEM0NS41MjI4IDIwIDUwIDI0LjQ3NzIgNTAgMzBDMTUgNDAgNjUgNDAgNDAgNTBDNDAgNDUuNTIyOCAzNS41MjI4IDQwIDMwIDQwQzI0LjQ3NzIgNDAgMjAgMzUuNTIyOCAyMCAzMEMyMCAyNC40NzcyIDI0LjQ3NzIgMjAgMzAgMjBaIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4K';"></td>
+                            <td><img src="${item.image || ''}" alt="Item Image" class="item-image" onerror="this.onerror=null; this.src='image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA4MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRUJFQkVCIi8+CjxwYXRoIGQ9Ik00MCAyMEM0NS41MjI4IDIwIDUwIDI0LjQ3NzIgNTAgMzBDMTUgNDAgNjUgNDAgNDAgNTBDNDAgNDUuNTIyOCAzNS41MjI4IDQwIDMwIDQwQzI0LjQ3NzIgNDAgMjAgMzUuNTIyOCAyMCAzMEMyMCAyNC40NzcyIDI0LjQ3NzIgMjAgMzAgMjBaIiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMiIvPgo8L3N2Zz4K';"></td>
                             <td>${item.description || ''}</td>
                             <td><button class="btn btn-danger delete-menu-btn" data-item-id="${itemId}">Delete</button></td>
                         `;
@@ -457,7 +457,7 @@
                         const row = document.createElement('tr');
                          // Use the new CSS class 'slider-image' for consistent sizing
                         row.innerHTML = `
-                            <td><img src="${image.url || ''}" alt="Slider Image" class="slider-image" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiB2aWV3Qm94PSIwIDAgMTAwIDc1IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiBmaWxsPSIjRUJFQkVCIi8+CjxwYXRoIGQ9Ik01MCAyNUM1NS41MjI4IDI1IDYwIDI5LjQ3NzIgNjAgMzVDMTYgNDUgODQgNDUgNTAgNTVDMzQuNDc3MiA0NSAzMCA0MC41MjI4IDMwIDM1QzMwIDI5LjQ3NzIgMzQuNDc3MiAyNSA0MCAyNVoiIHN0cm9rZT0iIzk5OSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=';"></td>
+                            <td><img src="${image.url || ''}" alt="Slider Image" class="slider-image" onerror="this.onerror=null; this.src='image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiB2aWV3Qm94PSIwIDAgMTAwIDc1IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiBmaWxsPSIjRUJFQkVCIi8+CjxwYXRoIGQ9Ik01MCAyNUM1NS41MjI4IDI1IDYwIDI5LjQ3NzIgNjAgMzVDMTYgNDUgODQgNDUgNTAgNTVDMzQuNDc3MiA0NSAzMCA0MC41MjI4IDMwIDM1QzMwIDI5LjQ3NzIgMzQuNDc3MiAyNSA0MCAyNVoiIHN0cm9rZT0iIzk5OSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=';"></td>
                             <td><button class="btn btn-danger delete-slider-btn" data-image-id="${imageId}">Delete</button></td>
                         `;
                         tableBody.appendChild(row);
@@ -674,11 +674,11 @@
         }
         // --- End New Delete Order Function ---
 
-        // --- Menu Item with Upload (Robust Version) ---
+        // --- Menu Item with Upload (Robust Version with Debug Alerts) ---
         document.getElementById('add-menu-item-btn').addEventListener('click', addMenuItemWithUpload);
 
         function addMenuItemWithUpload() {
-            alert("Menu Upload function started!"); // <-- Alert for Menu Upload
+            alert("1. Upload function started!");
             console.log("Add Menu Item button clicked.");
             const nameInput = document.getElementById('new-item-name');
             const priceInput = document.getElementById('new-item-price');
@@ -709,6 +709,7 @@
                 return;
             }
 
+            alert("2. Validation passed. File selected: " + file.name); // Alert added
             console.log("Validation passed. File selected:", file.name);
 
             // Show progress bar
@@ -717,9 +718,10 @@
 
             // Create a unique filename
             const timestamp = Date.now();
-            const fileName = `${name.replace(/\s+/g, '_')}_${timestamp}_${file.name}`; // More robust filename
+            const fileName = `${name.replace(/\s+/g, '_')}_${timestamp}_${file.name}`;
             const storageRef = storage.ref(`menu_images/${fileName}`);
 
+            alert("3. Starting upload to: menu_images/" + fileName); // Alert added
             console.log("Starting upload to:", `menu_images/${fileName}`);
             const uploadTask = storageRef.put(file);
 
@@ -735,14 +737,15 @@
                     console.error("Error uploading menu image:", error);
                     alert("Failed to upload menu image: " + (error.message || error.code));
                     progressContainer.style.display = 'none';
-                    // Reset file input on error
                     fileInput.value = '';
                 },
                 () => {
                     // Handle successful uploads on complete
+                    alert("4. Upload complete. Getting download URL..."); // Alert added
                     console.log('Menu Image upload complete. Getting download URL...');
                     uploadTask.snapshot.ref.getDownloadURL()
                         .then((downloadURL) => {
+                            alert("5. Download URL obtained: " + downloadURL.substring(0, 50) + "..."); // Alert added (shortened)
                             console.log('Download URL obtained:', downloadURL);
                             progressContainer.style.display = 'none';
 
@@ -762,13 +765,12 @@
                             priceInput.value = '';
                             fileInput.value = '';
                             descInput.value = '';
-                            alert("Menu item added successfully!");
+                            alert("6. Menu item added successfully!"); // Final success alert
                         })
                         .catch((error) => {
                             console.error("Error saving menu item:", error);
-                            alert("Menu item uploaded, but failed to save data: " + (error.message || error.code));
+                            alert("Menu item uploaded, but failed to save  " + (error.message || error.code));
                             progressContainer.style.display = 'none';
-                            // Reset file input on database error as well
                             fileInput.value = '';
                         });
                 }
