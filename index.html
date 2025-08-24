@@ -31,7 +31,7 @@
             background-size: 400% 400%;
             animation: gradientBG 20s ease infinite;
             color: var(--dark-text);
-            padding-bottom: 120px; /* Increased space for new footer */
+            padding-bottom: 180px; /* Increased space for non-fixed footer */
         }
 
         @keyframes gradientBG {
@@ -84,6 +84,12 @@
             padding: 8px 12px;
             border-radius: 20px;
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        nav a i {
+            margin-right: 5px;
         }
 
         nav a:hover {
@@ -96,15 +102,16 @@
             align-items: center;
         }
 
-        .cart-icon, .user-icon {
+        .cart-icon, .user-icon, .view-cart-icon {
             position: relative;
             cursor: pointer;
             font-size: 1.6rem;
             margin-left: 20px;
             transition: var(--transition);
+            color: white; /* Ensure icons are white */
         }
 
-        .cart-icon:hover, .user-icon:hover {
+        .cart-icon:hover, .user-icon:hover, .view-cart-icon:hover {
             color: var(--accent-gold);
             transform: scale(1.1);
         }
@@ -340,6 +347,7 @@
             align-items: center;
             font-weight: bold;
             margin-right: 15px;
+            flex-shrink: 0; /* Prevent avatar from shrinking */
         }
 
         .reviewer-info h4 {
@@ -362,6 +370,142 @@
             color: #444;
         }
 
+        /* Cart Modal */
+        #cartModal {
+             display: none; /* Hidden by default */
+             position: fixed;
+             z-index: 1002; /* Higher than login modal */
+             left: 0;
+             top: 0;
+             width: 100%;
+             height: 100%;
+             overflow: auto; /* Enable scroll if needed */
+             background-color: rgba(0,0,0,0.6);
+             backdrop-filter: blur(3px);
+        }
+
+        #cartModal .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* 15% from the top and centered */
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        @keyframes animatetop {
+            from {top: -300px; opacity: 0}
+            to {top: 0; opacity: 1}
+        }
+
+        #cartModal .modal-header {
+            padding: 15px 20px;
+            background-color: var(--primary-blue);
+            color: white;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #cartModal .modal-header h2 {
+             margin: 0;
+             font-family: 'Playfair Display', serif;
+        }
+
+        #cartModal .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        #cartModal .close:hover,
+        #cartModal .close:focus {
+            color: var(--accent-gold);
+        }
+
+        #cartModal .modal-body {
+            padding: 20px;
+            overflow-y: auto; /* Scrollable content */
+            flex-grow: 1;
+        }
+
+        #cartItems {
+             width: 100%;
+             border-collapse: collapse;
+        }
+
+        #cartItems th, #cartItems td {
+             border-bottom: 1px solid #ddd;
+             padding: 12px;
+             text-align: left;
+        }
+
+        #cartItems th {
+             background-color: #f2f2f2;
+        }
+
+        .cart-item-quantity {
+             display: flex;
+             align-items: center;
+        }
+
+        .cart-item-quantity button {
+             background-color: var(--primary-blue);
+             color: white;
+             border: none;
+             padding: 5px 10px;
+             cursor: pointer;
+             border-radius: 3px;
+        }
+
+        .cart-item-quantity input {
+             width: 40px;
+             text-align: center;
+             margin: 0 5px;
+             border: 1px solid #ccc;
+             border-radius: 3px;
+        }
+
+        #cartModal .modal-footer {
+            padding: 15px 20px;
+            background-color: #f9f9f9;
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #cartTotal {
+             font-size: 1.2rem;
+             font-weight: bold;
+        }
+
+        #checkoutBtn {
+             background-color: var(--primary-red);
+             color: white;
+             border: none;
+             padding: 10px 20px;
+             cursor: pointer;
+             border-radius: 5px;
+             font-weight: bold;
+             transition: var(--transition);
+        }
+
+        #checkoutBtn:hover {
+             background-color: #b71c1c; /* Darker red */
+        }
 
         /* Modals */
         .modal {
@@ -471,36 +615,36 @@
             color: #555;
         }
 
-        /* Footer / Social Links - ENHANCED */
+        /* Footer / Social Links - IMPROVED MOBILE */
         footer {
-            position: fixed;
-            bottom: 0;
+            /* position: fixed; REMOVED fixed positioning */
+            /* bottom: 0; */
             width: 100%;
-            /* background: linear-gradient(to right, var(--primary-red), var(--primary-blue)); */
-            background: #1a1a1a; /* Darker background for contrast */
+            background: #1a1a1a;
             color: white;
-            padding: 15px 5%;
+            padding: 20px 5%;
             display: flex;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
+            flex-wrap: wrap;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start; /* Align items to the start */
             box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
             z-index: 99;
-            font-family: 'Playfair Display', serif; /* Use fancy font for footer text */
+            font-family: 'Playfair Display', serif;
+            margin-top: 40px; /* Add some space above the footer */
         }
 
         .footer-section {
-            flex: 1; /* Distribute space */
-            min-width: 200px; /* Minimum width before wrapping */
-            margin: 10px;
+            flex: 1;
+            min-width: 200px;
+            margin: 15px;
         }
 
         .footer-section h3 {
             color: var(--accent-gold);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             font-size: 1.3rem;
             border-bottom: 1px solid var(--primary-blue);
-            padding-bottom: 5px;
+            padding-bottom: 8px;
             display: inline-block;
         }
 
@@ -508,7 +652,7 @@
             color: #ddd;
             text-decoration: none;
             display: block;
-            margin: 5px 0;
+            margin: 8px 0;
             transition: color 0.3s ease;
         }
 
@@ -519,10 +663,11 @@
         .social-links {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center; /* Center social icons */
         }
 
         .social-links a {
-            margin: 0 15px 10px 0; /* Add bottom margin for wrapping */
+            margin: 0 15px 15px 0;
             color: white;
             font-size: 1.8rem;
             transition: var(--transition);
@@ -547,19 +692,19 @@
         .contact-line {
              display: flex;
              align-items: center;
-             margin: 5px 0;
+             margin: 8px 0;
         }
 
         .tagline {
             font-style: italic;
             text-align: center;
             width: 100%;
-            padding: 10px;
+            padding: 15px;
             background-color: rgba(0, 0, 0, 0.2);
             font-size: 1rem;
             border-top: 1px solid #444;
+            margin-top: 10px; /* Space above tagline */
         }
-
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -569,23 +714,29 @@
             .menu-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
             nav a { margin-left: 10px; font-size: 0.9rem; padding: 6px 10px; }
             .logo { font-size: 1.8rem; }
-            .cart-icon, .user-icon { font-size: 1.4rem; margin-left: 15px; }
-            footer { flex-direction: column; align-items: flex-start; padding: 15px 3%; }
-            .footer-section { min-width: 100%; text-align: center; } /* Stack sections on mobile */
+            .cart-icon, .user-icon, .view-cart-icon { font-size: 1.4rem; margin-left: 15px; }
+            footer { flex-direction: column; align-items: center; padding: 20px 3%; text-align: center; } /* Stack and center footer on mobile */
+            .footer-section { min-width: 100%; margin: 15px 0; } /* Full width sections on mobile */
             .social-links { justify-content: center; }
             .tagline { font-size: 0.9rem; }
+            .menu-header { flex-direction: column; align-items: flex-start; }
+            .menu-price { margin-top: 10px; }
         }
 
         @media (max-width: 480px) {
             header { padding: 12px 3%; flex-direction: column; gap: 10px; }
             .logo-container { justify-content: center; }
             nav { width: 100%; justify-content: center; flex-wrap: wrap; }
-            nav a { margin: 5px 8px; font-size: 0.8rem; }
+            nav a { margin: 5px 8px; font-size: 0.8rem; padding: 5px 8px; }
             .hero-slider { height: 25vh; }
             .section-title { font-size: 2rem; }
             .menu-grid { grid-template-columns: 1fr; }
             .reviews-grid { grid-template-columns: 1fr; }
             .modal-content { padding: 20px; }
+            .menu-details { padding: 15px; }
+            .add-to-cart { padding: 10px 15px; font-size: 0.9rem; }
+            .review-header { flex-direction: column; align-items: flex-start; text-align: center; }
+            .reviewer-avatar { margin-bottom: 10px; }
         }
 
     </style>
@@ -602,13 +753,14 @@
             <a href="#" id="reviewsLink"><i class="fas fa-star"></i> Reviews</a>
         </nav>
         <div class="header-icons">
+             <div class="view-cart-icon" id="openCart">
+                <i class="fas fa-shopping-basket"></i> <!-- Changed icon for cart view -->
+                <span class="cart-count" id="cartCountHeader">0</span> <!-- Dedicated cart count for header icon -->
+            </div>
             <div class="user-icon" id="openLogin">
                 <i class="fas fa-user"></i>
             </div>
-            <div class="cart-icon" id="cartIcon">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count" id="cartCount">0</span>
-            </div>
+            <!-- Removed the old cart icon here -->
         </div>
     </header>
 
@@ -649,7 +801,6 @@
         <h2 class="section-title">Customer Reviews</h2>
         <div class="reviews-grid" id="reviewsGrid">
             <!-- Reviews will be populated dynamically -->
-            <!-- Example static review -->
             <div class="review-card">
                 <div class="review-header">
                     <div class="reviewer-avatar">JD</div>
@@ -659,11 +810,7 @@
                     </div>
                 </div>
                 <div class="review-stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star-half-alt"></i>
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
                 </div>
                 <p class="review-text">"The Biriyani was absolutely incredible! The flavors were so rich and authentic. Will definitely order again!"</p>
             </div>
@@ -676,11 +823,7 @@
                     </div>
                 </div>
                 <div class="review-stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                 </div>
                 <p class="review-text">"Fast delivery and the food was still hot and fresh. The customer service was also very polite. Highly recommended!"</p>
             </div>
@@ -693,11 +836,7 @@
                     </div>
                 </div>
                 <div class="review-stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="far fa-star"></i>
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
                 </div>
                 <p class="review-text">"Great variety on the menu. The Tandoori Platter was a hit at our party. The presentation was also very nice."</p>
             </div>
@@ -711,16 +850,46 @@
             <h2>Welcome to MIRDHUNA</h2>
             <form id="loginForm">
                 <input type="tel" id="mobileNumber" placeholder="Enter Mobile Number" required>
-                <label for="locationInput">Your Location:</label>
-                <input type="text" id="locationInput" placeholder="Click 'Get My Location' below" readonly>
+                <label for="locationInput">Your Location (Coordinates):</label>
+                <input type="text" id="locationInput" placeholder="Click 'Get My Location' to fetch coordinates" readonly>
                 <button type="button" id="getLocationBtn"><i class="fas fa-location-arrow"></i> Get My Location</button>
-                <div id="locationStatus">Please click the button to get your location.</div>
+                <div id="locationStatus">Please click the button to get your location coordinates.</div>
                 <button type="submit">Login & Proceed</button>
             </form>
         </div>
     </div>
 
-    <!-- Footer with Social Links - ENHANCED -->
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Your Cart</h2>
+                <span class="close" id="closeCart">&times;</span>
+            </div>
+            <div class="modal-body">
+                <table id="cartItems">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Cart items will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <span id="cartTotal">Total: ₹0.00</span>
+                <button id="checkoutBtn">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer with Social Links - IMPROVED MOBILE -->
     <footer>
         <div class="footer-section">
             <h3>Find Us</h3>
@@ -747,21 +916,42 @@
         <div class="tagline">Crafting Memories, One Meal at a Time.</div>
     </footer>
 
-    <!-- Load Google Maps API -->
-    <!-- *** IMPORTANT: REPLACE 'YOUR_GOOGLE_MAPS_API_KEY' *** -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initAutocomplete" async defer></script>
+    <!-- ==================== FIREBASE INTEGRATION ==================== -->
+    <!-- Firebase App (core) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <!-- Firebase Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <!-- (Optional) Firebase Analytics -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics-compat.js"></script>
 
     <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+          authDomain: "mirdhuna-25542.firebaseapp.com",
+          databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+          projectId: "mirdhuna-25542",
+          storageBucket: "mirdhuna-25542.firebasestorage.app",
+          messagingSenderId: "575924409876",
+          appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+          measurementId: "G-YB7LDKHBPV"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        console.log("Firebase initialized successfully.");
+
         // --- Global Variables ---
-        let mapAutocomplete;
         const locationInput = document.getElementById('locationInput');
         const locationStatus = document.getElementById('locationStatus');
         const getLocationBtn = document.getElementById('getLocationBtn');
-        let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || []; // Load cart from localStorage
+        let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || [];
 
         // --- Basic Interactions ---
 
-        // Slider Functionality (Enhanced Example)
+        // Slider Functionality
         let heroSlideIndex = 0;
         const heroSlides = document.querySelector('.hero-slides');
         const totalHeroSlides = document.querySelectorAll('.hero-slide').length;
@@ -772,29 +962,45 @@
         }
         setInterval(showHeroSlides, 5000);
 
-        // Modal Controls
-        const modal = document.getElementById("loginModal");
-        const btn = document.getElementById("openLogin");
-        const span = document.getElementById("closeLogin");
+        // Modal Controls - Login
+        const loginModal = document.getElementById("loginModal");
+        const openLoginBtn = document.getElementById("openLogin");
+        const closeLoginSpan = document.getElementById("closeLogin");
 
-        btn.onclick = function() {
-            modal.style.display = "flex";
+        openLoginBtn.onclick = function() {
+            loginModal.style.display = "flex";
+        }
+        closeLoginSpan.onclick = function() {
+            loginModal.style.display = "none";
         }
 
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
+        // Modal Controls - Cart
+        const cartModal = document.getElementById("cartModal");
+        const openCartBtn = document.getElementById("openCart");
+        const closeCartSpan = document.getElementById("closeCart");
 
+        openCartBtn.onclick = function() {
+            displayCart();
+            cartModal.style.display = "block";
+        }
+        closeCartSpan.onclick = function() {
+            cartModal.style.display = "none";
+        }
+        // Close modals if clicked outside
         window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+            if (event.target == loginModal) {
+                loginModal.style.display = "none";
+            }
+            if (event.target == cartModal) {
+                cartModal.style.display = "none";
             }
         }
 
-        // Update cart count on page load
+        // Update cart count on page load and when cart changes
         function updateCartCount() {
             const count = cart.reduce((total, item) => total + item.quantity, 0);
-            document.getElementById('cartCount').innerText = count;
+            document.getElementById('cartCountHeader').innerText = count; // Update header icon
+            // document.getElementById('cartCount').innerText = count; // Update any other cart count elements if needed
         }
         updateCartCount();
 
@@ -802,7 +1008,6 @@
         document.getElementById('mapLink').addEventListener('click', function(e) {
              e.preventDefault();
              alert('Opening Google Maps to our location...');
-             // window.open('https://maps.google.com/?q=Your+Business+Location', '_blank');
         });
 
         // Scroll to reviews
@@ -812,46 +1017,13 @@
         });
 
 
-        // --- Google Maps Integration ---
-
-        function initAutocomplete() {
-             // Initialize Autocomplete for the location input field
-             mapAutocomplete = new google.maps.places.Autocomplete(locationInput);
-             mapAutocomplete.setFields(['address_components', 'formatted_address']);
-             // Optional: Bias autocomplete to user's current location if known
-             // if (navigator.geolocation) {
-             //     navigator.geolocation.getCurrentPosition(position => {
-             //         const geolocation = {
-             //             lat: position.coords.latitude,
-             //             lng: position.coords.longitude
-             //         };
-             //         const circle = new google.maps.Circle({ center: geolocation, radius: position.coords.accuracy });
-             //         mapAutocomplete.setBounds(circle.getBounds());
-             //     });
-             // }
-
-             // Listen for place changes
-             mapAutocomplete.addListener("place_changed", () => {
-                 const place = mapAutocomplete.getPlace();
-                 if (!place.formatted_address) {
-                     locationStatus.textContent = "Please select a valid address from the list.";
-                     locationStatus.style.color = "orange";
-                 } else {
-                     locationStatus.textContent = "Address selected.";
-                     locationStatus.style.color = "green";
-                 }
-             });
-
-             console.log("Google Maps Autocomplete initialized.");
-        }
-
-        // Fallback Geolocation if Autocomplete isn't sufficient or user denies permissions initially
-        function getLocationFallback() {
+        // --- Location Logic (Coordinates Only) ---
+        function getLocationCoordinates() {
             if (navigator.geolocation) {
                 locationStatus.textContent = "Locating...";
                 getLocationBtn.disabled = true;
                 navigator.geolocation.getCurrentPosition(
-                    showPosition,
+                    showCoordinates,
                     showError,
                     { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
                 );
@@ -861,36 +1033,20 @@
             }
         }
 
-        function showPosition(position) {
-            const geocoder = new google.maps.Geocoder();
-            const latlng = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-
-            geocoder.geocode({ location: latlng }, (results, status) => {
-                if (status === "OK") {
-                    if (results[0]) {
-                        locationInput.value = results[0].formatted_address;
-                        locationStatus.textContent = "Location fetched successfully!";
-                        locationStatus.style.color = "green";
-                    } else {
-                        locationStatus.textContent = "No address found for this location.";
-                        locationStatus.style.color = "orange";
-                    }
-                } else {
-                    console.error("Geocoder failed due to: " + status);
-                    locationStatus.textContent = "Geocoding failed. Please try typing your address.";
-                    locationStatus.style.color = "red";
-                }
-                getLocationBtn.disabled = false;
-            });
+        function showCoordinates(position) {
+            const lat = position.coords.latitude.toFixed(6);
+            const lng = position.coords.longitude.toFixed(6);
+            // Display coordinates in the input field
+            locationInput.value = `Lat: ${lat}, Lng: ${lng}`;
+            locationStatus.textContent = "Coordinates fetched successfully!";
+            locationStatus.style.color = "green";
+            getLocationBtn.disabled = false;
         }
 
         function showError(error) {
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    locationStatus.textContent = "Location access denied. Please type your address or allow location access.";
+                    locationStatus.textContent = "Location access denied. Please allow location access.";
                     break;
                 case error.POSITION_UNAVAILABLE:
                     locationStatus.textContent = "Location information is unavailable.";
@@ -906,21 +1062,9 @@
             getLocationBtn.disabled = false;
         }
 
-        // Event listener for the Get Location button (tries autocomplete first, then geolocation)
-        getLocationBtn.addEventListener('click', function() {
-            // Check if a place has been selected via Autocomplete
-            const place = mapAutocomplete ? mapAutocomplete.getPlace() : null;
-            if (place && place.formatted_address) {
-                // Address was selected from autocomplete, do nothing extra, let form submit use it.
-                locationStatus.textContent = "Using selected address.";
-                locationStatus.style.color = "green";
-            } else {
-                // No address selected, try geolocation fallback
-                getLocationFallback();
-            }
-        });
+        getLocationBtn.addEventListener('click', getLocationCoordinates);
 
-        // Placeholder for login form submission
+        // --- Login Form Submission ---
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const mobile = document.getElementById('mobileNumber').value.trim();
@@ -930,116 +1074,200 @@
                 alert("Please enter your mobile number.");
                 return;
             }
-            if (!location || location === "Click 'Get My Location' below" || location === "Fetching your address..." ) {
-                alert("Please get your location or type a valid address.");
+            if (!location || location.includes("Click 'Get My Location'") || location === "") {
+                alert("Please get your location coordinates first.");
                 return;
             }
 
-            console.log("Login Attempt - Mobile:", mobile, "Location:", location);
-            // Here you would integrate with Firebase to store user data
-            alert(`Successfully logged in!\nMobile: ${mobile}\nLocation: ${location}`);
-            modal.style.display = "none";
-            // Reset form
-            this.reset();
-            locationInput.placeholder = "Click 'Get My Location' below";
-            locationStatus.textContent = "Please click the button to get your location.";
-            locationStatus.style.color = "initial";
+            // Save user data to Firebase
+            const userRef = firebase.database().ref('users/' + mobile);
+            const userData = {
+                mobile: mobile,
+                location: location, // This will now be coordinates
+                lastLogin: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            userRef.set(userData)
+                .then(() => {
+                    console.log("User data saved to Firebase successfully.");
+                    alert(`Successfully logged in!\nMobile: ${mobile}\nLocation (Coords): ${location}`);
+                    loginModal.style.display = "none";
+                    document.getElementById('loginForm').reset();
+                    locationInput.placeholder = "Click 'Get My Location' to fetch coordinates";
+                    locationStatus.textContent = "Please click the button to get your location coordinates.";
+                    locationStatus.style.color = "initial";
+                })
+                .catch((error) => {
+                    console.error("Error saving user data to Firebase:", error);
+                    alert("Login successful locally, but there was an error saving your data.");
+                    loginModal.style.display = "none"; // Close on client success
+                });
         });
 
 
         // --- Menu Items & Cart Logic ---
-        function loadMenuItems() {
-            // Simulated data - Replace with data fetched from Firebase
-            const menuItems = [
-                {
-                    id: 'm1',
-                    name: 'Signature Biriyani',
-                    price: 220,
-                    description: 'Fragrant basmati rice cooked with tender meat and exotic spices.',
-                    image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=500'
-                },
-                {
-                    id: 'm2',
-                    name: 'Tandoori Platter',
-                    price: 350,
-                    description: 'Assorted grilled meats marinated in yogurt and spices.',
-                    image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=500'
-                },
-                {
-                    id: 'm3',
-                    name: 'Creamy Pasta',
-                    price: 180,
-                    description: 'Al dente pasta in a rich, creamy sauce with herbs.',
-                    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500'
-                },
-                {
-                    id: 'm4',
-                    name: 'Fresh Garden Salad',
-                    price: 120,
-                    description: 'Crisp greens, seasonal vegetables, and a light vinaigrette.',
-                    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500'
-                }
-            ];
-
+        function loadMenuItemsFromFirebase() {
             const menuGrid = document.getElementById('menuGrid');
-            menuGrid.innerHTML = '';
+            menuGrid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1;">Loading menu...</p>';
 
-            menuItems.forEach(item => {
-                const menuItemElement = document.createElement('div');
-                menuItemElement.className = 'menu-item';
-                menuItemElement.innerHTML = `
-                    <div class="menu-img-container">
-                        <img src="${item.image}" alt="${item.name}" class="menu-img" loading="lazy">
-                    </div>
-                    <div class="menu-details">
-                        <div class="menu-header">
-                            <h3 class="menu-name">${item.name}</h3>
-                            <div class="menu-price">₹${item.price}</div>
-                        </div>
-                        <p class="menu-description">${item.description}</p>
-                        <button class="add-to-cart" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">
-                            <i class="fas fa-cart-plus"></i> Add to Cart
-                        </button>
-                    </div>
-                `;
-                menuGrid.appendChild(menuItemElement);
-            });
+            const menuRef = firebase.database().ref('menu');
+            menuRef.once('value')
+                .then((snapshot) => {
+                    menuGrid.innerHTML = '';
+                    const menuData = snapshot.val();
 
-            // Add event listeners to new "Add to Cart" buttons
-            document.querySelectorAll('.add-to-cart').forEach(button => {
-                button.addEventListener('click', function() {
-                    const itemId = this.getAttribute('data-id');
-                    const itemName = this.getAttribute('data-name');
-                    const itemPrice = parseFloat(this.getAttribute('data-price'));
-
-                    // Check if item already in cart
-                    const existingItemIndex = cart.findIndex(cartItem => cartItem.id === itemId);
-
-                    if (existingItemIndex > -1) {
-                        // Increase quantity
-                        cart[existingItemIndex].quantity += 1;
-                    } else {
-                        // Add new item
-                        cart.push({ id: itemId, name: itemName, price: itemPrice, quantity: 1 });
+                    if (!menuData) {
+                        menuGrid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1;">Menu is currently unavailable.</p>';
+                        return;
                     }
 
-                    // Save updated cart to localStorage
-                    localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                    Object.keys(menuData).forEach(key => {
+                        const item = menuData[key];
+                        const menuItemElement = document.createElement('div');
+                        menuItemElement.className = 'menu-item';
+                        menuItemElement.innerHTML = `
+                            <div class="menu-img-container">
+                                <img src="${item.image || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${item.name}" class="menu-img" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Image+Error';">
+                            </div>
+                            <div class="menu-details">
+                                <div class="menu-header">
+                                    <h3 class="menu-name">${item.name || 'Unknown Item'}</h3>
+                                    <div class="menu-price">₹${item.price !== undefined ? item.price : '?'} </div>
+                                </div>
+                                <p class="menu-description">${item.description || 'No description available.'}</p>
+                                <button class="add-to-cart" data-id="${key}" data-name="${item.name || 'Item'}" data-price="${item.price !== undefined ? item.price : 0}">
+                                    <i class="fas fa-cart-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        `;
+                        menuGrid.appendChild(menuItemElement);
+                    });
 
-                    // Update UI
-                    updateCartCount();
-                    alert(`"${itemName}" added to cart!`);
-                    console.log("Cart updated:", cart);
+                    document.querySelectorAll('.add-to-cart').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const itemId = this.getAttribute('data-id');
+                            const itemName = this.getAttribute('data-name');
+                            const itemPrice = parseFloat(this.getAttribute('data-price'));
+
+                            let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || [];
+                            const existingItemIndex = cart.findIndex(cartItem => cartItem.id === itemId);
+
+                            if (existingItemIndex > -1) {
+                                cart[existingItemIndex].quantity += 1;
+                            } else {
+                                cart.push({ id: itemId, name: itemName, price: itemPrice, quantity: 1 });
+                            }
+
+                            localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                            updateCartCount();
+                            alert(`"${itemName}" added to cart!`);
+                            console.log("Cart updated:", cart);
+                        });
+                    });
+
+                })
+                .catch((error) => {
+                    console.error("Error loading menu from Firebase:", error);
+                    menuGrid.innerHTML = '<p style="text-align:center; color:red; grid-column: 1 / -1;">Failed to load menu. Please try again later.</p>';
                 });
-            });
         }
 
-        // Load menu items when the page loads
-        window.onload = function() {
-            loadMenuItems();
-        };
+        // --- Cart Display & Management ---
+        function displayCart() {
+             const cartItemsTable = document.querySelector('#cartItems tbody');
+             const cartTotalElement = document.getElementById('cartTotal');
+             cartItemsTable.innerHTML = ''; // Clear existing items
+
+             let total = 0;
+             if (cart.length === 0) {
+                 cartItemsTable.innerHTML = '<tr><td colspan="5" style="text-align:center;">Your cart is empty.</td></tr>';
+                 cartTotalElement.textContent = 'Total: ₹0.00';
+                 return;
+             }
+
+             cart.forEach((item, index) => {
+                 const itemTotal = item.price * item.quantity;
+                 total += itemTotal;
+                 const row = document.createElement('tr');
+                 row.innerHTML = `
+                     <td>${item.name}</td>
+                     <td>₹${item.price.toFixed(2)}</td>
+                     <td class="cart-item-quantity">
+                         <button class="decrease-qty" data-index="${index}">-</button>
+                         <input type="number" class="qty-input" data-index="${index}" value="${item.quantity}" min="1">
+                         <button class="increase-qty" data-index="${index}">+</button>
+                     </td>
+                     <td>₹${itemTotal.toFixed(2)}</td>
+                     <td><button class="remove-item" data-index="${index}"><i class="fas fa-trash"></i></button></td>
+                 `;
+                 cartItemsTable.appendChild(row);
+             });
+
+             cartTotalElement.textContent = `Total: ₹${total.toFixed(2)}`;
+
+             // --- Attach event listeners for cart actions ---
+             document.querySelectorAll('.decrease-qty').forEach(button => {
+                 button.addEventListener('click', function() {
+                     const index = parseInt(this.getAttribute('data-index'));
+                     if (cart[index].quantity > 1) {
+                         cart[index].quantity--;
+                         localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                         updateCartCount();
+                         displayCart(); // Re-render cart
+                     }
+                 });
+             });
+
+             document.querySelectorAll('.increase-qty').forEach(button => {
+                 button.addEventListener('click', function() {
+                     const index = parseInt(this.getAttribute('data-index'));
+                     cart[index].quantity++;
+                     localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                     updateCartCount();
+                     displayCart(); // Re-render cart
+                 });
+             });
+
+             document.querySelectorAll('.qty-input').forEach(input => {
+                 input.addEventListener('change', function() {
+                     const index = parseInt(this.getAttribute('data-index'));
+                     const newQty = parseInt(this.value);
+                     if (!isNaN(newQty) && newQty > 0) {
+                         cart[index].quantity = newQty;
+                         localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                         updateCartCount();
+                         displayCart(); // Re-render cart
+                     } else {
+                         this.value = cart[index].quantity; // Revert if invalid
+                     }
+                 });
+             });
+
+             document.querySelectorAll('.remove-item').forEach(button => {
+                 button.addEventListener('click', function() {
+                     const index = parseInt(this.getAttribute('data-index'));
+                     cart.splice(index, 1);
+                     localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+                     updateCartCount();
+                     displayCart(); // Re-render cart
+                 });
+             });
+        }
+
+        document.getElementById('checkoutBtn').addEventListener('click', function() {
+             alert("Proceeding to checkout is not implemented in this static example.");
+             // Here you would typically redirect to a checkout page or initiate payment
+        });
+
+        // --- Initialize Data Loading ---
+        window.addEventListener('load', function() {
+            console.log("Window loaded, initializing data...");
+            loadMenuItemsFromFirebase();
+            updateCartCount();
+        });
 
     </script>
+    <!-- ==================== END FIREBASE INTEGRATION ==================== -->
 
 </body>
 </html>
