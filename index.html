@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mirdhuna - Order Delicious Food</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>MIRDHUNA - Exquisite Flavors</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* --- Modern Attractive Styles --- */
         :root {
-            --primary: #e94560;       /* Red from your image */
-            --secondary: #f7d3a3;     /* Light Yellow (Background) */
-            --accent: #ffeb3b;        /* Yellow from your image */
-            --dark: #212121;          /* Dark text */
-            --light: #fff;            /* White */
-            --text: #333;
-            --shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            --primary-red: #d32f2f; /* Darker, richer red */
+            --primary-yellow: #ffab00; /* Vibrant amber */
+            --primary-blue: #1565c0; /* Strong blue */
+            --accent-gold: #ffd600; /* Bright gold for highlights */
+            --light-bg: #fff8e1; /* Creamy light background */
+            --dark-text: #212121; /* Near black for text */
+            --off-white: #f5f5f5;
+            --shadow: 0 8px 16px rgba(0,0,0,0.2);
             --transition: all 0.3s ease;
         }
 
@@ -22,244 +23,194 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            background-color: var(--secondary); /* Light Yellow Background */
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #fce4ec, #e3f2fd, #fff8e1); /* Soft pastel background */
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+            color: var(--dark-text);
+            padding-bottom: 70px; /* Space for fixed footer */
+            overflow-x: hidden;
         }
 
-        /* --- Header --- */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1, h2, h3, .logo {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Header & Navigation */
         header {
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
             color: white;
-            padding: 40px 5%; /* Increased padding for larger height */
+            padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
-            z-index: 1000;
             position: sticky;
             top: 0;
+            z-index: 100;
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 15px;
         }
 
         .logo {
-            font-size: 3rem; /* Made logo much bigger */
-            font-weight: 800;
-            color: var(--light);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            cursor: pointer;
         }
 
-        .tagline {
-            font-size: 1.2rem;
-            opacity: 0.95;
+        .logo-icon {
+            margin-right: 10px;
+            color: var(--accent-gold);
+            font-size: 2rem;
         }
 
-        .user-controls {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-info {
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        .user-info span {
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        /* --- Buttons --- */
-        .btn {
-            background: var(--accent);
-            color: var(--dark);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn:hover {
-            background: #ffd700;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn:active { transform: translateY(1px); }
-
-        .btn-secondary {
-            background: var(--light);
-            color: var(--dark);
-            border: 1px solid var(--primary);
-        }
-
-        .btn-secondary:hover { background: #e0f0ef; }
-
-        .btn-primary {
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+        nav a {
+            margin-left: 25px;
+            text-decoration: none;
             color: white;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 20px;
+            transition: var(--transition);
         }
 
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #cc0000, #ffeb3b);
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
-        /* --- Hero / Slideshow Section --- */
-        .hero-slider {
-            position: relative;
-            overflow: hidden;
-            height: 400px;
-            width: 100%;
-            margin-bottom: 30px;
-        }
-
-        .slider-container {
+        .header-icons {
             display: flex;
-            transition: transform 0.5s ease-in-out;
+            align-items: center;
+        }
+
+        .cart-icon, .user-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.6rem;
+            margin-left: 20px;
+            transition: var(--transition);
+        }
+
+        .cart-icon:hover, .user-icon:hover {
+            color: var(--accent-gold);
+            transform: scale(1.1);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent-gold);
+            color: var(--dark-text);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Hero Slider Section */
+        .hero-slider {
+            width: 100%;
+            height: 40vh; /* Responsive height */
+            max-height: 500px;
+            overflow: hidden;
+            margin-top: 10px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .hero-slides {
+            display: flex;
+            width: 500%; /* Adjust based on number of slides */
             height: 100%;
         }
 
-        .slide {
-            min-width: 100%;
+        .hero-slide {
+            min-width: 20%; /* 1/5 of the container width */
             height: 100%;
-            position: relative;
             background-size: cover;
             background-position: center;
-        }
-
-        .slide-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 80%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .slide-content h1 {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .slide-content p {
-            font-size: 1.2rem;
-            margin-bottom: 25px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .slide-content .btn {
-            background: var(--accent);
-            color: var(--dark);
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .slide-content .btn:hover {
-            background: #ffeb3b;
-            transform: translateY(-3px);
-        }
-
-        .dots-container {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .dot.active {
-            background-color: white;
-        }
-
-        /* --- Main Content --- */
-        main {
-            flex: 1;
-            padding: 0 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* --- Menu Section --- */
-        .menu-section {
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            padding: 30px;
-            margin-bottom: 40px;
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .menu-section h2 {
-            margin-bottom: 25px;
-            color: var(--dark);
             position: relative;
-            padding-bottom: 10px;
         }
 
-        .menu-section h2::after {
-            content: '';
+        .slide-overlay {
             position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 60px;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .slide-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px black;
+        }
+
+        .slide-text {
+            font-size: 1.1rem;
+            max-width: 80%;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        /* Menu Section */
+        .menu-section {
+            padding: 30px 5%;
+            margin-top: 30px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-red);
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
             height: 4px;
-            background: linear-gradient(to right, var(--primary), var(--accent));
+            background: linear-gradient(to right, var(--primary-red), var(--primary-yellow));
+            margin: 10px auto;
             border-radius: 2px;
         }
 
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
         }
 
         .menu-item {
-            background-color: #fff;
-            border-radius: 18px;
+            background-color: var(--off-white);
+            border-radius: 15px;
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: var(--transition);
@@ -269,85 +220,89 @@
         }
 
         .menu-item:hover {
-             transform: translateY(-8px);
-             box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.25);
         }
 
-        .item-image {
+        .menu-img-container {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .menu-img {
             width: 100%;
-            height: 160px;
+            height: 100%;
             object-fit: cover;
-            display: block;
+            transition: var(--transition);
         }
 
-        .item-details {
+        .menu-item:hover .menu-img {
+            transform: scale(1.05);
+        }
+
+        .menu-details {
             padding: 20px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
 
-        .item-header {
+        .menu-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
-        .item-name {
+        .menu-name {
             font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--dark);
-            margin: 0;
+            font-size: 1.4rem;
+            color: var(--dark-text);
         }
 
-        .item-price {
-            color: var(--primary);
-            font-weight: 800;
-            font-size: 1.2rem;
-            background-color: rgba(233, 69, 96, 0.1);
-            padding: 3px 10px;
+        .menu-price {
+            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
+            color: white;
+            padding: 5px 12px;
             border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        .item-description {
-            font-size: 0.9rem;
-            color: #666;
+        .menu-description {
+            color: #555;
             margin-bottom: 20px;
             flex-grow: 1;
         }
 
         .add-to-cart {
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+            background: linear-gradient(to right, var(--primary-blue), var(--primary-red));
             color: white;
             border: none;
-            padding: 12px 15px;
-            border-radius: 12px;
+            padding: 12px 20px;
+            border-radius: 30px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 500;
+            font-size: 1rem;
             transition: var(--transition);
-            align-self: flex-start;
-            width: 100%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
         }
 
         .add-to-cart:hover {
-            background: linear-gradient(90deg, #cc0000, #ffeb3b);
-            transform: scale(1.02);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.25);
         }
 
-        #menu-loading {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #777;
-            grid-column: 1 / -1;
-            padding: 40px;
+        .add-to-cart i {
+            margin-right: 8px;
         }
 
-        /* --- MODAL STYLES --- */
+
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -356,933 +311,535 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
         }
 
         .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 0;
-            border: none;
+            background: linear-gradient(135deg, var(--light-bg), #e3f2fd);
+            padding: 30px;
             border-radius: 20px;
             width: 90%;
-            max-width: 600px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             position: relative;
-            animation: slideIn 0.4s ease-out;
-            max-height: 90vh;
-            overflow-y: auto;
+            animation: modalPop 0.4s ease-out forwards;
         }
 
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        @keyframes modalPop {
+            0% { opacity: 0; transform: translateY(-50px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .modal-header {
-             padding: 20px;
-             background: linear-gradient(90deg, var(--primary), var(--accent));
-             color: white;
-             border-radius: 20px 20px 0 0;
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-        }
-
-        .modal-header h2 {
-             margin: 0;
-             font-size: 1.5rem;
-        }
-
-        .close-modal {
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
             cursor: pointer;
-            background: none;
-            border: none;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background-color 0.2s;
+            color: var(--dark-text);
+            transition: var(--transition);
         }
 
-        .close-modal:hover,
-        .close-modal:focus {
-            background-color: rgba(255, 255, 255, 0.2);
+        .close:hover {
+            color: var(--primary-red);
+            transform: rotate(90deg);
         }
 
-        .modal-body {
-             padding: 25px;
+        .modal-content h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--primary-blue);
+            font-size: 2rem;
         }
 
-        /* --- Login Modal Specific Styles --- */
-        #login-modal .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        label {
-            font-weight: 500;
-            color: var(--dark);
-        }
-
-        input[type="tel"], input[type="text"] {
+        #loginForm input, #locationInput {
             width: 100%;
             padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
+            margin: 15px 0;
+            border: 2px solid #ccc;
+            border-radius: 10px;
             font-size: 1rem;
             transition: var(--transition);
         }
 
-        input[type="tel"]:focus, input[type="text"]:focus {
-            border-color: var(--primary);
+        #loginForm input:focus, #locationInput:focus {
+            border-color: var(--primary-blue);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+            box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.2);
         }
 
-        .location-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .location-display {
-            font-size: 0.95rem;
-            min-height: 24px;
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            background-color: #f0f8f7;
+        #loginForm button, #getLocationBtn {
+            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
             width: 100%;
-        }
-
-        #map {
-            height: 200px;
-            width: 100%;
-            border-radius: 12px;
-            border: 1px solid #eee;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: none;
-            margin-top: 10px;
-        }
-
-        #login-message {
-            text-align: center;
-            min-height: 24px;
             font-weight: 500;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            transition: var(--transition);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
-        .success { color: green; }
-        .error { color: var(--primary); }
-
-        /* --- Cart Modal Specific Styles --- */
-        #cart-modal .cart-items-container {
-             max-height: 60vh;
-             overflow-y: auto;
-             margin-bottom: 20px;
+        #loginForm button:hover, #getLocationBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
 
-        #cart-items {
-            list-style: none;
-            padding: 0;
+        #getLocationBtn {
+            background: linear-gradient(to right, #4caf50, var(--primary-green)); /* Green gradient for location */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        #cart-items li {
-            padding: 15px 0;
-            border-bottom: 1px dashed #eee;
+        #getLocationBtn i {
+            margin-right: 10px;
+        }
+
+        #locationStatus {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            min-height: 1.2rem;
+        }
+
+        /* Footer / Social Links */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
+            color: white;
+            padding: 12px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+            z-index: 99;
         }
 
-        #cart-items li:last-child { border-bottom: none; }
-
-        .cart-item-info {
-            flex-grow: 1;
-        }
-
-        .cart-item-name {
-             font-weight: 600;
-        }
-
-        .cart-item-price {
-             color: var(--primary);
-             font-weight: 600;
-        }
-
-        .cart-item-controls {
-             display: flex;
-             align-items: center;
-             gap: 10px;
-        }
-
-        .quantity-btn {
-             width: 30px;
-             height: 30px;
-             border-radius: 50%;
-             border: none;
-             background: #eee;
-             cursor: pointer;
-             font-weight: bold;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-        }
-
-        .quantity-btn:hover {
-             background: #ddd;
-        }
-
-        .item-quantity {
-             min-width: 30px;
-             text-align: center;
-             font-weight: 600;
-        }
-
-        .remove-item {
-             background: none;
-             border: none;
-             color: var(--primary);
-             cursor: pointer;
-             font-size: 1.2rem;
-             margin-left: 10px;
-        }
-
-        .remove-item:hover {
-             color: #cc0000;
-        }
-
-        .cart-summary {
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-             flex-wrap: wrap;
-             gap: 15px;
-             padding-top: 15px;
-             border-top: 1px solid #eee;
-        }
-
-        .cart-total {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        /* --- Footer --- */
-        footer {
-            text-align: center;
-            padding: 30px 5%;
-            background: var(--dark);
+        .social-links a {
+            margin: 0 12px;
             color: white;
-            margin-top: auto;
-        }
-
-        .contact-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 25px;
-            margin-top: 15px;
-            margin-bottom: 20px;
-        }
-
-        .social-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100px;
-            border-radius: 10px;
-            font-size: 3rem;
-            color: white;
-            text-decoration: none;
+            font-size: 1.7rem;
             transition: var(--transition);
-            box-shadow: var(--shadow);
-            background-color: var(--accent);
-            border: 2px solid var(--primary);
-            text-align: center;
-            padding: 10px;
         }
 
-        .social-link:hover {
-            transform: translateY(-5px) scale(1.05);
-            background-color: var(--primary);
-            border-color: var(--accent);
+        .social-links a:hover {
+            color: var(--accent-gold);
+            transform: translateY(-3px);
         }
 
-        .social-link.facebook  { background-color: #3b5998; border-color: #2d4373; }
-        .social-link.whatsapp  { background-color: #25D366; border-color: #128C7E; }
-        .social-link.instagram { background-color: #833AB4; border-color: #581c87; }
-        .social-link.telegram  { background-color: #0088cc; border-color: #006699; }
-        .social-link.envelope  { background-color: #D44638; border-color: #B23121; }
-        .social-link.map-marker { background-color: #4285F4; border-color: #356AC4; }
-
-        .copyright {
-             margin-top: 20px;
-             font-size: 0.9rem;
-             opacity: 0.8;
+        .contact-info {
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
         }
 
-        /* --- Responsive Design --- */
+        .contact-info i {
+            margin-right: 8px;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .hero-slider { height: 300px; }
-            .slide-content h1 { font-size: 2.2rem; }
-            .slide-content p { font-size: 1rem; }
-            .slide-content .btn { font-size: 1rem; }
-            .dots-container { bottom: 15px; }
-            .dot { width: 10px; height: 10px; }
-            .logo { font-size: 2.5rem; }
-            .menu-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-            .item-image { height: 130px; }
-            .item-details { padding: 15px; }
-            .item-name { font-size: 1.1rem; }
-            .item-price { font-size: 1.1rem; }
-            .contact-links { grid-template-columns: 1fr; }
-            .social-link { height: 80px; font-size: 2.5rem; }
-            .modal-content { width: 95%; margin: 7% auto; }
-            .cart-summary { flex-direction: column; align-items: stretch; }
-            .cart-total { text-align: center; }
+            .hero-slider { height: 30vh; }
+            .slide-title { font-size: 1.5rem; }
+            .slide-text { font-size: 0.9rem; max-width: 95%;}
+            .menu-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+            nav a { margin-left: 10px; font-size: 0.9rem; padding: 6px 10px; }
+            .logo { font-size: 1.8rem; }
+            .cart-icon, .user-icon { font-size: 1.4rem; margin-left: 15px; }
         }
 
         @media (max-width: 480px) {
-            .hero-slider { height: 250px; }
-            .slide-content h1 { font-size: 1.8rem; }
-            .slide-content p { font-size: 0.9rem; }
-            .slide-content .btn { font-size: 0.9rem; }
-            .logo { font-size: 2rem; }
+            header { padding: 12px 3%; flex-direction: column; gap: 10px; }
+            .logo-container { justify-content: center; }
+            nav { width: 100%; justify-content: center; }
+            nav a { margin: 0 8px; font-size: 0.8rem; }
+            .hero-slider { height: 25vh; }
+            .section-title { font-size: 2rem; }
             .menu-grid { grid-template-columns: 1fr; }
-            .btn { padding: 12px 18px; font-size: 0.95rem; }
-            .contact-links { grid-template-columns: 1fr; }
-            .social-link { height: 70px; font-size: 2rem; }
-            .modal-header { padding: 15px; }
-            .modal-header h2 { font-size: 1.3rem; }
-            .modal-body { padding: 20px 15px; }
+            footer { flex-direction: column; gap: 8px; padding: 10px 3%; }
+            .social-links { order: 2; }
+            .contact-info { order: 1; font-size: 0.9rem; }
         }
+
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo-container">
+            <i class="fas fa-utensils logo-icon"></i>
             <div class="logo">MIRDHUNA</div>
-            <div class="tagline">Experience Culinary Excellence with Every Bite</div>
         </div>
-        <div class="user-controls">
-            <div class="user-info" id="user-display">Welcome, Guest!</div>
-            <button class="btn btn-secondary" id="header-login-btn"><i class="fas fa-sign-in-alt"></i> Login</button>
-            <div class="cart-container" id="cart-icon-header">
-                <i class="fas fa-shopping-cart cart-icon"></i>
-                <span class="cart-count" id="cart-count">0</span>
+        <nav>
+            <a href="#" id="mapLink"><i class="fas fa-map-marked-alt"></i> Find Us</a>
+            <a href="#" id="reviewsLink"><i class="fas fa-star"></i> Reviews</a>
+        </nav>
+        <div class="header-icons">
+            <div class="user-icon" id="openLogin">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="cart-icon" id="cartIcon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cartCount">0</span>
             </div>
         </div>
     </header>
 
-    <!-- --- HERO SLIDESHOW SECTION --- -->
+    <!-- Hero Slider Section -->
     <div class="hero-slider">
-        <div class="slider-container" id="slider-container">
-            <!-- Slide 1 -->
-            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
-                <div class="slide-content">
-                    <h1>Delicious Bites Await</h1>
-                    <p>Discover our signature dishes crafted with love.</p>
-                    <button class="btn btn-primary"><i class="fas fa-utensils"></i> Order Now</button>
+        <div class="hero-slides">
+            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000');">
+                <div class="slide-overlay">
+                    <h2 class="slide-title">Authentic Flavors</h2>
+                    <p class="slide-text">Experience the true taste of tradition in every bite.</p>
                 </div>
             </div>
-            <!-- Slide 2 -->
-            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1524896732298-768086207080?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
-                <div class="slide-content">
-                    <h1>Fresh & Fast Delivery</h1>
-                    <p>Get your favorite meals delivered fresh to your door.</p>
-                    <button class="btn btn-primary"><i class="fas fa-truck"></i> Order Now</button>
+            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1000');">
+                <div class="slide-overlay">
+                    <h2 class="slide-title">Fresh Ingredients</h2>
+                    <p class="slide-text">Sourced daily for the highest quality and taste.</p>
                 </div>
             </div>
-            <!-- Slide 3 -->
-            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1544142245-b17233d52832?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
-                <div class="slide-content">
-                    <h1>Our Secret Recipe</h1>
-                    <p>Experience the taste of tradition and innovation.</p>
-                    <button class="btn btn-primary"><i class="fas fa-heart"></i> Order Now</button>
+            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000');">
+                <div class="slide-overlay">
+                    <h2 class="slide-title">Delicious Deals</h2>
+                    <p class="slide-text">Enjoy great food without breaking the bank.</p>
                 </div>
             </div>
-        </div>
-        <div class="dots-container" id="dots-container">
-            <span class="dot active" data-slide="0"></span>
-            <span class="dot" data-slide="1"></span>
-            <span class="dot" data-slide="2"></span>
+            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1476224203421-9ac39bcbaf2f?q=80&w=1000');">
+                <div class="slide-overlay">
+                    <h2 class="slide-title">Fast Delivery</h2>
+                    <p class="slide-text">Hot meals delivered to your doorstep quickly.</p>
+                </div>
+            </div>
+            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1550949900-d395fa4da090?q=80&w=1000');">
+                <div class="slide-overlay">
+                    <h2 class="slide-title">MIRDHUNA Experience</h2>
+                    <p class="slide-text">Where every meal is a celebration.</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <main>
-        <section class="menu-section">
-            <h2><i class="fas fa-utensils"></i> Our Delicious Menu</h2>
-            <div class="menu-grid" id="menu-grid">
-                <p id="menu-loading">Loading delicious options for you...</p>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="contact-links">
-            <a class="social-link facebook" href="#" target="_blank" aria-label="Facebook">
-                <i class="fab fa-facebook-f"></i>
-                <span>Facebook</span>
-            </a>
-            <a class="social-link whatsapp" href="https://wa.me/919835124772" target="_blank" aria-label="WhatsApp">
-                <i class="fab fa-whatsapp"></i>
-                <span>WhatsApp</span>
-            </a>
-            <a class="social-link instagram" href="#" target="_blank" aria-label="Instagram">
-                <i class="fab fa-instagram"></i>
-                <span>Instagram</span>
-            </a>
-            <a class="social-link telegram" href="#" target="_blank" aria-label="Telegram">
-                <i class="fab fa-telegram-plane"></i>
-                <span>Telegram</span>
-            </a>
-            <a class="social-link envelope" href="mailto:someone@example.com" aria-label="Email">
-                <i class="fas fa-envelope"></i>
-                <span>Email</span>
-            </a>
-            <a class="social-link map-marker" href="https://maps.app.goo.gl/kotovw4g7chuqy5J8" target="_blank" aria-label="Map">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>Location</span>
-            </a>
+    <!-- Menu Section (acts as Homepage) -->
+    <section class="menu-section">
+        <h2 class="section-title">Our Delectable Menu</h2>
+        <div class="menu-grid" id="menuGrid">
+            <!-- Menu items will be populated dynamically -->
         </div>
-        <p class="copyright">© 2023 Mirdhuna. All rights reserved.</p>
-    </footer>
-
-    <!-- --- MODALS --- -->
+    </section>
 
     <!-- Login Modal -->
-    <div id="login-modal" class="modal">
+    <div id="loginModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-user"></i> Quick Login & Location</h2>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="auth-form">
-                    <div class="input-group">
-                        <label for="phone-number">Mobile Number</label>
-                        <input type="tel" id="phone-number" placeholder="e.g., 9835124772" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Delivery Location</label>
-                        <div class="location-controls">
-                            <button class="btn btn-secondary" id="get-location-btn"><i class="fas fa-location-arrow"></i> Get My Current Location</button>
-                            <div class="location-display" id="location-display">
-                                Detecting location automatically...
-                            </div>
-                            <div id="map"></div>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-primary" id="login-btn"><i class="fas fa-sign-in-alt"></i> Login / Update Info</button>
-                    <p id="login-message"></p>
-                </div>
-            </div>
+            <span class="close" id="closeLogin">&times;</span>
+            <h2>Welcome to MIRDHUNA</h2>
+            <form id="loginForm">
+                <input type="tel" id="mobileNumber" placeholder="Enter Mobile Number" required>
+                <label for="locationInput">Your Location:</label>
+                <input type="text" id="locationInput" placeholder="Fetching your address..." readonly>
+                <button type="button" id="getLocationBtn"><i class="fas fa-location-arrow"></i> Get My Location</button>
+                <div id="locationStatus">Please click the button to get your location.</div>
+                <button type="submit">Login & Proceed</button>
+            </form>
         </div>
     </div>
 
-    <!-- Cart Modal -->
-    <div id="cart-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-shopping-basket"></i> Your Cart</h2>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="cart-items-container">
-                    <ul id="cart-items"></ul>
-                </div>
-                <div class="cart-summary">
-                    <div class="cart-total">Total: ₹<span id="cart-total-price">0.00</span></div>
-                    <div>
-                        <button class="btn btn-success" id="proceed-to-order-btn"><i class="fas fa-clipboard-check"></i> Proceed to Order</button>
-                    </div>
-                </div>
-            </div>
+    <!-- Footer with Social Links -->
+    <footer>
+        <div class="social-links">
+            <a href="https://www.facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://wa.me/9835124772" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://t.me/yourusername" target="_blank" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
         </div>
-    </div>
+        <div class="contact-info">
+            <i class="fas fa-phone-alt"></i> +91 98351 24772
+        </div>
+    </footer>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
-    <!-- Google Maps API (Replace YOUR_API_KEY) -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMapPlaceholder" async defer></script>
+    <!-- Load Google Maps API -->
+    <!-- *** IMPORTANT: REPLACE 'YOUR_GOOGLE_MAPS_API_KEY' *** -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initMap" async defer></script>
 
     <script>
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
-            authDomain: "mirdhuna-25542.firebaseapp.com",
-            databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
-            projectId: "mirdhuna-25542",
-            storageBucket: "mirdhuna-25542.firebasestorage.app",
-            messagingSenderId: "575924409876",
-            appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
-            measurementId: "G-YB7LDKHBPV"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // --- DOM Elements ---
-        const headerLoginBtn = document.getElementById('header-login-btn');
-        const phoneNumberInput = document.getElementById('phone-number');
-        const loginBtn = document.getElementById('login-btn');
-        const loginMessage = document.getElementById('login-message');
-        const userDisplay = document.getElementById('user-display');
-        const getLocationBtn = document.getElementById('get-location-btn');
-        const locationDisplay = document.getElementById('location-display');
-        const mapDiv = document.getElementById('map');
-        const menuGrid = document.getElementById('menu-grid');
-        const menuLoading = document.getElementById('menu-loading');
-        const cartCount = document.getElementById('cart-count');
-        const cartItemsList = document.getElementById('cart-items');
-        const cartTotalPrice = document.getElementById('cart-total-price');
-        const cartIconHeader = document.getElementById('cart-icon-header');
-
-        // --- Modal Elements ---
-        const loginModal = document.getElementById('login-modal');
-        const cartModal = document.getElementById('cart-modal');
-        const closeModalButtons = document.querySelectorAll('.close-modal');
-        const proceedToOrderBtn = document.getElementById('proceed-to-order-btn');
-
-        // --- State ---
-        let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || [];
-        let userLocation = JSON.parse(localStorage.getItem('mirdhunaUserLocation')) || null;
+        // --- Global Variables ---
         let map;
-        let marker;
-        let menuData = {};
+        let geocoder;
+        let autocomplete;
+        const locationInput = document.getElementById('locationInput');
+        const locationStatus = document.getElementById('locationStatus');
+        const getLocationBtn = document.getElementById('getLocationBtn');
 
-        // --- Modal Functions ---
-        function openModal(modalElement) {
-            document.body.classList.add('modal-open');
-            modalElement.style.display = 'block';
+        // --- Firebase Placeholder ---
+        // You will initialize Firebase here with the provided config
+        /*
+        import { initializeApp } from "firebase/app";
+        import { getDatabase, ref, onValue, push, set } from "firebase/database";
+        const firebaseConfig = { /* ... */ /* };
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        */
+
+
+        // --- Basic Interactions (No Firebase yet) ---
+
+        // Slider Functionality (Enhanced Example)
+        let heroSlideIndex = 0;
+        const heroSlides = document.querySelector('.hero-slides');
+        const totalHeroSlides = document.querySelectorAll('.hero-slide').length;
+
+        function showHeroSlides() {
+            heroSlideIndex = (heroSlideIndex + 1) % totalHeroSlides; // Loop infinitely
+            heroSlides.style.transform = `translateX(${-heroSlideIndex * 20}%)`; // Move by 20% (1/5)
+        }
+        setInterval(showHeroSlides, 5000); // Change slide every 5 seconds
+
+        // Modal Controls
+        const modal = document.getElementById("loginModal");
+        const btn = document.getElementById("openLogin");
+        const span = document.getElementById("closeLogin");
+
+        btn.onclick = function() {
+            modal.style.display = "flex";
         }
 
-        function closeModal(modalElement) {
-            document.body.classList.remove('modal-open');
-            modalElement.style.display = 'none';
+        span.onclick = function() {
+            modal.style.display = "none";
         }
 
         window.onclick = function(event) {
-            if (event.target === loginModal) {
-                closeModal(loginModal);
-            }
-            if (event.target === cartModal) {
-                closeModal(cartModal);
-            }
-        };
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                if (loginModal.style.display === 'block') {
-                    closeModal(loginModal);
-                }
-                if (cartModal.style.display === 'block') {
-                    closeModal(cartModal);
-                }
-            }
-        });
-
-        closeModalButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const modal = button.closest('.modal');
-                if (modal) {
-                    closeModal(modal);
-                }
-            });
-        });
-
-        headerLoginBtn.addEventListener('click', () => openModal(loginModal));
-        cartIconHeader.addEventListener('click', () => {
-            if (cart.length > 0) {
-                openModal(cartModal);
-            } else {
-                alert("Your cart is empty!");
-            }
-        });
-
-        // --- Slideshow Logic ---
-        const sliderContainer = document.getElementById('slider-container');
-        const dotsContainer = document.getElementById('dots-container');
-        const dots = document.querySelectorAll('.dot');
-        let currentSlide = 0;
-
-        function showSlide(index) {
-            sliderContainer.style.transform = `translateX(-${index * 100}%)`;
-            dots.forEach(dot => dot.classList.remove('active'));
-            dots[index].classList.add('active');
-        }
-
-        showSlide(currentSlide);
-
-        dots.forEach(dot => {
-            dot.addEventListener('click', () => {
-                const index = parseInt(dot.dataset.slide);
-                currentSlide = index;
-                showSlide(index);
-            });
-        });
-
-        setInterval(() => {
-            currentSlide = (currentSlide + 1) % dots.length;
-            showSlide(currentSlide);
-        }, 5000);
-
-        // --- Simplified Login & Automatic Location ---
-        function initMapPlaceholder() {}
-
-        loginModal.addEventListener('DOMNodeInserted', function(event) {
-            if (event.target === loginModal && loginModal.style.display === 'block') {
-                attemptAutoLocation();
-            }
-        });
-
-        function attemptAutoLocation() {
-            if (navigator.geolocation) {
-                locationDisplay.textContent = "Detecting location automatically...";
-                locationDisplay.className = "location-display";
-                navigator.geolocation.getCurrentPosition(showPosition, showError, {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 300000
-                });
-            } else {
-                locationDisplay.textContent = "Geolocation not supported. Please enter manually.";
-                locationDisplay.className = "location-display error";
+            if (event.target == modal) {
+                modal.style.display = "none";
             }
         }
 
-        loginBtn.addEventListener('click', () => {
-            const phoneNumber = phoneNumberInput.value.trim();
-            if (!phoneNumber) {
-                showMessage(loginMessage, "Please enter a mobile number.", "error");
-                return;
-            }
-            if (phoneNumber.length < 10) {
-                 showMessage(loginMessage, "Please enter a valid mobile number.", "error");
-                 return;
-            }
-            localStorage.setItem('mirdhunaUserPhone', phoneNumber);
-            if (userLocation) {
-                localStorage.setItem('mirdhunaUserLocation', JSON.stringify(userLocation));
-            }
-            showMessage(loginMessage, "Information updated successfully!", "success");
-            updateUI();
-            setTimeout(() => closeModal(loginModal), 1500);
+        // Placeholder for cart count update
+        document.getElementById('cartCount').innerText = '0';
+
+        // Placeholder for map link
+        document.getElementById('mapLink').addEventListener('click', function(e) {
+             e.preventDefault();
+             alert('Opening Google Maps to our location...');
+             // window.open('https://maps.google.com/?q=Your+Business+Location', '_blank');
         });
 
-        getLocationBtn.addEventListener('click', () => {
-            if (navigator.geolocation) {
-                locationDisplay.textContent = "Finding your location...";
-                locationDisplay.className = "location-display";
-                navigator.geolocation.getCurrentPosition(showPosition, showError);
-            } else {
-                showMessage(loginMessage, "Geolocation is not supported by this browser.", "error");
-            }
+        // Placeholder for reviews link
+        document.getElementById('reviewsLink').addEventListener('click', function(e) {
+             e.preventDefault();
+             alert('Customer reviews section will open here.');
         });
+
+
+        // --- Google Maps Integration ---
+
+        function initMap() {
+            // Initialize Geocoder service
+            geocoder = new google.maps.Geocoder();
+
+            // Initialize Autocomplete for manual typing (optional enhancement)
+            // autocomplete = new google.maps.places.Autocomplete(locationInput);
+            // autocomplete.bindTo('bounds', map); // Bind to map bounds if map object exists
+            // autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                locationStatus.textContent = "Locating...";
+                getLocationBtn.disabled = true;
+                navigator.geolocation.getCurrentPosition(
+                    showPosition,
+                    showError,
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 } // 5 min cache
+                );
+            } else {
+                locationStatus.textContent = "Geolocation is not supported by this browser.";
+                getLocationBtn.disabled = false;
+            }
+        }
 
         function showPosition(position) {
-            userLocation = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            locationDisplay.innerHTML = `<strong>Location Found!</strong><br>Lat: ${userLocation.lat.toFixed(6)}, Lng: ${userLocation.lng.toFixed(6)}`;
-            locationDisplay.className = "location-display success";
-            mapDiv.style.display = 'block';
-            initMap();
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const latlng = { lat: lat, lng: lng };
+
+            if (geocoder) {
+                geocoder.geocode({ location: latlng }, (results, status) => {
+                    if (status === "OK") {
+                        if (results[0]) {
+                            locationInput.value = results[0].formatted_address;
+                            locationStatus.textContent = "Location fetched successfully!";
+                            locationStatus.style.color = "green";
+                        } else {
+                            locationStatus.textContent = "No address found for this location.";
+                            locationStatus.style.color = "orange";
+                        }
+                    } else {
+                        console.error("Geocoder failed due to: " + status);
+                        locationStatus.textContent = "Geocoding failed. Please try again.";
+                        locationStatus.style.color = "red";
+                    }
+                     getLocationBtn.disabled = false;
+                });
+            } else {
+                locationStatus.textContent = "Map services not initialized.";
+                locationStatus.style.color = "red";
+                getLocationBtn.disabled = false;
+            }
         }
 
         function showError(error) {
-            let message = "";
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    message = "Location access denied. Please enable location services or enter manually.";
+                    locationStatus.textContent = "User denied the request for Geolocation.";
                     break;
                 case error.POSITION_UNAVAILABLE:
-                    message = "Location information is unavailable.";
+                    locationStatus.textContent = "Location information is unavailable.";
                     break;
                 case error.TIMEOUT:
-                    message = "The request to get user location timed out.";
+                    locationStatus.textContent = "The request to get user location timed out.";
                     break;
                 case error.UNKNOWN_ERROR:
-                    message = "An unknown error occurred.";
+                    locationStatus.textContent = "An unknown error occurred.";
                     break;
             }
-            locationDisplay.textContent = message;
-            locationDisplay.className = "location-display error";
-            mapDiv.style.display = 'none';
+            locationStatus.style.color = "red";
+            getLocationBtn.disabled = false;
         }
 
-        function initMap() {
-            if (userLocation && typeof google !== 'undefined' && google.maps) {
-                const mapOptions = {
-                    center: userLocation,
-                    zoom: 16,
-                    styles: [
-                        { "featureType": "administrative", "elementType": "labels.text.fill", "stylers": [{ "color": "#444444" }] },
-                        { "featureType": "landscape", "elementType": "all", "stylers": [{ "color": "#f2f2f2" }] },
-                        { "featureType": "poi", "elementType": "all", "stylers": [{ "visibility": "off" }] },
-                        { "featureType": "road", "elementType": "all", "stylers": [{ "saturation": -100 }, { "lightness": 45 }] },
-                        { "featureType": "road.highway", "elementType": "all", "stylers": [{ "visibility": "simplified" }] },
-                        { "featureType": "road.arterial", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] },
-                        { "featureType": "transit", "elementType": "all", "stylers": [{ "visibility": "off" }] },
-                        { "featureType": "water", "elementType": "all", "stylers": [{ "color": "#4ECDC4" }, { "visibility": "on" }] }
-                    ]
-                };
-                map = new google.maps.Map(mapDiv, mapOptions);
-                marker = new google.maps.Marker({
-                    position: userLocation,
-                    map: map,
-                    title: "Your Delivery Location",
-                    icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 10,
-                        fillColor: "#FF6B6B",
-                        fillOpacity: 1,
-                        strokeColor: "#FFFFFF",
-                        strokeWeight: 2
-                    }
-                });
+        // Event listener for the Get Location button
+        getLocationBtn.addEventListener('click', getLocation);
+
+        // Placeholder for login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const mobile = document.getElementById('mobileNumber').value.trim();
+            const location = locationInput.value.trim();
+
+            if (!mobile) {
+                alert("Please enter your mobile number.");
+                return;
             }
-        }
+            if (!location || location === "Fetching your address..." ) {
+                alert("Please get your location first.");
+                return;
+            }
 
-        function showMessage(element, text, type) {
-            element.textContent = text;
-            element.className = type;
-            setTimeout(() => {
-                element.textContent = "";
-                element.className = "";
-            }, 3000);
-        }
+            console.log("Login Attempt - Mobile:", mobile, "Location:", location);
+            // Here you would integrate with Firebase to store user data
+            alert(`Successfully logged in!\nMobile: ${mobile}\nLocation: ${location}`);
+            modal.style.display = "none";
+            // Reset form
+            this.reset();
+            locationInput.value = "Fetching your address...";
+            locationStatus.textContent = "Please click the button to get your location.";
+            locationStatus.style.color = "initial";
+        });
 
-        // --- Firebase Realtime Database - Menu ---
-        function loadMenu() {
-            const menuRef = database.ref('menu');
-            menuRef.on('value', (snapshot) => {
-                menuGrid.innerHTML = '';
-                menuData = {};
-                const data = snapshot.val();
-                if (data) {
-                    menuData = data;
-                    let hasItems = false;
-                    for (const key in data) {
-                        if (data.hasOwnProperty(key)) {
-                            hasItems = true;
-                            const item = data[key];
-                            const menuItem = document.createElement('div');
-                            menuItem.className = 'menu-item';
-                            const imageUrl = item.image && item.image.trim() !== '' ? item.image : 'https://placehold.co/300x200/4ECDC4/FFFFFF?text=Mirdhuna';
-                            menuItem.innerHTML = `
-                                <img src="${imageUrl}" alt="${item.name}" class="item-image" onerror="this.onerror=null; this.src='https://placehold.co/300x200/CCCCCC/969696?text=Image+Not+Found';">
-                                <div class="item-details">
-                                    <div class="item-header">
-                                        <h3 class="item-name">${item.name}</h3>
-                                        <div class="item-price">₹${item.price}</div>
-                                    </div>
-                                    <p class="item-description">${item.description || 'A delicious choice!'}</p>
-                                    <button class="add-to-cart" data-id="${key}" data-name="${item.name}" data-price="${item.price}">
-                                        <i class="fas fa-plus"></i> Add to Cart
-                                    </button>
-                                </div>
-                            `;
-                            menuGrid.appendChild(menuItem);
-                        }
-                    }
-                    if (!hasItems) {
-                        menuGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 40px;">No items available in the menu right now. Please check back later!</p>';
-                    }
-                } else {
-                    menuGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 40px;">Menu is currently empty.</p>';
+
+        // --- Placeholder for Menu Items (Will come from Firebase) ---
+        // This section simulates loading menu data. Replace with Firebase `onValue` listener.
+        function loadMenuItems() {
+            // Simulated data - Replace with data fetched from Firebase
+            const menuItems = [
+                {
+                    id: 'm1',
+                    name: 'Signature Biriyani',
+                    price: 220,
+                    description: 'Fragrant basmati rice cooked with tender meat and exotic spices.',
+                    image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=500'
+                },
+                {
+                    id: 'm2',
+                    name: 'Tandoori Platter',
+                    price: 350,
+                    description: 'Assorted grilled meats marinated in yogurt and spices.',
+                    image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=500'
+                },
+                {
+                    id: 'm3',
+                    name: 'Creamy Pasta',
+                    price: 180,
+                    description: 'Al dente pasta in a rich, creamy sauce with herbs.',
+                    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500'
+                },
+                {
+                    id: 'm4',
+                    name: 'Fresh Garden Salad',
+                    price: 120,
+                    description: 'Crisp greens, seasonal vegetables, and a light vinaigrette.',
+                    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500'
+                },
+                {
+                    id: 'm5',
+                    name: 'Chocolate Lava Cake',
+                    price: 150,
+                    description: 'Warm chocolate cake with a molten center, served with ice cream.',
+                    image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=500'
+                },
+                {
+                    id: 'm6',
+                    name: 'Refreshing Mocktail',
+                    price: 90,
+                    description: 'A blend of fresh fruits and herbs for a delightful drink.',
+                    image: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=500'
                 }
-                menuLoading.style.display = 'none';
-                document.querySelectorAll('.add-to-cart').forEach(button => {
-                    button.addEventListener('click', addToCart);
+            ];
+
+            const menuGrid = document.getElementById('menuGrid');
+            menuGrid.innerHTML = ''; // Clear any existing content
+
+            menuItems.forEach(item => {
+                const menuItemElement = document.createElement('div');
+                menuItemElement.className = 'menu-item';
+                menuItemElement.innerHTML = `
+                    <div class="menu-img-container">
+                        <img src="${item.image}" alt="${item.name}" class="menu-img" loading="lazy">
+                    </div>
+                    <div class="menu-details">
+                        <div class="menu-header">
+                            <h3 class="menu-name">${item.name}</h3>
+                            <div class="menu-price">₹${item.price}</div>
+                        </div>
+                        <p class="menu-description">${item.description}</p>
+                        <button class="add-to-cart" data-id="${item.id}">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </div>
+                `;
+                menuGrid.appendChild(menuItemElement);
+            });
+
+            // Add event listeners to new "Add to Cart" buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const itemId = this.getAttribute('data-id');
+                    console.log("Adding item ID:", itemId);
+                    // Logic to add item to cart (using local storage or Firebase)
+                    alert(`Item added to cart! (ID: ${itemId})`);
+                    // Update cart count
+                    let count = parseInt(document.getElementById('cartCount').innerText) || 0;
+                    document.getElementById('cartCount').innerText = count + 1;
                 });
-            }, (error) => {
-                console.error("Error fetching menu:", error);
-                menuLoading.textContent = "Failed to load menu. Please try again later.";
-                menuLoading.style.color = "#FF6B6B";
             });
         }
 
-        // --- Cart Functionality ---
-        function addToCart(event) {
-             const storedPhone = localStorage.getItem('mirdhunaUserPhone');
-             if (!storedPhone) {
-                 alert("Please login first to add items to your cart.");
-                 openModal(loginModal);
-                 return;
-             }
-
-            const button = event.currentTarget;
-            const id = button.dataset.id;
-            const name = button.dataset.name;
-            const price = parseFloat(button.dataset.price);
-
-            const existingItemIndex = cart.findIndex(item => item.id === id);
-            if (existingItemIndex > -1) {
-                cart[existingItemIndex].quantity += 1;
-            } else {
-                cart.push({ id, name, price, quantity: 1 });
-            }
-            localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
-            updateCartDisplay();
-
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-check"></i> Added!';
-            button.style.background = 'linear-gradient(90deg, #4CAF50, #2E7D32)';
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.style.background = '';
-            }, 1000);
-        }
-
-        function updateCartItemQuantity(index, change) {
-            cart[index].quantity += change;
-            if (cart[index].quantity <= 0) {
-                cart.splice(index, 1);
-            }
-            localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
-            updateCartDisplay();
-            if (cartModal.style.display === 'block') {
-                 displayCartItems();
-            }
-        }
-
-        function removeCartItem(index) {
-             cart.splice(index, 1);
-             localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
-             updateCartDisplay();
-             if (cartModal.style.display === 'block') {
-                 displayCartItems();
-             }
-        }
-
-        function displayCartItems() {
-             cartItemsList.innerHTML = '';
-             if (cart.length > 0) {
-                 cart.forEach((item, index) => {
-                     const li = document.createElement('li');
-                     li.innerHTML = `
-                         <div class="cart-item-info">
-                             <div class="cart-item-name">${item.name}</div>
-                             <div class="cart-item-price">₹${item.price.toFixed(2)} each</div>
-                         </div>
-                         <div class="cart-item-controls">
-                             <button class="quantity-btn decrease-qty" data-index="${index}">-</button>
-                             <span class="item-quantity">${item.quantity}</span>
-                             <button class="quantity-btn increase-qty" data-index="${index}">+</button>
-                             <button class="remove-item" data-index="${index}"><i class="fas fa-trash"></i></button>
-                         </div>
-                     `;
-                     cartItemsList.appendChild(li);
-                 });
-
-                 document.querySelectorAll('.decrease-qty').forEach(btn => {
-                     btn.addEventListener('click', (e) => {
-                         const index = parseInt(e.target.dataset.index);
-                         updateCartItemQuantity(index, -1);
-                     });
-                 });
-
-                 document.querySelectorAll('.increase-qty').forEach(btn => {
-                     btn.addEventListener('click', (e) => {
-                         const index = parseInt(e.target.dataset.index);
-                         updateCartItemQuantity(index, 1);
-                     });
-                 });
-
-                 document.querySelectorAll('.remove-item').forEach(btn => {
-                     btn.addEventListener('click', (e) => {
-                         const index = parseInt(e.target.dataset.index);
-                         removeCartItem(index);
-                     });
-                 });
-
-             } else {
-                 cartItemsList.innerHTML = '<li style="text-align:center; padding: 20px;">Your cart is empty.</li>';
-                 proceedToOrderBtn.disabled = true;
-             }
-        }
-
-        function updateCartDisplay() {
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-            cartCount.textContent = totalItems;
-            cartTotalPrice.textContent = totalPrice.toFixed(2);
-
-            // Update modal total if it's open
-            if (cartModal.style.display === 'block') {
-                document.getElementById('cart-total-price').textContent = totalPrice.toFixed(2);
-                proceedToOrderBtn.disabled = (totalItems === 0);
-            }
-
-            // If cart becomes empty, close the modal
-            if (totalItems === 0 && cartModal.style.display === 'block') {
-                 closeModal(cartModal);
-            }
-        }
-
-        // --- UI Update based on State ---
-        function updateUI() {
-            const storedPhone = localStorage.getItem('mirdhunaUserPhone');
-            if (storedPhone) {
-                const lastFour = storedPhone.slice(-4);
-                userDisplay.innerHTML = `Hi, <span>+91 XXXXXX${lastFour}</span>!`;
-                headerLoginBtn.style.display = 'none';
-            } else {
-                userDisplay.textContent = "Welcome, Guest!";
-                headerLoginBtn.style.display = 'inline-flex';
-            }
-            updateCartDisplay();
-            displayCartItems(); // Update modal content
-
-            if (userLocation) {
-                locationDisplay.innerHTML = `<strong>Stored Location:</strong><br>Lat: ${userLocation.lat.toFixed(6)}, Lng: ${userLocation.lng.toFixed(6)}`;
-                locationDisplay.className = "location-display success";
-                mapDiv.style.display = 'block';
-                setTimeout(initMap, 100);
-            }
-        }
-
-        // --- Initialize ---
+        // Load menu items when the page loads (or when Firebase data is ready)
         window.onload = function() {
-            updateUI();
-            loadMenu();
-
-            if (typeof google === 'undefined' || !google.maps) {
-                console.log("Google Maps script might still be loading or failed.");
-            }
+            loadMenuItems();
         };
+
     </script>
+
 </body>
 </html>
