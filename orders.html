@@ -261,7 +261,7 @@
                          <option value="all">All</option>
                          <option value="Pending">Pending</option>
                          <option value="Preparing">Preparing</option>
-                         <option value="Completed">Completed</option>
+                         <option value="Delivered">Delivered</option> <!-- Updated based on screenshot -->
                      </select>
                  </div>
                  <div class="control-group">
@@ -273,8 +273,8 @@
                      <input type="date" id="filter-date-to">
                  </div>
                  <div class="control-group">
-                     <label for="search-order">Search (Mobile):</label>
-                     <input type="text" id="search-order" placeholder="Enter mobile number">
+                     <label for="search-order">Search (Order ID/Mobile):</label> <!-- Updated placeholder -->
+                     <input type="text" id="search-order" placeholder="Enter Order ID or Mobile">
                  </div>
                  <button id="apply-filters-btn">Apply Filters</button>
                  <button id="clear-filters-btn">Clear</button>
@@ -296,7 +296,8 @@
                     <thead>
                         <tr>
                             <th><input type="checkbox" id="select-all-checkbox"></th> <!-- Select All Checkbox -->
-                            <th data-sort="orderId">Order ID (Mobile) <span class="sort-indicator"></span></th>
+                            <th data-sort="orderId">Order ID <span class="sort-indicator"></span></th> <!-- Updated header -->
+                            <th data-sort="userMobile">User Mobile <span class="sort-indicator"></span></th> <!-- New column header -->
                             <th data-sort="timestamp">Timestamp <span class="sort-indicator"></span></th>
                             <th data-sort="totalValue">Total Value <span class="sort-indicator"></span></th>
                             <th>Items Ordered</th>
@@ -406,7 +407,7 @@
                 applyFilters(); // Apply current filters/sort on new data
             }, (error) => {
                  console.error("Error fetching orders:", error);
-                 document.querySelector('#orders-table tbody').innerHTML = `<tr><td colspan="7">Error loading orders: ${error.message || 'Permission denied or network issue.'}</td></tr>`;
+                 document.querySelector('#orders-table tbody').innerHTML = `<tr><td colspan="8">Error loading orders: ${error.message || 'Permission denied or network issue.'}</td></tr>`; // Updated colspan
                  updateOrdersCount(0);
             });
         }
@@ -420,7 +421,7 @@
 
              filteredOrders = {};
 
-             for (const orderId in allOrders) { // orderId IS the mobile number
+             for (const orderId in allOrders) {
                  if (allOrders.hasOwnProperty(orderId)) {
                      const order = allOrders[orderId];
                      let includeOrder = true;
@@ -445,9 +446,13 @@
                          }
                      }
 
-                     // 3. Search Filter (Order ID / Mobile Number)
-                     if (includeOrder && searchTerm && !orderId.toLowerCase().includes(searchTerm)) {
-                         includeOrder = false;
+                     // 3. Search Filter (Order ID or User Mobile Number)
+                     if (includeOrder && searchTerm) {
+                         const matchesOrderId = orderId.toLowerCase().includes(searchTerm);
+                         const matchesMobile = order.userMobile && order.userMobile.toLowerCase().includes(searchTerm);
+                         if (!matchesOrderId && !matchesMobile) {
+                             includeOrder = false;
+                         }
                      }
 
                      if (includeOrder) {
@@ -486,6 +491,10 @@
                     case 'orderId':
                         valueA = idA;
                         valueB = idB;
+                        break;
+                    case 'userMobile': // Sort by userMobile
+                        valueA = orderA.userMobile || '';
+                        valueB = orderB.userMobile || '';
                         break;
                     case 'timestamp':
                         // Handle potential missing or invalid timestamps
@@ -566,12 +575,12 @@
             updateOrdersCount(orderIds.length);
 
             if (orderIds.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7">No orders found matching the criteria.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="8">No orders found matching the criteria.</td></tr>'; // Updated colspan
                 updateBulkDeleteButton(); // Ensure button state is correct
                 return;
             }
 
-            orderIds.forEach(orderId => { // orderId IS the mobile number
+            orderIds.forEach(orderId => {
                  const order = filteredOrders[orderId];
                  const row = document.createElement('tr');
                  row.setAttribute('data-order-id', orderId); // Add data attribute for easy lookup
@@ -614,33 +623,13 @@
                       itemsListShort.push('No items');
                  }
 
-                 // --- Format Location Data for Table ---
-                 let locationDisplay = 'N/A';
-                 if (order.location) {
-                     // Check if location is an object with lat/lng (from coordinates)
-                     if (typeof order.location === 'object' &&
-                         order.location.latitude !== undefined &&
-                         order.location.longitude !== undefined) {
-                         locationDisplay = `
-                             <div id="map-placeholder">Map View</div>
-                             <small>Lat: ${parseFloat(order.location.latitude).toFixed(4)}, Lng: ${parseFloat(order.location.longitude).toFixed(4)}</small>
-                         `;
-                     }
-                     // Check if location is a string (e.g., address)
-                     else if (typeof order.location === 'string') {
-                         locationDisplay = `<small>${order.location}</small>`;
-                     }
-                     // Handle other potential formats or just show the raw data
-                     else {
-                         locationDisplay = `<small>${JSON.stringify(order.location)}</small>`;
-                     }
-                 }
-
                  const formattedTime = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
+                 const userMobile = order.userMobile || 'N/A'; // Get user mobile
 
                  row.innerHTML = `
                     <td><input type="checkbox" class="order-checkbox" data-order-id="${orderId}"></td>
-                    <td>${orderId}</td> <!-- orderId is the mobile number -->
+                    <td>${orderId}</td> <!-- Display Firebase-generated Order ID -->
+                    <td>${userMobile}</td> <!-- Display User Mobile Number -->
                     <td>${formattedTime}</td>
                     <td>₹${totalValue.toFixed(2)}</td>
                     <td>
@@ -651,7 +640,7 @@
                         <select class="status-select" data-order-id="${orderId}">
                             <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
                             <option value="Preparing" ${order.status === 'Preparing' ? 'selected' : ''}>Preparing</option>
-                            <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option> <!-- Updated -->
                         </select>
                         <button class="btn btn-primary update-status-btn" data-order-id="${orderId}">Update</button>
                     </td>
@@ -666,25 +655,25 @@
             // Add event listeners to the newly created buttons/checkboxes
             document.querySelectorAll('.update-status-btn').forEach(button => {
                 button.addEventListener('click', function() {
-                    const orderId = this.getAttribute('data-order-id'); // orderId is the mobile number
+                    const orderId = this.getAttribute('data-order-id');
                     updateOrderStatus(orderId);
                 });
             });
             document.querySelectorAll('.print-btn').forEach(button => {
                  button.addEventListener('click', function() {
-                     const orderId = this.getAttribute('data-order-id'); // orderId is the mobile number
+                     const orderId = this.getAttribute('data-order-id');
                      printOrder(orderId);
                  });
             });
             document.querySelectorAll('.delete-order-btn').forEach(button => {
                 button.addEventListener('click', function() {
-                    const orderId = this.getAttribute('data-order-id'); // orderId is the mobile number
+                    const orderId = this.getAttribute('data-order-id');
                     deleteOrder(orderId);
                 });
             });
             document.querySelectorAll('.view-details-btn').forEach(button => {
                  button.addEventListener('click', function() {
-                     const orderId = this.getAttribute('data-order-id'); // orderId is the mobile number
+                     const orderId = this.getAttribute('data-order-id');
                      showOrderDetails(orderId);
                  });
             });
@@ -699,7 +688,7 @@
         }
 
         // --- CRUD Functions ---
-        function updateOrderStatus(orderId) { // orderId is the mobile number
+        function updateOrderStatus(orderId) {
             const selectElement = document.querySelector(`.status-select[data-order-id="${orderId}"]`);
             if (!selectElement) {
                  console.error("Status select element not found for order:", orderId);
@@ -707,7 +696,7 @@
             }
             const newStatus = selectElement.value;
 
-            // Update the database using the mobile number (orderId) as the key
+            // Update the database using the Firebase-generated order ID as the key
             database.ref(`orders/${orderId}`).update({ status: newStatus })
                 .then(() => {
                      console.log(`Order ${orderId} status updated to ${newStatus}`);
@@ -717,8 +706,6 @@
                      }
                      // Re-apply filters/sort as status might affect them
                      applyFilters();
-                     // Optional: Provide feedback
-                     // alert(`Order ${orderId} status updated to ${newStatus}`);
                 })
                 .catch((error) => {
                     console.error("Error updating order status:", orderId, error);
@@ -726,12 +713,12 @@
                 });
         }
 
-        function printOrder(orderId) { // orderId is the mobile number
-            // Fetch the specific order data using the mobile number (orderId)
+        function printOrder(orderId) {
+            // Fetch the specific order data using the Firebase-generated order ID
             const orderRef = database.ref('orders/' + orderId);
             orderRef.once('value')
                 .then((snapshot) => {
-                    const orderData = snapshot.val(); // Use orderData for clarity
+                    const orderData = snapshot.val();
 
                     if (!orderData) {
                         alert(`Order data for ${orderId} not found.`);
@@ -762,19 +749,7 @@
                     }
 
                     const formattedTime = orderData.timestamp ? new Date(orderData.timestamp).toLocaleString() : 'N/A';
-                    // Format location for print receipt
-                    let userLocation = 'N/A';
-                    if (orderData.location) {
-                        if (typeof orderData.location === 'object' &&
-                            orderData.location.latitude !== undefined &&
-                            orderData.location.longitude !== undefined) {
-                            userLocation = `Lat: ${parseFloat(orderData.location.latitude).toFixed(4)}, Lng: ${parseFloat(orderData.location.longitude).toFixed(4)}`;
-                        } else if (typeof orderData.location === 'string') {
-                            userLocation = orderData.location;
-                        } else {
-                            userLocation = JSON.stringify(orderData.location);
-                        }
-                    }
+                    const userMobile = orderData.userMobile || 'N/A';
                     const status = orderData.status || 'N/A';
 
                     const printContent = `
@@ -802,9 +777,9 @@
                             <h2>Mirdhuna - Order Receipt</h2>
                         </div>
                         <div class="order-details">
-                            <p><strong>Order ID (Mobile):</strong> ${orderId}</p>
+                            <p><strong>Order ID:</strong> ${orderId}</p>
+                            <p><strong>User Mobile:</strong> ${userMobile}</p>
                             <p><strong>Order Timestamp:</strong> ${formattedTime}</p>
-                            <p><strong>User Location:</strong> ${userLocation}</p>
                             <p><strong>Status:</strong> ${status}</p>
                         </div>
                         <table class="items-table">
@@ -846,12 +821,12 @@
                 });
         }
 
-        function deleteOrder(orderId) { // orderId is the mobile number
+        function deleteOrder(orderId) {
              if (!confirm(`Are you sure you want to permanently delete Order ID: ${orderId}?`)) {
                 return;
             }
 
-            // Reference the specific order in the database using the mobile number (orderId)
+            // Reference the specific order in the database using the Firebase-generated order ID
             const orderRef = database.ref(`orders/${orderId}`);
             orderRef.remove()
                 .then(() => {
@@ -869,8 +844,8 @@
         }
 
         // --- Order Details Modal ---
-        function showOrderDetails(orderId) { // orderId is the mobile number
-            const order = allOrders[orderId]; // Get from full data using mobile number
+        function showOrderDetails(orderId) {
+            const order = allOrders[orderId]; // Get from full data
             if (!order) {
                 alert("Order details not found.");
                 return;
@@ -924,28 +899,15 @@
                 itemsHtml = "<p>No items found for this order.</p>";
             }
 
-            // --- Format location for modal ---
-            let userLocation = 'N/A';
-            if (order.location) {
-                if (typeof order.location === 'object' &&
-                    order.location.latitude !== undefined &&
-                    order.location.longitude !== undefined) {
-                    userLocation = `Lat: ${parseFloat(order.location.latitude).toFixed(4)}, Lng: ${parseFloat(order.location.longitude).toFixed(4)}`;
-                } else if (typeof order.location === 'string') {
-                    userLocation = order.location;
-                } else {
-                    userLocation = JSON.stringify(order.location);
-                }
-            }
-
             const formattedTime = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
+            const userMobile = order.userMobile || 'N/A';
             const status = order.status || 'N/A';
 
             modalContent.innerHTML = `
-                <div class="order-detail-item"><span class="order-detail-label">Order ID (Mobile):</span> ${orderId}</div>
+                <div class="order-detail-item"><span class="order-detail-label">Order ID:</span> ${orderId}</div>
+                <div class="order-detail-item"><span class="order-detail-label">User Mobile:</span> ${userMobile}</div>
                 <div class="order-detail-item"><span class="order-detail-label">Timestamp:</span> ${formattedTime}</div>
                 <div class="order-detail-item"><span class="order-detail-label">Status:</span> ${status}</div>
-                <div class="order-detail-item"><span class="order-detail-label">Location:</span> ${userLocation}</div>
                 <div class="order-detail-item"><span class="order-detail-label">Items Ordered:</span></div>
                 ${itemsHtml}
                 <div style="margin-top: 20px; text-align: right;">
@@ -957,10 +919,10 @@
             modal.style.display = "block";
 
             // Add event listeners for buttons inside the modal
-            modalContent.querySelector('.print-btn-modal').addEventListener('click', () => printOrder(orderId)); // Use mobile number
+            modalContent.querySelector('.print-btn-modal').addEventListener('click', () => printOrder(orderId));
             modalContent.querySelector('.delete-order-btn-modal').addEventListener('click', () => {
                  modal.style.display = "none"; // Close modal first
-                 setTimeout(() => deleteOrder(orderId), 100); // Slight delay to ensure modal closes, use mobile number
+                 setTimeout(() => deleteOrder(orderId), 100); // Slight delay to ensure modal closes
             });
         }
 
@@ -993,7 +955,7 @@
 
         function bulkDeleteOrders() {
              const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
-             const orderIdsToDelete = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-order-id')); // These are mobile numbers
+             const orderIdsToDelete = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-order-id'));
 
              if (orderIdsToDelete.length === 0) {
                  alert("No orders selected for deletion.");
@@ -1006,9 +968,9 @@
 
              // Use a Promise chain or batch to handle multiple deletes
              const deletePromises = orderIdsToDelete.map(orderId =>
-                 database.ref(`orders/${orderId}`).remove().then(() => { // Use mobile number
+                 database.ref(`orders/${orderId}`).remove().then(() => {
                      console.log(`Order ${orderId} deleted (bulk).`);
-                     delete allOrders[orderId]; // Remove from local cache using mobile number
+                     delete allOrders[orderId]; // Remove from local cache
                  }).catch(err => {
                      console.error(`Error deleting order ${orderId} (bulk):`, err);
                      throw err; // Re-throw to catch in final .catch
@@ -1042,11 +1004,11 @@
                 return;
             }
 
-            let csvContent = "text/csv;charset=utf-8,";
+            let csvContent = "data:text/csv;charset=utf-8,";
             // Add CSV header
-            csvContent += "Order ID (Mobile),Timestamp,Total Value,Status,Items\n";
+            csvContent += "Order ID,User Mobile,Timestamp,Total Value,Status,Items\n";
 
-            orderIds.forEach(orderId => { // orderId is the mobile number
+            orderIds.forEach(orderId => {
                 const order = filteredOrders[orderId];
                 let totalValue = 0;
                 let itemsList = [];
@@ -1063,23 +1025,11 @@
                     }
                 }
                 const formattedTime = order.timestamp ? `"${new Date(order.timestamp).toLocaleString()}"` : 'N/A'; // Quote timestamp
-                // Format location for CSV export
-                let locationString = 'N/A';
-                 if (order.location) {
-                     if (typeof order.location === 'object' &&
-                         order.location.latitude !== undefined &&
-                         order.location.longitude !== undefined) {
-                         locationString = `Lat: ${parseFloat(order.location.latitude).toFixed(4)}, Lng: ${parseFloat(order.location.longitude).toFixed(4)}`;
-                     } else if (typeof order.location === 'string') {
-                         locationString = order.location;
-                     } else {
-                         locationString = JSON.stringify(order.location);
-                     }
-                 }
-                 const itemsString = `"${itemsList.join(' | ')} | Location: ${locationString}"`; // Quote items list to handle commas
+                const userMobile = order.userMobile || 'N/A';
+                const itemsString = `"${itemsList.join(' | ')}"`; // Quote items list to handle commas
 
                 // Add data row
-                csvContent += `${orderId},${formattedTime},${totalValue.toFixed(2)},${order.status || 'N/A'},${itemsString}\n`;
+                csvContent += `${orderId},${userMobile},${formattedTime},${totalValue.toFixed(2)},${order.status || 'N/A'},${itemsString}\n`;
             });
 
             const encodedUri = encodeURI(csvContent);
