@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slider Management - Mirdhuna Admin</title>
-    <!-- Include Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <title>Slider Management - Mirdhuna (REST API)</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -56,8 +52,21 @@
             background-color: var(--primary); color: white;
             padding: 15px; text-align: center;
             margin-bottom: 20px; border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         header h1 { margin: 0; font-size: 1.4rem; }
+        #logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        #logout-btn:hover { background-color: #c0392b; }
 
         .section {
             background: white; margin-bottom: 20px;
@@ -78,7 +87,6 @@
             border: 1px solid var(--border); border-radius: 4px;
             box-sizing: border-box; font-size: 1rem;
         }
-        /* Removed styling for file input type as it's not used */
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
         th, td { border: 1px solid var(--border); padding: 10px 8px; text-align: left; word-wrap: break-word; }
@@ -93,31 +101,27 @@
         .btn-success { background-color: var(--success); color: white; }
         .btn-danger { background-color: var(--danger); color: white; }
 
-        /* Progress bar styles removed as upload is no longer used */
-        /*
-        .upload-progress {
-            width: 100%; height: 15px;
-            background-color: #f0f0f0; border-radius: 10px;
-            overflow: hidden; margin-top: 10px; display: none;
-        }
-        .upload-progress-bar {
-            height: 100%; background-color: var(--success);
-            width: 0%; transition: width 0.3s ease;
-        }
-        */
-
         .table-container { overflow-x: auto; margin: 10px 0; }
         table { min-width: 600px; }
 
         /* --- Image Display Fixes --- */
         .slider-image {
-            width: 100px; /* Set a fixed width */
-            height: 75px; /* Set a fixed height */
-            object-fit: cover; /* Ensures image covers the area without distortion */
+            width: 100px;
+            height: 75px;
+            object-fit: cover;
             border-radius: 4px;
-            display: block; /* Ensures proper layout */
-            margin: 0 auto; /* Centers the image if needed */
+            display: block;
+            margin: 0 auto;
         }
+
+        #status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: none;
+        }
+        .status-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
         @media (min-width: 768px) {
             #login-form { padding: 30px; }
@@ -129,10 +133,7 @@
             th, td { padding: 12px 15px; }
             .btn { padding: 6px 12px; font-size: 0.9rem; }
             .form-control { font-size: 1rem; }
-            .slider-image {
-                 width: 150px;
-                 height: 100px;
-            }
+            .slider-image { width: 150px; height: 100px; }
         }
         @media (min-width: 1024px) {
             #slider-content { max-width: 1200px; padding: 20px; }
@@ -153,29 +154,27 @@
 
     <!-- Main Slide Management Content -->
     <div id="slider-content">
-        <header><h1>Mirdhuna Slide Management</h1></header>
+        <header>
+            <h1>Mirdhuna Slide Management (REST API)</h1>
+            <button id="logout-btn">Logout</button>
+        </header>
 
-        <!-- Add New Slide Section (Modified for URL Input) -->
+        <!-- Status Message Area -->
+        <div id="status-message"></div>
+
+        <!-- Add New Slide Section -->
         <div class="section">
             <div class="section-header">Add New Slide</div>
             <div class="section-content">
-                <!-- Replaced file upload with URL input -->
                 <div class="form-group">
                     <label for="new-slider-image-url">Image URL:</label>
-                    <input type="url" id="new-slider-image-url" class="form-control" placeholder="Enter the full image URL (e.g., https://example.com/image.jpg)" required>
-                    <small>Provide a direct link to the image you want to use.</small>
+                    <input type="url" id="new-slider-image-url" class="form-control" placeholder="Enter the full image URL..." required>
                 </div>
                 <div class="form-group">
                     <label for="new-slider-text">Text Description:</label>
                     <textarea id="new-slider-text" class="form-control" placeholder="Enter slide text..." rows="3" required></textarea>
                 </div>
                 <button class="btn btn-success" id="add-slider-btn">Add Slide</button>
-                <!-- Removed upload progress bar as it's not needed -->
-                <!--
-                <div class="upload-progress" id="slider-upload-progress">
-                    <div class="upload-progress-bar" id="slider-progress-bar"></div>
-                </div>
-                -->
             </div>
         </div>
 
@@ -183,6 +182,7 @@
         <div class="section">
             <div class="section-header">Existing Slides</div>
             <div class="section-content">
+                <button class="btn btn-primary" id="refresh-slides-btn">Refresh Slides</button>
                 <div class="table-container">
                 <table id="slides-table">
                     <thead><tr>
@@ -197,165 +197,207 @@
 
     <script>
         // --- Firebase Configuration ---
-        // IMPORTANT: Ensure databaseURL does NOT have trailing spaces!
-        const firebaseConfig = {
+        const FIREBASE_CONFIG = {
             apiKey: "AIzaSyB0sVoG5VdOxmk4ZM5m837pN2uQ3XfRwZw",
-            authDomain: "mirdhuna-25542.firebaseapp.com",
-            databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com", // Removed trailing space
-            projectId: "mirdhuna-25542",
-            storageBucket: "mirdhuna-25542.appspot.com",
-            messagingSenderId: "1078913123456",
-            appId: "1:1078913123456:web:placeholder",
-            measurementId: "G-XXXXXXXXXX"
+            databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com"
         };
+        const DATABASE_URL = FIREBASE_CONFIG.databaseURL;
+        const SLIDER_PATH = "slider";
+        const ADMIN_PASSWORD = "Sanu.0000"; // Hardcoded password for simplicity
 
-        // --- Initialize Firebase ---
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+        // --- DOM Elements ---
+        const loginOverlay = document.getElementById('login-overlay');
+        const sliderContent = document.getElementById('slider-content');
+        const statusMessage = document.getElementById('status-message');
+        const slidesTableBody = document.querySelector('#slides-table tbody');
+
+        // --- Utility Functions ---
+        function showStatus(message, isSuccess = true) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-${isSuccess ? 'success' : 'error'}`;
+            statusMessage.style.display = 'block';
+            setTimeout(() => { statusMessage.style.display = 'none'; }, 5000); // Hide after 5 seconds
         }
-        const database = firebase.database();
-        // const storage = firebase.storage(); // No longer needed for URL input
 
-        // --- Login Logic ---
-        document.getElementById('login-btn').addEventListener('click', checkPassword);
-        document.getElementById('admin-password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') checkPassword();
-        });
+        function generatePlaceholderImage() {
+             return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiB2aWV3Qm94PSIwIDAgMTAwIDc1IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiBmaWxsPSIjRUJFQkVCIi8+CjxwYXRoIGQ9Ik01MCAyNUM1NS41MjI4IDI1IDYwIDI5LjQ3NzIgNjAgMzVDMTUgNDUgODQgNDUgNTAgNTVDMzQuNDc3MiA0NSAzMCA0MC41MjI4IDMwIDM1QzMwIDI5LjQ3NzIgMzQuNDc3MiAyNSA0MCAyNVoiIHN0cm9rZT0iIzk5OSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=';
+        }
 
-        function checkPassword() {
-            const password = document.getElementById('admin-password').value;
-            const messageElement = document.getElementById('login-message');
-            if (password === 'Sanu.0000') {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('slider-content').style.display = 'block';
-                fetchSlides(); // Start fetching data after login
-            } else {
-                messageElement.textContent = 'Incorrect password.';
+        // --- Firebase REST API Interaction Functions ---
+        async function fetchSlides() {
+            try {
+                const response = await fetch(`${DATABASE_URL}/${SLIDER_PATH}.json`);
+                if (!response.ok) {
+                     if(response.status === 401 || response.status === 403) {
+                         throw new Error("Permission denied. Check database rules.");
+                     }
+                     throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                displaySlides(data);
+            } catch (error) {
+                console.error("Error fetching slides:", error);
+                slidesTableBody.innerHTML = `<tr><td colspan="3">Error loading slides: ${error.message}</td></tr>`;
+                showStatus(`Error fetching slides: ${error.message}`, false);
             }
         }
 
-        // --- Fetch and Display Slides ---
-        function fetchSlides() {
-            const slidesRef = database.ref('slider');
-            slidesRef.on('value', (snapshot) => {
-                const slides = snapshot.val();
-                const tableBody = document.querySelector('#slides-table tbody');
-                tableBody.innerHTML = '';
+        function displaySlides(slidesData) {
+            slidesTableBody.innerHTML = '';
 
-                if (!slides) {
-                    tableBody.innerHTML = '<tr><td colspan="3">No slides found.</td></tr>';
-                    return;
+            if (!slidesData) {
+                slidesTableBody.innerHTML = '<tr><td colspan="3">No slides found.</td></tr>';
+                return;
+            }
+
+            // Iterate through the object properties (each key is a slide ID)
+            for (const slideId in slidesData) {
+                if (slidesData.hasOwnProperty(slideId)) {
+                    const slide = slidesData[slideId];
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td><img src="${slide.url || generatePlaceholderImage()}" alt="Slide Image" class="slider-image" onerror="this.onerror=null; this.src='${generatePlaceholderImage()}';"></td>
+                        <td>${slide.text || ''}</td>
+                        <td>
+                            <button class="btn btn-danger delete-slider-btn" data-slide-id="${slideId}">Delete</button>
+                        </td>
+                    `;
+                    slidesTableBody.appendChild(row);
                 }
+            }
 
-                for (const slideId in slides) {
-                    if (slides.hasOwnProperty(slideId)) {
-                        const slide = slides[slideId];
-                        const row = document.createElement('tr');
-
-                        // Use the new CSS class 'slider-image' for consistent sizing
-                        row.innerHTML = `
-                            <td><img src="${slide.url || ''}" alt="Slide Image" class="slider-image" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiB2aWV3Qm94PSIwIDAgMTAwIDc1IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9Ijc1IiBmaWxsPSIjRUJFQkVCIi8+CjxwYXRoIGQ9Ik01MCAyNUM1NS41MjI4IDI1IDYwIDI5LjQ3NzIgNjAgMzVDMTUgNDUgODQgNDUgNTAgNTVDMzQuNDc3MiA0NSAzMCA0MC41MjI4IDMwIDM1QzMwIDI5LjQ3NzIgMzQuNDc3MiAyNSA0MCAyNVoiIHN0cm9rZT0iIzk5OSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=';"></td>
-                            <td>${slide.text || ''}</td>
-                            <td>
-                                <button class="btn btn-danger delete-slider-btn" data-slide-id="${slideId}">Delete</button>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    }
-                }
-
-                // Add event listeners to the newly created delete buttons
-                document.querySelectorAll('.delete-slider-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const slideId = this.getAttribute('data-slide-id');
-                        deleteSlide(slideId);
-                    });
+            // Add event listeners to the newly created delete buttons
+            document.querySelectorAll('.delete-slider-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const slideId = this.getAttribute('data-slide-id');
+                    deleteSlide(slideId);
                 });
-
-            }, (error) => {
-                 console.error("Error fetching slides:", error);
-                 document.querySelector('#slides-table tbody').innerHTML = `<tr><td colspan="3">Error loading slides: ${error.message || 'Permission denied or network issue.'}</td></tr>`;
             });
         }
 
-        // --- Add New Slide (Modified for URL Input) ---
-        document.getElementById('add-slider-btn').addEventListener('click', addSlide);
 
-        function addSlide() {
-            // Get the URL input value
+        async function addSlide(imageUrl, text) {
+            try {
+                 const newSlideData = { url: imageUrl, text: text };
+                 const response = await fetch(`${DATABASE_URL}/${SLIDER_PATH}.json`, {
+                     method: 'POST', // Firebase REST API uses POST to generate a unique key
+                     headers: {
+                         'Content-Type': 'application/json'
+                         // No auth header needed if rules allow unauthenticated write
+                         // If using auth, you'd add it here, e.g., 'Authorization': `Bearer ${idToken}`
+                     },
+                     body: JSON.stringify(newSlideData)
+                 });
+
+                 if (!response.ok) {
+                     if(response.status === 401 || response.status === 403) {
+                         throw new Error("Permission denied. Cannot add slide.");
+                     }
+                     throw new Error(`HTTP error! status: ${response.status}`);
+                 }
+
+                 const responseData = await response.json();
+                 console.log("Slide added successfully with ID:", responseData.name); // Firebase returns the key in .name
+                 showStatus("Slide added successfully!");
+                 document.getElementById('new-slider-image-url').value = '';
+                 document.getElementById('new-slider-text').value = '';
+                 fetchSlides(); // Refresh the list
+
+            } catch (error) {
+                console.error("Error adding slide:", error);
+                showStatus(`Error adding slide: ${error.message}`, false);
+            }
+        }
+
+        async function deleteSlide(slideId) {
+             if (!confirm(`Are you sure you want to permanently delete this slide (ID: ${slideId})?`)) {
+                return;
+             }
+
+             try {
+                 const response = await fetch(`${DATABASE_URL}/${SLIDER_PATH}/${slideId}.json`, {
+                     method: 'DELETE',
+                     headers: {
+                         'Content-Type': 'application/json'
+                         // No auth header needed if rules allow unauthenticated write
+                         // If using auth, you'd add it here
+                     }
+                 });
+
+                 if (!response.ok) {
+                     if(response.status === 401 || response.status === 403) {
+                         throw new Error("Permission denied. Cannot delete slide.");
+                     }
+                     throw new Error(`HTTP error! status: ${response.status}`);
+                 }
+
+                 console.log(`Slide ${slideId} deleted successfully.`);
+                 showStatus("Slide deleted successfully.");
+                 fetchSlides(); // Refresh the list
+
+             } catch (error) {
+                 console.error("Error deleting slide:", error);
+                 showStatus(`Error deleting slide: ${error.message}`, false);
+             }
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const password = document.getElementById('admin-password').value;
+            const messageElement = document.getElementById('login-message');
+            if (password === ADMIN_PASSWORD) {
+                loginOverlay.style.display = 'none';
+                sliderContent.style.display = 'block';
+                fetchSlides(); // Load slides on login
+            } else {
+                messageElement.textContent = 'Incorrect password.';
+            }
+        });
+
+        document.getElementById('admin-password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('login-btn').click();
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+             sliderContent.style.display = 'none';
+             loginOverlay.style.display = 'flex'; // Show login again
+             document.getElementById('admin-password').value = '';
+             document.getElementById('login-message').textContent = '';
+             slidesTableBody.innerHTML = ''; // Clear displayed slides
+        });
+
+        document.getElementById('add-slider-btn').addEventListener('click', () => {
             const urlInput = document.getElementById('new-slider-image-url');
-            const imageUrl = urlInput.value.trim(); // Get the URL string
-
-            // Get the text input value
             const textInput = document.getElementById('new-slider-text');
+            const imageUrl = urlInput.value.trim();
             const text = textInput.value.trim();
 
-            // Validation
             if (!imageUrl) {
                 alert("Please enter an Image URL.");
                 urlInput.focus();
                 return;
             }
-            // Basic URL validation (HTML5 'type="url"' helps, but extra check is good)
-            try {
-                new URL(imageUrl); // This will throw an error if the URL is invalid
-            } catch (e) {
+            try { new URL(imageUrl); } catch (e) {
                  alert("Please enter a valid Image URL.");
                  urlInput.focus();
                  return;
             }
-
             if (!text) {
                 alert("Please enter a Text Description.");
                 textInput.focus();
                 return;
             }
 
+            addSlide(imageUrl, text);
+        });
 
-            // Save data directly to the database using the provided URL
-            const newSlideRef = database.ref('slider').push();
-            newSlideRef.set({
-                url: imageUrl, // Use the provided URL
-                text: text
-            })
-            .then(() => {
-                console.log("Slide data (URL) saved to database.");
-                // Clear form fields on success
-                urlInput.value = '';
-                textInput.value = '';
-                alert("Slide added successfully using the provided URL!");
-            })
-            .catch((error) => {
-                console.error("Error saving slide with URL:", error);
-                alert("Failed to add slide: " + (error.message || error.code));
-                // Optionally, clear fields on error too
-                // urlInput.value = '';
-                // textInput.value = '';
-            });
-        }
+        document.getElementById('refresh-slides-btn').addEventListener('click', fetchSlides);
 
-
-        // --- Delete Slide (Unchanged) ---
-        function deleteSlide(slideId) {
-             if (!confirm(`Are you sure you want to permanently delete this slide?`)) {
-                return; // If user clicks 'Cancel', do nothing
-            }
-
-            // Reference the specific slide in the database
-            const slideRef = database.ref(`slider/${slideId}`);
-
-            // Remove the slide data from the database
-            slideRef.remove()
-                .then(() => {
-                    console.log(`Slide ${slideId} deleted successfully.`);
-                    alert(`Slide has been deleted.`);
-                    // Note: The UI will automatically update due to the .on('value') listener in fetchSlides
-                })
-                .catch((error) => {
-                    console.error("Error deleting slide:", error);
-                    alert("Failed to delete slide. Please try again.");
-                });
-        }
+        // --- Initial State ---
+        // Ensure login is shown initially
+        loginOverlay.style.display = 'flex';
+        sliderContent.style.display = 'none';
     </script>
 </body>
-    </html>
+</html>
