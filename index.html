@@ -147,12 +147,13 @@
 
         .hero-slides {
             display: flex;
-            width: 500%;
+            width: 100%;
             height: 100%;
+            transition: transform 0.5s ease-in-out;
         }
 
         .hero-slide {
-            min-width: 20%;
+            min-width: 100%;
             height: 100%;
             background-size: cover;
             background-position: center;
@@ -768,25 +769,8 @@
 
     <!-- Hero Slider Section -->
     <div class="hero-slider">
-        <div class="hero-slides">
-            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000');">
-                <div class="slide-overlay">
-                    <h2 class="slide-title">Authentic Flavors</h2>
-                    <p class="slide-text">Experience the true taste of tradition in every bite.</p>
-                </div>
-            </div>
-            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1000');">
-                <div class="slide-overlay">
-                    <h2 class="slide-title">Fresh Ingredients</h2>
-                    <p class="slide-text">Sourced daily for the highest quality and taste.</p>
-                </div>
-            </div>
-            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000');">
-                <div class="slide-overlay">
-                    <h2 class="slide-title">Delicious Deals</h2>
-                    <p class="slide-text">Enjoy great food without breaking the bank.</p>
-                </div>
-            </div>
+        <div class="hero-slides" id="heroSlides">
+            <!-- Slides will be populated dynamically -->
         </div>
     </div>
 
@@ -934,7 +918,7 @@
           authDomain: "mirdhuna-25542.firebaseapp.com",
           databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
           projectId: "mirdhuna-25542",
-          storageBucket: "mirdhuna-25542.firebasestorage.app",
+          storageBucket: "mirdhuna-25542.appspot.com",
           messagingSenderId: "575924409876",
           appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
           measurementId: "G-YB7LDKHBPV"
@@ -953,6 +937,7 @@
         const getLocationBtn = document.getElementById('getLocationBtn');
         let currentCart = []; // Cart is now managed in memory, not localStorage
         let currentUser = null; // To hold the Firebase user object
+        let sliderInterval; // To hold the slider interval ID
 
         // --- Firebase Auth State Listener ---
         auth.onAuthStateChanged(user => {
@@ -1010,18 +995,103 @@
             });
         }
 
-        // --- Basic Interactions ---
-
-        // Slider Functionality
-        let heroSlideIndex = 0;
-        const heroSlides = document.querySelector('.hero-slides');
-        const totalHeroSlides = document.querySelectorAll('.hero-slide').length;
-
-        function showHeroSlides() {
-            heroSlideIndex = (heroSlideIndex + 1) % totalHeroSlides;
-            heroSlides.style.transform = `translateX(${-heroSlideIndex * 20}%)`;
+        // --- Load Slider from Firebase ---
+        function loadSliderFromFirebase() {
+            const sliderRef = firebase.database().ref('slider');
+            const heroSlidesContainer = document.getElementById('heroSlides');
+            
+            sliderRef.once('value')
+                .then((snapshot) => {
+                    const sliderData = snapshot.val();
+                    
+                    if (!sliderData) {
+                        console.log("No slider data found in Firebase.");
+                        // Use default slides if no data in Firebase
+                        loadDefaultSlider();
+                        return;
+                    }
+                    
+                    // Clear existing slides
+                    heroSlidesContainer.innerHTML = '';
+                    
+                    // Convert object to array and sort by index if it exists
+                    const slidesArray = Object.keys(sliderData).map(key => ({
+                        id: key,
+                        ...sliderData[key]
+                    })).sort((a, b) => (a.index || 0) - (b.index || 0));
+                    
+                    // Add slides to the container
+                    slidesArray.forEach(slide => {
+                        const slideElement = document.createElement('div');
+                        slideElement.className = 'hero-slide';
+                        slideElement.style.backgroundImage = `url('${slide.image}')`;
+                        
+                        const overlayElement = document.createElement('div');
+                        overlayElement.className = 'slide-overlay';
+                        overlayElement.innerHTML = `
+                            <h2 class="slide-title">${slide.title || ''}</h2>
+                            <p class="slide-text">${slide.text || ''}</p>
+                        `;
+                        
+                        slideElement.appendChild(overlayElement);
+                        heroSlidesContainer.appendChild(slideElement);
+                    });
+                    
+                    // Start slider animation
+                    startSlider();
+                })
+                .catch((error) => {
+                    console.error("Error loading slider from Firebase:", error);
+                    // Use default slides if there's an error
+                    loadDefaultSlider();
+                });
         }
-        setInterval(showHeroSlides, 5000);
+        
+        // --- Load Default Slider (Fallback) ---
+        function loadDefaultSlider() {
+            const heroSlidesContainer = document.getElementById('heroSlides');
+            heroSlidesContainer.innerHTML = `
+                <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000');">
+                    <div class="slide-overlay">
+                        <h2 class="slide-title">Authentic Flavors</h2>
+                        <p class="slide-text">Experience the true taste of tradition in every bite.</p>
+                    </div>
+                </div>
+                <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1000');">
+                    <div class="slide-overlay">
+                        <h2 class="slide-title">Fresh Ingredients</h2>
+                        <p class="slide-text">Sourced daily for the highest quality and taste.</p>
+                    </div>
+                </div>
+                <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000');">
+                    <div class="slide-overlay">
+                        <h2 class="slide-title">Delicious Deals</h2>
+                        <p class="slide-text">Enjoy great food without breaking the bank.</p>
+                    </div>
+                </div>
+            `;
+            startSlider();
+        }
+        
+        // --- Start Slider Animation ---
+        function startSlider() {
+            const heroSlides = document.querySelector('.hero-slides');
+            const totalSlides = document.querySelectorAll('.hero-slide').length;
+            let currentSlide = 0;
+            
+            // Clear any existing interval
+            if (sliderInterval) {
+                clearInterval(sliderInterval);
+            }
+            
+            // Set up the slider interval
+            sliderInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                heroSlides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }, 5000); // Change slide every 5 seconds
+        }
+
+        // --- Basic Interactions ---
 
         // Modal Controls - Login
         const loginModal = document.getElementById("loginModal");
@@ -1391,6 +1461,7 @@
         // --- Initialize Data Loading and Track Page View ---
         window.addEventListener('load', function() {
             console.log("Window loaded, initializing data...");
+            loadSliderFromFirebase(); // Load slider from Firebase
             loadMenuItemsFromFirebase();
             trackPageView(); // Call the tracking function
             // Cart count is updated on load and after login
