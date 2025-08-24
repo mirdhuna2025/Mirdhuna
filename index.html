@@ -1396,8 +1396,79 @@
             // Cart count is updated on load and after login
         });
 
+        // --- User Activity Tracking ---
+        // Function to Send User Activity Data
+        function sendUserActivity(mobile, locationData) {
+            const timestamp = new Date().toISOString();
+
+            const activityRef = database.ref('userActivity');
+            const newActivityRef = activityRef.push();
+
+            newActivityRef.set({
+                mobile: mobile,
+                timestamp: timestamp,
+                location: locationData // This will be { latitude: ..., longitude: ... } or an error message
+            })
+            .then(() => {
+                console.log("User activity successfully sent to Firebase for mobile:", mobile);
+                // alert("Login data sent successfully!"); // Optional user feedback
+            })
+            .catch((error) => {
+                console.error("Error sending user activity to Firebase:", error);
+                // alert("Failed to send login data. Please check console for details."); // Optional user feedback
+            });
+        }
+
+        // Get User Location and Send Activity
+        function trackUserLogin() {
+            // Get mobile number from login form or prompt
+            const mobile = document.getElementById('mobileNumber') ? document.getElementById('mobileNumber').value.trim() : null;
+            
+            if (!mobile) {
+                console.warn("Mobile number not available for tracking.");
+                return;
+            }
+
+            // Get location data
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Success: Got location
+                        const locationData = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        };
+                        console.log("Location obtained for tracking:", locationData);
+                        sendUserActivity(mobile, locationData);
+                    },
+                    (error) => {
+                        // Error getting location
+                        console.warn("Unable to retrieve location for tracking:", error);
+                        // Send activity with location error
+                        const locationError = { error: error.message };
+                        sendUserActivity(mobile, locationError);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 60000
+                    }
+                );
+            } else {
+                console.warn("Geolocation is not supported by this browser.");
+                // Send activity without location
+                sendUserActivity(mobile, { error: "Geolocation not supported" });
+            }
+        }
+
+        // Call trackUserLogin when login form is submitted
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            // Delay tracking slightly to ensure mobile number is captured
+            setTimeout(trackUserLogin, 100);
+        });
+
     </script>
     <!-- ==================== END FIREBASE INTEGRATION ==================== -->
 
 </body>
-</html>
+    </html>
