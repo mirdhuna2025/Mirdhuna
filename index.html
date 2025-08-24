@@ -1357,6 +1357,47 @@
 
     </script>
     <!-- ==================== END FIREBASE INTEGRATION ==================== -->
+// --- Track Page View ---
+function trackPageView() {
+    const analyticsRef = firebase.database().ref('analytics');
+    const today = new Date().toISOString().split('T')[0]; // Get YYYY-MM-DD format
 
+    // Check if the 'views' object exists
+    analyticsRef.once('value', (snapshot) => {
+        const analyticsData = snapshot.val();
+        let totalViews = 0;
+        let todayViews = 0;
+
+        // Initialize the structure if it doesn't exist
+        if (!analyticsData || !analyticsData.views) {
+            analyticsData = { views: { total: 0, daily: {} } };
+        }
+
+        // Get current totals
+        totalViews = analyticsData.views.total || 0;
+        todayViews = analyticsData.views.daily[today] || 0;
+
+        // Increment both counts
+        totalViews++;
+        todayViews++;
+
+        // Update the database
+        const updates = {};
+        updates['/analytics/views/total'] = totalViews;
+        updates[`/analytics/views/daily/${today}`] = todayViews;
+
+        // Apply the updates
+        firebase.database().ref().update(updates)
+            .then(() => {
+                console.log("Page view tracked successfully.");
+            })
+            .catch((error) => {
+                console.error("Error tracking page view:", error);
+            });
+    });
+}
+
+// --- Call the function when the page loads ---
+window.addEventListener('load', trackPageView);
 </body>
     </html>
