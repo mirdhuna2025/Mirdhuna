@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Activity - Mirdhuna Admin</title>
+    <!-- Include Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --border: #bdc3c7;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0;
+            background-color: #f4f6f8; color: #333;
+            line-height: 1.5;
+        }
+        #login-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        #login-form {
+            background: white; padding: 25px;
+            border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center; width: 95%; max-width: 400px;
+        }
+        #login-form h2 { margin-top: 0; color: var(--primary); }
+        #admin-password {
+            width: 100%; padding: 12px; margin: 15px 0;
+            border: 1px solid var(--border); border-radius: 4px;
+        }
+        #login-btn {
+            background-color: var(--secondary); color: white;
+            border: none; padding: 12px 20px; border-radius: 4px;
+            cursor: pointer; width: 100%; font-weight: bold;
+        }
+        #login-btn:hover { background-color: #2980b9; }
+        #login-message { color: var(--danger); margin-top: 10px; }
+
+        #activity-content { display: none; padding: 15px; max-width: 100%; margin: 0 auto; }
+        header {
+            background-color: var(--primary); color: white;
+            padding: 15px; text-align: center;
+            margin-bottom: 20px; border-radius: 5px;
+        }
+        header h1 { margin: 0; font-size: 1.4rem; }
+
+        .section {
+            background: white; margin-bottom: 20px;
+            border-radius: 5px; overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .section-header {
+            background-color: var(--light);
+            padding: 15px; border-bottom: 1px solid var(--border);
+            font-weight: bold;
+        }
+        .section-content { padding: 15px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        th, td { border: 1px solid var(--border); padding: 10px 8px; text-align: left; word-wrap: break-word; }
+        th { background-color: #f8f9fa; }
+
+        .table-container { overflow-x: auto; margin: 10px 0; }
+        table { min-width: 600px; }
+
+        @media (min-width: 768px) {
+            #login-form { padding: 30px; }
+            #login-form h2 { font-size: 1.8rem; }
+            #activity-content { padding: 20px; }
+            header h1 { font-size: 1.8rem; }
+            .section-header { font-size: 1.3rem; }
+            table { font-size: 1rem; }
+            th, td { padding: 12px 15px; }
+        }
+        @media (min-width: 1024px) {
+            #activity-content { max-width: 1200px; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Overlay -->
+    <div id="login-overlay">
+        <div id="login-form">
+            <h2>User Activity Login</h2>
+            <input type="password" id="admin-password" placeholder="Enter password (Sanu.0000)" />
+            <button id="login-btn">Login</button>
+            <p id="login-message"></p>
+        </div>
+    </div>
+
+    <!-- Main Activity Content -->
+    <div id="activity-content">
+        <header><h1>Mirdhuna User Activity</h1></header>
+
+        <!-- User Activity Section -->
+        <div class="section">
+            <div class="section-header">User Login Activity</div>
+            <div class="section-content">
+                <div class="table-container">
+                <table id="activity-table">
+                    <thead><tr>
+                        <th>Mobile Number</th><th>Login Timestamp</th><th>Location</th>
+                    </tr></thead>
+                    <tbody><!-- Activity populated by JS --></tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Firebase Configuration (SAME AS ADMIN PANEL) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyB0sVoG5VdOxmk4ZM5m837pN2uQ3XfRwZw",
+            authDomain: "mirdhuna-25542.firebaseapp.com",
+            databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+            projectId: "mirdhuna-25542",
+            storageBucket: "mirdhuna-25542.appspot.com",
+            messagingSenderId: "1078913123456",
+            appId: "1:1078913123456:web:placeholder",
+            measurementId: "G-XXXXXXXXXX"
+        };
+
+        // --- Initialize Firebase ---
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        // --- Login Logic ---
+        document.getElementById('login-btn').addEventListener('click', checkPassword);
+        document.getElementById('admin-password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        function checkPassword() {
+            const password = document.getElementById('admin-password').value;
+            const messageElement = document.getElementById('login-message');
+            if (password === 'Sanu.0000') {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('activity-content').style.display = 'block';
+                fetchUserActivity(); // Start fetching data after login
+            } else {
+                messageElement.textContent = 'Incorrect password.';
+            }
+        }
+
+        // --- Fetch and Display User Activity ---
+        function fetchUserActivity() {
+            const activityRef = database.ref('userActivity');
+            activityRef.on('value', (snapshot) => {
+                const activities = snapshot.val();
+                const tableBody = document.querySelector('#activity-table tbody');
+                tableBody.innerHTML = '';
+
+                if (!activities) {
+                    tableBody.innerHTML = '<tr><td colspan="3">No user activity found.</td></tr>';
+                    return;
+                }
+
+                // Convert to array and sort by timestamp (newest first)
+                const activityArray = Object.entries(activities).map(([key, data]) => ({ key, ...data }));
+                activityArray.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                // Populate table
+                activityArray.forEach(activity => {
+                    const formattedTime = activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'N/A';
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${activity.mobile || 'N/A'}</td>
+                        <td>${formattedTime}</td>
+                        <td>${activity.location ? (activity.location.latitude ? `${activity.location.latitude.toFixed(4)}, ${activity.location.longitude.toFixed(4)}` : activity.location) : 'N/A'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }, (error) => {
+                 // Handle potential read errors (e.g., permissions)
+                 console.error("Error fetching user activity:", error);
+                 document.querySelector('#activity-table tbody').innerHTML = `<tr><td colspan="3">Error loading  ${error.message || 'Permission denied or network issue.'}</td></tr>`;
+            });
+        }
+    </script>
+</body>
+</html>
