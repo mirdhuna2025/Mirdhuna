@@ -8,12 +8,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-red: #d32f2f; /* Darker, richer red */
-            --primary-yellow: #ffab00; /* Vibrant amber */
-            --primary-blue: #1565c0; /* Strong blue */
-            --accent-gold: #ffd600; /* Bright gold for highlights */
-            --light-bg: #fff8e1; /* Creamy light background */
-            --dark-text: #212121; /* Near black for text */
+            --primary-red: #d32f2f;
+            --primary-yellow: #ffab00;
+            --primary-blue: #1565c0;
+            --accent-gold: #ffd600;
+            --light-bg: #fff8e1;
+            --dark-text: #212121;
             --off-white: #f5f5f5;
             --shadow: 0 8px 16px rgba(0,0,0,0.2);
             --transition: all 0.3s ease;
@@ -27,12 +27,11 @@
 
         body {
             font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #fce4ec, #e3f2fd, #fff8e1); /* Soft pastel background */
+            background: linear-gradient(135deg, #fce4ec, #e3f2fd, #fff8e1);
             background-size: 400% 400%;
             animation: gradientBG 20s ease infinite;
             color: var(--dark-text);
-            padding-bottom: 70px; /* Space for fixed footer */
-            overflow-x: hidden;
+            padding-bottom: 120px; /* Increased space for new footer */
         }
 
         @keyframes gradientBG {
@@ -130,7 +129,7 @@
         /* Hero Slider Section */
         .hero-slider {
             width: 100%;
-            height: 40vh; /* Responsive height */
+            height: 40vh;
             max-height: 500px;
             overflow: hidden;
             margin-top: 10px;
@@ -141,12 +140,12 @@
 
         .hero-slides {
             display: flex;
-            width: 500%; /* Adjust based on number of slides */
+            width: 500%;
             height: 100%;
         }
 
         .hero-slide {
-            min-width: 20%; /* 1/5 of the container width */
+            min-width: 20%;
             height: 100%;
             background-size: cover;
             background-position: center;
@@ -301,6 +300,68 @@
             margin-right: 8px;
         }
 
+        /* Reviews Section */
+        .reviews-section {
+            padding: 30px 5%;
+            margin-top: 40px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .reviews-grid {
+             display: grid;
+             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+             gap: 25px;
+             margin-top: 20px;
+        }
+
+        .review-card {
+            background: var(--light-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .reviewer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .reviewer-info h4 {
+            margin: 0;
+            color: var(--dark-text);
+        }
+
+        .review-date {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .review-stars {
+            color: var(--accent-gold);
+            margin: 10px 0;
+        }
+
+        .review-text {
+            font-style: italic;
+            color: #444;
+        }
+
 
         /* Modals */
         .modal {
@@ -392,7 +453,7 @@
         }
 
         #getLocationBtn {
-            background: linear-gradient(to right, #4caf50, var(--primary-green)); /* Green gradient for location */
+            background: linear-gradient(to right, #4caf50, #2e7d32);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -407,45 +468,98 @@
             margin-top: 10px;
             font-size: 0.9rem;
             min-height: 1.2rem;
+            color: #555;
         }
 
-        /* Footer / Social Links */
+        /* Footer / Social Links - ENHANCED */
         footer {
             position: fixed;
             bottom: 0;
             width: 100%;
-            background: linear-gradient(to right, var(--primary-red), var(--primary-blue));
+            /* background: linear-gradient(to right, var(--primary-red), var(--primary-blue)); */
+            background: #1a1a1a; /* Darker background for contrast */
             color: white;
-            padding: 12px 5%;
+            padding: 15px 5%;
             display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
             z-index: 99;
+            font-family: 'Playfair Display', serif; /* Use fancy font for footer text */
+        }
+
+        .footer-section {
+            flex: 1; /* Distribute space */
+            min-width: 200px; /* Minimum width before wrapping */
+            margin: 10px;
+        }
+
+        .footer-section h3 {
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            border-bottom: 1px solid var(--primary-blue);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #ddd;
+            text-decoration: none;
+            display: block;
+            margin: 5px 0;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent-gold);
+        }
+
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
         }
 
         .social-links a {
-            margin: 0 12px;
+            margin: 0 15px 10px 0; /* Add bottom margin for wrapping */
             color: white;
-            font-size: 1.7rem;
+            font-size: 1.8rem;
             transition: var(--transition);
         }
 
         .social-links a:hover {
             color: var(--accent-gold);
-            transform: translateY(-3px);
+            transform: translateY(-3px) scale(1.2);
         }
 
         .contact-info {
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 1.1rem;
             display: flex;
-            align-items: center;
+            flex-direction: column;
         }
 
         .contact-info i {
-            margin-right: 8px;
+            margin-right: 10px;
+            color: var(--accent-gold);
         }
+
+        .contact-line {
+             display: flex;
+             align-items: center;
+             margin: 5px 0;
+        }
+
+        .tagline {
+            font-style: italic;
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            font-size: 1rem;
+            border-top: 1px solid #444;
+        }
+
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -456,19 +570,22 @@
             nav a { margin-left: 10px; font-size: 0.9rem; padding: 6px 10px; }
             .logo { font-size: 1.8rem; }
             .cart-icon, .user-icon { font-size: 1.4rem; margin-left: 15px; }
+            footer { flex-direction: column; align-items: flex-start; padding: 15px 3%; }
+            .footer-section { min-width: 100%; text-align: center; } /* Stack sections on mobile */
+            .social-links { justify-content: center; }
+            .tagline { font-size: 0.9rem; }
         }
 
         @media (max-width: 480px) {
             header { padding: 12px 3%; flex-direction: column; gap: 10px; }
             .logo-container { justify-content: center; }
-            nav { width: 100%; justify-content: center; }
-            nav a { margin: 0 8px; font-size: 0.8rem; }
+            nav { width: 100%; justify-content: center; flex-wrap: wrap; }
+            nav a { margin: 5px 8px; font-size: 0.8rem; }
             .hero-slider { height: 25vh; }
             .section-title { font-size: 2rem; }
             .menu-grid { grid-template-columns: 1fr; }
-            footer { flex-direction: column; gap: 8px; padding: 10px 3%; }
-            .social-links { order: 2; }
-            .contact-info { order: 1; font-size: 0.9rem; }
+            .reviews-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px; }
         }
 
     </style>
@@ -516,18 +633,6 @@
                     <p class="slide-text">Enjoy great food without breaking the bank.</p>
                 </div>
             </div>
-            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1476224203421-9ac39bcbaf2f?q=80&w=1000');">
-                <div class="slide-overlay">
-                    <h2 class="slide-title">Fast Delivery</h2>
-                    <p class="slide-text">Hot meals delivered to your doorstep quickly.</p>
-                </div>
-            </div>
-            <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1550949900-d395fa4da090?q=80&w=1000');">
-                <div class="slide-overlay">
-                    <h2 class="slide-title">MIRDHUNA Experience</h2>
-                    <p class="slide-text">Where every meal is a celebration.</p>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -539,6 +644,66 @@
         </div>
     </section>
 
+    <!-- Reviews Section -->
+    <section class="reviews-section" id="reviewsSection">
+        <h2 class="section-title">Customer Reviews</h2>
+        <div class="reviews-grid" id="reviewsGrid">
+            <!-- Reviews will be populated dynamically -->
+            <!-- Example static review -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">JD</div>
+                    <div class="reviewer-info">
+                        <h4>John Doe</h4>
+                        <div class="review-date">2023-11-15</div>
+                    </div>
+                </div>
+                <div class="review-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <p class="review-text">"The Biriyani was absolutely incredible! The flavors were so rich and authentic. Will definitely order again!"</p>
+            </div>
+             <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">AS</div>
+                    <div class="reviewer-info">
+                        <h4>Anita Singh</h4>
+                        <div class="review-date">2023-12-02</div>
+                    </div>
+                </div>
+                <div class="review-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="review-text">"Fast delivery and the food was still hot and fresh. The customer service was also very polite. Highly recommended!"</p>
+            </div>
+             <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">MR</div>
+                    <div class="reviewer-info">
+                        <h4>Mike Rahman</h4>
+                        <div class="review-date">2024-01-10</div>
+                    </div>
+                </div>
+                <div class="review-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+                <p class="review-text">"Great variety on the menu. The Tandoori Platter was a hit at our party. The presentation was also very nice."</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
@@ -547,7 +712,7 @@
             <form id="loginForm">
                 <input type="tel" id="mobileNumber" placeholder="Enter Mobile Number" required>
                 <label for="locationInput">Your Location:</label>
-                <input type="text" id="locationInput" placeholder="Fetching your address..." readonly>
+                <input type="text" id="locationInput" placeholder="Click 'Get My Location' below" readonly>
                 <button type="button" id="getLocationBtn"><i class="fas fa-location-arrow"></i> Get My Location</button>
                 <div id="locationStatus">Please click the button to get your location.</div>
                 <button type="submit">Login & Proceed</button>
@@ -555,44 +720,46 @@
         </div>
     </div>
 
-    <!-- Footer with Social Links -->
+    <!-- Footer with Social Links - ENHANCED -->
     <footer>
-        <div class="social-links">
-            <a href="https://www.facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://wa.me/9835124772" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-            <a href="https://www.instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://t.me/yourusername" target="_blank" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+        <div class="footer-section">
+            <h3>Find Us</h3>
+            <p><i class="fas fa-map-marker-alt"></i> 123 Flavor Street, Foodie City</p>
+            <p><i class="fas fa-clock"></i> Open: 11:00 AM - 10:00 PM</p>
+            <p><i class="fas fa-motorcycle"></i> Delivery Available</p>
         </div>
-        <div class="contact-info">
-            <i class="fas fa-phone-alt"></i> +91 98351 24772
+        <div class="footer-section">
+            <h3>Connect</h3>
+            <div class="social-links">
+                <a href="https://www.facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://wa.me/9835124772" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://t.me/yourusername" target="_blank" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+            </div>
         </div>
+        <div class="footer-section">
+            <h3>Contact</h3>
+            <div class="contact-info">
+                <div class="contact-line"><i class="fas fa-phone-alt"></i> +91 98351 24772</div>
+                <div class="contact-line"><i class="fas fa-envelope"></i> info@mirdhuna.com</div>
+            </div>
+        </div>
+        <div class="tagline">Crafting Memories, One Meal at a Time.</div>
     </footer>
 
     <!-- Load Google Maps API -->
     <!-- *** IMPORTANT: REPLACE 'YOUR_GOOGLE_MAPS_API_KEY' *** -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initAutocomplete" async defer></script>
 
     <script>
         // --- Global Variables ---
-        let map;
-        let geocoder;
-        let autocomplete;
+        let mapAutocomplete;
         const locationInput = document.getElementById('locationInput');
         const locationStatus = document.getElementById('locationStatus');
         const getLocationBtn = document.getElementById('getLocationBtn');
+        let cart = JSON.parse(localStorage.getItem('mirdhunaCart')) || []; // Load cart from localStorage
 
-        // --- Firebase Placeholder ---
-        // You will initialize Firebase here with the provided config
-        /*
-        import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, onValue, push, set } from "firebase/database";
-        const firebaseConfig = { /* ... */ /* };
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        */
-
-
-        // --- Basic Interactions (No Firebase yet) ---
+        // --- Basic Interactions ---
 
         // Slider Functionality (Enhanced Example)
         let heroSlideIndex = 0;
@@ -600,10 +767,10 @@
         const totalHeroSlides = document.querySelectorAll('.hero-slide').length;
 
         function showHeroSlides() {
-            heroSlideIndex = (heroSlideIndex + 1) % totalHeroSlides; // Loop infinitely
-            heroSlides.style.transform = `translateX(${-heroSlideIndex * 20}%)`; // Move by 20% (1/5)
+            heroSlideIndex = (heroSlideIndex + 1) % totalHeroSlides;
+            heroSlides.style.transform = `translateX(${-heroSlideIndex * 20}%)`;
         }
-        setInterval(showHeroSlides, 5000); // Change slide every 5 seconds
+        setInterval(showHeroSlides, 5000);
 
         // Modal Controls
         const modal = document.getElementById("loginModal");
@@ -624,8 +791,12 @@
             }
         }
 
-        // Placeholder for cart count update
-        document.getElementById('cartCount').innerText = '0';
+        // Update cart count on page load
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cartCount').innerText = count;
+        }
+        updateCartCount();
 
         // Placeholder for map link
         document.getElementById('mapLink').addEventListener('click', function(e) {
@@ -634,33 +805,55 @@
              // window.open('https://maps.google.com/?q=Your+Business+Location', '_blank');
         });
 
-        // Placeholder for reviews link
+        // Scroll to reviews
         document.getElementById('reviewsLink').addEventListener('click', function(e) {
              e.preventDefault();
-             alert('Customer reviews section will open here.');
+             document.getElementById('reviewsSection').scrollIntoView({ behavior: 'smooth' });
         });
 
 
         // --- Google Maps Integration ---
 
-        function initMap() {
-            // Initialize Geocoder service
-            geocoder = new google.maps.Geocoder();
+        function initAutocomplete() {
+             // Initialize Autocomplete for the location input field
+             mapAutocomplete = new google.maps.places.Autocomplete(locationInput);
+             mapAutocomplete.setFields(['address_components', 'formatted_address']);
+             // Optional: Bias autocomplete to user's current location if known
+             // if (navigator.geolocation) {
+             //     navigator.geolocation.getCurrentPosition(position => {
+             //         const geolocation = {
+             //             lat: position.coords.latitude,
+             //             lng: position.coords.longitude
+             //         };
+             //         const circle = new google.maps.Circle({ center: geolocation, radius: position.coords.accuracy });
+             //         mapAutocomplete.setBounds(circle.getBounds());
+             //     });
+             // }
 
-            // Initialize Autocomplete for manual typing (optional enhancement)
-            // autocomplete = new google.maps.places.Autocomplete(locationInput);
-            // autocomplete.bindTo('bounds', map); // Bind to map bounds if map object exists
-            // autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
+             // Listen for place changes
+             mapAutocomplete.addListener("place_changed", () => {
+                 const place = mapAutocomplete.getPlace();
+                 if (!place.formatted_address) {
+                     locationStatus.textContent = "Please select a valid address from the list.";
+                     locationStatus.style.color = "orange";
+                 } else {
+                     locationStatus.textContent = "Address selected.";
+                     locationStatus.style.color = "green";
+                 }
+             });
+
+             console.log("Google Maps Autocomplete initialized.");
         }
 
-        function getLocation() {
+        // Fallback Geolocation if Autocomplete isn't sufficient or user denies permissions initially
+        function getLocationFallback() {
             if (navigator.geolocation) {
                 locationStatus.textContent = "Locating...";
                 getLocationBtn.disabled = true;
                 navigator.geolocation.getCurrentPosition(
                     showPosition,
                     showError,
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 } // 5 min cache
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
                 );
             } else {
                 locationStatus.textContent = "Geolocation is not supported by this browser.";
@@ -669,39 +862,35 @@
         }
 
         function showPosition(position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const latlng = { lat: lat, lng: lng };
+            const geocoder = new google.maps.Geocoder();
+            const latlng = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
 
-            if (geocoder) {
-                geocoder.geocode({ location: latlng }, (results, status) => {
-                    if (status === "OK") {
-                        if (results[0]) {
-                            locationInput.value = results[0].formatted_address;
-                            locationStatus.textContent = "Location fetched successfully!";
-                            locationStatus.style.color = "green";
-                        } else {
-                            locationStatus.textContent = "No address found for this location.";
-                            locationStatus.style.color = "orange";
-                        }
+            geocoder.geocode({ location: latlng }, (results, status) => {
+                if (status === "OK") {
+                    if (results[0]) {
+                        locationInput.value = results[0].formatted_address;
+                        locationStatus.textContent = "Location fetched successfully!";
+                        locationStatus.style.color = "green";
                     } else {
-                        console.error("Geocoder failed due to: " + status);
-                        locationStatus.textContent = "Geocoding failed. Please try again.";
-                        locationStatus.style.color = "red";
+                        locationStatus.textContent = "No address found for this location.";
+                        locationStatus.style.color = "orange";
                     }
-                     getLocationBtn.disabled = false;
-                });
-            } else {
-                locationStatus.textContent = "Map services not initialized.";
-                locationStatus.style.color = "red";
+                } else {
+                    console.error("Geocoder failed due to: " + status);
+                    locationStatus.textContent = "Geocoding failed. Please try typing your address.";
+                    locationStatus.style.color = "red";
+                }
                 getLocationBtn.disabled = false;
-            }
+            });
         }
 
         function showError(error) {
             switch(error.code) {
                 case error.PERMISSION_DENIED:
-                    locationStatus.textContent = "User denied the request for Geolocation.";
+                    locationStatus.textContent = "Location access denied. Please type your address or allow location access.";
                     break;
                 case error.POSITION_UNAVAILABLE:
                     locationStatus.textContent = "Location information is unavailable.";
@@ -717,8 +906,19 @@
             getLocationBtn.disabled = false;
         }
 
-        // Event listener for the Get Location button
-        getLocationBtn.addEventListener('click', getLocation);
+        // Event listener for the Get Location button (tries autocomplete first, then geolocation)
+        getLocationBtn.addEventListener('click', function() {
+            // Check if a place has been selected via Autocomplete
+            const place = mapAutocomplete ? mapAutocomplete.getPlace() : null;
+            if (place && place.formatted_address) {
+                // Address was selected from autocomplete, do nothing extra, let form submit use it.
+                locationStatus.textContent = "Using selected address.";
+                locationStatus.style.color = "green";
+            } else {
+                // No address selected, try geolocation fallback
+                getLocationFallback();
+            }
+        });
 
         // Placeholder for login form submission
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -730,8 +930,8 @@
                 alert("Please enter your mobile number.");
                 return;
             }
-            if (!location || location === "Fetching your address..." ) {
-                alert("Please get your location first.");
+            if (!location || location === "Click 'Get My Location' below" || location === "Fetching your address..." ) {
+                alert("Please get your location or type a valid address.");
                 return;
             }
 
@@ -741,14 +941,13 @@
             modal.style.display = "none";
             // Reset form
             this.reset();
-            locationInput.value = "Fetching your address...";
+            locationInput.placeholder = "Click 'Get My Location' below";
             locationStatus.textContent = "Please click the button to get your location.";
             locationStatus.style.color = "initial";
         });
 
 
-        // --- Placeholder for Menu Items (Will come from Firebase) ---
-        // This section simulates loading menu data. Replace with Firebase `onValue` listener.
+        // --- Menu Items & Cart Logic ---
         function loadMenuItems() {
             // Simulated data - Replace with data fetched from Firebase
             const menuItems = [
@@ -779,25 +978,11 @@
                     price: 120,
                     description: 'Crisp greens, seasonal vegetables, and a light vinaigrette.',
                     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500'
-                },
-                {
-                    id: 'm5',
-                    name: 'Chocolate Lava Cake',
-                    price: 150,
-                    description: 'Warm chocolate cake with a molten center, served with ice cream.',
-                    image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=500'
-                },
-                {
-                    id: 'm6',
-                    name: 'Refreshing Mocktail',
-                    price: 90,
-                    description: 'A blend of fresh fruits and herbs for a delightful drink.',
-                    image: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=500'
                 }
             ];
 
             const menuGrid = document.getElementById('menuGrid');
-            menuGrid.innerHTML = ''; // Clear any existing content
+            menuGrid.innerHTML = '';
 
             menuItems.forEach(item => {
                 const menuItemElement = document.createElement('div');
@@ -812,7 +997,7 @@
                             <div class="menu-price">₹${item.price}</div>
                         </div>
                         <p class="menu-description">${item.description}</p>
-                        <button class="add-to-cart" data-id="${item.id}">
+                        <button class="add-to-cart" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">
                             <i class="fas fa-cart-plus"></i> Add to Cart
                         </button>
                     </div>
@@ -824,17 +1009,32 @@
             document.querySelectorAll('.add-to-cart').forEach(button => {
                 button.addEventListener('click', function() {
                     const itemId = this.getAttribute('data-id');
-                    console.log("Adding item ID:", itemId);
-                    // Logic to add item to cart (using local storage or Firebase)
-                    alert(`Item added to cart! (ID: ${itemId})`);
-                    // Update cart count
-                    let count = parseInt(document.getElementById('cartCount').innerText) || 0;
-                    document.getElementById('cartCount').innerText = count + 1;
+                    const itemName = this.getAttribute('data-name');
+                    const itemPrice = parseFloat(this.getAttribute('data-price'));
+
+                    // Check if item already in cart
+                    const existingItemIndex = cart.findIndex(cartItem => cartItem.id === itemId);
+
+                    if (existingItemIndex > -1) {
+                        // Increase quantity
+                        cart[existingItemIndex].quantity += 1;
+                    } else {
+                        // Add new item
+                        cart.push({ id: itemId, name: itemName, price: itemPrice, quantity: 1 });
+                    }
+
+                    // Save updated cart to localStorage
+                    localStorage.setItem('mirdhunaCart', JSON.stringify(cart));
+
+                    // Update UI
+                    updateCartCount();
+                    alert(`"${itemName}" added to cart!`);
+                    console.log("Cart updated:", cart);
                 });
             });
         }
 
-        // Load menu items when the page loads (or when Firebase data is ready)
+        // Load menu items when the page loads
         window.onload = function() {
             loadMenuItems();
         };
