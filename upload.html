@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload</title> <!-- Simplified title -->
+    <!-- Include Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+        .container { border: 1px solid #ccc; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        h1, h2 { color: #333; }
+        input[type="file"] { margin: 10px 0; }
+        button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:disabled {
+             background-color: #cccccc; /* Gray */
+             cursor: not-allowed;
+        }
+        #upload-progress { width: 100%; height: 20px; background-color: #f0f0f0; border-radius: 10px; overflow: hidden; margin: 10px 0; display: none; }
+        #progress-bar { height: 100%; background-color: #4CAF50; width: 0%; transition: width 0.3s; }
+        #result { margin-top: 20px; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        #download-url { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+        #preview-image { max-width: 100%; height: auto; margin-top: 10px; display: none; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+<h1>Upload Image</h1> <!-- Simplified heading -->
+
+<div class="container">
+    <h2>Select and Upload</h2>
+    <input type="file" id="file-input" accept="image/*">
+    <button id="upload-button">Upload Image</button>
+    <div id="upload-progress">
+        <div id="progress-bar"></div>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Upload Result</h2>
+    <div id="result"></div>
+    <input type="text" id="download-url" readonly style="display:none;">
+    <img id="preview-image" alt="Uploaded Image Preview">
+</div>
+
+<script>
+    // --- Firebase Configuration ---
+    // Replace with your project's config (from Firebase Console)
+    const firebaseConfig = {
+        apiKey: "AIzaSyB0sVoG5VdOxmk4ZM5m837pN2uQ3XfRwZw",
+        authDomain: "mirdhuna-25542.firebaseapp.com",
+        projectId: "mirdhuna-25542",
+        storageBucket: "mirdhuna-25542.appspot.com", // Crucial for Storage
+        messagingSenderId: "1078913123456",
+        appId: "1:1078913123456:web:placeholder"
+        // measurementId is optional for Storage
+    };
+
+    // --- Initialize Firebase ---
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    } else {
+        firebase.app(); // if already initialized, use that one
+    }
+    const storage = firebase.storage();
+
+    // --- DOM Elements ---
+    const fileInput = document.getElementById('file-input');
+    const uploadButton = document.getElementById('upload-button');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('upload-progress');
+    const resultDiv = document.getElementById('result');
+    const downloadUrlInput = document.getElementById('download-url');
+    const previewImage = document.getElementById('preview-image');
+
+    // --- Upload Function ---
+    uploadButton.addEventListener('click', () => {
+        const file = fileInput.files[0];
+
+        if (!file) {
+            showMessage('Please select a file first.', 'error');
+            return;
+        }
+
+        // Optional: Check file type
+        if (!file.type.startsWith('image/')) {
+            showMessage('Please select an image file (jpg, png, gif, etc.).', 'error');
+            return;
+        }
+
+        // Optional: Check file size (e.g., limit to 5MB)
+        const maxSizeInBytes = 5 * 1024 * 1024;
+        if (file.size > maxSizeInBytes) {
+             showMessage('File size exceeds 5MB limit.', 'error');
+             return;
+        }
+
+        // Create a unique filename (optional but recommended)
+        const timestamp = Date.now();
+        const fileName = `${timestamp}_${file.name}`; // e.g., 1678886400000_myphoto.jpg
+        // You can change the folder path as needed, e.g., 'user_uploads/images/'
+        const storageRef = storage.ref('slider_images/' + fileName);
+
+        // Show progress bar
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        uploadButton.disabled = true;
+        resultDiv.innerHTML = '';
+        downloadUrlInput.style.display = 'none';
+        previewImage.style.display = 'none';
+        previewImage.src = '';
+
+        // Upload the file
+        const uploadTask = storageRef.put(file);
+
+        // Listen for state changes, errors, and completion
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                // Handle progress
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress.toFixed(2) + '% done');
+                progressBar.style.width = progress + '%';
+            },
+            (error) => {
+                // Handle unsuccessful uploads
+                console.error("Upload failed:", error);
+                showMessage(`Upload failed: ${error.message || error.code}`, 'error');
+                progressContainer.style.display = 'none';
+                uploadButton.disabled = false;
+            },
+            () => {
+                // Handle successful uploads on complete
+                console.log('Upload complete! Getting download URL...');
+                // Get the download URL
+                uploadTask.snapshot.ref.getDownloadURL()
+                    .then((downloadURL) => {
+                        console.log('File available at', downloadURL);
+                        showMessage('Upload successful!', 'success');
+                        downloadUrlInput.value = downloadURL;
+                        downloadUrlInput.style.display = 'block';
+                        previewImage.src = downloadURL;
+                        previewImage.style.display = 'block';
+                        progressContainer.style.display = 'none';
+                        uploadButton.disabled = false;
+                    })
+                    .catch((error) => {
+                        // Handle errors getting download URL
+                        console.error("Error getting download URL:", error);
+                        showMessage(`Upload completed, but failed to get URL: ${error.message || error.code}`, 'error');
+                        progressContainer.style.display = 'none';
+                        uploadButton.disabled = false;
+                    });
+            }
+        );
+    });
+
+    // --- Utility Function ---
+    function showMessage(message, type) {
+        resultDiv.textContent = message;
+        resultDiv.className = type; // Applies 'success' or 'error' class for styling
+    }
+</script>
+
+</body>
+</html>
