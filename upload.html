@@ -125,6 +125,54 @@
       text-align: center;
       padding: 40px;
     }
+    /* Folder List Styles */
+    .folder-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 20px 0;
+    }
+    .folder-item {
+      display: flex;
+      align-items: center;
+      background: #e3f2fd;
+      color: #1a73e8;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .folder-item:hover {
+      background: #bbdefb;
+    }
+    .folder-item.active {
+      background: #1a73e8;
+      color: white;
+    }
+    .folder-item .delete-folder {
+      margin-left: 6px;
+      background: #d32f2f;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 10px;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+    .folder-item .delete-folder:hover {
+      opacity: 1;
+    }
+    .folder-root {
+      background: #f0f4ff;
+      font-weight: bold;
+    }
+    .folder-root.active {
+      background: #1a73e8;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -133,11 +181,12 @@
 
   <!-- Folder Controls -->
   <div class="section">
+    <strong>Folders:</strong>
+    <div class="folder-list" id="folderList">
+      <!-- Folders will be dynamically inserted here -->
+      <div class="folder-item folder-root" data-folder="">📁 Root</div>
+    </div>
     <div class="folder-controls">
-      <label><strong>Folder:</strong></label>
-      <select id="folderSelect">
-        <option value="">Root</option>
-      </select>
       <input type="text" id="newFolderInput" placeholder="New folder name" />
       <button class="create" id="createFolderBtn">Create Folder</button>
     </div>
@@ -188,11 +237,11 @@
     const uploadBtn = document.getElementById("uploadBtn");
     const uploadProgress = document.getElementById("uploadProgress");
     const imageGrid = document.getElementById("imageGrid");
-    const folderSelect = document.getElementById("folderSelect");
     const createFolderBtn = document.getElementById("createFolderBtn");
     const newFolderInput = document.getElementById("newFolderInput");
     const currentFolderDisplay = document.getElementById("currentFolderDisplay");
     const selectedFiles = document.getElementById("selectedFiles");
+    const folderList = document.getElementById("folderList");
 
     let selectedFilesList = [];
     let currentFolder = "";
@@ -228,21 +277,99 @@
       if (!name) return alert("Folder name is required");
       if (/[.#$\/\[\]]/.test(name)) return alert("Invalid characters: .#$[]/");
 
-      if (!Array.from(folderSelect.options).some(opt => opt.value === name)) {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        folderSelect.appendChild(opt);
+      // Check if folder already exists
+      const exists = Array.from(folderList.children).some(el => el.dataset.folder === name);
+      if (exists) {
+        alert("Folder already exists!");
+        return;
       }
+
+      addFolderToList(name);
       newFolderInput.value = "";
     });
 
-    // =============== Folder Change ===============
-    folderSelect.addEventListener("change", () => {
-      currentFolder = folderSelect.value;
-      currentFolderDisplay.textContent = currentFolder || "Root";
+    // Helper: Add folder to list
+    function addFolderToList(folderName) {
+      const div = document.createElement("div");
+      div.className = "folder-item";
+      div.dataset.folder = folderName;
+      div.innerHTML = `
+        📁 ${folderName}
+        <button class="delete-folder" data-folder="${folderName}" title="Delete folder">×</button>
+      `;
+      folderList.appendChild(div);
+
+      // Add click listener
+      div.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("delete-folder")) {
+          setCurrentFolder(folderName);
+        }
+      });
+
+      // Delete button event
+      div.querySelector(".delete-folder").addEventListener("click", (e) => {
+        e.stopPropagation();
+        deleteFolder(folderName);
+      });
+    }
+
+    // =============== Set Current Folder ===============
+    function setCurrentFolder(folder) {
+      currentFolder = folder;
+      currentFolderDisplay.textContent = folder || "Root";
+
+      // Update active class
+      document.querySelectorAll(".folder-item").forEach(el => {
+        el.classList.toggle("active", el.dataset.folder === folder);
+      });
+
       loadImages();
-    });
+    }
+
+    // =============== Delete Folder ===============
+    async function deleteFolder(folderName) {
+      if (!confirm(`Delete folder "${folderName}" and all its images? This cannot be undone.`)) return;
+
+      try {
+        const snapshot = await imagesRef.once("value");
+        const data = snapshot.val();
+        const toDelete = [];
+
+        if (data) {
+          Object.values(data).forEach(img => {
+            if (img.folder === folderName) {
+              toDelete.push({
+                id: img.id,
+                path: img.path
+              });
+            }
+          });
+        }
+
+        // Delete from storage and database
+        for (const item of toDelete) {
+          await storageRef.child(item.path).delete()
+            .catch(err => {
+              if (err.code !== 'storage/object-not-found') console.error("Storage delete error:", err);
+            });
+          await imagesRef.orderByChild("id").equalTo(item.id).once("value", snap => {
+            snap.forEach(child => child.ref.remove());
+          });
+        }
+
+        // Remove folder from UI
+        document.querySelectorAll(`[data-folder="${folderName}"]`).forEach(el => el.remove());
+
+        if (currentFolder === folderName) {
+          setCurrentFolder("");
+        }
+
+        alert(`✅ Folder "${folderName}" deleted successfully!`);
+        loadFolders(); // Refresh folder list
+      } catch (err) {
+        alert("❌ Error deleting folder: " + err.message);
+      }
+    }
 
     // =============== Upload Files ===============
     uploadBtn.addEventListener("click", () => {
@@ -309,27 +436,26 @@
 
         if (data) {
           Object.values(data).forEach(img => {
-            const path = img.path || "";
-            const match = path.match(/^images\/([^/]+)/);
-            if (match) folders.add(match[1]);
+            if (img.folder) folders.add(img.folder);
           });
         }
 
-        folderSelect.innerHTML = '<option value="">Root</option>';
+        // Clear all except root
+        while (folderList.children.length > 1) {
+          folderList.removeChild(folderList.lastChild);
+        }
+
+        // Add folders
         Array.from(folders).sort().forEach(folder => {
-          const opt = document.createElement("option");
-          opt.value = folder;
-          opt.textContent = folder;
-          folderSelect.appendChild(opt);
+          if (!Array.from(folderList.children).some(el => el.dataset.folder === folder)) {
+            addFolderToList(folder);
+          }
         });
 
-        if (folderSelect.querySelector(`option[value="${currentFolder}"]`)) {
-          folderSelect.value = currentFolder;
-        } else {
-          currentFolder = "";
-          folderSelect.value = "";
+        // Ensure current folder still exists
+        if (currentFolder && !Array.from(folderList.children).some(el => el.dataset.folder === currentFolder)) {
+          setCurrentFolder("");
         }
-        currentFolderDisplay.textContent = currentFolder || "Root";
       });
     }
 
@@ -347,8 +473,8 @@
         }
 
         const items = Object.values(data).filter(img => {
-          if (!currentFolder) return !((img.path || "").includes("/"));
-          return (img.path || "").startsWith(`images/${currentFolder}/`);
+          if (!currentFolder) return !img.folder;
+          return img.folder === currentFolder;
         }).sort((a, b) => (b.uploadedAt || 0) - (a.uploadedAt || 0));
 
         if (items.length === 0) {
@@ -383,7 +509,7 @@
           });
         });
 
-        // Delete
+        // Delete image
         document.querySelectorAll(".delete").forEach(btn => {
           btn.addEventListener("click", (e) => {
             const id = e.target.dataset.id;
@@ -391,18 +517,14 @@
 
             if (!confirm("Delete this image permanently?")) return;
 
-            // Delete from Firebase Storage
             storageRef.child(path).delete()
               .then(() => console.log("✅ Deleted from Storage"))
               .catch(err => {
-                if (err.code === 'storage/object-not-found') {
-                  console.log("File already deleted or not found");
-                } else {
+                if (err.code !== 'storage/object-not-found') {
                   console.error("Storage delete error:", err);
                 }
               });
 
-            // Delete from Realtime Database
             imagesRef.orderByChild("id").equalTo(id).once("value", snap => {
               snap.forEach(child => {
                 child.ref.remove()
@@ -423,7 +545,7 @@
 
     // =============== Initialize ===============
     loadFolders();
-    loadImages();
+    setCurrentFolder(""); // Set to root
   </script>
 
 </body>
