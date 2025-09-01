@@ -1,96 +1,148 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>图片管理 - Mirdhuna</title>
+  <title>Firebase Image Manager</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-      max-width: 900px;
-      margin: 0 auto;
+      margin: 20px auto;
+      max-width: 1000px;
       padding: 20px;
+      background: #f5f7fa;
+      color: #333;
     }
     h2, h3 {
       color: #1a73e8;
     }
     .upload-section {
-      border: 1px solid #ddd;
-      padding: 20px;
-      border-radius: 8px;
+      border: 2px dashed #1a73e8;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      background: #f0f4ff;
       margin-bottom: 30px;
-      background-color: #f9f9f9;
+      transition: background 0.3s;
     }
-    .image-list {
+    .upload-section.highlight {
+      background: #e3f2fd;
+      border-color: #0d47a1;
+    }
+    .upload-section input {
+      display: none;
+    }
+    .folder-controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .folder-controls select, .folder-controls button {
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+    .folder-controls input {
+      padding: 8px;
+      width: 180px;
+    }
+    .image-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
     }
     .image-card {
-      border: 1px solid #eee;
+      border: 1px solid #ddd;
       border-radius: 8px;
       padding: 10px;
       width: 200px;
       text-align: center;
       background: white;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .image-card:hover {
+      transform: translateY(-4px);
     }
     .image-card img {
       max-width: 100%;
-      border-radius: 4px;
+      border-radius: 6px;
+      height: 150px;
+      object-fit: cover;
     }
     .url-box {
-      font-size: 0.8em;
-      word-break: break-word;
+      font-size: 0.75em;
+      word-break: break-all;
       margin: 8px 0;
+      color: #555;
     }
     button {
-      margin: 5px;
+      cursor: pointer;
       padding: 6px 10px;
       font-size: 0.9em;
-      cursor: pointer;
-      background: #1a73e8;
-      color: white;
       border: none;
       border-radius: 4px;
     }
-    button:hover {
-      background: #0d47a1;
+    button.upload {
+      background: #1a73e8;
+      color: white;
     }
     button.delete {
       background: #d32f2f;
-    }
-    button.delete:hover {
-      background: #b71c1c;
+      color: white;
     }
     button.copy {
       background: #388e3c;
+      color: white;
+    }
+    button.new-folder {
+      background: #ff9800;
+      color: white;
     }
     progress {
       width: 100%;
-      margin: 10px 0;
+      height: 20px;
+      margin-top: 10px;
+      display: none;
     }
     .empty {
       color: #777;
       font-style: italic;
+      text-align: center;
+      padding: 40px;
+    }
+    .folder-label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #1a73e8;
     }
   </style>
 </head>
 <body>
 
-  <h2>📷 上传图片到 Firebase</h2>
-  <div class="upload-section">
-    <input type="file" id="imageUpload" accept="image/*" />
-    <progress id="progress" value="0" max="100" style="display: none; width: 100%;"></progress>
-    <div id="preview-container" style="margin-top: 10px; display: none;">
-      <img id="preview" src="" alt="预览" style="max-width: 200px; border-radius: 4px;" />
-    </div>
+  <h2>📁 Image Manager</h2>
+
+  <!-- Folder Controls -->
+  <div class="folder-controls">
+    <label class="folder-label">Select Folder:</label>
+    <select id="folderSelect"></select>
+    <input type="text" id="newFolderInput" placeholder="New folder name" />
+    <button class="new-folder" id="createFolderBtn">➕ Create Folder</button>
   </div>
 
-  <h3>🗂 已上传的图片</h3>
-  <div id="image-list">
-    <p class="empty">正在加载...</p>
+  <!-- Upload Section (Drag & Drop) -->
+  <div class="upload-section" id="dropZone">
+    <p>📁 Drag & drop images here, or</p>
+    <button class="upload">Choose Files</button>
+    <input type="file" id="fileInput" multiple accept="image/*" />
+    <progress id="uploadProgress" value="0" max="100"></progress>
+  </div>
+
+  <!-- Image List -->
+  <h3>🖼 Uploaded Images (<span id="currentFolderDisplay">Root</span>)</h3>
+  <div id="imageGrid">
+    <p class="empty">Loading...</p>
   </div>
 
   <!-- Firebase SDKs -->
@@ -99,7 +151,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase 配置
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
       authDomain: "mirdhuna-25542.firebaseapp.com",
@@ -111,83 +163,179 @@
       measurementId: "G-YB7LDKHBPV"
     };
 
-    // 初始化 Firebase
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-
     const storageRef = firebase.storage().ref();
     const databaseRef = firebase.database().ref("images");
 
-    // DOM 元素
-    const uploadInput = document.getElementById("imageUpload");
-    const previewContainer = document.getElementById("preview-container");
-    const preview = document.getElementById("preview");
-    const progress = document.getElementById("progress");
-    const imageList = document.getElementById("image-list");
+    // DOM elements
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+    const uploadProgress = document.getElementById("uploadProgress");
+    const imageGrid = document.getElementById("imageGrid");
+    const folderSelect = document.getElementById("folderSelect");
+    const createFolderBtn = document.getElementById("createFolderBtn");
+    const newFolderInput = document.getElementById("newFolderInput");
+    const currentFolderDisplay = document.getElementById("currentFolderDisplay");
 
-    // 上传图片
-    uploadInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+    let currentFolder = ""; // "" means root
 
-      // 显示预览
-      const reader = new FileReader();
-      reader.onload = () => {
-        preview.src = reader.result;
-        previewContainer.style.display = "block";
-      };
-      reader.readAsDataURL(file);
-
-      // 上传到 Firebase Storage
-      const fileName = `images/${new Date().getTime()}_${file.name}`;
-      const fileRef = storageRef.child(fileName);
-      const task = fileRef.put(file);
-
-      progress.style.display = "block";
-      progress.value = 0;
-
-      task.on("state_changed",
-        (snapshot) => {
-          const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          progress.value = percent;
-        },
-        (error) => {
-          console.error("上传失败:", error);
-          alert("上传失败: " + error.message);
-        },
-        () => {
-          task.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            // 保存到 Realtime Database
-            const newImageRef = databaseRef.push();
-            newImageRef.set({
-              id: newImageRef.key,
-              name: file.name,
-              url: downloadURL,
-              path: fileName,
-              uploadedAt: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
-              console.log("图片信息已保存");
-              loadImages(); // 刷新列表
-              uploadInput.value = ""; // 重置输入
-              progress.style.display = "none";
-            });
-          });
-        }
-      );
-    });
-
-    // 加载所有图片
-    function loadImages() {
-      imageList.innerHTML = '<p>加载中...</p>';
+    // =============== Load Folders ===============
+    function loadFolders() {
       databaseRef.once("value", (snapshot) => {
         const data = snapshot.val();
-        imageList.innerHTML = "";
+        const folders = new Set();
+
+        if (data) {
+          Object.values(data).forEach(img => {
+            const path = img.path || "";
+            const match = path.match(/^images\/([^/]+)/);
+            if (match) folders.add(match[1]);
+          });
+        }
+
+        folderSelect.innerHTML = '<option value="">Root</option>';
+        Array.from(folders).sort().forEach(folder => {
+          const opt = document.createElement("option");
+          opt.value = folder;
+          opt.textContent = folder;
+          folderSelect.appendChild(opt);
+        });
+      });
+    }
+
+    createFolderBtn.addEventListener("click", () => {
+      const name = newFolderInput.value.trim();
+      if (!name) return alert("Please enter folder name");
+      if (/[.#$\/\[\]]/.test(name)) return alert("Name cannot contain . # $ [ ] /");
+
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      folderSelect.appendChild(opt);
+      newFolderInput.value = "";
+    });
+
+    folderSelect.addEventListener("change", () => {
+      currentFolder = folderSelect.value;
+      currentFolderDisplay.textContent = currentFolder || "Root";
+      loadImages();
+    });
+
+    // =============== Drag & Drop ===============
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ["dragleave", "drop"].forEach(eventName => {
+      dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+      dropZone.classList.add("highlight");
+    }
+
+    function unhighlight() {
+      dropZone.classList.remove("highlight");
+    }
+
+    dropZone.addEventListener("drop", handleDrop, false);
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length) handleFiles(files);
+    }
+
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length) handleFiles(fileInput.files);
+    });
+
+    dropZone.querySelector("button").onclick = () => fileInput.click();
+
+    // =============== Upload Files ===============
+    function handleFiles(files) {
+      uploadProgress.style.display = "block";
+      uploadProgress.value = 0;
+
+      const totalFiles = files.length;
+      let uploaded = 0;
+
+      Array.from(files).forEach(file => {
+        if (!file.type.match("image.*")) return;
+
+        const timestamp = new Date().getTime();
+        const folderPath = currentFolder ? `${currentFolder}/` : "";
+        const filePath = `images/${folderPath}${timestamp}_${file.name}`;
+        const fileRef = storageRef.child(filePath);
+
+        const task = fileRef.put(file);
+
+        task.on("state_changed",
+          (snapshot) => {
+            const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            uploadProgress.value = ((uploaded * 100) + percent) / totalFiles;
+          },
+          (error) => {
+            console.error("Upload failed:", error);
+            alert("Upload failed: " + file.name);
+          },
+          () => {
+            task.snapshot.ref.getDownloadURL().then((url) => {
+              const dbRef = databaseRef.push();
+              dbRef.set({
+                id: dbRef.key,
+                name: file.name,
+                url: url,
+                path: filePath,
+                folder: currentFolder,
+                uploadedAt: firebase.database.ServerValue.TIMESTAMP
+              }).then(() => {
+                uploaded++;
+                if (uploaded === totalFiles) {
+                  uploadProgress.style.display = "none";
+                  fileInput.value = "";
+                  loadImages();
+                  alert("✅ All images uploaded!");
+                }
+              });
+            });
+          }
+        );
+      });
+    }
+
+    // =============== Load Images ===============
+    function loadImages() {
+      imageGrid.innerHTML = '<p class="empty">Loading...</p>';
+      databaseRef.once("value", (snapshot) => {
+        const data = snapshot.val();
+        imageGrid.innerHTML = "";
 
         if (!data) {
-          imageList.innerHTML = '<p class="empty">暂无图片</p>';
+          imageGrid.innerHTML = '<p class="empty">No images in this folder</p>';
           return;
         }
 
-        const images = Object.values(data).reverse(); // 最新的在前
+        const images = Object.values(data)
+          .filter(img => {
+            if (!currentFolder) return !img.path.includes("/"); // root
+            return img.path.startsWith(`images/${currentFolder}/`);
+          })
+          .sort((a, b) => (b.uploadedAt || 0) - (a.uploadedAt || 0));
+
+        if (images.length === 0) {
+          imageGrid.innerHTML = '<p class="empty">No images in this folder</p>';
+          return;
+        }
 
         images.forEach(img => {
           const card = document.createElement("div");
@@ -195,24 +343,21 @@
 
           card.innerHTML = `
             <img src="${img.url}" alt="${img.name}" />
-            <div class="url-box" title="${img.url}">${img.name}</div>
-            <button class="copy" data-url="${img.url}">复制 URL</button>
-            <button class="delete" data-id="${img.id}" data-path="${img.path}">删除</button>
+            <div class="url-box">${img.name}</div>
+            <button class="copy" data-url="${img.url}">📋 Copy URL</button>
+            <button class="delete" data-id="${img.id}" data-path="${img.path}">🗑 Delete</button>
           `;
 
-          imageList.appendChild(card);
+          imageGrid.appendChild(card);
         });
 
-        // 添加事件监听
+        // Bind events
         document.querySelectorAll(".copy").forEach(btn => {
           btn.addEventListener("click", (e) => {
             const url = e.target.dataset.url;
             navigator.clipboard.writeText(url).then(() => {
-              alert("✅ 图片 URL 已复制到剪贴板:\n" + url);
-            }).catch(err => {
-              console.error("复制失败:", err);
-              prompt("复制 URL:", url);
-            });
+              alert("✅ Image URL copied to clipboard!");
+            }).catch(() => prompt("Copy URL:", url));
           });
         });
 
@@ -221,8 +366,30 @@
             const id = e.target.dataset.id;
             const path = e.target.dataset.path;
 
-            if (confirm("确定要删除这张图片吗？")) {
-              // 1. 删除 Storage 中的文件
-              storageRef.child(path).delete().then(() => {
-                // 2. 删除数据库中的记录
-                database
+            if (confirm("Delete this image?")) {
+              storageRef.child(path).delete().catch(err => {
+                if (err.code !== 'storage/object-not-found') console.error(err);
+              });
+
+              databaseRef.orderByChild("id").equalTo(id).once("value", snap => {
+                snap.forEach(child => child.ref.remove());
+              }).then(() => {
+                alert("✅ Image deleted");
+                loadImages();
+                loadFolders();
+              }).catch(err => {
+                alert("Delete failed: " + err.message);
+              });
+            }
+          });
+        });
+      });
+    }
+
+    // =============== Initialize ===============
+    loadFolders();
+    loadImages();
+  </script>
+
+</body>
+</html>
