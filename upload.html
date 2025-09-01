@@ -99,11 +99,20 @@
       object-fit: cover;
       border-radius: 6px;
     }
-    .url-box {
+    .image-info {
       font-size: 0.75em;
       word-break: break-all;
-      margin: 8px 0;
+      margin: 5px 0;
       color: #555;
+    }
+    .folder-tag {
+      display: inline-block;
+      background: #e3f2fd;
+      color: #1a73e8;
+      font-size: 0.7em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 4px;
     }
     progress {
       width: 100%;
@@ -168,13 +177,9 @@
     };
 
     // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const storage = firebase.storage();
-    const db = firebase.database();
-
-    // References
-    const storageRef = storage.ref();
-    const imagesRef = db.ref("images");
+    firebase.initializeApp(firebaseConfig);
+    const storageRef = firebase.storage().ref();
+    const imagesRef = firebase.database().ref("images");
 
     // DOM Elements
     const dropZone = document.getElementById("dropZone");
@@ -256,11 +261,11 @@
         const timestamp = new Date().getTime();
         const folderPath = currentFolder ? `${currentFolder}/` : "";
         const filePath = `images/${folderPath}${timestamp}_${file.name}`;
-        const fileStorageRef = storageRef.child(filePath);
+        const fileRef = storageRef.child(filePath);
 
-        const uploadTask = fileStorageRef.put(file);
+        const task = fileRef.put(file);
 
-        uploadTask.on("state_changed",
+        task.on("state_changed",
           (snap) => {
             const percent = (snap.bytesTransferred / snap.totalBytes) * 100;
             uploadProgress.value = ((uploaded * 100) + percent) / total;
@@ -270,7 +275,7 @@
             alert(`Failed: ${file.name}`);
           },
           () => {
-            uploadTask.snapshot.ref.getDownloadURL().then(url => {
+            task.snapshot.ref.getDownloadURL().then(url => {
               const newImageRef = imagesRef.push();
               newImageRef.set({
                 id: newImageRef.key,
@@ -310,7 +315,6 @@
           });
         }
 
-        // Rebuild dropdown
         folderSelect.innerHTML = '<option value="">Root</option>';
         Array.from(folders).sort().forEach(folder => {
           const opt = document.createElement("option");
@@ -319,7 +323,6 @@
           folderSelect.appendChild(opt);
         });
 
-        // Restore current folder
         if (folderSelect.querySelector(`option[value="${currentFolder}"]`)) {
           folderSelect.value = currentFolder;
         } else {
@@ -343,26 +346,30 @@
           return;
         }
 
-        // Filter by current folder
-        const filtered = Object.values(data).filter(img => {
+        const items = Object.values(data).filter(img => {
           if (!currentFolder) return !((img.path || "").includes("/"));
           return (img.path || "").startsWith(`images/${currentFolder}/`);
         }).sort((a, b) => (b.uploadedAt || 0) - (a.uploadedAt || 0));
 
-        if (filtered.length === 0) {
+        if (items.length === 0) {
           imageGrid.innerHTML = '<p class="empty">No images in this folder</p>';
           return;
         }
 
-        filtered.forEach(img => {
+        items.forEach(img => {
           const card = document.createElement("div");
           card.className = "image-card";
+
+          const folderLabel = img.folder ? `<span class="folder-tag">${img.folder}</span>` : "📁 Root";
+
           card.innerHTML = `
             <img src="${img.url}" alt="${img.name}" onerror="this.src='https://via.placeholder.com/200x150?text=Image+Not+Found';" />
-            <div class="url-box">${img.name}</div>
+            <div class="image-info">${img.name}</div>
+            ${folderLabel}
             <button class="copy" data-url="${img.url}">📋 Copy URL</button>
             <button class="delete" data-id="${img.id}" data-path="${img.path}">🗑 Delete</button>
           `;
+
           imageGrid.appendChild(card);
         });
 
@@ -376,7 +383,7 @@
           });
         });
 
-        // Delete from Storage & DB
+        // Delete
         document.querySelectorAll(".delete").forEach(btn => {
           btn.addEventListener("click", (e) => {
             const id = e.target.dataset.id;
@@ -384,9 +391,9 @@
 
             if (!confirm("Delete this image permanently?")) return;
 
-            // Delete from Storage
+            // Delete from Firebase Storage
             storageRef.child(path).delete()
-              .then(() => console.log("Deleted from Storage"))
+              .then(() => console.log("✅ Deleted from Storage"))
               .catch(err => {
                 if (err.code === 'storage/object-not-found') {
                   console.log("File already deleted or not found");
@@ -395,8 +402,8 @@
                 }
               });
 
-            // Delete from Database
-            db.ref("images").orderByChild("id").equalTo(id).once("value", snap => {
+            // Delete from Realtime Database
+            imagesRef.orderByChild("id").equalTo(id).once("value", snap => {
               snap.forEach(child => {
                 child.ref.remove()
                   .then(() => {
@@ -405,7 +412,7 @@
                     loadFolders();
                   })
                   .catch(err => {
-                    alert("Failed to delete from database: " + err.message);
+                    alert("❌ Failed to delete from database: " + err.message);
                   });
               });
             });
