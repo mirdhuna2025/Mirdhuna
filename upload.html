@@ -1,136 +1,228 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Firebase Image Upload</title>
+  <title>图片管理 - Mirdhuna</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-    .container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-    h1, h2 { color: #333; }
-    input[type="file"] { margin: 10px 0; }
-    button {
-      background: #4CAF50; color: white; border: none; padding: 10px 20px;
-      border-radius: 5px; cursor: pointer; font-size: 16px;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
     }
-    button:disabled { background: #aaa; cursor: not-allowed; }
-    #upload-progress { width: 100%; height: 20px; background: #eee; border-radius: 10px; overflow: hidden; display: none; }
-    #progress-bar { height: 100%; background: #4CAF50; width: 0%; transition: width 0.3s; }
-    #result { margin-top: 15px; }
-    .success { color: green; }
-    .error { color: red; }
-    #download-url { width: 100%; padding: 8px; margin-top: 8px; }
-    #preview-image { max-width: 100%; margin-top: 10px; display: none; border: 1px solid #ccc; }
+    h2, h3 {
+      color: #1a73e8;
+    }
+    .upload-section {
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      background-color: #f9f9f9;
+    }
+    .image-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .image-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 10px;
+      width: 200px;
+      text-align: center;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .image-card img {
+      max-width: 100%;
+      border-radius: 4px;
+    }
+    .url-box {
+      font-size: 0.8em;
+      word-break: break-word;
+      margin: 8px 0;
+    }
+    button {
+      margin: 5px;
+      padding: 6px 10px;
+      font-size: 0.9em;
+      cursor: pointer;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #0d47a1;
+    }
+    button.delete {
+      background: #d32f2f;
+    }
+    button.delete:hover {
+      background: #b71c1c;
+    }
+    button.copy {
+      background: #388e3c;
+    }
+    progress {
+      width: 100%;
+      margin: 10px 0;
+    }
+    .empty {
+      color: #777;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
-  <h1>Upload Image</h1>
 
-  <div class="container">
-    <h2>Select and Upload</h2>
-    <input type="file" id="file-input" accept="image/*"/>
-    <button id="upload-button">Upload</button>
-    <div id="upload-progress"><div id="progress-bar"></div></div>
+  <h2>📷 上传图片到 Firebase</h2>
+  <div class="upload-section">
+    <input type="file" id="imageUpload" accept="image/*" />
+    <progress id="progress" value="0" max="100" style="display: none; width: 100%;"></progress>
+    <div id="preview-container" style="margin-top: 10px; display: none;">
+      <img id="preview" src="" alt="预览" style="max-width: 200px; border-radius: 4px;" />
+    </div>
   </div>
 
-  <div class="container">
-    <h2>Result</h2>
-    <div id="result"></div>
-    <input type="text" id="download-url" readonly style="display:none;"/>
-    <img id="preview-image" alt="Preview"/>
+  <h3>🗂 已上传的图片</h3>
+  <div id="image-list">
+    <p class="empty">正在加载...</p>
   </div>
 
   <!-- Firebase SDKs -->
-  <script type="module">
-    // Import Firebase libraries (modular v9+)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    // Your Firebase config
+  <script>
+    // Firebase 配置
     const firebaseConfig = {
       apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
       authDomain: "mirdhuna-25542.firebaseapp.com",
       databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
       projectId: "mirdhuna-25542",
-      storageBucket: "mirdhuna-25542.appspot.com", // ✅ Corrected
+      storageBucket: "mirdhuna-25542.firebasestorage.app",
       messagingSenderId: "575924409876",
       appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
       measurementId: "G-YB7LDKHBPV"
     };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const storage = getStorage(app);
+    // 初始化 Firebase
+    firebase.initializeApp(firebaseConfig);
 
-    // DOM elements
-    const fileInput = document.getElementById('file-input');
-    const uploadButton = document.getElementById('upload-button');
-    const progressBar = document.getElementById('progress-bar');
-    const progressContainer = document.getElementById('upload-progress');
-    const resultDiv = document.getElementById('result');
-    const downloadUrlInput = document.getElementById('download-url');
-    const previewImage = document.getElementById('preview-image');
+    const storageRef = firebase.storage().ref();
+    const databaseRef = firebase.database().ref("images");
 
-    // Upload handler
-    uploadButton.addEventListener('click', () => {
-      const file = fileInput.files[0];
-      if (!file) {
-        showMessage("Please select a file first.", "error");
-        return;
-      }
+    // DOM 元素
+    const uploadInput = document.getElementById("imageUpload");
+    const previewContainer = document.getElementById("preview-container");
+    const preview = document.getElementById("preview");
+    const progress = document.getElementById("progress");
+    const imageList = document.getElementById("image-list");
 
-      // File checks
-      if (!file.type.startsWith("image/")) {
-        showMessage("Only image files are allowed.", "error");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        showMessage("File exceeds 5MB limit.", "error");
-        return;
-      }
+    // 上传图片
+    uploadInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-      // Unique filename
-      const fileName = Date.now() + "_" + file.name;
-      const storageRef = ref(storage, "slider_images/" + fileName);
+      // 显示预览
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.src = reader.result;
+        previewContainer.style.display = "block";
+      };
+      reader.readAsDataURL(file);
 
-      // Start upload
-      const uploadTask = uploadBytesResumable(storageRef, file);
+      // 上传到 Firebase Storage
+      const fileName = `images/${new Date().getTime()}_${file.name}`;
+      const fileRef = storageRef.child(fileName);
+      const task = fileRef.put(file);
 
-      progressContainer.style.display = "block";
-      progressBar.style.width = "0%";
-      uploadButton.disabled = true;
-      resultDiv.textContent = "";
-      downloadUrlInput.style.display = "none";
-      previewImage.style.display = "none";
+      progress.style.display = "block";
+      progress.value = 0;
 
-      uploadTask.on("state_changed",
+      task.on("state_changed",
         (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          progressBar.style.width = progress + "%";
+          const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          progress.value = percent;
         },
         (error) => {
-          showMessage("Upload failed: " + error.message, "error");
-          uploadButton.disabled = false;
-          progressContainer.style.display = "none";
+          console.error("上传失败:", error);
+          alert("上传失败: " + error.message);
         },
         () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            showMessage("Upload successful!", "success");
-            downloadUrlInput.value = url;
-            downloadUrlInput.style.display = "block";
-            previewImage.src = url;
-            previewImage.style.display = "block";
-            uploadButton.disabled = false;
-            progressContainer.style.display = "none";
+          task.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            // 保存到 Realtime Database
+            const newImageRef = databaseRef.push();
+            newImageRef.set({
+              id: newImageRef.key,
+              name: file.name,
+              url: downloadURL,
+              path: fileName,
+              uploadedAt: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+              console.log("图片信息已保存");
+              loadImages(); // 刷新列表
+              uploadInput.value = ""; // 重置输入
+              progress.style.display = "none";
+            });
           });
         }
       );
     });
 
-    function showMessage(msg, type) {
-      resultDiv.textContent = msg;
-      resultDiv.className = type;
-    }
-  </script>
-</body>
-</html>
+    // 加载所有图片
+    function loadImages() {
+      imageList.innerHTML = '<p>加载中...</p>';
+      databaseRef.once("value", (snapshot) => {
+        const data = snapshot.val();
+        imageList.innerHTML = "";
+
+        if (!data) {
+          imageList.innerHTML = '<p class="empty">暂无图片</p>';
+          return;
+        }
+
+        const images = Object.values(data).reverse(); // 最新的在前
+
+        images.forEach(img => {
+          const card = document.createElement("div");
+          card.className = "image-card";
+
+          card.innerHTML = `
+            <img src="${img.url}" alt="${img.name}" />
+            <div class="url-box" title="${img.url}">${img.name}</div>
+            <button class="copy" data-url="${img.url}">复制 URL</button>
+            <button class="delete" data-id="${img.id}" data-path="${img.path}">删除</button>
+          `;
+
+          imageList.appendChild(card);
+        });
+
+        // 添加事件监听
+        document.querySelectorAll(".copy").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            const url = e.target.dataset.url;
+            navigator.clipboard.writeText(url).then(() => {
+              alert("✅ 图片 URL 已复制到剪贴板:\n" + url);
+            }).catch(err => {
+              console.error("复制失败:", err);
+              prompt("复制 URL:", url);
+            });
+          });
+        });
+
+        document.querySelectorAll(".delete").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            const id = e.target.dataset.id;
+            const path = e.target.dataset.path;
+
+            if (confirm("确定要删除这张图片吗？")) {
+              // 1. 删除 Storage 中的文件
+              storageRef.child(path).delete().then(() => {
+                // 2. 删除数据库中的记录
+                database
