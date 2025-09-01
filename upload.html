@@ -17,35 +17,30 @@
       color: #1a73e8;
     }
     .upload-section {
-      border: 2px dashed #1a73e8;
+      border: 2px dashed #ccc;
       border-radius: 12px;
-      padding: 40px;
+      padding: 30px;
       text-align: center;
-      background: #f0f4ff;
+      background: #f9f9f9;
       margin-bottom: 30px;
-      transition: background 0.3s;
     }
     .upload-section.highlight {
+      border-color: #1a73e8;
       background: #e3f2fd;
-      border-color: #0d47a1;
     }
-    .upload-section input {
-      display: none;
+    .file-input {
+      margin-bottom: 15px;
     }
-    .folder-controls {
-      margin-bottom: 20px;
+    .folder-controls, .upload-actions {
+      margin-bottom: 15px;
       display: flex;
-      gap: 10px;
       flex-wrap: wrap;
+      gap: 10px;
       align-items: center;
     }
-    .folder-controls select, .folder-controls button {
+    .folder-controls select, .folder-controls input, button {
       padding: 8px 12px;
       font-size: 14px;
-    }
-    .folder-controls input {
-      padding: 8px;
-      width: 180px;
     }
     .image-grid {
       display: flex;
@@ -59,17 +54,13 @@
       width: 200px;
       text-align: center;
       background: white;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      transition: transform 0.2s;
-    }
-    .image-card:hover {
-      transform: translateY(-4px);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .image-card img {
       max-width: 100%;
-      border-radius: 6px;
       height: 150px;
       object-fit: cover;
+      border-radius: 6px;
     }
     .url-box {
       font-size: 0.75em;
@@ -79,14 +70,19 @@
     }
     button {
       cursor: pointer;
-      padding: 6px 10px;
-      font-size: 0.9em;
+      padding: 8px 12px;
       border: none;
       border-radius: 4px;
+      font-size: 14px;
     }
-    button.upload {
+    button.choose {
       background: #1a73e8;
       color: white;
+    }
+    button.upload {
+      background: #4caf50;
+      color: white;
+      font-weight: bold;
     }
     button.delete {
       background: #d32f2f;
@@ -96,15 +92,10 @@
       background: #388e3c;
       color: white;
     }
-    button.new-folder {
-      background: #ff9800;
-      color: white;
-    }
     progress {
       width: 100%;
-      height: 20px;
-      margin-top: 10px;
       display: none;
+      margin-top: 10px;
     }
     .empty {
       color: #777;
@@ -112,10 +103,13 @@
       text-align: center;
       padding: 40px;
     }
-    .folder-label {
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #1a73e8;
+    .hidden {
+      display: none;
+    }
+    .selected-files {
+      margin: 10px 0;
+      font-size: 0.9em;
+      color: #555;
     }
   </style>
 </head>
@@ -125,24 +119,29 @@
 
   <!-- Folder Controls -->
   <div class="folder-controls">
-    <label class="folder-label">Select Folder:</label>
-    <select id="folderSelect"></select>
+    <label><strong>Folder:</strong></label>
+    <select id="folderSelect">
+      <option value="">Root</option>
+    </select>
     <input type="text" id="newFolderInput" placeholder="New folder name" />
-    <button class="new-folder" id="createFolderBtn">➕ Create Folder</button>
+    <button id="createFolderBtn">Create Folder</button>
   </div>
 
-  <!-- Upload Section (Drag & Drop) -->
+  <!-- Upload Section -->
   <div class="upload-section" id="dropZone">
-    <p>📁 Drag & drop images here, or</p>
-    <button class="upload">Choose Files</button>
-    <input type="file" id="fileInput" multiple accept="image/*" />
+    <p>📁 Drag & drop images here</p>
+    <div class="file-input">
+      <input type="file" id="fileInput" multiple accept="image/*" />
+    </div>
+    <div class="selected-files" id="selectedFiles">No files selected</div>
+    <button class="upload" id="uploadBtn">📤 Upload Selected Files</button>
     <progress id="uploadProgress" value="0" max="100"></progress>
   </div>
 
   <!-- Image List -->
   <h3>🖼 Uploaded Images (<span id="currentFolderDisplay">Root</span>)</h3>
   <div id="imageGrid">
-    <p class="empty">Loading...</p>
+    <p class="empty">Loading images...</p>
   </div>
 
   <!-- Firebase SDKs -->
@@ -151,7 +150,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase configuration
+    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
       authDomain: "mirdhuna-25542.firebaseapp.com",
@@ -168,17 +167,139 @@
     const storageRef = firebase.storage().ref();
     const databaseRef = firebase.database().ref("images");
 
-    // DOM elements
+    // DOM Elements
     const dropZone = document.getElementById("dropZone");
     const fileInput = document.getElementById("fileInput");
+    const uploadBtn = document.getElementById("uploadBtn");
     const uploadProgress = document.getElementById("uploadProgress");
     const imageGrid = document.getElementById("imageGrid");
     const folderSelect = document.getElementById("folderSelect");
     const createFolderBtn = document.getElementById("createFolderBtn");
     const newFolderInput = document.getElementById("newFolderInput");
     const currentFolderDisplay = document.getElementById("currentFolderDisplay");
+    const selectedFiles = document.getElementById("selectedFiles");
 
-    let currentFolder = ""; // "" means root
+    let selectedFilesList = []; // Hold files until upload
+    let currentFolder = "";
+
+    // =============== Prevent Default Drag Events ===============
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(event => {
+      dropZone.addEventListener(event, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, false);
+    });
+
+    dropZone.addEventListener("dragenter", () => {
+      dropZone.classList.add("highlight");
+    });
+    dropZone.addEventListener("dragover", () => {
+      dropZone.classList.add("highlight");
+    });
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("highlight");
+    });
+    dropZone.addEventListener("drop", (e) => {
+      dropZone.classList.remove("highlight");
+      const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+      if (files.length) {
+        selectedFilesList = files;
+        updateFileListPreview();
+      }
+    });
+
+    fileInput.addEventListener("change", () => {
+      const files = Array.from(fileInput.files).filter(f => f.type.startsWith("image/"));
+      selectedFilesList = files;
+      updateFileListPreview();
+    });
+
+    function updateFileListPreview() {
+      if (selectedFilesList.length === 0) {
+        selectedFiles.textContent = "No files selected";
+      } else {
+        selectedFiles.innerHTML = `Selected: ${selectedFilesList.length} image(s)`;
+      }
+    }
+
+    // =============== Create Folder ===============
+    createFolderBtn.addEventListener("click", () => {
+      const name = newFolderInput.value.trim();
+      if (!name) return alert("Please enter a folder name");
+      if (/[.#$\/\[\]]/.test(name)) return alert("Invalid characters in folder name");
+
+      if (!Array.from(folderSelect.options).some(opt => opt.value === name)) {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        folderSelect.appendChild(opt);
+      }
+      newFolderInput.value = "";
+    });
+
+    // =============== Folder Change ===============
+    folderSelect.addEventListener("change", () => {
+      currentFolder = folderSelect.value;
+      currentFolderDisplay.textContent = currentFolder || "Root";
+      loadImages();
+    });
+
+    // =============== Upload Button ===============
+    uploadBtn.addEventListener("click", () => {
+      if (selectedFilesList.length === 0) {
+        alert("Please select at least one image");
+        return;
+      }
+
+      uploadProgress.style.display = "block";
+      uploadProgress.value = 0;
+
+      const totalFiles = selectedFilesList.length;
+      let uploaded = 0;
+
+      selectedFilesList.forEach(file => {
+        const timestamp = Date.now();
+        const folderPath = currentFolder ? `${currentFolder}/` : "";
+        const filePath = `images/${folderPath}${timestamp}_${file.name}`;
+        const fileRef = storageRef.child(filePath);
+
+        const task = fileRef.put(file);
+
+        task.on("state_changed",
+          (snapshot) => {
+            const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            uploadProgress.value = ((uploaded * 100) + percent) / totalFiles;
+          },
+          (error) => {
+            console.error("Upload failed:", error);
+            alert(`Failed to upload: ${file.name}`);
+          },
+          () => {
+            task.snapshot.ref.getDownloadURL().then(url => {
+              const dbRef = databaseRef.push();
+              dbRef.set({
+                id: dbRef.key,
+                name: file.name,
+                url: url,
+                path: filePath,
+                folder: currentFolder,
+                uploadedAt: firebase.database.ServerValue.TIMESTAMP
+              }).then(() => {
+                uploaded++;
+                if (uploaded === totalFiles) {
+                  uploadProgress.style.display = "none";
+                  selectedFilesList = [];
+                  fileInput.value = ""; // Clear input
+                  selectedFiles.textContent = "No files selected";
+                  loadImages();
+                  alert("✅ All images uploaded!");
+                }
+              });
+            });
+          }
+        );
+      });
+    });
 
     // =============== Load Folders ===============
     function loadFolders() {
@@ -194,141 +315,45 @@
           });
         }
 
+        // Clear and repopulate
         folderSelect.innerHTML = '<option value="">Root</option>';
         Array.from(folders).sort().forEach(folder => {
-          const opt = document.createElement("option");
-          opt.value = folder;
-          opt.textContent = folder;
-          folderSelect.appendChild(opt);
-        });
-      });
-    }
-
-    createFolderBtn.addEventListener("click", () => {
-      const name = newFolderInput.value.trim();
-      if (!name) return alert("Please enter folder name");
-      if (/[.#$\/\[\]]/.test(name)) return alert("Name cannot contain . # $ [ ] /");
-
-      const opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = name;
-      folderSelect.appendChild(opt);
-      newFolderInput.value = "";
-    });
-
-    folderSelect.addEventListener("change", () => {
-      currentFolder = folderSelect.value;
-      currentFolderDisplay.textContent = currentFolder || "Root";
-      loadImages();
-    });
-
-    // =============== Drag & Drop ===============
-    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
-      dropZone.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    ["dragenter", "dragover"].forEach(eventName => {
-      dropZone.addEventListener(eventName, highlight, false);
-    });
-
-    ["dragleave", "drop"].forEach(eventName => {
-      dropZone.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight() {
-      dropZone.classList.add("highlight");
-    }
-
-    function unhighlight() {
-      dropZone.classList.remove("highlight");
-    }
-
-    dropZone.addEventListener("drop", handleDrop, false);
-    function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-      if (files.length) handleFiles(files);
-    }
-
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length) handleFiles(fileInput.files);
-    });
-
-    dropZone.querySelector("button").onclick = () => fileInput.click();
-
-    // =============== Upload Files ===============
-    function handleFiles(files) {
-      uploadProgress.style.display = "block";
-      uploadProgress.value = 0;
-
-      const totalFiles = files.length;
-      let uploaded = 0;
-
-      Array.from(files).forEach(file => {
-        if (!file.type.match("image.*")) return;
-
-        const timestamp = new Date().getTime();
-        const folderPath = currentFolder ? `${currentFolder}/` : "";
-        const filePath = `images/${folderPath}${timestamp}_${file.name}`;
-        const fileRef = storageRef.child(filePath);
-
-        const task = fileRef.put(file);
-
-        task.on("state_changed",
-          (snapshot) => {
-            const percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            uploadProgress.value = ((uploaded * 100) + percent) / totalFiles;
-          },
-          (error) => {
-            console.error("Upload failed:", error);
-            alert("Upload failed: " + file.name);
-          },
-          () => {
-            task.snapshot.ref.getDownloadURL().then((url) => {
-              const dbRef = databaseRef.push();
-              dbRef.set({
-                id: dbRef.key,
-                name: file.name,
-                url: url,
-                path: filePath,
-                folder: currentFolder,
-                uploadedAt: firebase.database.ServerValue.TIMESTAMP
-              }).then(() => {
-                uploaded++;
-                if (uploaded === totalFiles) {
-                  uploadProgress.style.display = "none";
-                  fileInput.value = "";
-                  loadImages();
-                  alert("✅ All images uploaded!");
-                }
-              });
-            });
+          if (!Array.from(folderSelect.options).some(opt => opt.value === folder)) {
+            const opt = document.createElement("option");
+            opt.value = folder;
+            opt.textContent = folder;
+            folderSelect.appendChild(opt);
           }
-        );
+        });
+
+        // Restore current folder if still exists
+        if (folderSelect.querySelector(`option[value="${currentFolder}"]`)) {
+          folderSelect.value = currentFolder;
+        } else {
+          currentFolder = "";
+          folderSelect.value = "";
+        }
+        currentFolderDisplay.textContent = currentFolder || "Root";
       });
     }
 
     // =============== Load Images ===============
     function loadImages() {
-      imageGrid.innerHTML = '<p class="empty">Loading...</p>';
+      imageGrid.innerHTML = '<p>Loading images...</p>';
+
       databaseRef.once("value", (snapshot) => {
         const data = snapshot.val();
         imageGrid.innerHTML = "";
 
         if (!data) {
-          imageGrid.innerHTML = '<p class="empty">No images in this folder</p>';
+          imageGrid.innerHTML = '<p class="empty">No images found</p>';
           return;
         }
 
         const images = Object.values(data)
           .filter(img => {
-            if (!currentFolder) return !img.path.includes("/"); // root
-            return img.path.startsWith(`images/${currentFolder}/`);
+            if (!currentFolder) return !(img.path || "").includes("/");
+            return (img.path || "").startsWith(`images/${currentFolder}/`);
           })
           .sort((a, b) => (b.uploadedAt || 0) - (a.uploadedAt || 0));
 
@@ -340,27 +365,26 @@
         images.forEach(img => {
           const card = document.createElement("div");
           card.className = "image-card";
-
           card.innerHTML = `
             <img src="${img.url}" alt="${img.name}" />
             <div class="url-box">${img.name}</div>
             <button class="copy" data-url="${img.url}">📋 Copy URL</button>
             <button class="delete" data-id="${img.id}" data-path="${img.path}">🗑 Delete</button>
           `;
-
           imageGrid.appendChild(card);
         });
 
-        // Bind events
+        // Copy URL
         document.querySelectorAll(".copy").forEach(btn => {
           btn.addEventListener("click", (e) => {
             const url = e.target.dataset.url;
             navigator.clipboard.writeText(url).then(() => {
-              alert("✅ Image URL copied to clipboard!");
+              alert("✅ URL copied: " + url);
             }).catch(() => prompt("Copy URL:", url));
           });
         });
 
+        // Delete
         document.querySelectorAll(".delete").forEach(btn => {
           btn.addEventListener("click", (e) => {
             const id = e.target.dataset.id;
@@ -374,7 +398,7 @@
               databaseRef.orderByChild("id").equalTo(id).once("value", snap => {
                 snap.forEach(child => child.ref.remove());
               }).then(() => {
-                alert("✅ Image deleted");
+                alert("✅ Deleted");
                 loadImages();
                 loadFolders();
               }).catch(err => {
