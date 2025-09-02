@@ -1,0 +1,554 @@
+<!-- content.html -->
+<!-- Categories Section -->
+<section class="section" id="categories">
+    <div class="container">
+        <div class="section-header">
+            <h2>Popular Categories</h2>
+            <p>Discover our most loved food categories</p>
+        </div>
+        <div class="categories" id="categoriesContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading categories...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Special Offers -->
+<section class="offers-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Special Offers</h2>
+            <p>Limited time deals just for you</p>
+        </div>
+        <div class="offers-grid" id="offersContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading special offers...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Menu -->
+<section class="section" id="menu">
+    <div class="container">
+        <div class="section-header">
+            <h2>Featured Dishes</h2>
+            <p>Our chef's special selections just for you</p>
+        </div>
+        <div class="menu-grid" id="menuContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading menu items...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Customer Reviews -->
+<section class="section reviews" id="reviews">
+    <div class="container">
+        <div class="section-header">
+            <h2>Customer Reviews</h2>
+            <p>What our customers are saying</p>
+        </div>
+        <div class="reviews-grid" id="reviewsContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading customer reviews...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Order History -->
+<section class="section" id="history">
+    <div class="container">
+        <div class="section-header">
+            <h2>Your Order History</h2>
+            <p>Reorder your favorite meals</p>
+        </div>
+        <div class="history-container" id="orderHistory">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading order history...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+    <div class="container">
+        <h2>Get Exclusive Offers</h2>
+        <p>Subscribe to our newsletter and be the first to know about special deals and new menu items</p>
+        <form class="newsletter-form" id="newsletterForm">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe</button>
+        </form>
+    </div>
+</section>
+
+<style>
+    /* Categories Section */
+    .section {
+        padding: 80px 0;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        color: var(--dark);
+        position: relative;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    .section-header h2:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--gradient);
+        border-radius: 2px;
+    }
+
+    .section-header p {
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+
+    .category-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        position: relative;
+        height: 250px;
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .category-img {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .category-content {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .category-content h3 {
+        color: var(--dark);
+        margin-bottom: 5px;
+    }
+
+    .category-content p {
+        color: #777;
+        font-size: 0.9rem;
+    }
+
+    /* Featured Items */
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .menu-item {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .menu-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .item-img {
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .item-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--primary);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .item-content {
+        padding: 20px;
+    }
+
+    .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .item-header h3 {
+        color: var(--dark);
+    }
+
+    .price {
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .item-desc {
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+    }
+
+    .item-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .rating {
+        color: var(--accent);
+    }
+
+    .add-to-cart {
+        background: var(--gradient);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .add-to-cart:hover {
+        transform: scale(1.05);
+    }
+
+    /* Reviews Section */
+    .reviews {
+        background: linear-gradient(135deg, var(--dark) 0%, #1a3a4a 100%);
+        color: white;
+    }
+
+    .reviews .section-header h2 {
+        color: white;
+    }
+
+    .reviews .section-header p {
+        color: rgba(255,255,255,0.7);
+    }
+
+    .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .review-card {
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 30px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: var(--transition);
+    }
+
+    .review-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255,255,255,0.15);
+    }
+
+    .review-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .review-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+
+    .review-info h4 {
+        margin-bottom: 5px;
+    }
+
+    .review-info p {
+        color: var(--accent);
+        font-size: 0.9rem;
+    }
+
+    .review-content p {
+        font-style: italic;
+        margin-bottom: 15px;
+    }
+
+    .review-rating {
+        color: var(--accent);
+    }
+
+    /* Order History */
+    .history-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .history-item {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+    .history-item:hover {
+        transform: translateX(10px);
+    }
+
+    .history-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        background-size: cover;
+        background-position: center;
+        margin-right: 20px;
+    }
+
+    .history-details {
+        flex: 1;
+    }
+
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .history-header h3 {
+        color: var(--dark);
+    }
+
+    .history-date {
+        color: #777;
+        font-size: 0.9rem;
+    }
+
+    .history-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .history-item-tag {
+        background: rgba(69, 123, 157, 0.1);
+        color: var(--secondary);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .history-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px dashed #eee;
+        padding-top: 15px;
+    }
+
+    .reorder-btn {
+        background: var(--gradient);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .reorder-btn:hover {
+        transform: scale(1.05);
+    }
+
+    /* Special Offers */
+    .offers-section {
+        background: linear-gradient(135deg, #fff5f5 0%, #f0f9ff 100%);
+        padding: 80px 0;
+    }
+
+    .offers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .offer-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .offer-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .offer-img {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .offer-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: var(--primary);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .offer-content {
+        padding: 20px;
+    }
+
+    .offer-content h3 {
+        color: var(--dark);
+        margin-bottom: 10px;
+    }
+
+    .offer-content p {
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .offer-content .price {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .offer-actions {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .offer-actions .add-to-cart {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+
+    .offer-timer {
+        background: var(--secondary);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    /* Newsletter */
+    .newsletter-section {
+        background: var(--gradient);
+        padding: 80px 0;
+        text-align: center;
+        color: white;
+    }
+
+    .newsletter-section h2 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+
+    .newsletter-section p {
+        max-width: 600px;
+        margin: 0 auto 30px;
+        font-size: 1.1rem;
+    }
+
+    .newsletter-form {
+        max-width: 500px;
+        margin: 0 auto;
+        display: flex;
+    }
+
+    .newsletter-form input {
+        flex: 1;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 30px 0 0 30px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+    }
+
+    .newsletter-form button {
+        background: var(--dark);
+        color: white;
+        border: none;
+        padding: 0 30px;
+        border-radius: 0 30px 30px 0;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .newsletter-form button:hover {
+        background: #1a3a4a;
+    }
+</style>
