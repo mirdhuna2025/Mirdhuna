@@ -1,0 +1,113 @@
+<!-- slides.html -->
+<div class="slider-container">
+    <div class="slider" id="slider">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading slides...</p>
+        </div>
+    </div>
+    <button class="slider-btn prev"><i class="fas fa-chevron-left"></i></button>
+    <button class="slider-btn next"><i class="fas fa-chevron-right"></i></button>
+    <div class="slider-nav" id="sliderNav"></div>
+</div>
+
+<style>
+    /* Slider/Carousel */
+    .slider-container {
+        position: relative;
+        height: 70vh;
+        overflow: hidden;
+        border-radius: 0 0 20px 20px;
+        box-shadow: var(--shadow);
+    }
+
+    .slider {
+        display: flex;
+        height: 100%;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .slide {
+        min-width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .slide-content {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 40px;
+        border-radius: 15px;
+        text-align: center;
+        max-width: 600px;
+        color: white;
+        backdrop-filter: blur(5px);
+    }
+
+    .slide-content h2 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    .slide-content p {
+        margin-bottom: 25px;
+        font-size: 1.1rem;
+    }
+
+    .slider-nav {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+    }
+
+    .slider-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .slider-dot.active {
+        background: white;
+        transform: scale(1.2);
+    }
+
+    .slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .slider-btn:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    .prev {
+        left: 20px;
+    }
+
+    .next {
+        right: 20px;
+    }
+</style>
