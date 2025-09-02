@@ -1,0 +1,220 @@
+<!-- header.html -->
+<header>
+    <div class="container header-container">
+        <div class="logo">
+            <i class="fas fa-utensils"></i>
+            <h1>MIRDHUNA</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#reviews">Reviews</a></li>
+                <li><a href="#history">History</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search dishes...">
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Top Action Bar -->
+<div class="top-action-bar">
+    <div class="container action-container">
+        <div class="welcome-message">
+            <h3 style="color: white; margin: 0;">Welcome to MIRDHUNA!</h3>
+        </div>
+        <div class="user-actions">
+            <a href="#" class="location-btn" id="locationTrigger">
+                <i class="fas fa-map-marker-alt"></i> Location
+            </a>
+            <a href="#" class="login-btn" id="loginTrigger">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="#" class="order-btn" id="cartTrigger">
+                <i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span>
+            </a>
+            <a href="#" class="order-btn">
+                <i class="fas fa-receipt"></i> Order Now
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Header Styles */
+    header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: var(--shadow);
+        padding: 15px 0;
+    }
+
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logo h1 {
+        font-size: 1.8rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-weight: 700;
+    }
+
+    .logo i {
+        font-size: 2rem;
+        color: var(--primary);
+    }
+
+    nav ul {
+        display: flex;
+        list-style: none;
+        gap: 30px;
+    }
+
+    nav a {
+        text-decoration: none;
+        color: var(--dark);
+        font-weight: 500;
+        position: relative;
+        padding: 5px 0;
+        transition: var(--transition);
+    }
+
+    nav a:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--primary);
+        transition: var(--transition);
+    }
+
+    nav a:hover:after {
+        width: 100%;
+    }
+
+    nav a:hover {
+        color: var(--primary);
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .search-bar {
+        position: relative;
+    }
+
+    .search-bar input {
+        padding: 10px 15px 10px 40px;
+        border-radius: 30px;
+        border: 1px solid #ddd;
+        font-family: 'Poppins', sans-serif;
+        width: 200px;
+        transition: var(--transition);
+    }
+
+    .search-bar input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2);
+        width: 250px;
+    }
+
+    .search-bar i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777;
+    }
+
+    /* Top Action Bar */
+    .top-action-bar {
+        background: var(--gradient);
+        padding: 15px 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .action-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .cart-icon, .user-icon, .login-btn, .order-btn, .location-btn {
+        position: relative;
+        font-size: 1.3rem;
+        color: white;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    .cart-icon:hover, .user-icon:hover, .login-btn:hover, .order-btn:hover, .location-btn:hover {
+        transform: translateY(-3px);
+    }
+
+    .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: white;
+        color: var(--primary);
+        font-size: 0.7rem;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .login-btn, .order-btn, .location-btn {
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .login-btn:hover, .order-btn:hover, .location-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+</style>
