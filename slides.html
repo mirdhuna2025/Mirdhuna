@@ -1,9 +1,7 @@
 <script type="module">
-  // Import Firebase
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  // Your Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
     authDomain: "mirdhuna-25542.firebaseapp.com",
@@ -15,40 +13,37 @@
     measurementId: "G-YB7LDKHBPV"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-
-  // Reference to the 'slider' node
   const sliderRef = ref(db, 'slider');
 
-  // DOM Elements
   const sliderContainer = document.getElementById('slider');
   const nav = document.getElementById('sliderNav');
 
-  // Listen for real-time updates
+  // Add this to check if Firebase works
+  console.log("Firebase initialized");
+
   onValue(sliderRef, (snapshot) => {
+    console.log("Snapshot received:", snapshot.val()); // Debug line
     const data = snapshot.val();
 
     if (data) {
-      const slides = Object.values(data); // Convert to array
+      const slides = Object.values(data);
       renderSlides(slides);
       initializeSlider();
     } else {
       sliderContainer.innerHTML = '<p class="text-white">No slides found.</p>';
     }
 
-    // Hide loading
     const loading = sliderContainer.querySelector('.loading');
     if (loading) loading.remove();
   }, (error) => {
-    console.error("Error loading slides:", error);
+    console.error("Firebase Error:", error);
     sliderContainer.innerHTML = '<p class="text-red-500">Failed to load slides.</p>';
     const loading = sliderContainer.querySelector('.loading');
     if (loading) loading.remove();
   });
 
-  // Render slides
   function renderSlides(slides) {
     sliderContainer.innerHTML = '';
     nav.innerHTML = '';
@@ -72,26 +67,31 @@
     });
   }
 
-  // Slider logic
   let currentSlide = 0;
   function initializeSlider() {
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.slider-dot');
     const total = slides.length;
 
-    const update = () => {
+    function update() {
       sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
       dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+    }
+
+    window.goToSlide = (i) => {
+      if (i >= 0 && i < total) currentSlide = i;
+      update();
     };
 
-    window.goToSlide = (i) => { if (i >= 0 && i < total) currentSlide = i; update(); };
+    document.querySelector('.prev')?.addEventListener('click', () => {
+      currentSlide = (currentSlide - 1 + total) % total;
+      update();
+    });
 
-    document.querySelector('.prev')?.addEventListener('click', () =>
-      currentSlide = (currentSlide - 1 + total) % total, update()
-    );
-    document.querySelector('.next')?.addEventListener('click', () =>
-      currentSlide = (currentSlide + 1) % total, update()
-    );
+    document.querySelector('.next')?.addEventListener('click', () => {
+      currentSlide = (currentSlide + 1) % total;
+      update();
+    });
 
     update();
   }
