@@ -7,9 +7,11 @@
     <title>MIRDHUNA | Authentic South Indian Cuisine</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-   <!-- Add these to your index.html <head> section -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+    <!-- Add Firebase SDK Scripts HERE, in the <head> -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --primary: #e63946;
@@ -79,6 +81,58 @@
     <div id="content-container"></div>
     <div id="footer-container"></div>
 
+    <!-- Initialize Firebase and get Database reference -->
+    <script>
+        // Your web app's Firebase configuration (Corrected databaseURL)
+        const firebaseConfig = {
+          apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+          authDomain: "mirdhuna-25542.firebaseapp.com",
+          databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com", // Removed trailing space
+          projectId: "mirdhuna-25542",
+          storageBucket: "mirdhuna-25542.firebasestorage.app",
+          messagingSenderId: "575924409876",
+          appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+          measurementId: "G-YB7LDKHBPV"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+
+        // Get a reference to the Realtime Database service
+        const database = firebase.database();
+
+        // Now you can use 'database' to read/write data
+        console.log("Firebase initialized and database reference ready:", database);
+
+        // Example: Read data (replace 'path/to/data' with your actual path)
+        /*
+        const myDataRef = database.ref('path/to/data');
+        myDataRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            console.log("Data retrieved:", data);
+            // Update your HTML here based on the data
+        }, (error) => {
+            console.error("Error reading data:", error);
+        });
+        */
+
+        // Example: Write data (replace 'path/to/data' and 'myValue' with your actual path and data)
+        /*
+        database.ref('test/writeTest').set({
+            message: "Hello from Firebase!",
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        }).then(() => {
+            console.log("Data written successfully");
+        }).catch((error) => {
+            console.error("Error writing data:", error);
+        });
+        */
+
+
+    </script>
+
+    <!-- Your existing loadhtml.js script -->
     <script src="loadhtml.js"></script>
+
 </body>
 </html>
