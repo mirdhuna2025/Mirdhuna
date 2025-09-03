@@ -1,4 +1,4 @@
-<!-- Load Firebase SDKs -->
+<!-- Load Firebase SDKs (Legacy - Works on All Servers) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 
@@ -23,7 +23,7 @@
   const sliderContainer = document.getElementById('slider');
   const nav = document.getElementById('sliderNav');
 
-  // Listen for data
+  // Listen for real-time updates
   sliderRef.on('value', (snapshot) => {
     const data = snapshot.val();
 
@@ -46,7 +46,7 @@
         slideEl.appendChild(content);
         sliderContainer.appendChild(slideEl);
 
-        // Create dot
+        // Create dot navigation
         const dot = document.createElement('div');
         dot.classList.add('slider-dot');
         if (index === 0) dot.classList.add('active');
@@ -70,7 +70,7 @@
         }
       };
 
-      // Buttons
+      // Prev/Next buttons
       document.querySelector('.prev')?.addEventListener('click', () => {
         currentSlide = (currentSlide - 1 + slides.length) % slides.length;
         updateSlider();
@@ -87,7 +87,7 @@
       console.log("No slides found");
     }
 
-    // Remove loading
+    // Remove loading spinner
     const loading = sliderContainer.querySelector('.loading');
     if (loading) loading.remove();
   }, (error) => {
