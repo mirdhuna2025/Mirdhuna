@@ -1,200 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Slides</title>
+<!-- Load Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script>
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+    authDomain: "mirdhuna-25542.firebaseapp.com",
+    databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+    projectId: "mirdhuna-25542",
+    storageBucket: "mirdhuna-25542.firebasestorage.app",
+    messagingSenderId: "575924409876",
+    appId: "1:575924409876:web:6ba1ed88ce941d9c83b901"
+  };
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; }
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const sliderRef = db.ref('slider');
 
-    .slider-container {
-      position: relative;
-      height: 70vh;
-      overflow: hidden;
-      border-radius: 0 0 20px 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      margin: 20px auto;
-      max-width: 1200px;
-    }
+  // DOM Elements
+  const sliderContainer = document.getElementById('slider');
+  const nav = document.getElementById('sliderNav');
 
-    .slider {
-      display: flex;
-      height: 100%;
-      transition: transform 0.5s ease;
-    }
+  // Listen for data
+  sliderRef.on('value', (snapshot) => {
+    const data = snapshot.val();
 
-    .slide {
-      min-width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    if (data && Object.keys(data).length > 0) {
+      const slides = Object.values(data);
 
-    .slide-content {
-      background: rgba(0,0,0,0.6);
-      color: white;
-      padding: 40px;
-      border-radius: 15px;
-      max-width: 600px;
-      text-align: center;
-      backdrop-filter: blur(5px);
-    }
-
-    .slide-content h2 {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
-    }
-
-    .slider-nav {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
-    }
-
-    .slider-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.5);
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .slider-dot.active {
-      background: white;
-      transform: scale(1.3);
-    }
-
-    .slider-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255,255,255,0.3);
-      color: white;
-      border: none;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    .prev { left: 20px; }
-    .next { right: 20px; }
-  </style>
-</head>
-<body>
-
-  <div class="slider-container">
-    <div class="slider" id="slider">
-      <div class="slide" style="background-image: url('https://source.unsplash.com/random/1200x600/?nature');">
-        <div class="slide-content">
-          <h2>Loading...</h2>
-        </div>
-      </div>
-    </div>
-    <button class="slider-btn prev"><i class="fas fa-chevron-left"></i></button>
-    <button class="slider-btn next"><i class="fas fa-chevron-right"></i></button>
-    <div class="slider-nav" id="sliderNav">
-      <div class="slider-dot active"></div>
-    </div>
-  </div>
-
-  <!-- Firebase CDN Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
-
-  <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
-      authDomain: "mirdhuna-25542.firebaseapp.com",
-      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
-      projectId: "mirdhuna-25542",
-      storageBucket: "mirdhuna-25542.firebasestorage.app",
-      messagingSenderId: "575924409876",
-      appId: "1:575924409876:web:6ba1ed88ce941d9c83b901"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const sliderRef = db.ref('slider');
-
-    const sliderContainer = document.getElementById('slider');
-    const nav = document.getElementById('sliderNav');
-
-    sliderRef.on('value', (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const slides = Object.values(data);
-        renderSlides(slides);
-        initSlider();
-      }
-    });
-
-    function renderSlides(slides) {
+      // Clear old content
       sliderContainer.innerHTML = '';
       nav.innerHTML = '';
 
-      slides.forEach((slide, i) => {
+      // Render each slide
+      slides.forEach((slide, index) => {
         const slideEl = document.createElement('div');
-        slideEl.className = 'slide';
-        slideEl.style.backgroundImage = `url(${slide.url})`;
+        slideEl.classList.add('slide');
+        if (slide.url) slideEl.style.backgroundImage = `url(${slide.url})`;
 
         const content = document.createElement('div');
-        content.className = 'slide-content';
-        content.innerHTML = `<h2>${slide.text || 'Slide'}</h2>`;
+        content.classList.add('slide-content');
+        content.innerHTML = `<h2>${slide.text || 'No Title'}</h2>`;
         slideEl.appendChild(content);
         sliderContainer.appendChild(slideEl);
 
+        // Create dot
         const dot = document.createElement('div');
-        dot.className = 'slider-dot';
-        if (i === 0) dot.classList.add('active');
-        dot.onclick = () => goToSlide(i);
+        dot.classList.add('slider-dot');
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(index));
         nav.appendChild(dot);
       });
-    }
 
-    let current = 0;
-    function initSlider() {
-      const slides = document.querySelectorAll('.slide');
-      const dots = document.querySelectorAll('.slider-dot');
-
-      function update() {
-        sliderContainer.style.transform = `translateX(-${current * 100}%)`;
-        dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
+      // Initialize slider controls
+      let currentSlide = 0;
+      function updateSlider() {
+        sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+        document.querySelectorAll('.slider-dot').forEach((dot, i) => {
+          dot.classList.toggle('active', i === currentSlide);
+        });
       }
 
-      window.goToSlide = (i) => {
-        if (i >= 0 && i < slides.length) current = i;
-        update();
+      window.goToSlide = (index) => {
+        if (index >= 0 && index < slides.length) {
+          currentSlide = index;
+          updateSlider();
+        }
       };
 
-      document.querySelector('.prev').onclick = () => {
-        current = (current - 1 + slides.length) % slides.length;
-        update();
-      };
+      // Buttons
+      document.querySelector('.prev')?.addEventListener('click', () => {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        updateSlider();
+      });
 
-      document.querySelector('.next').onclick = () => {
-        current = (current + 1) % slides.length;
-        update();
-      };
+      document.querySelector('.next')?.addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateSlider();
+      });
 
-      update();
+      // Initial render
+      updateSlider();
+    } else {
+      console.log("No slides found");
     }
-  </script>
 
-</body>
-</html>
+    // Remove loading
+    const loading = sliderContainer.querySelector('.loading');
+    if (loading) loading.remove();
+  }, (error) => {
+    console.error("Firebase Error:", error);
+    const loading = sliderContainer.querySelector('.loading');
+    if (loading) loading.remove();
+  });
+</script>
