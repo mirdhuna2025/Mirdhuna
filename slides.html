@@ -1,9 +1,9 @@
-<!-- Replace your current script with this -->
+<!-- Firebase SDK (Legacy CDN - Works Everywhere) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 
 <script>
-  // Firebase config
+  // Your Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
     authDomain: "mirdhuna-25542.firebaseapp.com",
@@ -16,7 +16,7 @@
   };
 
   // Initialize Firebase
-  const app = firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   const sliderRef = db.ref('slider');
 
@@ -24,75 +24,88 @@
   const sliderContainer = document.getElementById('slider');
   const nav = document.getElementById('sliderNav');
 
-  // Listen for data changes
+  // Listen for data
   sliderRef.on('value', (snapshot) => {
     const data = snapshot.val();
 
-    if (data && Object.keys(data).length > 0) {
+    if (data) {
       const slides = Object.values(data);
-
-      // Clear loading
-      sliderContainer.innerHTML = '';
-      nav.innerHTML = '';
-
-      slides.forEach((slide, index) => {
-        const slideEl = document.createElement('div');
-        slideEl.classList.add('slide');
-        if (slide.url) slideEl.style.backgroundImage = `url(${slide.url})`;
-
-        const content = document.createElement('div');
-        content.classList.add('slide-content');
-        content.innerHTML = `<h2>${slide.text || 'No Title'}</h2>`;
-        slideEl.appendChild(content);
-        sliderContainer.appendChild(slideEl);
-
-        const dot = document.createElement('div');
-        dot.classList.add('slider-dot');
-        if (index === 0) dot.classList.add('active');
-        dot.addEventListener('click', () => goToSlide(index));
-        nav.appendChild(dot);
-      });
-
-      // Initialize slider controls
-      let currentSlide = 0;
-      function updateSlider() {
-        sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
-        document.querySelectorAll('.slider-dot').forEach((dot, i) => {
-          dot.classList.toggle('active', i === currentSlide);
-        });
-      }
-
-      window.goToSlide = (index) => {
-        if (index >= 0 && index < slides.length) {
-          currentSlide = index;
-          updateSlider();
-        }
-      };
-
-      // Buttons
-      document.querySelector('.prev')?.addEventListener('click', () => {
-        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-        updateSlider();
-      });
-
-      document.querySelector('.next')?.addEventListener('click', () => {
-        currentSlide = (currentSlide + 1) % slides.length;
-        updateSlider();
-      });
-
-      // Initial render
-      updateSlider();
+      renderSlides(slides);
+      initializeSlider();
     } else {
-      sliderContainer.innerHTML = '<p class="text-white">No slides found.</p>';
+      console.log("No data found at /slider");
+      return;
     }
 
-    // Remove loading
+    // Remove any loading placeholder
     const loading = sliderContainer.querySelector('.loading');
     if (loading) loading.remove();
   }, (error) => {
     console.error("Firebase Error:", error);
-    sliderContainer.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
-    const loading = sliderContainer.querySelector('.loading');
-    if (loading) loading.remove();
+    // Don't clear everything — keep static fallback
   });
+
+  function renderSlides(slides) {
+    // Clear only the old slides, not the whole container
+    Array.from(sliderContainer.children)
+         .forEach(child => {
+           if (!child.classList.contains('slider-btn') && !child.classList.contains('slider-nav')) {
+             sliderContainer.removeChild(child);
+           }
+         });
+
+    // Clear nav dots
+    nav.innerHTML = '';
+
+    slides.forEach((slide, index) => {
+      const slideEl = document.createElement('div');
+      slideEl.classList.add('slide');
+      if (slide.url) slideEl.style.backgroundImage = `url(${slide.url})`;
+
+      const content = document.createElement('div');
+      content.classList.add('slide-content');
+      content.innerHTML = `<h2>${slide.text || 'No Title'}</h2>`;
+      slideEl.appendChild(content);
+      sliderContainer.appendChild(slideEl);
+
+      const dot = document.createElement('div');
+      dot.classList.add('slider-dot');
+      if (index === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(index));
+      nav.appendChild(dot);
+    });
+  }
+
+  // Slider Controls
+  let currentSlide = 0;
+
+  function initializeSlider() {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.slider-dot');
+    const total = slides.length;
+
+    function update() {
+      sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+    }
+
+    window.goToSlide = (index) => {
+      if (index >= 0 && index < total) {
+        currentSlide = index;
+        update();
+      }
+    };
+
+    document.querySelector('.prev')?.addEventListener('click', () => {
+      currentSlide = (currentSlide - 1 + total) % total;
+      update();
+    });
+
+    document.querySelector('.next')?.addEventListener('click', () => {
+      currentSlide = (currentSlide + 1) % total;
+      update();
+    });
+
+    update();
+  }
 </script>
