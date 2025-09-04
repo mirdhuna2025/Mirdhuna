@@ -499,15 +499,43 @@
           imageGrid.appendChild(card);
         });
 
-        // Copy URL
+        // =============== Copy URL (Improved) ===============
         document.querySelectorAll(".copy").forEach(btn => {
-          btn.addEventListener("click", (e) => {
+          btn.addEventListener("click", async (e) => { // Make the handler async
             const url = e.target.dataset.url;
-            navigator.clipboard.writeText(url).then(() => {
+            try {
+              // Try using the modern clipboard API
+              await navigator.clipboard.writeText(url);
               alert("✅ URL copied!");
-            }).catch(() => prompt("Copy URL:", url));
+            } catch (err) {
+              // If it fails, use the prompt fallback
+              // Wrap prompt in try/catch in case it's also restricted
+              try {
+                const fallbackResult = prompt("Copy URL:", url);
+                // Optionally, provide feedback if prompt was cancelled (fallbackResult is null)
+                // if (fallbackResult === null) {
+                //   console.log("Prompt cancelled or failed");
+                // } else {
+                //   alert("Please copy the URL from the prompt.");
+                // }
+                // For simplicity, we can just rely on the prompt itself.
+                 // Alerting here might be confusing if prompt failed, so maybe just log or do nothing.
+                 // Let's just ensure the prompt runs.
+                 if (fallbackResult !== null) { // If user didn't cancel the prompt
+                     // User had the chance to copy, assume they did or cancelled intentionally
+                     // You could alert here, but often the prompt itself is enough feedback.
+                     // alert("Please copy the URL from the prompt.");
+                 }
+              } catch (promptErr) {
+                 console.error("Both copy methods failed:", err, promptErr);
+                 // Last resort: Alert the URL or open in new tab?
+                 alert("Could not copy. Please copy this URL manually: " + url);
+                 // Or maybe: window.open(url, '_blank'); // Opens URL in new tab
+              }
+            }
           });
         });
+        // =============== End Copy URL ===============
 
         // Delete image
         document.querySelectorAll(".delete").forEach(btn => {
