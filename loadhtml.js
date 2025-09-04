@@ -454,3 +454,32 @@ function renderReviews(reviews) {
     
     container.innerHTML = reviewsHTML;
                     }
+// Make site fully mobile-friendly
+(function () {
+  // Add <meta viewport>
+  const meta = document.createElement("meta");
+  meta.name = "viewport";
+  meta.content = "width=device-width, initial-scale=1.0";
+  document.head.appendChild(meta);
+
+  // Add responsive CSS
+  const style = document.createElement("style");
+  style.textContent = `
+    body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    img { max-width: 100%; height: auto; }
+    iframe { max-width: 100%; height: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { word-wrap: break-word; padding: 8px; }
+    .container { width: 90%; margin: auto; }
+    nav { display: flex; flex-wrap: wrap; justify-content: space-between; }
+    h1, h2, h3, p { word-wrap: break-word; }
+  `;
+  document.head.appendChild(style);
+
+  // Adjust font size dynamically
+  function adjustFontSize() {
+    document.body.style.fontSize = window.innerWidth < 600 ? "16px" : "18px";
+  }
+  window.addEventListener("resize", adjustFontSize);
+  window.addEventListener("load", adjustFontSize);
+})();
