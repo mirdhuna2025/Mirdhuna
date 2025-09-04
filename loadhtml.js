@@ -34,20 +34,30 @@ function loadComponent(containerId, filePath) {
 
 function initHeaderEvents() {
     // Add event listeners for header elements
-    document.getElementById('locationTrigger').addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('Location selection would open here');
-    });
+    const locationTrigger = document.getElementById('locationTrigger');
+    const loginTrigger = document.getElementById('loginTrigger');
+    const cartTrigger = document.getElementById('cartTrigger');
     
-    document.getElementById('loginTrigger').addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('Login modal would open here');
-    });
+    if (locationTrigger) {
+        locationTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Location selection would open here');
+        });
+    }
     
-    document.getElementById('cartTrigger').addEventListener('click', function(e) {
-        e.preventDefault();
-        alert('Cart would open here');
-    });
+    if (loginTrigger) {
+        loginTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Login modal would open here');
+        });
+    }
+    
+    if (cartTrigger) {
+        cartTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Cart would open here');
+        });
+    }
 }
 
 function initSliderEvents() {
@@ -86,284 +96,361 @@ function initFirebase() {
 }
 
 function loadFirebaseContent() {
-    // This would fetch data from Firebase and populate the UI
-    // For demonstration, we'll simulate loading with sample data
+    const database = firebase.database();
     
-    // Simulate loading slides
-    setTimeout(() => {
-        const slidesContainer = document.getElementById('slider');
-        if (slidesContainer) {
-            slidesContainer.innerHTML = `
-                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1606755962773-d324e0a13086?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');">
-                    <div class="slide-content">
-                        <h2>Authentic South Indian Flavors</h2>
-                        <p>Experience the rich and diverse cuisine of South India with our traditional recipes</p>
-                        <a href="#menu" class="cta-button">Order Now</a>
-                    </div>
-                </div>
-                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1198&q=80');">
-                    <div class="slide-content">
-                        <h2>Healthy & Organic Options</h2>
-                        <p>Choose from our wide selection of healthy, organic meals prepared with fresh ingredients</p>
-                        <a href="#menu" class="cta-button">Explore Menu</a>
-                    </div>
-                </div>
-                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1606491956689-2ea866880c84?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80');">
-                    <div class="slide-content">
-                        <h2>Special Offers This Week</h2>
-                        <p>Get 20% off on all South Indian dishes and free delivery for orders over ₹500</p>
-                        <a href="#menu" class="cta-button">View Offers</a>
-                    </div>
-                </div>
-            `;
-            
-            // Add navigation dots
-            const sliderNav = document.getElementById('sliderNav');
-            if (sliderNav) {
-                sliderNav.innerHTML = `
-                    <div class="slider-dot active"></div>
-                    <div class="slider-dot"></div>
-                    <div class="slider-dot"></div>
-                `;
-            }
+    // Load slides from Firebase
+    const slidesRef = database.ref('slides');
+    slidesRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            renderSlides(Object.values(data));
+        } else {
+            // Fallback content if no slides in database
+            renderSlides([
+                {
+                    title: "Authentic South Indian Flavors",
+                    description: "Experience the rich and diverse cuisine of South India with our traditional recipes",
+                    image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                },
+                {
+                    title: "Healthy & Organic Options",
+                    description: "Choose from our wide selection of healthy, organic meals prepared with fresh ingredients",
+                    image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1198&q=80"
+                },
+                {
+                    title: "Special Offers This Week",
+                    description: "Get 20% off on all South Indian dishes and free delivery for orders over ₹500",
+                    image: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80"
+                }
+            ]);
         }
-    }, 1000);
+    });
     
-    // Simulate loading categories
-    setTimeout(() => {
-        const categoriesContainer = document.getElementById('categoriesContainer');
-        if (categoriesContainer) {
-            categoriesContainer.innerHTML = `
-                <div class="category-card">
-                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1606755962773-d324e0a13086?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');"></div>
-                    <div class="category-content">
-                        <h3>South Indian</h3>
-                        <p>Traditional dishes with authentic flavors</p>
-                    </div>
-                </div>
-                <div class="category-card">
-                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1081&q=80');"></div>
-                    <div class="category-content">
-                        <h3>Pizza</h3>
-                        <p>Freshly baked with premium ingredients</p>
-                    </div>
-                </div>
-                <div class="category-card">
-                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80');"></div>
-                    <div class="category-content">
-                        <h3>Burgers</h3>
-                        <p>Juicy, flavorful, and satisfying</p>
-                    </div>
-                </div>
-                <div class="category-card">
-                    <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1587&q=80');"></div>
-                    <div class="category-content">
-                        <h3>Mexican</h3>
-                        <p>Spicy, bold, and authentic flavors</p>
-                    </div>
-                </div>
-            `;
+    // Load categories from Firebase
+    const categoriesRef = database.ref('categories');
+    categoriesRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            renderCategories(Object.values(data));
+        } else {
+            // Fallback content if no categories in database
+            renderCategories([
+                {
+                    name: "South Indian",
+                    description: "Traditional dishes with authentic flavors",
+                    image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                },
+                {
+                    name: "Pizza",
+                    description: "Freshly baked with premium ingredients",
+                    image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1081&q=80"
+                },
+                {
+                    name: "Burgers",
+                    description: "Juicy, flavorful, and satisfying",
+                    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80"
+                },
+                {
+                    name: "Mexican",
+                    description: "Spicy, bold, and authentic flavors",
+                    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1587&q=80"
+                }
+            ]);
         }
-    }, 1200);
+    });
     
-    // Simulate loading offers
-    setTimeout(() => {
-        const offersContainer = document.getElementById('offersContainer');
-        if (offersContainer) {
-            offersContainer.innerHTML = `
-                <div class="offer-card">
-                    <div class="offer-img" style="background-image: url('https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1198&q=80');">
-                        <div class="offer-badge">20% OFF</div>
-                    </div>
-                    <div class="offer-content">
-                        <h3>Truffle Pasta Special</h3>
-                        <p>Handmade pasta with black truffle, parmesan, and fresh herbs</p>
-                        <div class="price">₹380 <span style="text-decoration: line-through; color: #777; font-size: 1rem;">₹475</span></div>
-                        <div class="offer-actions">
-                            <button class="add-to-cart" data-id="1" data-name="Truffle Pasta" data-price="380">Add to Cart</button>
-                            <div class="offer-timer">Ends in 24:15:30</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="offer-card">
-                    <div class="offer-img" style="background-image: url('https://images.unsplash.com/photo-1606755962773-d324e0a13086?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');">
-                        <div class="offer-badge">BUY 1 GET 1</div>
-                    </div>
-                    <div class="offer-content">
-                        <h3>Dragon Roll Deal</h3>
-                        <p>Eel, avocado, cucumber topped with spicy tuna and eel sauce</p>
-                        <div class="price">₹450</div>
-                        <div class="offer-actions">
-                            <button class="add-to-cart" data-id="2" data-name="Dragon Roll" data-price="450">Add to Cart</button>
-                            <div class="offer-timer">Ends in 18:45:22</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="offer-card">
-                    <div class="offer-img" style="background-image: url('https://images.unsplash.com/photo-1606491956689-2ea866880c84?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80');">
-                        <div class="offer-badge">FREE DELIVERY</div>
-                    </div>
-                    <div class="offer-content">
-                        <h3>Gourmet Burger Bundle</h3>
-                        <p>Angus beef, aged cheddar, caramelized onions, and truffle aioli</p>
-                        <div class="price">₹335</div>
-                        <div class="offer-actions">
-                            <button class="add-to-cart" data-id="3" data-name="Gourmet Burger" data-price="335">Add to Cart</button>
-                            <div class="offer-timer">Ends in 32:10:45</div>
-                        </div>
-                    </div>
-                </div>
-            `;
+    // Load offers from Firebase
+    const offersRef = database.ref('offers');
+    offersRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            renderOffers(Object.values(data));
+        } else {
+            // Fallback content if no offers in database
+            renderOffers([
+                {
+                    name: "Truffle Pasta Special",
+                    description: "Handmade pasta with black truffle, parmesan, and fresh herbs",
+                    badge: "20% OFF",
+                    price: 380,
+                    originalPrice: 475,
+                    image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1198&q=80"
+                },
+                {
+                    name: "Dragon Roll Deal",
+                    description: "Eel, avocado, cucumber topped with spicy tuna and eel sauce",
+                    badge: "BUY 1 GET 1",
+                    price: 450,
+                    image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                },
+                {
+                    name: "Gourmet Burger Bundle",
+                    description: "Angus beef, aged cheddar, caramelized onions, and truffle aioli",
+                    badge: "FREE DELIVERY",
+                    price: 335,
+                    image: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80"
+                }
+            ]);
         }
-    }, 1400);
+    });
     
-    // Simulate loading menu items
-    setTimeout(() => {
-        const menuContainer = document.getElementById('menuContainer');
-        if (menuContainer) {
-            menuContainer.innerHTML = `
-                <div class="menu-item">
-                    <div class="item-img" style="background-image: url('https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1198&q=80');">
-                        <div class="item-badge">Chef's Special</div>
-                    </div>
-                    <div class="item-content">
-                        <div class="item-header">
-                            <h3>Truffle Pasta</h3>
-                            <div class="price">₹475</div>
-                        </div>
-                        <p class="item-desc">Handmade pasta with black truffle, parmesan, and fresh herbs</p>
-                        <div class="item-actions">
-                            <div class="rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span>(128)</span>
-                            </div>
-                            <button class="add-to-cart" data-id="4" data-name="Truffle Pasta" data-price="475">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <div class="item-img" style="background-image: url('https://images.unsplash.com/photo-1606755962773-d324e0a13086?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');">
-                        <div class="item-badge">New</div>
-                    </div>
-                    <div class="item-content">
-                        <div class="item-header">
-                            <h3>Dragon Roll</h3>
-                            <div class="price">₹550</div>
-                        </div>
-                        <p class="item-desc">Eel, avocado, cucumber topped with spicy tuna and eel sauce</p>
-                        <div class="item-actions">
-                            <div class="rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                                <span>(96)</span>
-                            </div>
-                            <button class="add-to-cart" data-id="5" data-name="Dragon Roll" data-price="550">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="menu-item">
-                    <div class="item-img" style="background-image: url('https://images.unsplash.com/photo-1606491956689-2ea866880c84?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80');">
-                        <div class="item-badge">Popular</div>
-                    </div>
-                    <div class="item-content">
-                        <div class="item-header">
-                            <h3>Gourmet Burger</h3>
-                            <div class="price">₹420</div>
-                        </div>
-                        <p class="item-desc">Angus beef, aged cheddar, caramelized onions, and truffle aioli</p>
-                        <div class="item-actions">
-                            <div class="rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span>(245)</span>
-                            </div>
-                            <button class="add-to-cart" data-id="6" data-name="Gourmet Burger" data-price="420">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-            `;
+    // Load menu items from Firebase
+    const menuRef = database.ref('menu');
+    menuRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            renderMenuItems(Object.values(data));
+        } else {
+            // Fallback content if no menu items in database
+            renderMenuItems([
+                {
+                    name: "Truffle Pasta",
+                    description: "Handmade pasta with black truffle, parmesan, and fresh herbs",
+                    badge: "Chef's Special",
+                    price: 475,
+                    rating: 4.5,
+                    reviews: 128,
+                    image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1198&q=80"
+                },
+                {
+                    name: "Dragon Roll",
+                    description: "Eel, avocado, cucumber topped with spicy tuna and eel sauce",
+                    badge: "New",
+                    price: 550,
+                    rating: 4.0,
+                    reviews: 96,
+                    image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+                },
+                {
+                    name: "Gourmet Burger",
+                    description: "Angus beef, aged cheddar, caramelized onions, and truffle aioli",
+                    badge: "Popular",
+                    price: 420,
+                    rating: 5.0,
+                    reviews: 245,
+                    image: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80"
+                }
+            ]);
         }
-    }, 1600);
+    });
     
-    // Simulate loading reviews
-    setTimeout(() => {
-        const reviewsContainer = document.getElementById('reviewsContainer');
-        if (reviewsContainer) {
-            reviewsContainer.innerHTML = `
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="review-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="review-info">
-                            <h4>Deepak Sharma</h4>
-                            <p>Food Enthusiast</p>
-                        </div>
-                    </div>
-                    <div class="review-content">
-                        <p>"The dosa at MIRDHUNA is absolutely divine! The quality of ingredients and presentation was exceptional. Will definitely order again!"</p>
-                        <div class="review-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="review-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="review-info">
-                            <h4>Priya Patel</h4>
-                            <p>Regular Customer</p>
-                        </div>
-                    </div>
-                    <div class="review-content">
-                        <p>"Fast delivery and the food arrived hot and fresh. The biryani was the best I've had in months. Highly recommended!"</p>
-                        <div class="review-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="review-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="review-info">
-                            <h4>Rajesh Kumar</h4>
-                            <p>Food Blogger</p>
-                        </div>
-                    </div>
-                    <div class="review-content">
-                        <p>"As a food blogger, I'm picky about quality. MIRDHUNA exceeded my expectations. The idli was a masterpiece!"</p>
-                        <div class="review-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-            `;
+    // Load reviews from Firebase
+    const reviewsRef = database.ref('reviews');
+    reviewsRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            renderReviews(Object.values(data));
+        } else {
+            // Fallback content if no reviews in database
+            renderReviews([
+                {
+                    name: "Deepak Sharma",
+                    role: "Food Enthusiast",
+                    comment: "The dosa at MIRDHUNA is absolutely divine! The quality of ingredients and presentation was exceptional. Will definitely order again!",
+                    stars: 5
+                },
+                {
+                    name: "Priya Patel",
+                    role: "Regular Customer",
+                    comment: "Fast delivery and the food arrived hot and fresh. The biryani was the best I've had in months. Highly recommended!",
+                    stars: 4.5
+                },
+                {
+                    name: "Rajesh Kumar",
+                    role: "Food Blogger",
+                    comment: "As a food blogger, I'm picky about quality. MIRDHUNA exceeded my expectations. The idli was a masterpiece!",
+                    stars: 5
+                }
+            ]);
         }
-    }, 1800);
+    });
 }
+
+// Render functions for each section
+function renderSlides(slides) {
+    const slider = document.getElementById('slider');
+    if (!slider) return;
+    
+    let slidesHTML = '';
+    slides.forEach((slide, index) => {
+        slidesHTML += `
+        <div class="slide" style="background-image: url('${slide.image}');">
+            <div class="slide-content">
+                <h2>${slide.title}</h2>
+                <p>${slide.description}</p>
+                <a href="#menu" class="cta-button">Order Now</a>
+            </div>
+        </div>
+        `;
+    });
+    
+    slider.innerHTML = slidesHTML;
+    
+    // Add navigation dots
+    const sliderNav = document.getElementById('sliderNav');
+    if (sliderNav) {
+        let navHTML = '';
+        slides.forEach((_, index) => {
+            navHTML += `<div class="slider-dot ${index === 0 ? 'active' : ''}"></div>`;
+        });
+        sliderNav.innerHTML = navHTML;
+    }
+    
+    // Add slider navigation functionality
+    initSliderNavigation(slides.length);
+}
+
+function initSliderNavigation(slideCount) {
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+    const slider = document.getElementById('slider');
+    const dots = document.querySelectorAll('.slider-dot');
+    
+    if (!prevBtn || !nextBtn || !slider) return;
+    
+    let currentIndex = 0;
+    
+    function updateSlider() {
+        slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        // Update active dot
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+    }
+    
+    prevBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + slideCount) % slideCount;
+        updateSlider();
+    });
+    
+    nextBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % slideCount;
+        updateSlider();
+    });
+    
+    // Dot navigation
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            currentIndex = index;
+            updateSlider();
+        });
+    });
+    
+    // Auto-slide
+    setInterval(() => {
+        currentIndex = (currentIndex + 1) % slideCount;
+        updateSlider();
+    }, 5000);
+}
+
+function renderCategories(categories) {
+    const container = document.getElementById('categoriesContainer');
+    if (!container) return;
+    
+    let categoriesHTML = '';
+    categories.forEach(category => {
+        categoriesHTML += `
+        <div class="category-card">
+            <div class="category-img" style="background-image: url('${category.image}');"></div>
+            <div class="category-content">
+                <h3>${category.name}</h3>
+                <p>${category.description}</p>
+            </div>
+        </div>
+        `;
+    });
+    
+    container.innerHTML = categoriesHTML;
+}
+
+function renderOffers(offers) {
+    const container = document.getElementById('offersContainer');
+    if (!container) return;
+    
+    let offersHTML = '';
+    offers.forEach(offer => {
+        offersHTML += `
+        <div class="offer-card">
+            <div class="offer-img" style="background-image: url('${offer.image}');">
+                <div class="offer-badge">${offer.badge}</div>
+            </div>
+            <div class="offer-content">
+                <h3>${offer.name}</h3>
+                <p>${offer.description}</p>
+                <div class="price">₹${offer.price} ${offer.originalPrice ? `<span style="text-decoration: line-through; color: #777; font-size: 1rem;">₹${offer.originalPrice}</span>` : ''}</div>
+                <div class="offer-actions">
+                    <button class="add-to-cart">Add to Cart</button>
+                    <div class="offer-timer">Ends in 24:15:30</div>
+                </div>
+            </div>
+        </div>
+        `;
+    });
+    
+    container.innerHTML = offersHTML;
+}
+
+function renderMenuItems(menuItems) {
+    const container = document.getElementById('menuContainer');
+    if (!container) return;
+    
+    let menuHTML = '';
+    menuItems.forEach(item => {
+        menuHTML += `
+        <div class="menu-item">
+            <div class="item-img" style="background-image: url('${item.image}');">
+                <div class="item-badge">${item.badge}</div>
+            </div>
+            <div class="item-content">
+                <div class="item-header">
+                    <h3>${item.name}</h3>
+                    <div class="price">₹${item.price}</div>
+                </div>
+                <p class="item-desc">${item.description}</p>
+                <div class="item-actions">
+                    <div class="rating">
+                        ${'<i class="fas fa-star"></i>'.repeat(Math.floor(item.rating))}
+                        ${item.rating % 1 ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                        <span>(${item.reviews})</span>
+                    </div>
+                    <button class="add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+        `;
+    });
+    
+    container.innerHTML = menuHTML;
+}
+
+function renderReviews(reviews) {
+    const container = document.getElementById('reviewsContainer');
+    if (!container) return;
+    
+    let reviewsHTML = '';
+    reviews.forEach(review => {
+        reviewsHTML += `
+        <div class="review-card">
+            <div class="review-header">
+                <div class="review-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="review-info">
+                    <h4>${review.name}</h4>
+                    <p>${review.role}</p>
+                </div>
+            </div>
+            <div class="review-content">
+                <p>"${review.comment}"</p>
+                <div class="review-rating">
+                    ${'<i class="fas fa-star"></i>'.repeat(Math.floor(review.stars))}
+                    ${review.stars % 1 ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                </div>
+            </div>
+        </div>
+        `;
+    });
+    
+    container.innerHTML = reviewsHTML;
+                    }
