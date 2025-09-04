@@ -70,6 +70,75 @@
         #header-container, #slides-container, #content-container, #footer-container {
             width: 100%;
         }
+
+        /* Responsive Images */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Touch-friendly buttons */
+        button, .btn {
+            min-height: 44px;
+            min-width: 44px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* Flexbox helper */
+        .flex-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Mobile Responsive Styles */
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+
+            p, li {
+                font-size: 0.95rem;
+            }
+
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            p, li {
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
