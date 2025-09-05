@@ -72,7 +72,7 @@
             margin: 0 auto;
         }
 
-        /* CHANGED: Categories - Always 3 items per row */
+        /* Categories - Always 3 items per row */
         .categories {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -115,7 +115,7 @@
             font-size: 0.9rem;
         }
 
-        /* CHANGED: Featured Items - Always 2 items per row */
+        /* Featured Items - Always 2 items per row */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -364,7 +364,7 @@
             transform: scale(1.05);
         }
 
-        /* CHANGED: Special Offers - Always 2 items per row */
+        /* Special Offers - Always 2 items per row */
         .offers-section {
             background: linear-gradient(135deg, #fff5f5 0%, #f0f9ff 100%);
             padding: 80px 0;
@@ -446,32 +446,32 @@
             font-weight: 600;
         }
 
-        /* Newsletter */
-        .newsletter-section {
+        /* Mobile Number Subscription Section */
+        .subscription-section {
             background: var(--gradient);
             padding: 80px 0;
             text-align: center;
             color: white;
         }
 
-        .newsletter-section h2 {
+        .subscription-section h2 {
             font-size: 2.5rem;
             margin-bottom: 20px;
         }
 
-        .newsletter-section p {
+        .subscription-section p {
             max-width: 600px;
             margin: 0 auto 30px;
             font-size: 1.1rem;
         }
 
-        .newsletter-form {
+        .subscription-form {
             max-width: 500px;
             margin: 0 auto;
             display: flex;
         }
 
-        .newsletter-form input {
+        .subscription-form input {
             flex: 1;
             padding: 15px 20px;
             border: none;
@@ -480,7 +480,11 @@
             font-size: 1rem;
         }
 
-        .newsletter-form button {
+        .subscription-form input::placeholder {
+            color: #999;
+        }
+
+        .subscription-form button {
             background: var(--dark);
             color: white;
             border: none;
@@ -493,7 +497,7 @@
             transition: var(--transition);
         }
 
-        .newsletter-form button:hover {
+        .subscription-form button:hover {
             background: #1a3a4a;
         }
 
@@ -535,7 +539,7 @@
                 font-size: 0.95rem;
             }
             
-            /* CHANGED: Categories - Still 3 columns on mobile */
+            /* Categories - Still 3 columns on mobile */
             .categories {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 20px;
@@ -553,7 +557,7 @@
                 padding: 15px;
             }
             
-            /* CHANGED: Featured Menu - Still 2 columns on mobile */
+            /* Featured Menu - Still 2 columns on mobile */
             .menu-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
@@ -614,7 +618,7 @@
                 width: 100%;
             }
             
-            /* CHANGED: Special Offers - Still 2 columns on mobile */
+            /* Special Offers - Still 2 columns on mobile */
             .offers-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
@@ -630,27 +634,27 @@
                 text-align: center;
             }
             
-            /* Newsletter */
-            .newsletter-section {
+            /* Subscription */
+            .subscription-section {
                 padding: 50px 0;
             }
             
-            .newsletter-section h2 {
+            .subscription-section h2 {
                 font-size: 2rem;
             }
             
-            .newsletter-section p {
+            .subscription-section p {
                 font-size: 0.95rem;
                 margin-bottom: 20px;
             }
             
-            .newsletter-form {
+            .subscription-form {
                 flex-direction: column;
                 gap: 15px;
             }
             
-            .newsletter-form input,
-            .newsletter-form button {
+            .subscription-form input,
+            .subscription-form button {
                 width: 100%;
                 border-radius: 30px;
                 padding: 15px;
@@ -677,7 +681,7 @@
                 bottom: -8px;
             }
             
-            /* CHANGED: Categories - Still 3 columns on small screens */
+            /* Categories - Still 3 columns on small screens */
             .categories {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 15px;
@@ -691,7 +695,7 @@
                 height: 120px;
             }
             
-            /* CHANGED: Special Offers - Still 2 columns on small screens */
+            /* Special Offers - Still 2 columns on small screens */
             .offers-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
@@ -701,7 +705,7 @@
                 height: 150px;
             }
             
-            /* CHANGED: Menu Items - Still 2 columns on small screens */
+            /* Menu Items - Still 2 columns on small screens */
             .menu-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
@@ -803,13 +807,13 @@
         </div>
     </section>
 
-    <!-- Newsletter Section -->
-    <section class="newsletter-section">
+    <!-- Mobile Number Subscription Section -->
+    <section class="subscription-section">
         <div class="container">
             <h2>Get Exclusive Offers</h2>
-            <p>Subscribe to our newsletter and be the first to know about special deals and new menu items</p>
-            <form class="newsletter-form" id="newsletterForm">
-                <input type="email" placeholder="Enter your email address" required>
+            <p>Subscribe with your mobile number and be the first to know about special deals and new menu items</p>
+            <form class="subscription-form" id="subscriptionForm">
+                <input type="tel" placeholder="Enter your mobile number" required>
                 <button type="submit">Subscribe</button>
             </form>
         </div>
