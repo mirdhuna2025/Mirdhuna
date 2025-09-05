@@ -1,386 +1,485 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MIRDHUNA | Exquisite Dining</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRDHUNA | Exquisite Dining</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics-compat.js"></script>
+    <style>
+        :root {
+            --primary: #d40000;
+            --secondary: #f9c300;
+            --accent: #ffd700;
+            --dark: #1b1b1b;
+            --light: #fffaf0;
+            --text: #333;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            --glow: 0 0 15px rgba(249, 195, 0, 0.4);
+            --radius: 20px;
+            --transition: all 0.3s ease;
+        }
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics-compat.js"></script>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-  <style>
-    :root {
-      --primary: #d40000; /* Deep Royal Red */
-      --secondary: #f9c300; /* Golden Yellow */
-      --accent: #ffd700; /* Pure Gold */
-      --dark: #1b1b1b;
-      --light: #fffaf0;
-      --text: #333;
-      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-      --glow: 0 0 15px rgba(249, 195, 0, 0.4);
-      --radius: 20px;
-      --transition: all 0.3s ease;
-    }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(249, 195, 0, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0); }
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        .pulse {
+            animation: pulse 0.8s ease-out;
+            box-shadow: var(--glow);
+        }
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #cddc39; /* Light yellow background */
-      color: var(--text);
-      overflow-x: hidden;
-    }
+        .colorful-mirdhuna {
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow 5s ease infinite;
+            font-size: 2.3rem;
+            letter-spacing: -1px;
+            margin: 0;
+        }
 
-    @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0.7); }
-      50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(249, 195, 0, 0); }
-      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0); }
-    }
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-    .pulse {
-      animation: pulse 0.8s ease-out;
-      box-shadow: var(--glow);
-    }
+        header {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.15);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 16px 0;
+        }
 
-    header {
-      backdrop-filter: blur(12px);
-      background: rgba(255, 255, 255, 0.15);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 16px 0;
-    }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-family: 'Playfair Display', serif;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-family: 'Playfair Display', serif;
-      color: white;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
+        .logo i {
+            font-size: 2.2rem;
+            color: var(--accent);
+            text-shadow: var(--glow);
+        }
 
-    .logo i {
-      font-size: 2.2rem;
-      color: var(--accent);
-      text-shadow: var(--glow);
-    }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
 
-    .logo h1 {
-      font-size: 2.3rem;
-      background: linear-gradient(to right, #fff, #ffe599);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -1px;
-    }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+            padding: 6px 0;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            transition: var(--transition);
+        }
 
-    nav ul {
-      display: flex;
-      list-style: none;
-      gap: 40px;
-    }
+        nav a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
 
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1.1rem;
-      position: relative;
-      padding: 6px 0;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-      transition: var(--transition);
-    }
+        nav a:hover::before {
+            width: 100%;
+        }
 
-    nav a::before {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 3px;
-      background: var(--accent);
-      border-radius: 3px;
-      transition: width 0.4s ease;
-    }
+        nav a:hover {
+            color: #fffaf0;
+            transform: translateY(-3px);
+        }
 
-    nav a:hover::before {
-      width: 100%;
-    }
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-left: auto;
+        }
 
-    nav a:hover {
-      color: #fffaf0;
-      transform: translateY(-3px);
-    }
+        .menu-toggle:hover {
+            transform: rotate(18deg);
+        }
 
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.6rem;
-      color: white;
-      cursor: pointer;
-      transition: var(--transition);
-    }
+        .top-action-bar {
+            background: var(--gradient);
+            padding: 18px 0;
+            box-shadow: var(--shadow);
+        }
 
-    .menu-toggle:hover {
-      transform: rotate(18deg);
-    }
+        .action-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    /* Top Action Bar */
-    .top-action-bar {
-      background: var(--gradient);
-      padding: 18px 0;
-      box-shadow: var(--shadow);
-    }
+        .welcome-message h3 {
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
 
-    .action-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
+        .user-actions {
+            display: flex;
+            gap: 14px;
+        }
 
-    .welcome-message h3 {
-      color: white;
-      font-weight: 600;
-      font-size: 1.2rem;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    }
+        .user-actions a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 22px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
 
-    .user-actions {
-      display: flex;
-      gap: 14px;
-    }
+        .user-actions a:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
 
-    .user-actions a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 22px;
-      border-radius: 50px;
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      transition: var(--transition);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-    }
+        .user-actions a i {
+            font-size: 1.25rem;
+        }
 
-    .user-actions a:hover {
-      background: rgba(255, 255, 255, 0.4);
-      transform: translateY(-4px) scale(1.08);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    }
+        .cart-count {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--accent);
+            color: var(--dark);
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+        }
 
-    .user-actions a i {
-      font-size: 1.25rem;
-    }
+        .social-icons {
+            display: flex;
+            gap: 12px;
+            margin-left: 10px;
+        }
 
-    .cart-count {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      background: var(--accent);
-      color: var(--dark);
-      font-size: 0.7rem;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
-    }
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
 
-    /* Social Icons + Call */
-    .social-icons {
-      display: flex;
-      gap: 12px;
-      margin-left: 10px;
-    }
+        .social-icons a:hover {
+            background: white;
+            transform: translateY(-4px) scale(1.1);
+            color: var(--dark);
+        }
 
-    .social-icons a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      font-size: 1.1rem;
-      transition: var(--transition);
-    }
+        .social-icons a.call {
+            background: #25d366 !important;
+            color: white;
+        }
 
-    .social-icons a:hover {
-      background: white;
-      transform: translateY(-4px) scale(1.1);
-      color: var(--dark);
-    }
+        .social-icons a.call:hover {
+            background: #128c7e !important;
+            color: white;
+        }
 
-    .social-icons a.call {
-      background: #25d366 !important;
-      color: white;
-    }
+        .social-icons a.facebook:hover { color: #3b5998; }
+        .social-icons a.instagram:hover { color: #e1306c; }
+        .social-icons a.whatsapp:hover { color: #075e54; }
+        .social-icons a.telegram:hover { color: #0088cc; }
 
-    .social-icons a.call:hover {
-      background: #128c7e !important;
-      color: white;
-    }
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.4s ease;
+        }
 
-    .social-icons a.facebook:hover { color: #3b5998; }
-    .social-icons a.instagram:hover { color: #e1306c; }
-    .social-icons a.whatsapp:hover { color: #075e54; }
-    .social-icons a.telegram:hover { color: #0088cc; }
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
 
-    /* Modals */
-    .modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(6px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-      opacity: 0;
-      visibility: hidden;
-      transition: 0.4s ease;
-    }
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: translateY(-30px);
+            transition: 0.5s ease;
+        }
 
-    .modal.active {
-      opacity: 1;
-      visibility: visible;
-    }
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
 
-    .modal-content {
-      background: white;
-      padding: 35px;
-      border-radius: var(--radius);
-      width: 90%;
-      max-width: 420px;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      transform: translateY(-30px);
-      transition: 0.5s ease;
-    }
+        .modal h2 {
+            margin-bottom: 16px;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+        }
 
-    .modal.active .modal-content {
-      transform: translateY(0);
-    }
+        .modal p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
 
-    .modal h2 {
-      margin-bottom: 16px;
-      color: var(--primary);
-      font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
-    }
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 1.5rem;
+            color: #aaa;
+            cursor: pointer;
+        }
 
-    .modal p {
-      color: #666;
-      margin-bottom: 20px;
-      font-size: 1rem;
-    }
+        .modal-close:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
 
-    .modal-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      font-size: 1.5rem;
-      color: #aaa;
-      cursor: pointer;
-    }
+        /* Floating Cart */
+        .floating-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            border-radius: 50px;
+            padding: 15px 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+            cursor: pointer;
+            transition: var(--transition);
+        }
 
-    .modal-close:hover {
-      color: var(--primary);
-      transform: rotate(90deg);
-    }
+        .floating-cart:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
 
-    @media (max-width: 768px) {
-      .menu-toggle { display: block; }
-      nav { display: none; }
-      nav.active { display: block; margin-top: 10px; }
-      nav ul {
-        flex-direction: column;
-        gap: 12px;
-        background: rgba(220, 30, 40, 0.95);
-        padding: 15px;
-        border-radius: var(--radius);
-      }
-      .container {
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
-      }
-      .logo { justify-content: center; }
-      .action-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 16px;
-      }
-      .social-icons { margin-left: 0; }
-      .user-actions { justify-content: center; flex-wrap: wrap; }
-    }
-  </style>
+        .floating-cart i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .floating-cart .cart-count {
+            position: static;
+            background: var(--gradient);
+            color: white;
+            width: 30px;
+            height: 30px;
+            font-size: 0.9rem;
+        }
+
+        .floating-cart .total-price {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: var(--dark);
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            border-left: 5px solid var(--primary);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { 
+                display: block; 
+            }
+            
+            nav { 
+                display: none; 
+            }
+            
+            nav.active { 
+                display: block; 
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(220, 30, 40, 0.95);
+                padding: 15px;
+                border-radius: 0 0 var(--radius) var(--radius);
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .header-container {
+                flex-direction: row;
+                text-align: center;
+                gap: 12px;
+            }
+            
+            .logo { 
+                justify-content: flex-start; 
+            }
+            
+            .action-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+            
+            .social-icons { 
+                margin-left: 0; 
+            }
+            
+            .user-actions { 
+                justify-content: center; 
+                flex-wrap: wrap; 
+            }
+            
+            .floating-cart {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+            }
+            
+            .floating-cart .total-price {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<!-- Header -->
 <header>
-  <div class="container">
+  <div class="header-container">
     <div class="logo">
       <i class="fas fa-utensils"></i>
-      <h1>MIRDHUNA</h1>
+      <h1 class="colorful-mirdhuna">MIRDHUNA</h1>
     </div>
-
-    <button class="menu-toggle" id="menuToggle">
-      <i class="fas fa-bars"></i>
-    </button>
 
     <nav id="mainNav">
       <ul>
         <li><a href="#home">Home</a></li>
+        <li><a href="#categories">Categories</a></li>
         <li><a href="#menu">Menu</a></li>
-        <!-- Removed Categories -->
-        <!-- Moved Reviews and History here -->
+        <li><a href="#offers">Offers</a></li>
         <li><a href="#reviews">Reviews</a></li>
         <li><a href="#history">History</a></li>
       </ul>
     </nav>
+
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
   </div>
 </header>
 
-<!-- Top Action Bar -->
 <div class="top-action-bar">
-  <div class="action-container container">
+  <div class="action-container">
     <div class="welcome-message">
       <h3>✨ Welcome to MIRDHUNA – Where Flavor Meets Elegance</h3>
     </div>
@@ -390,19 +489,6 @@
       </a>
       <a href="#" id="locationTrigger">
         <i class="fas fa-map-marker-alt"></i> Location
-      </a>
-      <a href="#" id="cartTrigger">
-        <i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span>
-      </a>
-      <a href="#" id="orderNow">
-        <i class="fas fa-bolt"></i> Order Now
-      </a>
-      <!-- Moved Reviews and History links here -->
-      <a href="#reviews">
-        <i class="fas fa-star"></i> Reviews
-      </a>
-      <a href="#history">
-        <i class="fas fa-history"></i> History
       </a>
     </div>
 
@@ -416,7 +502,15 @@
   </div>
 </div>
 
-<!-- Login Modal -->
+<!-- Floating Cart -->
+<div class="floating-cart" id="floatingCart">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="cart-count">0</span>
+    <span class="total-price">₹0.00</span>
+</div>
+
+<div class="notification" id="notification"></div>
+
 <div class="modal" id="loginModal">
   <div class="modal-content">
     <span class="modal-close" id="closeLogin">&times;</span>
@@ -432,7 +526,6 @@
   </div>
 </div>
 
-<!-- Location Modal -->
 <div class="modal" id="locationModal">
   <div class="modal-content">
     <span class="modal-close" id="closeLocation">&times;</span>
@@ -441,18 +534,18 @@
   </div>
 </div>
 
-<!-- Cart Modal -->
 <div class="modal" id="cartModal">
   <div class="modal-content">
     <span class="modal-close" id="closeCart">&times;</span>
     <h2>🛒 Your Cart</h2>
-    <p id="cartItems">No items yet. Add something delicious!</p>
-    <button id="viewCart" style="background:var(--gradient); color:white; border:none; padding:14px 35px; border-radius:30px; font-weight:600; cursor:pointer; display:none; margin-top:15px;">Go to Checkout</button>
+    <div id="cartItemsContainer">
+      <p id="cartItems">No items yet. Add something delicious!</p>
+      <button id="viewCart" style="background:var(--gradient); color:white; border:none; padding:14px 35px; border-radius:30px; font-weight:600; cursor:pointer; display:none; margin-top:15px;">Place Order</button>
+    </div>
   </div>
 </div>
 
 <script>
-  // 🔥 Firebase Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
     authDomain: "mirdhuna-25542.firebaseapp.com",
@@ -464,18 +557,14 @@
     measurementId: "G-YB7LDKHBPV"
   };
 
-  // Initialize Firebase
   const app = firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   const analytics = firebase.analytics();
 
-  // DOM Elements
   const menuToggle = document.getElementById('menuToggle');
   const mainNav = document.getElementById('mainNav');
   const loginTrigger = document.getElementById('loginTrigger');
   const locationTrigger = document.getElementById('locationTrigger');
-  const cartTrigger = document.getElementById('cartTrigger');
-  const orderNow = document.getElementById('orderNow');
 
   const loginModal = document.getElementById('loginModal');
   const locationModal = document.getElementById('locationModal');
@@ -489,12 +578,15 @@
   const cartItems = document.getElementById('cartItems');
   const viewCart = document.getElementById('viewCart');
   const cartCount = document.querySelector('.cart-count');
+  const cartItemsContainer = document.getElementById('cartItemsContainer');
+  const floatingCart = document.getElementById('floatingCart');
+  const totalPriceElement = document.querySelector('.total-price');
+  const notification = document.getElementById('notification');
 
-  let count = parseInt(localStorage.getItem('cartCount')) || 0;
-  const menuItems = ["Truffle Pasta", "Spicy Ramen", "Saffron Biryani", "Mango Lassi", "Chocolate Fondue"];
-  cartCount.textContent = count;
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let currentUser = null;
+  updateCartDisplay();
 
-  // Toggle Mobile Menu
   menuToggle.addEventListener('click', () => {
     mainNav.classList.toggle('active');
     menuToggle.innerHTML = mainNav.classList.contains('active') 
@@ -502,7 +594,6 @@
       : '<i class="fas fa-bars"></i>';
   });
 
-  // Close menu on nav click
   document.querySelectorAll('#mainNav ul li a').forEach(link => {
     link.addEventListener('click', () => {
       mainNav.classList.remove('active');
@@ -510,7 +601,6 @@
     });
   });
 
-  // === LOGIN MODAL ===
   loginTrigger.addEventListener('click', (e) => {
     e.preventDefault();
     loginModal.classList.add('active');
@@ -522,7 +612,6 @@
     document.body.style.overflow = '';
   });
 
-  // Auto-detect location on login
   loginBtn.addEventListener('click', async () => {
     const num = mobileInput.value.trim();
     if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
@@ -531,8 +620,6 @@
     }
 
     let lat, lng;
-
-    // Show loading
     loginBtn.textContent = "🔍 Detecting Location...";
     loginBtn.disabled = true;
 
@@ -589,6 +676,7 @@
         };
         usersRef.child(num).set(userData)
           .then(() => {
+            currentUser = num;
             alert(`✅ Logged in successfully as ${num}!`);
             loginModal.classList.remove('active');
             document.body.style.overflow = '';
@@ -604,7 +692,6 @@
       });
   });
 
-  // === LOCATION MODAL ===
   locationTrigger.addEventListener('click', (e) => {
     e.preventDefault();
     const lat = localStorage.getItem('userLat');
@@ -624,20 +711,16 @@
     document.body.style.overflow = '';
   });
 
-  // === CART ===
-  cartTrigger.addEventListener('click', (e) => {
+  floatingCart.addEventListener('click', (e) => {
     e.preventDefault();
+    if (!currentUser) {
+      loginModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      return;
+    }
     cartModal.classList.add('active');
     document.body.style.overflow = 'hidden';
-
-    if (count === 0) {
-      cartItems.textContent = "No items yet. Add something delicious!";
-      viewCart.style.display = "none";
-    } else {
-      const item = menuItems[Math.floor(Math.random() * menuItems.length)];
-      cartItems.innerHTML = `<strong>${count} item(s)</strong> in cart:<br>✨ <em>${item}</em>`;
-      viewCart.style.display = "block";
-    }
+    renderCartItems();
   });
 
   closeCart.addEventListener('click', () => {
@@ -645,16 +728,6 @@
     document.body.style.overflow = '';
   });
 
-  orderNow.addEventListener('click', () => {
-    count++;
-    cartCount.textContent = count;
-    cartCount.parentElement.classList.add('pulse');
-    setTimeout(() => cartCount.parentElement.classList.remove('pulse'), 800);
-    alert(`🎉 Item added! Total: ${count}`);
-    localStorage.setItem('cartCount', count);
-  });
-
-  // Close modals on click outside
   [loginModal, locationModal, cartModal].forEach(modal => {
     modal.addEventListener('click', e => {
       if (e.target === modal) {
@@ -664,7 +737,6 @@
     });
   });
 
-  // Escape key
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       loginModal.classList.remove('active');
@@ -673,7 +745,157 @@
       document.body.style.overflow = '';
     }
   });
-</script>
 
+  function showNotification(message) {
+      notification.textContent = message;
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+          notification.classList.remove('show');
+      }, 3000);
+  }
+
+  function updateCartDisplay() {
+      cartCount.textContent = cart.length;
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      totalPriceElement.textContent = `₹${total.toFixed(2)}`;
+      localStorage.setItem('cart', JSON.stringify(cart));
+  }
+
+  function addToCart(item) {
+      const existingItem = cart.find(cartItem => cartItem.id === item.id);
+      
+      if (existingItem) {
+          existingItem.quantity += 1;
+      } else {
+          cart.push({...item});
+      }
+      
+      updateCartDisplay();
+      showNotification(`${item.name} added to cart!`);
+  }
+
+  function updateQuantity(index, change) {
+      const item = cart[index];
+      item.quantity += change;
+      
+      if (item.quantity <= 0) {
+          cart.splice(index, 1);
+      }
+      
+      updateCartDisplay();
+      renderCartItems();
+  }
+
+  function renderCartItems() {
+      if (cart.length === 0) {
+          cartItems.innerHTML = "No items yet. Add something delicious!";
+          viewCart.style.display = "none";
+          return;
+      }
+
+      let cartHTML = '<div class="cart-items">';
+      let total = 0;
+
+      cart.forEach((item, index) => {
+          const itemTotal = item.price * item.quantity;
+          total += itemTotal;
+          
+          cartHTML += `
+              <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+                  <div>
+                      <h4>${item.name}</h4>
+                      <p>₹${item.price} each</p>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                      <div class="quantity-controls">
+                          <button class="quantity-btn minus" data-index="${index}">-</button>
+                          <span class="quantity-value">${item.quantity}</span>
+                          <button class="quantity-btn plus" data-index="${index}">+</button>
+                      </div>
+                      <div style="margin-top: 10px; font-weight: bold;">₹${itemTotal.toFixed(2)}</div>
+                  </div>
+              </div>
+          `;
+      });
+
+      cartHTML += `
+          <div style="border-top: 2px solid #eee; padding-top: 15px; margin-top: 15px;">
+              <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem;">
+                  <span>Total:</span>
+                  <span>₹${total.toFixed(2)}</span>
+              </div>
+          </div>
+      `;
+
+      cartItems.innerHTML = cartHTML;
+      viewCart.style.display = "block";
+
+      // Add event listeners for quantity buttons
+      document.querySelectorAll('.quantity-btn.minus').forEach(button => {
+          button.addEventListener('click', (e) => {
+              const index = parseInt(e.target.getAttribute('data-index'));
+              updateQuantity(index, -1);
+          });
+      });
+
+      document.querySelectorAll('.quantity-btn.plus').forEach(button => {
+          button.addEventListener('click', (e) => {
+              const index = parseInt(e.target.getAttribute('data-index'));
+              updateQuantity(index, 1);
+          });
+      });
+
+      viewCart.onclick = () => {
+          if (cart.length > 0) {
+              if (!currentUser) {
+                  cartModal.classList.remove('active');
+                  document.body.style.overflow = '';
+                  setTimeout(() => {
+                      loginModal.classList.add('active');
+                      document.body.style.overflow = 'hidden';
+                  }, 100);
+                  return;
+              }
+              
+              const orderRef = db.ref('orders').push();
+              orderRef.set({
+                  userId: currentUser,
+                  items: cart,
+                  total: total,
+                  timestamp: new Date().toISOString(),
+                  status: 'pending'
+              }).then(() => {
+                  cart = [];
+                  updateCartDisplay();
+                  renderCartItems();
+                  cartModal.classList.remove('active');
+                  document.body.style.overflow = '';
+                  showNotification("Order placed successfully!");
+              }).catch(error => {
+                  console.error("Error placing order:", error);
+                  alert("Failed to place order. Please try again.");
+              });
+          }
+      };
+  }
+
+  document.getElementById('subscriptionForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const mobile = this.querySelector('input').value;
+      
+      const subscriptionsRef = db.ref('subscriptions');
+      subscriptionsRef.push({
+          mobile: mobile,
+          timestamp: new Date().toISOString()
+      }).then(() => {
+          alert(`Thank you for subscribing with mobile number: ${mobile}`);
+          this.reset();
+      }).catch((error) => {
+          console.error("Error saving subscription:", error);
+          alert("Subscription failed. Please try again.");
+      });
+  });
+</script>
 </body>
-</html>
+  </html>
