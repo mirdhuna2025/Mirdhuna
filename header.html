@@ -1,252 +1,680 @@
-<!-- header.html -->
-<header>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-  }
-  img {
-    max-width: 100%;
-    height: auto;
-  }
-  .container {
-    width: 90%;
-    margin: auto;
-  }
-  nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-  h1, h2, h3, p {
-    word-wrap: break-word;
-  }
-</style>
-<script>
-  function adjustFontSize() {
-    const width = window.innerWidth;
-    document.body.style.fontSize = width < 600 ? "16px" : "18px";
-  }
-  window.addEventListener("resize", adjustFontSize);
-  window.addEventListener("load", adjustFontSize);
-</script>
-    <div class="container header-container">
-        <div class="logo">
-            <i class="fas fa-utensils"></i>
-            <h1>MIRDHUNA</h1>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#menu">Menu</a></li>
-                <li><a href="#categories">Categories</a></li>
-                <li><a href="#reviews">Reviews</a></li>
-                <li><a href="#history">History</a></li>
-            </ul>
-        </nav>
-        <div class="header-actions">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search dishes...">
-            </div>
-        </div>
-    </div>
-</header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MIRDHUNA | Exquisite Dining</title>
 
-<!-- Top Action Bar -->
-<div class="top-action-bar">
-    <div class="container action-container">
-        <div class="welcome-message">
-            <h3 style="color: white; margin: 0;">Welcome to MIRDHUNA!</h3>
-        </div>
-        <div class="user-actions">
-            <a href="#" class="location-btn" id="locationTrigger">
-                <i class="fas fa-map-marker-alt"></i> Location
-            </a>
-            <a href="#" class="login-btn" id="loginTrigger">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </a>
-            <a href="#" class="order-btn" id="cartTrigger">
-                <i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span>
-            </a>
-            <a href="#" class="order-btn">
-                <i class="fas fa-receipt"></i> Order Now
-            </a>
-        </div>
-    </div>
-</div>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
 
-<style>
-    /* Header Styles */
-    header {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        box-shadow: var(--shadow);
-        padding: 15px 0;
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics-compat.js"></script>
+
+  <style>
+    :root {
+      --primary: #d40000; /* Deep Royal Red */
+      --secondary: #f9c300; /* Golden Yellow */
+      --accent: #ffd700; /* Pure Gold */
+      --dark: #1b1b1b;
+      --light: #fffaf0;
+      --text: #333;
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      --glow: 0 0 15px rgba(249, 195, 0, 0.4);
+      --radius: 20px;
+      --transition: all 0.3s ease;
     }
 
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.2);
+      z-index: -1;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0.7); }
+      50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(249, 195, 0, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0); }
+    }
+
+    .pulse {
+      animation: pulse 0.8s ease-out;
+      box-shadow: var(--glow);
+    }
+
+    header {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.15);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 16px 0;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .logo h1 {
-        font-size: 1.8rem;
-        background: var(--gradient);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'Playfair Display', serif;
+      color: white;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     .logo i {
-        font-size: 2rem;
-        color: var(--primary);
+      font-size: 2.2rem;
+      color: var(--accent);
+      text-shadow: var(--glow);
+    }
+
+    .logo h1 {
+      font-size: 2.3rem;
+      background: linear-gradient(to right, #fff, #ffe599);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
     }
 
     nav ul {
-        display: flex;
-        list-style: none;
-        gap: 30px;
+      display: flex;
+      list-style: none;
+      gap: 40px;
     }
 
     nav a {
-        text-decoration: none;
-        color: var(--dark);
-        font-weight: 500;
-        position: relative;
-        padding: 5px 0;
-        transition: var(--transition);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      position: relative;
+      padding: 6px 0;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      transition: var(--transition);
     }
 
-    nav a:after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: var(--primary);
-        transition: var(--transition);
+    nav a::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.4s ease;
     }
 
-    nav a:hover:after {
-        width: 100%;
+    nav a:hover::before {
+      width: 100%;
     }
 
     nav a:hover {
-        color: var(--primary);
+      color: #fffaf0;
+      transform: translateY(-3px);
     }
 
-    .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 20px;
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: white;
+      cursor: pointer;
+      transition: var(--transition);
     }
 
-    .search-bar {
-        position: relative;
-    }
-
-    .search-bar input {
-        padding: 10px 15px 10px 40px;
-        border-radius: 30px;
-        border: 1px solid #ddd;
-        font-family: 'Poppins', sans-serif;
-        width: 200px;
-        transition: var(--transition);
-    }
-
-    .search-bar input:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2);
-        width: 250px;
-    }
-
-    .search-bar i {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #777;
+    .menu-toggle:hover {
+      transform: rotate(18deg);
     }
 
     /* Top Action Bar */
     .top-action-bar {
-        background: var(--gradient);
-        padding: 15px 0;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      background: var(--gradient);
+      padding: 18px 0;
+      box-shadow: var(--shadow);
     }
 
     .action-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .welcome-message h3 {
+      color: white;
+      font-weight: 600;
+      font-size: 1.2rem;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .user-actions {
-        display: flex;
-        gap: 15px;
-        align-items: center;
+      display: flex;
+      gap: 14px;
     }
 
-    .cart-icon, .user-icon, .login-btn, .order-btn, .location-btn {
-        position: relative;
-        font-size: 1.3rem;
-        color: white;
-        cursor: pointer;
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        text-decoration: none;
+    .user-actions a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 22px;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     }
 
-    .cart-icon:hover, .user-icon:hover, .login-btn:hover, .order-btn:hover, .location-btn:hover {
-        transform: translateY(-3px);
+    .user-actions a:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: translateY(-4px) scale(1.08);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .user-actions a i {
+      font-size: 1.25rem;
     }
 
     .cart-count {
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        background: white;
-        color: var(--primary);
-        font-size: 0.7rem;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: var(--accent);
+      color: var(--dark);
+      font-size: 0.7rem;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
     }
 
-    .login-btn, .order-btn, .location-btn {
-        font-size: 1rem;
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 8px 20px;
-        border-radius: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    /* Social Icons + Call */
+    .social-icons {
+      display: flex;
+      gap: 12px;
+      margin-left: 10px;
     }
 
-    .login-btn:hover, .order-btn:hover, .location-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
+    .social-icons a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 1.1rem;
+      transition: var(--transition);
     }
-</style>
+
+    .social-icons a:hover {
+      background: white;
+      transform: translateY(-4px) scale(1.1);
+      color: var(--dark);
+    }
+
+    .social-icons a.call {
+      background: #25d366 !important;
+      color: white;
+    }
+
+    .social-icons a.call:hover {
+      background: #128c7e !important;
+      color: white;
+    }
+
+    .social-icons a.facebook:hover { color: #3b5998; }
+    .social-icons a.instagram:hover { color: #e1306c; }
+    .social-icons a.whatsapp:hover { color: #075e54; }
+    .social-icons a.telegram:hover { color: #0088cc; }
+
+    /* Modals */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.4s ease;
+    }
+
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 35px;
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transform: translateY(-30px);
+      transition: 0.5s ease;
+    }
+
+    .modal.active .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal h2 {
+      margin-bottom: 16px;
+      color: var(--primary);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+    }
+
+    .modal p {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 1.5rem;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .modal-close:hover {
+      color: var(--primary);
+      transform: rotate(90deg);
+    }
+
+    @media (max-width: 768px) {
+      .menu-toggle { display: block; }
+      nav { display: none; }
+      nav.active { display: block; margin-top: 10px; }
+      nav ul {
+        flex-direction: column;
+        gap: 12px;
+        background: rgba(220, 30, 40, 0.95);
+        padding: 15px;
+        border-radius: var(--radius);
+      }
+      .container {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+      }
+      .logo { justify-content: center; }
+      .action-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+      }
+      .social-icons { margin-left: 0; }
+      .user-actions { justify-content: center; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="container">
+    <div class="logo">
+      <i class="fas fa-utensils"></i>
+      <h1>MIRDHUNA</h1>
+    </div>
+
+    <button class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <nav id="mainNav">
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#categories">Categories</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#history">History</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- Top Action Bar -->
+<div class="top-action-bar">
+  <div class="action-container container">
+    <div class="welcome-message">
+      <h3>✨ Welcome to MIRDHUNA – Where Flavor Meets Elegance</h3>
+    </div>
+    <div class="user-actions">
+      <a href="#" id="loginTrigger">
+        <i class="fas fa-user"></i> Login
+      </a>
+      <a href="#" id="locationTrigger">
+        <i class="fas fa-map-marker-alt"></i> Location
+      </a>
+      <a href="#" id="cartTrigger">
+        <i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span>
+      </a>
+      <a href="#" id="orderNow">
+        <i class="fas fa-bolt"></i> Order Now
+      </a>
+    </div>
+
+    <div class="social-icons">
+      <a href="https://facebook.com/mirdhuna.dining" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://instagram.com/mirdhuna.dining" class="instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://wa.me/9835124772" class="whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://t.me/9835124772" class="telegram" target="_blank"><i class="fab fa-telegram"></i></a>
+      <a href="tel:9835124772" class="call"><i class="fas fa-phone-alt"></i></a>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal" id="loginModal">
+  <div class="modal-content">
+    <span class="modal-close" id="closeLogin">&times;</span>
+    <h2>🔐 Login to MIRDHUNA</h2>
+    <p>Enter your mobile number to continue.</p>
+    <input 
+      type="tel" 
+      id="mobileInput" 
+      placeholder="Enter 10-digit mobile number" 
+      value="9835124772"
+      style="padding:14px; width:100%; margin-bottom:20px; border-radius:12px; border:1px solid #ddd; font-size:1rem;">
+    <button id="loginBtn" style="background:var(--gradient); color:white; border:none; padding:14px 35px; border-radius:30px; font-weight:600; font-size:1.1rem; cursor:pointer; width:100%;">Login Now</button>
+  </div>
+</div>
+
+<!-- Location Modal -->
+<div class="modal" id="locationModal">
+  <div class="modal-content">
+    <span class="modal-close" id="closeLocation">&times;</span>
+    <h2>📍 Your Location</h2>
+    <p id="locationText">Detecting your location...</p>
+  </div>
+</div>
+
+<!-- Cart Modal -->
+<div class="modal" id="cartModal">
+  <div class="modal-content">
+    <span class="modal-close" id="closeCart">&times;</span>
+    <h2>🛒 Your Cart</h2>
+    <p id="cartItems">No items yet. Add something delicious!</p>
+    <button id="viewCart" style="background:var(--gradient); color:white; border:none; padding:14px 35px; border-radius:30px; font-weight:600; cursor:pointer; display:none; margin-top:15px;">Go to Checkout</button>
+  </div>
+</div>
+
+<script>
+  // 🔥 Firebase Configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+    authDomain: "mirdhuna-25542.firebaseapp.com",
+    databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+    projectId: "mirdhuna-25542",
+    storageBucket: "mirdhuna-25542.firebasestorage.app",
+    messagingSenderId: "575924409876",
+    appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+    measurementId: "G-YB7LDKHBPV"
+  };
+
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const analytics = firebase.analytics();
+
+  // DOM Elements
+  const menuToggle = document.getElementById('menuToggle');
+  const mainNav = document.getElementById('mainNav');
+  const loginTrigger = document.getElementById('loginTrigger');
+  const locationTrigger = document.getElementById('locationTrigger');
+  const cartTrigger = document.getElementById('cartTrigger');
+  const orderNow = document.getElementById('orderNow');
+
+  const loginModal = document.getElementById('loginModal');
+  const locationModal = document.getElementById('locationModal');
+  const cartModal = document.getElementById('cartModal');
+  const closeLogin = document.getElementById('closeLogin');
+  const closeLocation = document.getElementById('closeLocation');
+  const closeCart = document.getElementById('closeCart');
+  const loginBtn = document.getElementById('loginBtn');
+  const mobileInput = document.getElementById('mobileInput');
+  const locationText = document.getElementById('locationText');
+  const cartItems = document.getElementById('cartItems');
+  const viewCart = document.getElementById('viewCart');
+  const cartCount = document.querySelector('.cart-count');
+
+  let count = parseInt(localStorage.getItem('cartCount')) || 0;
+  const menuItems = ["Truffle Pasta", "Spicy Ramen", "Saffron Biryani", "Mango Lassi", "Chocolate Fondue"];
+  cartCount.textContent = count;
+
+  // Toggle Mobile Menu
+  menuToggle.addEventListener('click', () => {
+    mainNav.classList.toggle('active');
+    menuToggle.innerHTML = mainNav.classList.contains('active') 
+      ? '<i class="fas fa-times"></i>' 
+      : '<i class="fas fa-bars"></i>';
+  });
+
+  // Close menu on nav click
+  document.querySelectorAll('#mainNav ul li a').forEach(link => {
+    link.addEventListener('click', () => {
+      mainNav.classList.remove('active');
+      menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    });
+  });
+
+  // === LOGIN MODAL ===
+  loginTrigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  });
+
+  closeLogin.addEventListener('click', () => {
+    loginModal.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+
+  // Auto-detect location on login
+  loginBtn.addEventListener('click', async () => {
+    const num = mobileInput.value.trim();
+    if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
+    let lat, lng;
+
+    // Show loading
+    loginBtn.textContent = "🔍 Detecting Location...";
+    loginBtn.disabled = true;
+
+    await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          lat = pos.coords.latitude;
+          lng = pos.coords.longitude;
+          resolve();
+        },
+        err => {
+          console.warn("Location error:", err.message);
+          if (err.code === err.PERMISSION_DENIED) {
+            alert("❌ Please allow location access to continue.");
+            loginBtn.textContent = "Login Now";
+            loginBtn.disabled = false;
+            return;
+          }
+          alert("⚠️ Could not detect location. Please try again.");
+          loginBtn.textContent = "Login Now";
+          loginBtn.disabled = false;
+          resolve();
+        }
+      );
+    });
+
+    if (!lat || !lng) {
+      alert("📍 Location required for login. Please enable location services.");
+      loginBtn.textContent = "Login Now";
+      loginBtn.disabled = false;
+      return;
+    }
+
+    const locationStr = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+    const now = new Date().toISOString();
+
+    const userActivityRef = db.ref('userActivity');
+    const usersRef = db.ref('users');
+
+    const activityKey = userActivityRef.push().key;
+
+    const activityData = {
+      mobile: num,
+      location: locationStr,
+      timestamp: now
+    };
+
+    userActivityRef.child(activityKey).set(activityData)
+      .then(() => {
+        const userData = {
+          mobile: num,
+          location: locationStr,
+          lastLogin: Date.now()
+        };
+        usersRef.child(num).set(userData)
+          .then(() => {
+            alert(`✅ Logged in successfully as ${num}!`);
+            loginModal.classList.remove('active');
+            document.body.style.overflow = '';
+          })
+          .catch(err => {
+            console.error("Error saving user:", err);
+            alert("Failed to save user info.");
+          });
+      })
+      .catch(err => {
+        console.error("Error saving activity:", err);
+        alert("Failed to save login data.");
+      });
+  });
+
+  // === LOCATION MODAL ===
+  locationTrigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    const lat = localStorage.getItem('userLat');
+    const lng = localStorage.getItem('userLng');
+
+    if (lat && lng) {
+      locationText.innerHTML = `<strong>📍 Detected:</strong><br>Lat: ${lat}<br>Lng: ${lng}`;
+    } else {
+      locationText.textContent = "📍 Location not detected. Please enable location access.";
+    }
+    locationModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  });
+
+  closeLocation.addEventListener('click', () => {
+    locationModal.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+
+  // === CART ===
+  cartTrigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    cartModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    if (count === 0) {
+      cartItems.textContent = "No items yet. Add something delicious!";
+      viewCart.style.display = "none";
+    } else {
+      const item = menuItems[Math.floor(Math.random() * menuItems.length)];
+      cartItems.innerHTML = `<strong>${count} item(s)</strong> in cart:<br>✨ <em>${item}</em>`;
+      viewCart.style.display = "block";
+    }
+  });
+
+  closeCart.addEventListener('click', () => {
+    cartModal.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+
+  orderNow.addEventListener('click', () => {
+    count++;
+    cartCount.textContent = count;
+    cartCount.parentElement.classList.add('pulse');
+    setTimeout(() => cartCount.parentElement.classList.remove('pulse'), 800);
+    alert(`🎉 Item added! Total: ${count}`);
+    localStorage.setItem('cartCount', count);
+  });
+
+  // Close modals on click outside
+  [loginModal, locationModal, cartModal].forEach(modal => {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+
+  // Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      loginModal.classList.remove('active');
+      locationModal.classList.remove('active');
+      cartModal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+</script>
+
+</body>
+</html>
