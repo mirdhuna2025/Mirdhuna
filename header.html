@@ -6,14 +6,14 @@
   <title>MIRDHUNA | Exquisite Dining</title>
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css "/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
 
   <!-- Firebase SDK -->
-  <script src=" https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js "></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js "></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics-compat.js "></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics-compat.js"></script>
 
   <style>
     :root {
@@ -38,7 +38,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #fff9c4; /* Light yellow background */
+      background-color: #cddc39; /* Light yellow background */
       color: var(--text);
       overflow-x: hidden;
     }
@@ -369,7 +369,8 @@
       <ul>
         <li><a href="#home">Home</a></li>
         <li><a href="#menu">Menu</a></li>
-        <li><a href="#categories">Categories</a></li>
+        <!-- Removed Categories -->
+        <!-- Moved Reviews and History here -->
         <li><a href="#reviews">Reviews</a></li>
         <li><a href="#history">History</a></li>
       </ul>
@@ -396,13 +397,20 @@
       <a href="#" id="orderNow">
         <i class="fas fa-bolt"></i> Order Now
       </a>
+      <!-- Moved Reviews and History links here -->
+      <a href="#reviews">
+        <i class="fas fa-star"></i> Reviews
+      </a>
+      <a href="#history">
+        <i class="fas fa-history"></i> History
+      </a>
     </div>
 
     <div class="social-icons">
-      <a href=" https://facebook.com/mirdhuna.dining " class="facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
-      <a href="https://instagram.com/mirdhuna.dining " class="instagram" target="_blank"><i class="fab fa-instagram"></i></a>
-      <a href="https://wa.me/9835124772 " class="whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
-      <a href="https://t.me/9835124772 " class="telegram" target="_blank"><i class="fab fa-telegram"></i></a>
+      <a href="https://facebook.com/mirdhuna.dining" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://instagram.com/mirdhuna.dining" class="instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://wa.me/9835124772" class="whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://t.me/9835124772" class="telegram" target="_blank"><i class="fab fa-telegram"></i></a>
       <a href="tel:9835124772" class="call"><i class="fas fa-phone-alt"></i></a>
     </div>
   </div>
@@ -448,7 +456,7 @@
   const firebaseConfig = {
     apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
     authDomain: "mirdhuna-25542.firebaseapp.com",
-    databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com ",
+    databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
     projectId: "mirdhuna-25542",
     storageBucket: "mirdhuna-25542.firebasestorage.app",
     messagingSenderId: "575924409876",
