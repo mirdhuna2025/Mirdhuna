@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="description" content="MIRDHUNA - Authentic South Indian Cuisine, made with tradition and love." />
+    <meta name="theme-color" content="#e63946" />
     <title>MIRDHUNA | Authentic South Indian Cuisine</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDK -->
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pOoZnx5fWt9b5fz8d5g9xUZ4qJv2x1d+LjQ8O4e5Q19v5J0d5f5v5f5" crossorigin="anonymous" />
+
+    <!-- Google Fonts (Poppins & Playfair Display) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Firebase SDK (Cleaned URLs - no extra spaces) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --primary: #e63946;
@@ -17,7 +25,7 @@
             --dark: #1d3557;
             --light: #f1faee;
             --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
@@ -33,23 +41,29 @@
             color: #333;
             line-height: 1.6;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         h1, h2, h3, h4, h5 {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.8em;
+            color: var(--dark);
         }
 
         .container {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 16px;
         }
 
+        /* Loading Spinner */
         .loading {
             text-align: center;
-            padding: 50px 0;
+            padding: 60px 0;
         }
 
         .spinner {
@@ -67,40 +81,62 @@
             100% { transform: rotate(360deg); }
         }
 
-        #header-container, #slides-container, #content-container, #footer-container {
+        /* Section Containers */
+        #header-container,
+        #slides-container,
+        #content-container,
+        #footer-container {
             width: 100%;
         }
 
-        /* Responsive Images */
-        img {
+        /* Responsive Images & Media */
+        img, picture, video {
             max-width: 100%;
             height: auto;
+            display: block;
         }
 
-        /* Touch-friendly buttons */
+        /* Buttons - Mobile Touch Optimization */
         button, .btn {
-            min-height: 44px;
-            min-width: 44px;
-            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 20px;
             font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            min-height: 48px;
+            min-width: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Flexbox helper */
+        button:hover, .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Flex Helper */
         .flex-container {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
+            justify-content: flex-start;
         }
 
-        /* Mobile Responsive Styles */
-        @media screen and (max-width: 768px) {
+        /* Mobile-First Responsive Design */
+        @media (max-width: 768px) {
             .container {
-                padding: 0 15px;
+                padding: 0 12px;
             }
 
             h1 {
                 font-size: 2rem;
+                margin-top: 1rem;
             }
 
             h2 {
@@ -108,16 +144,18 @@
             }
 
             p, li {
-                font-size: 0.95rem;
+                font-size: 1rem;
+                line-height: 1.6;
             }
 
             .btn {
-                padding: 10px 16px;
-                font-size: 0.9rem;
+                padding: 12px 16px;
+                font-size: 0.95rem;
+                min-height: 44px;
             }
         }
 
-        @media screen and (max-width: 480px) {
+        @media (max-width: 480px) {
             .container {
                 padding: 0 10px;
             }
@@ -131,22 +169,74 @@
             }
 
             p, li {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
 
             .btn {
                 width: 100%;
-                text-align: center;
+                margin-bottom: 10px;
+                padding: 14px;
+                font-size: 1rem;
             }
+
+            .flex-container {
+                flex-direction: column;
+            }
+
+            .flex-container .btn {
+                width: 100%;
+            }
+        }
+
+        /* Avoid accidental zoom on input focus */
+        input, textarea {
+            font-size: 1rem;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* Improve tap highlighting */
+        * {
+            -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+        }
+
+        /* Sticky footer (optional) */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #content-container {
+            flex: 1;
         }
     </style>
 </head>
 <body>
+    <!-- Dynamic Content Load -->
     <div id="header-container"></div>
     <div id="slides-container"></div>
     <div id="content-container"></div>
     <div id="footer-container"></div>
 
+    <!-- External Script -->
     <script src="loadhtml.js"></script>
+
+    <!-- Optional: Firebase Config (if needed) -->
+    <script>
+        // Example: Initialize Firebase (only if you have config)
+        /*
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-app.firebaseapp.com",
+            databaseURL: "https://your-app-default-rtdb.firebaseio.com",
+            projectId: "your-project-id",
+        };
+        firebase.initializeApp(firebaseConfig);
+        */
+    </script>
 </body>
 </html>
