@@ -6,9 +6,6 @@
     <title>MIRDHUNA | Exquisite Dining</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics-compat.js"></script>
     <style>
         :root {
             --primary: #d40000;
@@ -19,7 +16,6 @@
             --text: #333;
             --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-            --glow: 0 0 15px rgba(249, 195, 0, 0.4);
             --radius: 20px;
             --transition: all 0.3s ease;
         }
@@ -43,290 +39,6 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 20px;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(249, 195, 0, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0); }
-        }
-
-        .pulse {
-            animation: pulse 0.8s ease-out;
-            box-shadow: var(--glow);
-        }
-
-        .colorful-mirdhuna {
-            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: rainbow 5s ease infinite;
-            font-size: 2.3rem;
-            letter-spacing: -1px;
-            margin: 0;
-        }
-
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        header {
-            backdrop-filter: blur(12px);
-            background: rgba(255, 255, 255, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 16px 0;
-        }
-
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-family: 'Playfair Display', serif;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .logo i {
-            font-size: 2.2rem;
-            color: var(--accent);
-            text-shadow: var(--glow);
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 40px;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            position: relative;
-            padding: 6px 0;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-            transition: var(--transition);
-        }
-
-        nav a::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 3px;
-            transition: width 0.4s ease;
-        }
-
-        nav a:hover::before {
-            width: 100%;
-        }
-
-        nav a:hover {
-            color: #fffaf0;
-            transform: translateY(-3px);
-        }
-
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.6rem;
-            color: white;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-left: auto;
-        }
-
-        .menu-toggle:hover {
-            transform: rotate(18deg);
-        }
-
-        .top-action-bar {
-            background: var(--gradient);
-            padding: 18px 0;
-            box-shadow: var(--shadow);
-        }
-
-        .action-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .welcome-message h3 {
-            color: white;
-            font-weight: 600;
-            font-size: 1.2rem;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .user-actions {
-            display: flex;
-            gap: 14px;
-        }
-
-        .user-actions a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 22px;
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: var(--transition);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .user-actions a:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: translateY(-4px) scale(1.08);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-        }
-
-        .user-actions a i {
-            font-size: 1.25rem;
-        }
-
-        .cart-count {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--accent);
-            color: var(--dark);
-            font-size: 0.7rem;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 12px;
-            margin-left: 10px;
-        }
-
-        .social-icons a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 1.1rem;
-            transition: var(--transition);
-        }
-
-        .social-icons a:hover {
-            background: white;
-            transform: translateY(-4px) scale(1.1);
-            color: var(--dark);
-        }
-
-        .social-icons a.call {
-            background: #25d366 !important;
-            color: white;
-        }
-
-        .social-icons a.call:hover {
-            background: #128c7e !important;
-            color: white;
-        }
-
-        .social-icons a.facebook:hover { color: #3b5998; }
-        .social-icons a.instagram:hover { color: #e1306c; }
-        .social-icons a.whatsapp:hover { color: #075e54; }
-        .social-icons a.telegram:hover { color: #0088cc; }
-
-        .modal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(6px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.4s ease;
-        }
-
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 35px;
-            border-radius: var(--radius);
-            width: 90%;
-            max-width: 420px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            transform: translateY(-30px);
-            transition: 0.5s ease;
-        }
-
-        .modal.active .modal-content {
-            transform: translateY(0);
-        }
-
-        .modal h2 {
-            margin-bottom: 16px;
-            color: var(--primary);
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-        }
-
-        .modal p {
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 1rem;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            font-size: 1.5rem;
-            color: #aaa;
-            cursor: pointer;
-        }
-
-        .modal-close:hover {
-            color: var(--primary);
-            transform: rotate(90deg);
         }
 
         .section {
@@ -810,67 +522,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            color: var(--dark);
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            transform: translateX(200%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            border-left: 5px solid var(--primary);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        /* Floating Cart */
-        .floating-cart {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: white;
-            border-radius: 50px;
-            padding: 15px 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            z-index: 100;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .floating-cart:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        }
-
-        .floating-cart i {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-
-        .floating-cart .cart-count {
-            position: static;
-            background: var(--gradient);
-            color: white;
-            width: 30px;
-            height: 30px;
-            font-size: 0.9rem;
-        }
-
-        .floating-cart .total-price {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.1rem;
-        }
-
         /* Quantity Controls */
         .quantity-controls {
             display: flex;
@@ -902,55 +553,6 @@
         }
 
         @media (max-width: 768px) {
-            .menu-toggle { 
-                display: block; 
-            }
-            
-            nav { 
-                display: none; 
-            }
-            
-            nav.active { 
-                display: block; 
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: rgba(220, 30, 40, 0.95);
-                padding: 15px;
-                border-radius: 0 0 var(--radius) var(--radius);
-            }
-            
-            nav ul {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            .header-container {
-                flex-direction: row;
-                text-align: center;
-                gap: 12px;
-            }
-            
-            .logo { 
-                justify-content: flex-start; 
-            }
-            
-            .action-container {
-                flex-direction: column;
-                text-align: center;
-                gap: 16px;
-            }
-            
-            .social-icons { 
-                margin-left: 0; 
-            }
-            
-            .user-actions { 
-                justify-content: center; 
-                flex-wrap: wrap; 
-            }
-            
             .section {
                 padding: 50px 0;
             }
@@ -1075,16 +677,6 @@
                 border-radius: 30px;
                 padding: 15px;
             }
-            
-            .floating-cart {
-                bottom: 20px;
-                right: 20px;
-                padding: 12px 20px;
-            }
-            
-            .floating-cart .total-price {
-                font-size: 1rem;
-            }
         }
         
         @media (max-width: 480px) {
@@ -1149,54 +741,6 @@
     </style>
 </head>
 <body>
-<header>
-  <div class="container header-container">
-    <div class="logo">
-      <i class="fas fa-utensils"></i>
-      <h1 class="colorful-mirdhuna">MIRDHUNA</h1>
-    </div>
-
-    <nav id="mainNav">
-      <ul>
-        <li><a href="#home">Home</a></li>
-        <li><a href="#categories">Categories</a></li>
-        <li><a href="#menu">Menu</a></li>
-        <li><a href="#offers">Offers</a></li>
-        <li><a href="#reviews">Reviews</a></li>
-        <li><a href="#history">History</a></li>
-      </ul>
-    </nav>
-
-    <button class="menu-toggle" id="menuToggle">
-      <i class="fas fa-bars"></i>
-    </button>
-  </div>
-</header>
-
-<div class="top-action-bar">
-  <div class="action-container container">
-    <div class="welcome-message">
-      <h3>✨ Welcome to MIRDHUNA – Where Flavor Meets Elegance</h3>
-    </div>
-    <div class="user-actions">
-      <a href="#" id="loginTrigger">
-        <i class="fas fa-user"></i> Login
-      </a>
-      <a href="#" id="locationTrigger">
-        <i class="fas fa-map-marker-alt"></i> Location
-      </a>
-    </div>
-
-    <div class="social-icons">
-      <a href="https://facebook.com/mirdhuna.dining" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
-      <a href="https://instagram.com/mirdhuna.dining" class="instagram" target="_blank"><i class="fab fa-instagram"></i></a>
-      <a href="https://wa.me/9835124772" class="whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
-      <a href="https://t.me/9835124772" class="telegram" target="_blank"><i class="fab fa-telegram"></i></a>
-      <a href="tel:9835124772" class="call"><i class="fas fa-phone-alt"></i></a>
-    </div>
-  </div>
-</div>
-
 <section class="section" id="categories">
     <div class="container">
         <div class="section-header">
@@ -1283,390 +827,7 @@
     </div>
 </section>
 
-<!-- Floating Cart -->
-<div class="floating-cart" id="floatingCart">
-    <i class="fas fa-shopping-cart"></i>
-    <span class="cart-count">0</span>
-    <span class="total-price">₹0.00</span>
-</div>
-
-<div class="notification" id="notification"></div>
-
-<div class="modal" id="loginModal">
-  <div class="modal-content">
-    <span class="modal-close" id="closeLogin">&times;</span>
-    <h2>🔐 Login to MIRDHUNA</h2>
-    <p>Enter your mobile number to continue.</p>
-    <input 
-      type="tel" 
-      id="mobileInput" 
-      placeholder="Enter 10-digit mobile number" 
-      value="9835124772"
-      style="padding:14px; width:100%; margin-bottom:20px; border-radius:12px; border:1px solid #ddd; font-size:1rem;">
-    <button id="loginBtn" style="background:var(--gradient); color:white; border:none; padding:14px 35px; border-radius:30px; font-weight:600; font-size:1.1rem; cursor:pointer; width:100%;">Login Now</button>
-  </div>
-</div>
-
-<div class="modal" id="locationModal">
-  <div class="modal-content">
-    <span class="modal-close" id="closeLocation">&times;</span>
-    <h2>📍 Your Location</h2>
-    <p id="locationText">Detecting your location...</p>
-  </div>
-</div>
-
-<div class="modal" id="cartModal">
-  <div class="modal-content">
-    <span class="modal-close" id="closeCart">&times;</span>
-    <h2>🛒 Your Cart</h2>
-    <div id="cartItemsContainer">
-      <p id="cartItems">No items yet. Add something delicious!</p>
-      <button id="viewCart" style="background:var(--gradient); color:white; border:none; padding:14px 35px; border-radius:30px; font-weight:600; cursor:pointer; display:none; margin-top:15px;">Place Order</button>
-    </div>
-  </div>
-</div>
-
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
-    authDomain: "mirdhuna-25542.firebaseapp.com",
-    databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
-    projectId: "mirdhuna-25542",
-    storageBucket: "mirdhuna-25542.firebasestorage.app",
-    messagingSenderId: "575924409876",
-    appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
-    measurementId: "G-YB7LDKHBPV"
-  };
-
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const analytics = firebase.analytics();
-
-  const menuToggle = document.getElementById('menuToggle');
-  const mainNav = document.getElementById('mainNav');
-  const loginTrigger = document.getElementById('loginTrigger');
-  const locationTrigger = document.getElementById('locationTrigger');
-
-  const loginModal = document.getElementById('loginModal');
-  const locationModal = document.getElementById('locationModal');
-  const cartModal = document.getElementById('cartModal');
-  const closeLogin = document.getElementById('closeLogin');
-  const closeLocation = document.getElementById('closeLocation');
-  const closeCart = document.getElementById('closeCart');
-  const loginBtn = document.getElementById('loginBtn');
-  const mobileInput = document.getElementById('mobileInput');
-  const locationText = document.getElementById('locationText');
-  const cartItems = document.getElementById('cartItems');
-  const viewCart = document.getElementById('viewCart');
-  const cartCount = document.querySelector('.cart-count');
-  const cartItemsContainer = document.getElementById('cartItemsContainer');
-  const floatingCart = document.getElementById('floatingCart');
-  const totalPriceElement = document.querySelector('.total-price');
-
-  const categoriesContainer = document.getElementById('categoriesContainer');
-  const offersContainer = document.getElementById('offersContainer');
-  const menuContainer = document.getElementById('menuContainer');
-  const reviewsContainer = document.getElementById('reviewsContainer');
-  const orderHistoryContainer = document.getElementById('orderHistory');
-  const notification = document.getElementById('notification');
-
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  let currentUser = null;
-  updateCartDisplay();
-
-  menuToggle.addEventListener('click', () => {
-    mainNav.classList.toggle('active');
-    menuToggle.innerHTML = mainNav.classList.contains('active') 
-      ? '<i class="fas fa-times"></i>' 
-      : '<i class="fas fa-bars"></i>';
-  });
-
-  document.querySelectorAll('#mainNav ul li a').forEach(link => {
-    link.addEventListener('click', () => {
-      mainNav.classList.remove('active');
-      menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    });
-  });
-
-  loginTrigger.addEventListener('click', (e) => {
-    e.preventDefault();
-    loginModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  });
-
-  closeLogin.addEventListener('click', () => {
-    loginModal.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-
-  loginBtn.addEventListener('click', async () => {
-    const num = mobileInput.value.trim();
-    if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
-      alert("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-
-    let lat, lng;
-    loginBtn.textContent = "🔍 Detecting Location...";
-    loginBtn.disabled = true;
-
-    await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          lat = pos.coords.latitude;
-          lng = pos.coords.longitude;
-          resolve();
-        },
-        err => {
-          console.warn("Location error:", err.message);
-          if (err.code === err.PERMISSION_DENIED) {
-            alert("❌ Please allow location access to continue.");
-            loginBtn.textContent = "Login Now";
-            loginBtn.disabled = false;
-            return;
-          }
-          alert("⚠️ Could not detect location. Please try again.");
-          loginBtn.textContent = "Login Now";
-          loginBtn.disabled = false;
-          resolve();
-        }
-      );
-    });
-
-    if (!lat || !lng) {
-      alert("📍 Location required for login. Please enable location services.");
-      loginBtn.textContent = "Login Now";
-      loginBtn.disabled = false;
-      return;
-    }
-
-    const locationStr = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-    const now = new Date().toISOString();
-
-    const userActivityRef = db.ref('userActivity');
-    const usersRef = db.ref('users');
-
-    const activityKey = userActivityRef.push().key;
-
-    const activityData = {
-      mobile: num,
-      location: locationStr,
-      timestamp: now
-    };
-
-    userActivityRef.child(activityKey).set(activityData)
-      .then(() => {
-        const userData = {
-          mobile: num,
-          location: locationStr,
-          lastLogin: Date.now()
-        };
-        usersRef.child(num).set(userData)
-          .then(() => {
-            currentUser = num;
-            alert(`✅ Logged in successfully as ${num}!`);
-            loginModal.classList.remove('active');
-            document.body.style.overflow = '';
-          })
-          .catch(err => {
-            console.error("Error saving user:", err);
-            alert("Failed to save user info.");
-          });
-      })
-      .catch(err => {
-        console.error("Error saving activity:", err);
-        alert("Failed to save login data.");
-      });
-  });
-
-  locationTrigger.addEventListener('click', (e) => {
-    e.preventDefault();
-    const lat = localStorage.getItem('userLat');
-    const lng = localStorage.getItem('userLng');
-
-    if (lat && lng) {
-      locationText.innerHTML = `<strong>📍 Detected:</strong><br>Lat: ${lat}<br>Lng: ${lng}`;
-    } else {
-      locationText.textContent = "📍 Location not detected. Please enable location access.";
-    }
-    locationModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  });
-
-  closeLocation.addEventListener('click', () => {
-    locationModal.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-
-  floatingCart.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (!currentUser) {
-      loginModal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      return;
-    }
-    cartModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    renderCartItems();
-  });
-
-  closeCart.addEventListener('click', () => {
-    cartModal.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-
-  [loginModal, locationModal, cartModal].forEach(modal => {
-    modal.addEventListener('click', e => {
-      if (e.target === modal) {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    });
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      loginModal.classList.remove('active');
-      locationModal.classList.remove('active');
-      cartModal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-
-  function showNotification(message) {
-      notification.textContent = message;
-      notification.classList.add('show');
-      
-      setTimeout(() => {
-          notification.classList.remove('show');
-      }, 3000);
-  }
-
-  function updateCartDisplay() {
-      cartCount.textContent = cart.length;
-      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      totalPriceElement.textContent = `₹${total.toFixed(2)}`;
-      localStorage.setItem('cart', JSON.stringify(cart));
-  }
-
-  function addToCart(item) {
-      const existingItem = cart.find(cartItem => cartItem.id === item.id);
-      
-      if (existingItem) {
-          existingItem.quantity += 1;
-      } else {
-          cart.push({...item});
-      }
-      
-      updateCartDisplay();
-      showNotification(`${item.name} added to cart!`);
-  }
-
-  function updateQuantity(index, change) {
-      const item = cart[index];
-      item.quantity += change;
-      
-      if (item.quantity <= 0) {
-          cart.splice(index, 1);
-      }
-      
-      updateCartDisplay();
-      renderCartItems();
-  }
-
-  function renderCartItems() {
-      if (cart.length === 0) {
-          cartItems.innerHTML = "No items yet. Add something delicious!";
-          viewCart.style.display = "none";
-          return;
-      }
-
-      let cartHTML = '<div class="cart-items">';
-      let total = 0;
-
-      cart.forEach((item, index) => {
-          const itemTotal = item.price * item.quantity;
-          total += itemTotal;
-          
-          cartHTML += `
-              <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
-                  <div>
-                      <h4>${item.name}</h4>
-                      <p>₹${item.price} each</p>
-                  </div>
-                  <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                      <div class="quantity-controls">
-                          <button class="quantity-btn minus" data-index="${index}">-</button>
-                          <span class="quantity-value">${item.quantity}</span>
-                          <button class="quantity-btn plus" data-index="${index}">+</button>
-                      </div>
-                      <div style="margin-top: 10px; font-weight: bold;">₹${itemTotal.toFixed(2)}</div>
-                  </div>
-              </div>
-          `;
-      });
-
-      cartHTML += `
-          <div style="border-top: 2px solid #eee; padding-top: 15px; margin-top: 15px;">
-              <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem;">
-                  <span>Total:</span>
-                  <span>₹${total.toFixed(2)}</span>
-              </div>
-          </div>
-      `;
-
-      cartItems.innerHTML = cartHTML;
-      viewCart.style.display = "block";
-
-      // Add event listeners for quantity buttons
-      document.querySelectorAll('.quantity-btn.minus').forEach(button => {
-          button.addEventListener('click', (e) => {
-              const index = parseInt(e.target.getAttribute('data-index'));
-              updateQuantity(index, -1);
-          });
-      });
-
-      document.querySelectorAll('.quantity-btn.plus').forEach(button => {
-          button.addEventListener('click', (e) => {
-              const index = parseInt(e.target.getAttribute('data-index'));
-              updateQuantity(index, 1);
-          });
-      });
-
-      viewCart.onclick = () => {
-          if (cart.length > 0) {
-              if (!currentUser) {
-                  cartModal.classList.remove('active');
-                  document.body.style.overflow = '';
-                  setTimeout(() => {
-                      loginModal.classList.add('active');
-                      document.body.style.overflow = 'hidden';
-                  }, 100);
-                  return;
-              }
-              
-              const orderRef = db.ref('orders').push();
-              orderRef.set({
-                  userId: currentUser,
-                  items: cart,
-                  total: total,
-                  timestamp: new Date().toISOString(),
-                  status: 'pending'
-              }).then(() => {
-                  cart = [];
-                  updateCartDisplay();
-                  renderCartItems();
-                  cartModal.classList.remove('active');
-                  document.body.style.overflow = '';
-                  showNotification("Order placed successfully!");
-              }).catch(error => {
-                  console.error("Error placing order:", error);
-                  alert("Failed to place order. Please try again.");
-              });
-          }
-      };
-  }
-
   function getRandomColor() {
       const colors = ['d40000', 'f9c300', '1d3557', 'ffd166', '06d6a0', '118ab2'];
       return colors[Math.floor(Math.random() * colors.length)];
@@ -1685,7 +846,7 @@
               </div>
           `;
       });
-      categoriesContainer.innerHTML = html;
+      document.getElementById('categoriesContainer').innerHTML = html;
   }
 
   function renderOffers(offersData) {
@@ -1710,26 +871,7 @@
               </div>
           `;
       });
-      offersContainer.innerHTML = html;
-      
-      document.querySelectorAll('#offersContainer .add-to-cart').forEach(button => {
-          button.addEventListener('click', function() {
-              const id = this.getAttribute('data-id');
-              const name = this.getAttribute('data-name');
-              const price = parseFloat(this.getAttribute('data-price'));
-              
-              const originalText = this.innerHTML;
-              this.innerHTML = '<i class="fas fa-check"></i> Added!';
-              this.classList.add('added');
-              
-              addToCart({id, name, price, quantity: 1});
-              
-              setTimeout(() => {
-                  this.innerHTML = originalText;
-                  this.classList.remove('added');
-              }, 1500);
-          });
-      });
+      document.getElementById('offersContainer').innerHTML = html;
   }
 
   function renderMenuItems(menuData) {
@@ -1758,26 +900,7 @@
               </div>
           `;
       });
-      menuContainer.innerHTML = html;
-      
-      document.querySelectorAll('#menuContainer .add-to-cart').forEach(button => {
-          button.addEventListener('click', function() {
-              const id = this.getAttribute('data-id');
-              const name = this.getAttribute('data-name');
-              const price = parseFloat(this.getAttribute('data-price'));
-              
-              const originalText = this.innerHTML;
-              this.innerHTML = '<i class="fas fa-check"></i> Added!';
-              this.classList.add('added');
-              
-              addToCart({id, name, price, quantity: 1});
-              
-              setTimeout(() => {
-                  this.innerHTML = originalText;
-                  this.classList.remove('added');
-              }, 1500);
-          });
-      });
+      document.getElementById('menuContainer').innerHTML = html;
   }
 
   function renderReviews(reviewsData) {
@@ -1802,12 +925,13 @@
               </div>
           `;
       });
-      reviewsContainer.innerHTML = html;
+      document.getElementById('reviewsContainer').innerHTML = html;
   }
 
   function renderOrderHistory(historyData) {
+      const container = document.getElementById('orderHistory');
       if (historyData.length === 0) {
-          orderHistoryContainer.innerHTML = '<p style="text-align: center; padding: 30px;">No order history yet. Place your first order!</p>';
+          container.innerHTML = '<p style="text-align: center; padding: 30px;">No order history yet. Place your first order!</p>';
           return;
       }
       
@@ -1832,127 +956,76 @@
               </div>
           `;
       });
-      orderHistoryContainer.innerHTML = html;
-      
-      document.querySelectorAll('.reorder-btn').forEach(button => {
-          button.addEventListener('click', function() {
-              const items = JSON.parse(this.getAttribute('data-order'));
-              items.forEach(item => {
-                  addToCart(item);
-              });
-              showNotification("Items added to cart!");
-          });
-      });
+      container.innerHTML = html;
   }
 
-  function fetchDataFromFirebase() {
-      db.ref('categories').on('value', snapshot => {
-          const categoriesData = snapshot.val() ? Object.values(snapshot.val()) : [];
-          if (categoriesData.length > 0) {
-              renderCategories(categoriesData);
-          } else {
-              const sampleCategories = [
-                  { id: 1, name: "Pizza", description: "Delicious pizzas with fresh ingredients", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Pizza` },
-                  { id: 2, name: "Burgers", description: "Juicy burgers with premium beef", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Burgers` },
-                  { id: 3, name: "Sushi", description: "Fresh sushi rolls and sashimi", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Sushi` },
-                  { id: 4, name: "Pasta", description: "Authentic Italian pasta dishes", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Pasta` },
-                  { id: 5, name: "Salads", description: "Healthy and fresh salads", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Salads` },
-                  { id: 6, name: "Desserts", description: "Sweet treats to satisfy your cravings", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Desserts` }
-              ];
-              renderCategories(sampleCategories);
-          }
-      });
-
-      db.ref('offers').on('value', snapshot => {
-          const offersData = snapshot.val() ? Object.values(snapshot.val()) : [];
-          if (offersData.length > 0) {
-              renderOffers(offersData);
-          } else {
-              const sampleOffers = [
-                  { id: 1, name: "20% Off Pizza", description: "Get 20% discount on all pizza orders", price: "499", originalPrice: "624", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Pizza+Offer`, timer: "2 days" },
-                  { id: 2, name: "Burger Combo Deal", description: "Burger + Fries + Drink at special price", price: "299", originalPrice: "399", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Burger+Deal`, timer: "1 day" },
-                  { id: 3, name: "Sushi Platter", description: "Large sushi platter for 2 people", price: "899", originalPrice: "1199", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Sushi+Platter`, timer: "3 days" },
-                  { id: 4, name: "Pasta Special", description: "Chef's special pasta with wine pairing", price: "399", originalPrice: "499", image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Pasta+Special`, timer: "Ends tonight" }
-              ];
-              renderOffers(sampleOffers);
-          }
-      });
-
-      db.ref('menu').on('value', snapshot => {
-          const menuData = snapshot.val() ? Object.values(snapshot.val()) : [];
-          if (menuData.length > 0) {
-              renderMenuItems(menuData);
-          } else {
-              const sampleMenuItems = [
-                  { id: 1, name: "Margherita Pizza", description: "Classic pizza with tomato sauce and mozzarella", price: "349", rating: 4.8, image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Margherita` },
-                  { id: 2, name: "Cheeseburger", description: "Juicy beef burger with cheddar cheese", price: "199", rating: 4.6, image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Burger` },
-                  { id: 3, name: "California Roll", description: "Crab, avocado, and cucumber roll", price: "299", rating: 4.9, image: `https://placehold.co/300x200/${getRandomColor()}/white?text=California+Roll` },
-                  { id: 4, name: "Spaghetti Carbonara", description: "Classic Italian pasta with bacon and eggs", price: "399", rating: 4.7, image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Carbonara` },
-                  { id: 5, name: "Caesar Salad", description: "Fresh romaine lettuce with Caesar dressing", price: "249", rating: 4.5, image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Caesar+Salad` },
-                  { id: 6, name: "Chocolate Lava Cake", description: "Warm chocolate cake with molten center", price: "149", rating: 4.9, image: `https://placehold.co/300x200/${getRandomColor()}/white?text=Lava+Cake` }
-              ];
-              renderMenuItems(sampleMenuItems);
-          }
-      });
-
-      db.ref('reviews').on('value', snapshot => {
-          const reviewsData = snapshot.val() ? Object.values(snapshot.val()) : [];
-          if (reviewsData.length > 0) {
-              renderReviews(reviewsData);
-          } else {
-              const sampleReviews = [
-                  { id: 1, name: "Rahul Sharma", role: "Food Critic", content: "The best biryani I've ever had! The flavors are authentic and the service is excellent.", rating: 5, avatar: "RS" },
-                  { id: 2, name: "Priya Patel", role: "Regular Customer", content: "Fast delivery and delicious food. Will definitely order again! The butter chicken is a must-try.", rating: 4, avatar: "PP" },
-                  { id: 3, name: "Amit Kumar", role: "Food Blogger", content: "Impressive variety and quality. The tandoori platter is exceptional. Great ambiance too!", rating: 5, avatar: "AK" }
-              ];
-              renderReviews(sampleReviews);
-          }
-      });
-
-      // Fetch order history for current user
-      db.ref('orders').on('value', snapshot => {
-          const allOrders = snapshot.val() || {};
-          const userOrders = [];
-          
-          // Filter orders for current user
-          Object.keys(allOrders).forEach(orderId => {
-              const order = allOrders[orderId];
-              if (order.userId === currentUser) {
-                  userOrders.push({
-                      id: orderId,
-                      ...order
-                  });
-              }
-          });
-          
-          renderOrderHistory(userOrders);
-      });
-
+  // Sample data for demonstration
+  document.addEventListener('DOMContentLoaded', function() {
+      // Hide loading indicators
       setTimeout(() => {
           document.querySelectorAll('.loading').forEach(loader => {
               loader.style.display = 'none';
           });
       }, 1500);
-  }
-
-  document.getElementById('subscriptionForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const mobile = this.querySelector('input').value;
       
-      const subscriptionsRef = db.ref('subscriptions');
-      subscriptionsRef.push({
-          mobile: mobile,
-          timestamp: new Date().toISOString()
-      }).then(() => {
+      // Render sample data
+      const sampleCategories = [
+          { id: 1, name: "Pizza", description: "Delicious pizzas with fresh ingredients", image: `https://placehold.co/300x200/d40000/white?text=Pizza` },
+          { id: 2, name: "Burgers", description: "Juicy burgers with premium beef", image: `https://placehold.co/300x200/f9c300/white?text=Burgers` },
+          { id: 3, name: "Sushi", description: "Fresh sushi rolls and sashimi", image: `https://placehold.co/300x200/1d3557/white?text=Sushi` },
+          { id: 4, name: "Pasta", description: "Authentic Italian pasta dishes", image: `https://placehold.co/300x200/ffd166/white?text=Pasta` },
+          { id: 5, name: "Salads", description: "Healthy and fresh salads", image: `https://placehold.co/300x200/06d6a0/white?text=Salads` },
+          { id: 6, name: "Desserts", description: "Sweet treats to satisfy your cravings", image: `https://placehold.co/300x200/118ab2/white?text=Desserts` }
+      ];
+      renderCategories(sampleCategories);
+
+      const sampleOffers = [
+          { id: 1, name: "20% Off Pizza", description: "Get 20% discount on all pizza orders", price: "499", originalPrice: "624", image: `https://placehold.co/300x200/d40000/white?text=Pizza+Offer`, timer: "2 days" },
+          { id: 2, name: "Burger Combo Deal", description: "Burger + Fries + Drink at special price", price: "299", originalPrice: "399", image: `https://placehold.co/300x200/f9c300/white?text=Burger+Deal`, timer: "1 day" },
+          { id: 3, name: "Sushi Platter", description: "Large sushi platter for 2 people", price: "899", originalPrice: "1199", image: `https://placehold.co/300x200/1d3557/white?text=Sushi+Platter`, timer: "3 days" },
+          { id: 4, name: "Pasta Special", description: "Chef's special pasta with wine pairing", price: "399", originalPrice: "499", image: `https://placehold.co/300x200/ffd166/white?text=Pasta+Special`, timer: "Ends tonight" }
+      ];
+      renderOffers(sampleOffers);
+
+      const sampleMenuItems = [
+          { id: 1, name: "Margherita Pizza", description: "Classic pizza with tomato sauce and mozzarella", price: "349", rating: 4.8, image: `https://placehold.co/300x200/d40000/white?text=Margherita` },
+          { id: 2, name: "Cheeseburger", description: "Juicy beef burger with cheddar cheese", price: "199", rating: 4.6, image: `https://placehold.co/300x200/f9c300/white?text=Burger` },
+          { id: 3, name: "California Roll", description: "Crab, avocado, and cucumber roll", price: "299", rating: 4.9, image: `https://placehold.co/300x200/1d3557/white?text=California+Roll` },
+          { id: 4, name: "Spaghetti Carbonara", description: "Classic Italian pasta with bacon and eggs", price: "399", rating: 4.7, image: `https://placehold.co/300x200/ffd166/white?text=Carbonara` },
+          { id: 5, name: "Caesar Salad", description: "Fresh romaine lettuce with Caesar dressing", price: "249", rating: 4.5, image: `https://placehold.co/300x200/06d6a0/white?text=Caesar+Salad` },
+          { id: 6, name: "Chocolate Lava Cake", description: "Warm chocolate cake with molten center", price: "149", rating: 4.9, image: `https://placehold.co/300x200/118ab2/white?text=Lava+Cake` }
+      ];
+      renderMenuItems(sampleMenuItems);
+
+      const sampleReviews = [
+          { id: 1, name: "Rahul Sharma", role: "Food Critic", content: "The best biryani I've ever had! The flavors are authentic and the service is excellent.", rating: 5, avatar: "RS" },
+          { id: 2, name: "Priya Patel", role: "Regular Customer", content: "Fast delivery and delicious food. Will definitely order again! The butter chicken is a must-try.", rating: 4, avatar: "PP" },
+          { id: 3, name: "Amit Kumar", role: "Food Blogger", content: "Impressive variety and quality. The tandoori platter is exceptional. Great ambiance too!", rating: 5, avatar: "AK" }
+      ];
+      renderReviews(sampleReviews);
+
+      const sampleOrderHistory = [
+          { id: 1, timestamp: "2023-05-15", items: [{name: "Margherita Pizza", quantity: 1}, {name: "Garlic Bread", quantity: 1}], total: "499" },
+          { id: 2, timestamp: "2023-05-10", items: [{name: "Cheeseburger", quantity: 1}, {name: "Fries", quantity: 1}, {name: "Coke", quantity: 1}], total: "299" },
+          { id: 3, timestamp: "2023-05-05", items: [{name: "California Roll", quantity: 2}, {name: "Miso Soup", quantity: 1}], total: "399" }
+      ];
+      renderOrderHistory(sampleOrderHistory);
+
+      // Add event listeners for reorder buttons
+      document.addEventListener('click', function(e) {
+          if (e.target.classList.contains('reorder-btn')) {
+              alert('Items added to cart!');
+          }
+      });
+
+      // Add event listeners for subscription form
+      document.getElementById('subscriptionForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const mobile = this.querySelector('input').value;
           alert(`Thank you for subscribing with mobile number: ${mobile}`);
           this.reset();
-      }).catch((error) => {
-          console.error("Error saving subscription:", error);
-          alert("Subscription failed. Please try again.");
       });
   });
-
-  document.addEventListener('DOMContentLoaded', fetchDataFromFirebase);
 </script>
 </body>
-    </html>
+            </html>
