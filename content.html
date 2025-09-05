@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Delivery Service</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #ff6b6b;
@@ -34,6 +35,67 @@
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
+        }
+
+        /* Header/Navigation */
+        header {
+            background: white;
+            box-shadow: var(--shadow);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
         }
 
         /* Categories Section */
@@ -201,10 +263,17 @@
             cursor: pointer;
             font-weight: 500;
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .add-to-cart:hover {
             transform: scale(1.05);
+        }
+
+        .add-to-cart.added {
+            background: linear-gradient(135deg, #4CAF50, #457b9d);
         }
 
         /* Reviews Section */
@@ -525,6 +594,26 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: var(--dark);
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            border-left: 5px solid var(--primary);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
             .section {
@@ -537,6 +626,17 @@
             
             .section-header p {
                 font-size: 0.95rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
             }
             
             /* Categories - Still 3 columns on mobile */
@@ -578,6 +678,7 @@
             .add-to-cart {
                 width: 100%;
                 text-align: center;
+                justify-content: center;
             }
             
             /* Reviews Section */
@@ -632,6 +733,7 @@
             .offer-actions .add-to-cart {
                 width: 100%;
                 text-align: center;
+                justify-content: center;
             }
             
             /* Subscription */
@@ -727,6 +829,25 @@
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">FoodieDelight</div>
+                <div class="nav-links">
+                    <a href="#categories">Categories</a>
+                    <a href="#menu">Menu</a>
+                    <a href="#offers">Offers</a>
+                    <a href="#reviews">Reviews</a>
+                </div>
+                <div class="cart-icon" id="cartIcon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
     <!-- Categories Section -->
     <section class="section" id="categories">
         <div class="container">
@@ -737,14 +858,14 @@
             <div class="categories" id="categoriesContainer">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading categories from Firebase...</p>
+                    <p>Loading categories...</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Special Offers -->
-    <section class="offers-section">
+    <section class="offers-section" id="offers">
         <div class="container">
             <div class="section-header">
                 <h2>Special Offers</h2>
@@ -753,7 +874,7 @@
             <div class="offers-grid" id="offersContainer">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading special offers from Firebase...</p>
+                    <p>Loading special offers...</p>
                 </div>
             </div>
         </div>
@@ -769,7 +890,7 @@
             <div class="menu-grid" id="menuContainer">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading menu items from Firebase...</p>
+                    <p>Loading menu items...</p>
                 </div>
             </div>
         </div>
@@ -785,7 +906,7 @@
             <div class="reviews-grid" id="reviewsContainer">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading customer reviews from Firebase...</p>
+                    <p>Loading customer reviews...</p>
                 </div>
             </div>
         </div>
@@ -801,7 +922,7 @@
             <div class="history-container" id="orderHistory">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>Loading order history from Firebase...</p>
+                    <p>Loading order history...</p>
                 </div>
             </div>
         </div>
@@ -819,15 +940,341 @@
         </div>
     </section>
 
-    <script>
-        // Simple placeholder script to remove loading states
-        document.addEventListener('DOMContentLoaded', function() {
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+          authDomain: "mirdhuna-25542.firebaseapp.com",
+          databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+          projectId: "mirdhuna-25542",
+          storageBucket: "mirdhuna-25542.firebasestorage.app",
+          messagingSenderId: "575924409876",
+          appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+          measurementId: "G-YB7LDKHBPV"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // DOM Elements
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        const offersContainer = document.getElementById('offersContainer');
+        const menuContainer = document.getElementById('menuContainer');
+        const reviewsContainer = document.getElementById('reviewsContainer');
+        const orderHistoryContainer = document.getElementById('orderHistory');
+        const cartIcon = document.getElementById('cartIcon');
+        const cartCount = document.getElementById('cartCount');
+        const notification = document.getElementById('notification');
+
+        // Sample data (in a real app, this would come from Firebase)
+        const sampleCategories = [
+            { id: 1, name: "Pizza", description: "Delicious pizzas with fresh ingredients", image: "pizza" },
+            { id: 2, name: "Burgers", description: "Juicy burgers with premium beef", image: "burger" },
+            { id: 3, name: "Sushi", description: "Fresh sushi rolls and sashimi", image: "sushi" },
+            { id: 4, name: "Pasta", description: "Authentic Italian pasta dishes", image: "pasta" },
+            { id: 5, name: "Salads", description: "Healthy and fresh salads", image: "salad" },
+            { id: 6, name: "Desserts", description: "Sweet treats to satisfy your cravings", image: "dessert" }
+        ];
+
+        const sampleOffers = [
+            { id: 1, name: "20% Off Pizza", description: "Get 20% discount on all pizza orders", price: "$12.99", originalPrice: "$16.99", image: "pizza-offer", timer: "2 days" },
+            { id: 2, name: "Burger Combo Deal", description: "Burger + Fries + Drink at special price", price: "$8.99", originalPrice: "$12.99", image: "burger-offer", timer: "1 day" },
+            { id: 3, name: "Sushi Platter", description: "Large sushi platter for 2 people", price: "$24.99", originalPrice: "$32.99", image: "sushi-offer", timer: "3 days" },
+            { id: 4, name: "Pasta Special", description: "Chef's special pasta with wine pairing", price: "$15.99", originalPrice: "$19.99", image: "pasta-offer", timer: "Ends tonight" }
+        ];
+
+        const sampleMenuItems = [
+            { id: 1, name: "Margherita Pizza", description: "Classic pizza with tomato sauce and mozzarella", price: "$14.99", rating: 4.8, image: "margherita" },
+            { id: 2, name: "Cheeseburger", description: "Juicy beef burger with cheddar cheese", price: "$10.99", rating: 4.6, image: "cheeseburger" },
+            { id: 3, name: "California Roll", description: "Crab, avocado, and cucumber roll", price: "$8.99", rating: 4.9, image: "california-roll" },
+            { id: 4, name: "Spaghetti Carbonara", description: "Classic Italian pasta with bacon and eggs", price: "$13.99", rating: 4.7, image: "carbonara" },
+            { id: 5, name: "Caesar Salad", description: "Fresh romaine lettuce with Caesar dressing", price: "$9.99", rating: 4.5, image: "caesar-salad" },
+            { id: 6, name: "Chocolate Lava Cake", description: "Warm chocolate cake with molten center", price: "$6.99", rating: 4.9, image: "lava-cake" }
+        ];
+
+        const sampleReviews = [
+            { id: 1, name: "John Smith", role: "Food Critic", content: "The best pizza I've ever had! The crust is perfect and the toppings are fresh.", rating: 5, avatar: "JS" },
+            { id: 2, name: "Sarah Johnson", role: "Regular Customer", content: "Fast delivery and delicious food. Will definitely order again!", rating: 4, avatar: "SJ" },
+            { id: 3, name: "Mike Davis", role: "Food Blogger", content: "Impressive variety and quality. The sushi rolls are exceptional.", rating: 5, avatar: "MD" }
+        ];
+
+        const sampleOrderHistory = [
+            { id: 1, date: "2023-05-15", items: ["Margherita Pizza", "Garlic Bread"], total: "$19.98" },
+            { id: 2, date: "2023-05-10", items: ["Cheeseburger", "Fries", "Coke"], total: "$14.97" },
+            { id: 3, date: "2023-05-05", items: ["California Roll", "Miso Soup"], total: "$12.98" }
+        ];
+
+        // State
+        let cart = [];
+
+        // Show notification
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
             setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            cartCount.textContent = cart.length;
+        }
+
+        // Add to cart function
+        function addToCart(itemName, itemPrice, itemId) {
+            // Check if item is already in cart
+            const existingItem = cart.find(item => item.id === itemId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: itemId,
+                    name: itemName,
+                    price: parseFloat(itemPrice.replace('$', '')),
+                    quantity: 1
+                });
+            }
+            
+            updateCartCount();
+            
+            // Save to Firebase
+            const cartRef = ref(database, 'carts/user1'); // In a real app, use user ID
+            push(cartRef, {
+                itemId: itemId,
+                itemName: itemName,
+                itemPrice: parseFloat(itemPrice.replace('$', '')),
+                timestamp: new Date().toISOString()
+            }).catch((error) => {
+                console.error("Error adding to cart:", error);
+            });
+            
+            showNotification(`${itemName} added to cart!`);
+        }
+
+        // Render categories
+        function renderCategories() {
+            let html = '';
+            sampleCategories.forEach(category => {
+                html += `
+                    <div class="category-card">
+                        <div class="category-img" style="background-image: url('https://placehold.co/300x180/${getRandomColor()}/white?text=${category.image}')"></div>
+                        <div class="category-content">
+                            <h3>${category.name}</h3>
+                            <p>${category.description}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            categoriesContainer.innerHTML = html;
+        }
+
+        // Render special offers
+        function renderOffers() {
+            let html = '';
+            sampleOffers.forEach(offer => {
+                html += `
+                    <div class="offer-card">
+                        <div class="offer-img" style="background-image: url('https://placehold.co/300x180/${getRandomColor()}/white?text=${offer.image}')">
+                            <div class="offer-badge">SALE</div>
+                        </div>
+                        <div class="offer-content">
+                            <h3>${offer.name}</h3>
+                            <p>${offer.description}</p>
+                            <div class="price">
+                                ${offer.price} <span style="text-decoration: line-through; color: #999; font-size: 1rem;">${offer.originalPrice}</span>
+                            </div>
+                            <div class="offer-actions">
+                                <div class="offer-timer">${offer.timer}</div>
+                                <button class="add-to-cart" data-name="${offer.name}" data-price="${offer.price}" data-id="offer-${offer.id}">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            offersContainer.innerHTML = html;
+            
+            // Add event listeners to offer buttons
+            document.querySelectorAll('#offersContainer .add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const name = this.getAttribute('data-name');
+                    const price = this.getAttribute('data-price');
+                    const id = this.getAttribute('data-id');
+                    
+                    // Visual feedback
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Added!';
+                    this.classList.add('added');
+                    
+                    addToCart(name, price, id);
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.remove('added');
+                    }, 1500);
+                });
+            });
+        }
+
+        // Render menu items
+        function renderMenuItems() {
+            let html = '';
+            sampleMenuItems.forEach(item => {
+                html += `
+                    <div class="menu-item">
+                        <div class="item-img" style="background-image: url('https://placehold.co/300x200/${getRandomColor()}/white?text=${item.image}')">
+                            <div class="item-badge">HOT</div>
+                        </div>
+                        <div class="item-content">
+                            <div class="item-header">
+                                <h3>${item.name}</h3>
+                                <div class="price">${item.price}</div>
+                            </div>
+                            <div class="item-desc">${item.description}</div>
+                            <div class="item-actions">
+                                <div class="rating">
+                                    <i class="fas fa-star"></i> ${item.rating}
+                                </div>
+                                <button class="add-to-cart" data-name="${item.name}" data-price="${item.price}" data-id="menu-${item.id}">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            menuContainer.innerHTML = html;
+            
+            // Add event listeners to menu buttons
+            document.querySelectorAll('#menuContainer .add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const name = this.getAttribute('data-name');
+                    const price = this.getAttribute('data-price');
+                    const id = this.getAttribute('data-id');
+                    
+                    // Visual feedback
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Added!';
+                    this.classList.add('added');
+                    
+                    addToCart(name, price, id);
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.remove('added');
+                    }, 1500);
+                });
+            });
+        }
+
+        // Render reviews
+        function renderReviews() {
+            let html = '';
+            sampleReviews.forEach(review => {
+                html += `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-avatar">${review.avatar}</div>
+                            <div class="review-info">
+                                <h4>${review.name}</h4>
+                                <p>${review.role}</p>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <p>"${review.content}"</p>
+                            <div class="review-rating">
+                                ${'<i class="fas fa-star"></i>'.repeat(review.rating)}
+                                ${'<i class="far fa-star"></i>'.repeat(5 - review.rating)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            reviewsContainer.innerHTML = html;
+        }
+
+        // Render order history
+        function renderOrderHistory() {
+            let html = '';
+            sampleOrderHistory.forEach(order => {
+                html += `
+                    <div class="history-item">
+                        <div class="history-img" style="background-image: url('https://placehold.co/100x100/${getRandomColor()}/white?text=Order')"></div>
+                        <div class="history-details">
+                            <div class="history-header">
+                                <h3>Order #${order.id}</h3>
+                                <div class="history-date">${order.date}</div>
+                            </div>
+                            <div class="history-items">
+                                ${order.items.map(item => `<span class="history-item-tag">${item}</span>`).join('')}
+                            </div>
+                            <div class="history-footer">
+                                <div class="price">${order.total}</div>
+                                <button class="reorder-btn">Reorder</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            orderHistoryContainer.innerHTML = html;
+        }
+
+        // Helper function to generate random colors for placeholders
+        function getRandomColor() {
+            const colors = ['ff6b6b', '457b9d', '1d3557', 'ffd166', '06d6a0', '118ab2'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Initialize the page
+        function init() {
+            // Remove loading states after a delay
+            setTimeout(() => {
+                renderCategories();
+                renderOffers();
+                renderMenuItems();
+                renderReviews();
+                renderOrderHistory();
+                
+                // Hide loading indicators
                 document.querySelectorAll('.loading').forEach(loader => {
                     loader.style.display = 'none';
                 });
-            }, 2000);
-        });
+            }, 1500);
+            
+            // Cart icon click event
+            cartIcon.addEventListener('click', () => {
+                if (cart.length > 0) {
+                    alert(`You have ${cart.length} items in your cart:\n` + 
+                          cart.map(item => `${item.name} x${item.quantity}`).join('\n'));
+                } else {
+                    showNotification('Your cart is empty!');
+                }
+            });
+            
+            // Subscription form submission
+            document.getElementById('subscriptionForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const mobile = this.querySelector('input').value;
+                alert(`Thank you for subscribing with mobile number: ${mobile}`);
+                this.reset();
+            });
+        }
+
+        // Start the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
-</html>
+    </html>
