@@ -330,7 +330,6 @@
             transform: rotate(90deg);
         }
 
-        /* Floating Cart */
         .floating-cart {
             position: fixed;
             bottom: 30px;
@@ -391,17 +390,35 @@
             transform: translateX(0);
         }
 
+        /* Menu Section */
+        #menu {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .menu-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        /* Mobile Navigation Fix */
         @media (max-width: 768px) {
             .menu-toggle { 
                 display: block; 
             }
             
             nav { 
-                display: none; 
-            }
-            
-            nav.active { 
-                display: block; 
+                display: none; /* Hidden by default */
                 position: absolute;
                 top: 100%;
                 left: 0;
@@ -409,6 +426,11 @@
                 background: rgba(220, 30, 40, 0.95);
                 padding: 15px;
                 border-radius: 0 0 var(--radius) var(--radius);
+                z-index: 1001;
+            }
+            
+            nav.active { 
+                display: block; /* Only shown when active */
             }
             
             nav ul {
@@ -502,6 +524,42 @@
   </div>
 </div>
 
+<!-- Menu Section with Add to Cart -->
+<section id="menu">
+  <h2 style="text-align: center; font-family: 'Playfair Display', serif; color: var(--primary); margin-bottom: 30px;">Our Signature Dishes</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;">
+    <div class="menu-card">
+      <img src="https://via.placeholder.com/300x200/d40000/fff?text=Biryani" alt="Biryani">
+      <div style="padding: 20px;">
+        <h3 style="margin-bottom: 10px;">Royal Mutton Biryani</h3>
+        <p style="color: #666; margin-bottom: 15px;">Slow-cooked with saffron and aromatic spices.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 700; color: var(--primary); font-size: 1.2rem;">₹320</span>
+          <button class="add-to-cart-btn" data-id="biryani01" data-name="Royal Mutton Biryani" data-price="320"
+            style="background: var(--gradient); color: white; border: none; padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer;">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-card">
+      <img src="https://via.placeholder.com/300x200/f9c300/000?text=Paneer" alt="Paneer Tikka">
+      <div style="padding: 20px;">
+        <h3 style="margin-bottom: 10px;">Paneer Tikka Platter</h3>
+        <p style="color: #666; margin-bottom: 15px;">Grilled cottage cheese with mint chutney.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 700; color: var(--primary); font-size: 1.2rem;">₹240</span>
+          <button class="add-to-cart-btn" data-id="paneer01" data-name="Paneer Tikka Platter" data-price="240"
+            style="background: var(--gradient); color: white; border: none; padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer;">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Floating Cart -->
 <div class="floating-cart" id="floatingCart">
     <i class="fas fa-shopping-cart"></i>
@@ -511,16 +569,13 @@
 
 <div class="notification" id="notification"></div>
 
+<!-- Modals -->
 <div class="modal" id="loginModal">
   <div class="modal-content">
     <span class="modal-close" id="closeLogin">&times;</span>
     <h2>🔐 Login to MIRDHUNA</h2>
     <p>Enter your mobile number to continue.</p>
-    <input 
-      type="tel" 
-      id="mobileInput" 
-      placeholder="Enter 10-digit mobile number" 
-      value="9835124772"
+    <input type="tel" id="mobileInput" placeholder="Enter 10-digit mobile number" value="9835124772"
       style="padding:14px; width:100%; margin-bottom:20px; border-radius:12px; border:1px solid #ddd; font-size:1rem;">
     <button id="loginBtn" style="background:var(--gradient); color:white; border:none; padding:14px 35px; border-radius:30px; font-weight:600; font-size:1.1rem; cursor:pointer; width:100%;">Login Now</button>
   </div>
@@ -561,11 +616,11 @@
   const db = firebase.database();
   const analytics = firebase.analytics();
 
+  // DOM Elements
   const menuToggle = document.getElementById('menuToggle');
   const mainNav = document.getElementById('mainNav');
   const loginTrigger = document.getElementById('loginTrigger');
   const locationTrigger = document.getElementById('locationTrigger');
-
   const loginModal = document.getElementById('loginModal');
   const locationModal = document.getElementById('locationModal');
   const cartModal = document.getElementById('cartModal');
@@ -578,15 +633,15 @@
   const cartItems = document.getElementById('cartItems');
   const viewCart = document.getElementById('viewCart');
   const cartCount = document.querySelector('.cart-count');
-  const cartItemsContainer = document.getElementById('cartItemsContainer');
-  const floatingCart = document.getElementById('floatingCart');
   const totalPriceElement = document.querySelector('.total-price');
+  const floatingCart = document.getElementById('floatingCart');
   const notification = document.getElementById('notification');
 
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   let currentUser = null;
   updateCartDisplay();
 
+  // Mobile Nav Toggle
   menuToggle.addEventListener('click', () => {
     mainNav.classList.toggle('active');
     menuToggle.innerHTML = mainNav.classList.contains('active') 
@@ -594,6 +649,7 @@
       : '<i class="fas fa-bars"></i>';
   });
 
+  // Close mobile nav when clicking a link
   document.querySelectorAll('#mainNav ul li a').forEach(link => {
     link.addEventListener('click', () => {
       mainNav.classList.remove('active');
@@ -601,6 +657,7 @@
     });
   });
 
+  // Modals
   loginTrigger.addEventListener('click', (e) => {
     e.preventDefault();
     loginModal.classList.add('active');
@@ -612,91 +669,10 @@
     document.body.style.overflow = '';
   });
 
-  loginBtn.addEventListener('click', async () => {
-    const num = mobileInput.value.trim();
-    if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
-      alert("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-
-    let lat, lng;
-    loginBtn.textContent = "🔍 Detecting Location...";
-    loginBtn.disabled = true;
-
-    await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          lat = pos.coords.latitude;
-          lng = pos.coords.longitude;
-          resolve();
-        },
-        err => {
-          console.warn("Location error:", err.message);
-          if (err.code === err.PERMISSION_DENIED) {
-            alert("❌ Please allow location access to continue.");
-            loginBtn.textContent = "Login Now";
-            loginBtn.disabled = false;
-            return;
-          }
-          alert("⚠️ Could not detect location. Please try again.");
-          loginBtn.textContent = "Login Now";
-          loginBtn.disabled = false;
-          resolve();
-        }
-      );
-    });
-
-    if (!lat || !lng) {
-      alert("📍 Location required for login. Please enable location services.");
-      loginBtn.textContent = "Login Now";
-      loginBtn.disabled = false;
-      return;
-    }
-
-    const locationStr = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-    const now = new Date().toISOString();
-
-    const userActivityRef = db.ref('userActivity');
-    const usersRef = db.ref('users');
-
-    const activityKey = userActivityRef.push().key;
-
-    const activityData = {
-      mobile: num,
-      location: locationStr,
-      timestamp: now
-    };
-
-    userActivityRef.child(activityKey).set(activityData)
-      .then(() => {
-        const userData = {
-          mobile: num,
-          location: locationStr,
-          lastLogin: Date.now()
-        };
-        usersRef.child(num).set(userData)
-          .then(() => {
-            currentUser = num;
-            alert(`✅ Logged in successfully as ${num}!`);
-            loginModal.classList.remove('active');
-            document.body.style.overflow = '';
-          })
-          .catch(err => {
-            console.error("Error saving user:", err);
-            alert("Failed to save user info.");
-          });
-      })
-      .catch(err => {
-        console.error("Error saving activity:", err);
-        alert("Failed to save login data.");
-      });
-  });
-
   locationTrigger.addEventListener('click', (e) => {
     e.preventDefault();
     const lat = localStorage.getItem('userLat');
     const lng = localStorage.getItem('userLng');
-
     if (lat && lng) {
       locationText.innerHTML = `<strong>📍 Detected:</strong><br>Lat: ${lat}<br>Lng: ${lng}`;
     } else {
@@ -746,156 +722,184 @@
     }
   });
 
+  // Login Logic
+  loginBtn.addEventListener('click', async () => {
+    const num = mobileInput.value.trim();
+    if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
+    let lat, lng;
+    loginBtn.textContent = "🔍 Detecting Location...";
+    loginBtn.disabled = true;
+
+    await new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          lat = pos.coords.latitude;
+          lng = pos.coords.longitude;
+          resolve();
+        },
+        err => {
+          console.warn("Location error:", err.message);
+          alert("❌ Please allow location access to continue.");
+          loginBtn.textContent = "Login Now";
+          loginBtn.disabled = false;
+          resolve();
+        }
+      );
+    });
+
+    if (!lat || !lng) {
+      alert("📍 Location required for login.");
+      loginBtn.textContent = "Login Now";
+      loginBtn.disabled = false;
+      return;
+    }
+
+    const locationStr = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+    const now = new Date().toISOString();
+
+    const userActivityRef = db.ref('userActivity');
+    const usersRef = db.ref('users');
+
+    userActivityRef.push({
+      mobile: num,
+      location: locationStr,
+      timestamp: now
+    }).then(() => {
+      usersRef.child(num).set({
+        mobile: num,
+        location: locationStr,
+        lastLogin: Date.now()
+      }).then(() => {
+        currentUser = num;
+        alert(`✅ Logged in as ${num}!`);
+        loginModal.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+  });
+
+  // Cart Functions
   function showNotification(message) {
-      notification.textContent = message;
-      notification.classList.add('show');
-      
-      setTimeout(() => {
-          notification.classList.remove('show');
-      }, 3000);
+    notification.textContent = message;
+    notification.classList.add('show');
+    setTimeout(() => notification.classList.remove('show'), 3000);
   }
 
   function updateCartDisplay() {
-      cartCount.textContent = cart.length;
-      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      totalPriceElement.textContent = `₹${total.toFixed(2)}`;
-      localStorage.setItem('cart', JSON.stringify(cart));
+    cartCount.textContent = cart.length;
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    totalPriceElement.textContent = `₹${total.toFixed(2)}`;
+    localStorage.setItem('cart', JSON.stringify(cart));
   }
 
   function addToCart(item) {
-      const existingItem = cart.find(cartItem => cartItem.id === item.id);
-      
-      if (existingItem) {
-          existingItem.quantity += 1;
-      } else {
-          cart.push({...item});
-      }
-      
-      updateCartDisplay();
-      showNotification(`${item.name} added to cart!`);
+    const existingItem = cart.find(cartItem => cartItem.id === item.id);
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({...item, quantity: 1});
+    }
+    updateCartDisplay();
+    showNotification(`${item.name} added to cart!`);
   }
 
   function updateQuantity(index, change) {
-      const item = cart[index];
-      item.quantity += change;
-      
-      if (item.quantity <= 0) {
-          cart.splice(index, 1);
-      }
-      
-      updateCartDisplay();
-      renderCartItems();
+    cart[index].quantity += change;
+    if (cart[index].quantity <= 0) {
+      cart.splice(index, 1);
+    }
+    updateCartDisplay();
+    renderCartItems();
   }
 
   function renderCartItems() {
-      if (cart.length === 0) {
-          cartItems.innerHTML = "No items yet. Add something delicious!";
-          viewCart.style.display = "none";
-          return;
-      }
+    if (cart.length === 0) {
+      cartItems.innerHTML = "No items yet. Add something delicious!";
+      viewCart.style.display = "none";
+      return;
+    }
 
-      let cartHTML = '<div class="cart-items">';
-      let total = 0;
+    let cartHTML = '';
+    let total = 0;
 
-      cart.forEach((item, index) => {
-          const itemTotal = item.price * item.quantity;
-          total += itemTotal;
-          
-          cartHTML += `
-              <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
-                  <div>
-                      <h4>${item.name}</h4>
-                      <p>₹${item.price} each</p>
-                  </div>
-                  <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                      <div class="quantity-controls">
-                          <button class="quantity-btn minus" data-index="${index}">-</button>
-                          <span class="quantity-value">${item.quantity}</span>
-                          <button class="quantity-btn plus" data-index="${index}">+</button>
-                      </div>
-                      <div style="margin-top: 10px; font-weight: bold;">₹${itemTotal.toFixed(2)}</div>
-                  </div>
-              </div>
-          `;
-      });
-
+    cart.forEach((item, index) => {
+      const itemTotal = item.price * item.quantity;
+      total += itemTotal;
       cartHTML += `
-          <div style="border-top: 2px solid #eee; padding-top: 15px; margin-top: 15px;">
-              <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem;">
-                  <span>Total:</span>
-                  <span>₹${total.toFixed(2)}</span>
-              </div>
+        <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+          <div><h4>${item.name}</h4><p>₹${item.price} each</p></div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end;">
+            <div class="quantity-controls">
+              <button class="quantity-btn minus" data-index="${index}">-</button>
+              <span class="quantity-value">${item.quantity}</span>
+              <button class="quantity-btn plus" data-index="${index}">+</button>
+            </div>
+            <div style="margin-top: 10px; font-weight: bold;">₹${itemTotal.toFixed(2)}</div>
           </div>
+        </div>
       `;
+    });
 
-      cartItems.innerHTML = cartHTML;
-      viewCart.style.display = "block";
+    cartHTML += `
+      <div style="border-top: 2px solid #eee; padding-top: 15px; margin-top: 15px;">
+        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem;">
+          <span>Total:</span><span>₹${total.toFixed(2)}</span>
+        </div>
+      </div>
+    `;
 
-      // Add event listeners for quantity buttons
-      document.querySelectorAll('.quantity-btn.minus').forEach(button => {
-          button.addEventListener('click', (e) => {
-              const index = parseInt(e.target.getAttribute('data-index'));
-              updateQuantity(index, -1);
-          });
+    cartItems.innerHTML = cartHTML;
+    viewCart.style.display = "block";
+
+    // Reattach event listeners
+    document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
+      btn.onclick = (e) => updateQuantity(parseInt(e.target.dataset.index), -1);
+    });
+    document.querySelectorAll('.quantity-btn.plus').forEach(btn => {
+      btn.onclick = (e) => updateQuantity(parseInt(e.target.dataset.index), 1);
+    });
+
+    viewCart.onclick = () => {
+      if (!currentUser) {
+        cartModal.classList.remove('active');
+        setTimeout(() => {
+          loginModal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }, 100);
+        return;
+      }
+      db.ref('orders').push({
+        userId: currentUser,
+        items: cart,
+        total: total,
+        timestamp: new Date().toISOString(),
+        status: 'pending'
+      }).then(() => {
+        cart = [];
+        updateCartDisplay();
+        renderCartItems();
+        cartModal.classList.remove('active');
+        document.body.style.overflow = '';
+        showNotification("Order placed successfully!");
       });
-
-      document.querySelectorAll('.quantity-btn.plus').forEach(button => {
-          button.addEventListener('click', (e) => {
-              const index = parseInt(e.target.getAttribute('data-index'));
-              updateQuantity(index, 1);
-          });
-      });
-
-      viewCart.onclick = () => {
-          if (cart.length > 0) {
-              if (!currentUser) {
-                  cartModal.classList.remove('active');
-                  document.body.style.overflow = '';
-                  setTimeout(() => {
-                      loginModal.classList.add('active');
-                      document.body.style.overflow = 'hidden';
-                  }, 100);
-                  return;
-              }
-              
-              const orderRef = db.ref('orders').push();
-              orderRef.set({
-                  userId: currentUser,
-                  items: cart,
-                  total: total,
-                  timestamp: new Date().toISOString(),
-                  status: 'pending'
-              }).then(() => {
-                  cart = [];
-                  updateCartDisplay();
-                  renderCartItems();
-                  cartModal.classList.remove('active');
-                  document.body.style.overflow = '';
-                  showNotification("Order placed successfully!");
-              }).catch(error => {
-                  console.error("Error placing order:", error);
-                  alert("Failed to place order. Please try again.");
-              });
-          }
-      };
+    };
   }
 
-  document.getElementById('subscriptionForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const mobile = this.querySelector('input').value;
-      
-      const subscriptionsRef = db.ref('subscriptions');
-      subscriptionsRef.push({
-          mobile: mobile,
-          timestamp: new Date().toISOString()
-      }).then(() => {
-          alert(`Thank you for subscribing with mobile number: ${mobile}`);
-          this.reset();
-      }).catch((error) => {
-          console.error("Error saving subscription:", error);
-          alert("Subscription failed. Please try again.");
-      });
+  // Add to Cart Buttons
+  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const item = {
+        id: this.dataset.id,
+        name: this.dataset.name,
+        price: parseFloat(this.dataset.price)
+      };
+      addToCart(item);
+    });
   });
 </script>
 </body>
-  </html>
+    </html>
