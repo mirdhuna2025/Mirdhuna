@@ -100,10 +100,8 @@
             text-shadow: var(--glow);
         }
 
-        /* Removed nav styles since nav is gone */
-
         .top-action-bar {
-            background: var(--gradient); /* Kept original gradient — NOT solid red */
+            background: var(--gradient);
             padding: 18px 0;
             box-shadow: var(--shadow);
         }
@@ -339,7 +337,6 @@
             transform: translateX(0);
         }
 
-        /* Menu Section */
         #menu {
             padding: 60px 20px;
             max-width: 1200px;
@@ -396,7 +393,7 @@
   </div>
 </div>
 
-<!-- Menu Section -->
+<!-- ONLY "Our Signature Dishes" — unchanged -->
 <section id="menu">
   <h2 style="text-align: center; font-family: 'Playfair Display', serif; color: var(--primary); margin-bottom: 30px;">Our Signature Dishes</h2>
   <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;">
@@ -488,7 +485,6 @@
   const db = firebase.database();
   const analytics = firebase.analytics();
 
-  // DOM Elements
   const loginTrigger = document.getElementById('loginTrigger');
   const locationTrigger = document.getElementById('locationTrigger');
   const loginModal = document.getElementById('loginModal');
@@ -511,7 +507,7 @@
   let currentUser = null;
   updateCartDisplay();
 
-  // Modals
+  // Modal handlers
   loginTrigger.addEventListener('click', (e) => {
     e.preventDefault();
     loginModal.classList.add('active');
@@ -576,7 +572,6 @@
     }
   });
 
-  // Login Logic
   loginBtn.addEventListener('click', async () => {
     const num = mobileInput.value.trim();
     if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
@@ -596,7 +591,6 @@
           resolve();
         },
         err => {
-          console.warn("Location error:", err.message);
           alert("❌ Please allow location access to continue.");
           loginBtn.textContent = "Login Now";
           loginBtn.disabled = false;
@@ -613,15 +607,13 @@
     }
 
     const locationStr = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-    const now = new Date().toISOString();
-
     const userActivityRef = db.ref('userActivity');
     const usersRef = db.ref('users');
 
     userActivityRef.push({
       mobile: num,
       location: locationStr,
-      timestamp: now
+      timestamp: new Date().toISOString()
     }).then(() => {
       usersRef.child(num).set({
         mobile: num,
@@ -636,7 +628,6 @@
     });
   });
 
-  // Cart Functions
   function showNotification(message) {
     notification.textContent = message;
     notification.classList.add('show');
@@ -709,7 +700,6 @@
     cartItems.innerHTML = cartHTML;
     viewCart.style.display = "block";
 
-    // Reattach event listeners
     document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
       btn.onclick = (e) => updateQuantity(parseInt(e.target.dataset.index), -1);
     });
@@ -743,7 +733,6 @@
     };
   }
 
-  // Add to Cart Buttons
   document.querySelectorAll('.add-to-cart-btn').forEach(button => {
     button.addEventListener('click', function() {
       const item = {
