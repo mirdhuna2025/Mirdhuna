@@ -157,23 +157,6 @@
             font-size: 1.25rem;
         }
 
-        .cart-count {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--accent);
-            color: var(--dark);
-            font-size: 0.7rem;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
-        }
-
         .social-icons {
             display: flex;
             gap: 12px;
@@ -277,47 +260,6 @@
             transform: rotate(90deg);
         }
 
-        .floating-cart {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: white;
-            border-radius: 50px;
-            padding: 15px 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            z-index: 100;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .floating-cart:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        }
-
-        .floating-cart i {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-
-        .floating-cart .cart-count {
-            position: static;
-            background: var(--gradient);
-            color: white;
-            width: 30px;
-            height: 30px;
-            font-size: 0.9rem;
-        }
-
-        .floating-cart .total-price {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.1rem;
-        }
-
         .notification {
             position: fixed;
             top: 20px;
@@ -336,26 +278,6 @@
         .notification.show {
             transform: translateX(0);
         }
-
-        #menu {
-            padding: 60px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .menu-card {
-            background: white;
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .menu-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
     </style>
 </head>
 <body>
@@ -365,7 +287,6 @@
       <i class="fas fa-utensils"></i>
       <h1 class="colorful-mirdhuna">MIRDHUNA</h1>
     </div>
-    <!-- Navigation and hamburger button REMOVED -->
   </div>
 </header>
 
@@ -393,52 +314,9 @@
   </div>
 </div>
 
-<!-- ONLY "Our Signature Dishes" — unchanged -->
-<section id="menu">
-  <h2 style="text-align: center; font-family: 'Playfair Display', serif; color: var(--primary); margin-bottom: 30px;">Our Signature Dishes</h2>
-  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;">
-    <div class="menu-card">
-      <img src="https://via.placeholder.com/300x200/d40000/fff?text=Biryani" alt="Biryani">
-      <div style="padding: 20px;">
-        <h3 style="margin-bottom: 10px;">Royal Mutton Biryani</h3>
-        <p style="color: #666; margin-bottom: 15px;">Slow-cooked with saffron and aromatic spices.</p>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-weight: 700; color: var(--primary); font-size: 1.2rem;">₹320</span>
-          <button class="add-to-cart-btn" data-id="biryani01" data-name="Royal Mutton Biryani" data-price="320"
-            style="background: var(--gradient); color: white; border: none; padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer;">
-            Add to Cart
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="menu-card">
-      <img src="https://via.placeholder.com/300x200/f9c300/000?text=Paneer" alt="Paneer Tikka">
-      <div style="padding: 20px;">
-        <h3 style="margin-bottom: 10px;">Paneer Tikka Platter</h3>
-        <p style="color: #666; margin-bottom: 15px;">Grilled cottage cheese with mint chutney.</p>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-weight: 700; color: var(--primary); font-size: 1.2rem;">₹240</span>
-          <button class="add-to-cart-btn" data-id="paneer01" data-name="Paneer Tikka Platter" data-price="240"
-            style="background: var(--gradient); color: white; border: none; padding: 8px 20px; border-radius: 30px; font-weight: 600; cursor: pointer;">
-            Add to Cart
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Floating Cart -->
-<div class="floating-cart" id="floatingCart">
-    <i class="fas fa-shopping-cart"></i>
-    <span class="cart-count">0</span>
-    <span class="total-price">₹0.00</span>
-</div>
-
 <div class="notification" id="notification"></div>
 
-<!-- Modals -->
+<!-- Login Modal -->
 <div class="modal" id="loginModal">
   <div class="modal-content">
     <span class="modal-close" id="closeLogin">&times;</span>
@@ -450,22 +328,12 @@
   </div>
 </div>
 
+<!-- Location Modal -->
 <div class="modal" id="locationModal">
   <div class="modal-content">
     <span class="modal-close" id="closeLocation">&times;</span>
     <h2>📍 Your Location</h2>
     <p id="locationText">Detecting your location...</p>
-  </div>
-</div>
-
-<div class="modal" id="cartModal">
-  <div class="modal-content">
-    <span class="modal-close" id="closeCart">&times;</span>
-    <h2>🛒 Your Cart</h2>
-    <div id="cartItemsContainer">
-      <p id="cartItems">No items yet. Add something delicious!</p>
-      <button id="viewCart" style="background:var(--gradient); color:white; border:none; padding:14px 35px; border-radius:30px; font-weight:600; cursor:pointer; display:none; margin-top:15px;">Place Order</button>
-    </div>
   </div>
 </div>
 
@@ -489,23 +357,14 @@
   const locationTrigger = document.getElementById('locationTrigger');
   const loginModal = document.getElementById('loginModal');
   const locationModal = document.getElementById('locationModal');
-  const cartModal = document.getElementById('cartModal');
   const closeLogin = document.getElementById('closeLogin');
   const closeLocation = document.getElementById('closeLocation');
-  const closeCart = document.getElementById('closeCart');
   const loginBtn = document.getElementById('loginBtn');
   const mobileInput = document.getElementById('mobileInput');
   const locationText = document.getElementById('locationText');
-  const cartItems = document.getElementById('cartItems');
-  const viewCart = document.getElementById('viewCart');
-  const cartCount = document.querySelector('.cart-count');
-  const totalPriceElement = document.querySelector('.total-price');
-  const floatingCart = document.getElementById('floatingCart');
   const notification = document.getElementById('notification');
 
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  let currentUser = null;
-  updateCartDisplay();
+  let currentUser = localStorage.getItem('currentUser');
 
   // Modal handlers
   loginTrigger.addEventListener('click', (e) => {
@@ -537,24 +396,7 @@
     document.body.style.overflow = '';
   });
 
-  floatingCart.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (!currentUser) {
-      loginModal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      return;
-    }
-    cartModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    renderCartItems();
-  });
-
-  closeCart.addEventListener('click', () => {
-    cartModal.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-
-  [loginModal, locationModal, cartModal].forEach(modal => {
+  [loginModal, locationModal].forEach(modal => {
     modal.addEventListener('click', e => {
       if (e.target === modal) {
         modal.classList.remove('active');
@@ -567,65 +409,67 @@
     if (e.key === 'Escape') {
       loginModal.classList.remove('active');
       locationModal.classList.remove('active');
-      cartModal.classList.remove('active');
       document.body.style.overflow = '';
     }
   });
 
-  loginBtn.addEventListener('click', async () => {
+  // ✅ Login with mobile + geolocation → Firebase
+  loginBtn.addEventListener('click', () => {
     const num = mobileInput.value.trim();
+
     if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
-      alert("Please enter a valid 10-digit mobile number.");
+      showNotification("❌ Please enter a valid 10-digit mobile number.");
       return;
     }
 
-    let lat, lng;
     loginBtn.textContent = "🔍 Detecting Location...";
     loginBtn.disabled = true;
 
-    await new Promise((resolve) => {
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          lat = pos.coords.latitude;
-          lng = pos.coords.longitude;
-          resolve();
-        },
-        err => {
-          alert("❌ Please allow location access to continue.");
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        const locationStr = `Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}`;
+
+        try {
+          await db.ref(`users/${num}`).set({
+            mobile: num,
+            location: locationStr,
+            lastLogin: firebase.database.ServerValue.TIMESTAMP
+          });
+
+          await db.ref('userActivity').push({
+            mobile: num,
+            location: locationStr,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+          });
+
+          currentUser = num;
+          localStorage.setItem('currentUser', num);
+          localStorage.setItem('userLat', latitude);
+          localStorage.setItem('userLng', longitude);
+
+          showNotification(`✅ Welcome! Logged in as ${num}`);
+          loginModal.classList.remove('active');
+          document.body.style.overflow = '';
+        } catch (error) {
+          console.error("Firebase error:", error);
+          showNotification("❌ Failed to save data. Try again.");
+        } finally {
           loginBtn.textContent = "Login Now";
           loginBtn.disabled = false;
-          resolve();
         }
-      );
-    });
-
-    if (!lat || !lng) {
-      alert("📍 Location required for login.");
-      loginBtn.textContent = "Login Now";
-      loginBtn.disabled = false;
-      return;
-    }
-
-    const locationStr = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-    const userActivityRef = db.ref('userActivity');
-    const usersRef = db.ref('users');
-
-    userActivityRef.push({
-      mobile: num,
-      location: locationStr,
-      timestamp: new Date().toISOString()
-    }).then(() => {
-      usersRef.child(num).set({
-        mobile: num,
-        location: locationStr,
-        lastLogin: Date.now()
-      }).then(() => {
-        currentUser = num;
-        alert(`✅ Logged in as ${num}!`);
-        loginModal.classList.remove('active');
-        document.body.style.overflow = '';
-      });
-    });
+      },
+      (error) => {
+        let msg = "❌ Location access denied.";
+        if (error.code === 1) msg = "❌ Please allow location to continue.";
+        else if (error.code === 2) msg = "❌ Location unavailable.";
+        else if (error.code === 3) msg = "❌ Location request timed out.";
+        showNotification(msg);
+        loginBtn.textContent = "Login Now";
+        loginBtn.disabled = false;
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
   });
 
   function showNotification(message) {
@@ -633,116 +477,6 @@
     notification.classList.add('show');
     setTimeout(() => notification.classList.remove('show'), 3000);
   }
-
-  function updateCartDisplay() {
-    cartCount.textContent = cart.length;
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    totalPriceElement.textContent = `₹${total.toFixed(2)}`;
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }
-
-  function addToCart(item) {
-    const existingItem = cart.find(cartItem => cartItem.id === item.id);
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.push({...item, quantity: 1});
-    }
-    updateCartDisplay();
-    showNotification(`${item.name} added to cart!`);
-  }
-
-  function updateQuantity(index, change) {
-    cart[index].quantity += change;
-    if (cart[index].quantity <= 0) {
-      cart.splice(index, 1);
-    }
-    updateCartDisplay();
-    renderCartItems();
-  }
-
-  function renderCartItems() {
-    if (cart.length === 0) {
-      cartItems.innerHTML = "No items yet. Add something delicious!";
-      viewCart.style.display = "none";
-      return;
-    }
-
-    let cartHTML = '';
-    let total = 0;
-
-    cart.forEach((item, index) => {
-      const itemTotal = item.price * item.quantity;
-      total += itemTotal;
-      cartHTML += `
-        <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
-          <div><h4>${item.name}</h4><p>₹${item.price} each</p></div>
-          <div style="display: flex; flex-direction: column; align-items: flex-end;">
-            <div class="quantity-controls">
-              <button class="quantity-btn minus" data-index="${index}">-</button>
-              <span class="quantity-value">${item.quantity}</span>
-              <button class="quantity-btn plus" data-index="${index}">+</button>
-            </div>
-            <div style="margin-top: 10px; font-weight: bold;">₹${itemTotal.toFixed(2)}</div>
-          </div>
-        </div>
-      `;
-    });
-
-    cartHTML += `
-      <div style="border-top: 2px solid #eee; padding-top: 15px; margin-top: 15px;">
-        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem;">
-          <span>Total:</span><span>₹${total.toFixed(2)}</span>
-        </div>
-      </div>
-    `;
-
-    cartItems.innerHTML = cartHTML;
-    viewCart.style.display = "block";
-
-    document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
-      btn.onclick = (e) => updateQuantity(parseInt(e.target.dataset.index), -1);
-    });
-    document.querySelectorAll('.quantity-btn.plus').forEach(btn => {
-      btn.onclick = (e) => updateQuantity(parseInt(e.target.dataset.index), 1);
-    });
-
-    viewCart.onclick = () => {
-      if (!currentUser) {
-        cartModal.classList.remove('active');
-        setTimeout(() => {
-          loginModal.classList.add('active');
-          document.body.style.overflow = 'hidden';
-        }, 100);
-        return;
-      }
-      db.ref('orders').push({
-        userId: currentUser,
-        items: cart,
-        total: total,
-        timestamp: new Date().toISOString(),
-        status: 'pending'
-      }).then(() => {
-        cart = [];
-        updateCartDisplay();
-        renderCartItems();
-        cartModal.classList.remove('active');
-        document.body.style.overflow = '';
-        showNotification("Order placed successfully!");
-      });
-    };
-  }
-
-  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      const item = {
-        id: this.dataset.id,
-        name: this.dataset.name,
-        price: parseFloat(this.dataset.price)
-      };
-      addToCart(item);
-    });
-  });
 </script>
 </body>
 </html>
