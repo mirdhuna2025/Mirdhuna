@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin - Mirdhuna</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1a3a4a;
+        }
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: 600;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        button {
+            background: linear-gradient(90deg, #457b9d, #1d3557);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #fff;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .actions button {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🍽️ Admin Panel</h1>
+
+    <!-- CATEGORY FORM -->
+    <div class="form-section">
+        <h2>Add Category</h2>
+        <form id="categoryForm">
+            <label>Name</label>
+            <input type="text" id="catName" required />
+            <label>Subtitle (e.g., New)</label>
+            <input type="text" id="catSubtitle" placeholder="Loaded, New, etc." />
+            <label>Image Upload</label>
+            <input type="file" id="catImageFile" accept="image/*" required />
+            <button type="submit">Add Category</button>
+        </form>
+    </div>
+
+    <!-- MENU ITEM FORM -->
+    <div class="form-section">
+        <h2>Add Menu Item</h2>
+        <form id="menuForm">
+            <label>Name</label>
+            <input type="text" id="menuItemName" required />
+            <label>Description</label>
+            <input type="text" id="menuItemDesc" required />
+            <label>Price (₹)</label>
+            <input type="number" id="menuItemPrice" required />
+            <label>Veg? <input type="checkbox" id="menuItemVeg" checked /></label>
+            <label>External Link? <input type="checkbox" id="menuItemExternal" /></label>
+            <label>Image Upload</label>
+            <input type="file" id="menuItemFile" accept="image/*" required />
+            <button type="submit">Add Menu Item</button>
+        </form>
+    </div>
+
+    <h2>Manage Categories</h2>
+    <ul id="categoriesList"></ul>
+
+    <h2>Manage Menu Items</h2>
+    <ul id="menuItemsList"></ul>
+</div>
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
+    import { getDatabase, ref, push, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js';
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+        authDomain: "mirdhuna-25542.firebaseapp.com",
+        databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+        projectId: "mirdhuna-25542",
+        storageBucket: "mirdhuna-25542.firebasestorage.app",
+        messagingSenderId: "575924409876",
+        appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+        measurementId: "G-YB7LDKHBPV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase();
+    const storage = getStorage();
+
+    async function uploadImage(file, path) {
+        const fileRef = storageRef(storage, path);
+        await uploadBytes(fileRef, file);
+        return await getDownloadURL(fileRef);
+    }
+
+    // Add Category
+    document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const file = document.getElementById('catImageFile').files[0];
+        if (!file) return alert("Please select an image");
+
+        try {
+            const imageUrl = await uploadImage(file, `categories/${file.name}`);
+            await set(push(ref(db, 'categories')), {
+                name: document.getElementById('catName').value,
+                subtitle: document.getElementById('catSubtitle').value,
+                image: imageUrl
+            });
+            alert("Category added!");
+            document.getElementById('categoryForm').reset();
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    });
+
+    // Add Menu Item
+    document.getElementById('menuForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const file = document.getElementById('menuItemFile').files[0];
+        if (!file) return alert("Please select an image");
+
+        try {
+            const imageUrl = await uploadImage(file, `menu/${file.name}`);
+            await set(push(ref(db, 'menu')), {
+                name: document.getElementById('menuItemName').value,
+                description: document.getElementById('menuItemDesc').value,
+                price: parseFloat(document.getElementById('menuItemPrice').value),
+                isVeg: document.getElementById('menuItemVeg').checked,
+                external: document.getElementById('menuItemExternal').checked,
+                image: imageUrl
+            });
+            alert("Menu item added!");
+            document.getElementById('menuForm').reset();
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    });
+
+    // Load and Display Lists
+    function loadList(path, containerId, renderFn) {
+        const container = document.getElementById(containerId);
+        onValue(ref(db, path), (snapshot) => {
+            container.innerHTML = '';
+            snapshot.forEach(child => {
+                const el = document.createElement('li');
+                el.className = 'item';
+                el.innerHTML = renderFn(child.key, child.val());
+                container.appendChild(el);
+            });
+        });
+    }
+
+    loadList('categories', 'categoriesList', (id, data) =>
+        `<div><strong>${data.name}</strong> (${data.subtitle})</div>
+         <div class="actions">
+             <button onclick="deleteItem('categories','${id}')">Delete</button>
+         </div>`
+    );
+
+    loadList('menu', 'menuItemsList', (id, data) =>
+        `<div><strong>${data.name}</strong> - ₹${data.price}</div>
+         <div class="actions">
+             <button onclick="deleteItem('menu','${id}')">Delete</button>
+         </div>`
+    );
+
+    window.deleteItem = async (collection, id) => {
+        if (confirm("Delete this item?")) {
+            await remove(ref(db, `${collection}/${id}`));
+            alert("Deleted.");
+        }
+    };
+</script>
+</body>
+</html>
