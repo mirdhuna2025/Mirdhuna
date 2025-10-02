@@ -10,7 +10,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <style>
         body {
@@ -91,10 +90,13 @@
         <form id="categoryForm">
             <label>Name</label>
             <input type="text" id="catName" required />
+
             <label>Subtitle (e.g., New)</label>
             <input type="text" id="catSubtitle" placeholder="Loaded, New, etc." />
-            <label>Image Upload</label>
-            <input type="file" id="catImageFile" accept="image/*" required />
+
+            <label>Image URL</label>
+            <input type="url" id="catImageUrl" placeholder="https://example.com/category.jpg" required />
+
             <button type="submit">Add Category</button>
         </form>
     </div>
@@ -105,14 +107,20 @@
         <form id="menuForm">
             <label>Name</label>
             <input type="text" id="menuItemName" required />
+
             <label>Description</label>
             <input type="text" id="menuItemDesc" required />
+
             <label>Price (₹)</label>
             <input type="number" id="menuItemPrice" required />
+
             <label>Veg? <input type="checkbox" id="menuItemVeg" checked /></label>
+
             <label>External Link? <input type="checkbox" id="menuItemExternal" /></label>
-            <label>Image Upload</label>
-            <input type="file" id="menuItemFile" accept="image/*" required />
+
+            <label>Image URL</label>
+            <input type="url" id="menuItemUrl" placeholder="https://example.com/dish.jpg" required />
+
             <button type="submit">Add Menu Item</button>
         </form>
     </div>
@@ -127,7 +135,6 @@
 <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
     import { getDatabase, ref, push, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js';
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js';
 
     const firebaseConfig = {
         apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
@@ -142,25 +149,23 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase();
-    const storage = getStorage();
-
-    async function uploadImage(file, path) {
-        const fileRef = storageRef(storage, path);
-        await uploadBytes(fileRef, file);
-        return await getDownloadURL(fileRef);
-    }
 
     // Add Category
     document.getElementById('categoryForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const file = document.getElementById('catImageFile').files[0];
-        if (!file) return alert("Please select an image");
+        const name = document.getElementById('catName').value;
+        const subtitle = document.getElementById('catSubtitle').value;
+        const imageUrl = document.getElementById('catImageUrl').value;
+
+        if (!imageUrl.startsWith('http')) {
+            alert("Please enter a valid image URL (starting with http:// or https://)");
+            return;
+        }
 
         try {
-            const imageUrl = await uploadImage(file, `categories/${file.name}`);
             await set(push(ref(db, 'categories')), {
-                name: document.getElementById('catName').value,
-                subtitle: document.getElementById('catSubtitle').value,
+                name,
+                subtitle,
                 image: imageUrl
             });
             alert("Category added!");
@@ -173,17 +178,25 @@
     // Add Menu Item
     document.getElementById('menuForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const file = document.getElementById('menuItemFile').files[0];
-        if (!file) return alert("Please select an image");
+        const name = document.getElementById('menuItemName').value;
+        const desc = document.getElementById('menuItemDesc').value;
+        const price = parseFloat(document.getElementById('menuItemPrice').value);
+        const isVeg = document.getElementById('menuItemVeg').checked;
+        const isExternal = document.getElementById('menuItemExternal').checked;
+        const imageUrl = document.getElementById('menuItemUrl').value;
+
+        if (!imageUrl.startsWith('http')) {
+            alert("Please enter a valid image URL (starting with http:// or https://)");
+            return;
+        }
 
         try {
-            const imageUrl = await uploadImage(file, `menu/${file.name}`);
             await set(push(ref(db, 'menu')), {
-                name: document.getElementById('menuItemName').value,
-                description: document.getElementById('menuItemDesc').value,
-                price: parseFloat(document.getElementById('menuItemPrice').value),
-                isVeg: document.getElementById('menuItemVeg').checked,
-                external: document.getElementById('menuItemExternal').checked,
+                name,
+                description: desc,
+                price,
+                isVeg,
+                external: isExternal,
                 image: imageUrl
             });
             alert("Menu item added!");
