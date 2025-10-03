@@ -1,4 +1,4 @@
-// === 1. Firebase Initialization === //
+// === 1. Firebase Configuration & Initialization === //
 const firebaseConfig = {
   apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
   authDomain: "mirdhuna-25542.firebaseapp.com",
@@ -10,46 +10,45 @@ const firebaseConfig = {
   measurementId: "G-YB7LDKHBPV"
 };
 
-// Initialize Firebase if not already done
-if (!window.firebase || !firebase.apps.length) {
-  // Load Firebase via CDN (ensure this is included in index.html)
-  const firebaseAppScript = document.createElement('script');
-  firebaseAppScript.src = "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
-  firebaseAppScript.async = true;
-  document.head.appendChild(firebaseAppScript);
+// Load Firebase SDKs if not already present
+function loadFirebaseSDKs() {
+  if (window.firebase?.apps?.length) {
+    window.db = firebase.database();
+    initApp(); // Start app if already initialized
+    return;
+  }
 
-  firebaseAppScript.onload = () => {
-    const firebaseDbScript = document.createElement('script');
-    firebaseDbScript.src = "https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js";
-    document.head.appendChild(firebaseDbScript);
+  // Inject Firebase scripts dynamically
+  const loadScript = (src, onload) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.onload = onload;
+    script.onerror = () => console.error(`Failed to load script: ${src}`);
+    document.head.appendChild(script);
+  };
 
-    firebaseDbScript.onload = () => {
-      const firebaseAnalyticsScript = document.createElement('script');
-      firebaseAnalyticsScript.src = "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js";
-      document.head.appendChild(firebaseAnalyticsScript);
-
-      firebaseAnalyticsScript.onload = () => {
+  loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js", () => {
+    loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js", () => {
+      loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js", () => {
         firebase.initializeApp(firebaseConfig);
         console.log("✅ Firebase initialized");
         window.db = firebase.database();
-        initApp(); // Start the app once Firebase is ready
-      };
-    };
-  };
-} else {
-  window.db = firebase.database();
-  initApp();
+        initApp();
+      });
+    });
+  });
 }
 
-// === 2. Main App Logic === //
+// === 2. Main App Initialization === //
 function initApp() {
   document.addEventListener('DOMContentLoaded', () => {
-    // Load all components
+    // Load all partial HTML files
     loadComponent('header-container', 'header.html');
     loadComponent('slides-container', 'slides.html');
     loadComponent('content-container', 'content.html');
     loadComponent('footer-container', 'footer.html');
-    loadComponent('loginModal', 'login.html', true);
+    loadComponent('loginModal', 'login.html', true);   // Modal content
     loadComponent('cartModal', 'cart.html', true);
 
     // Show floating buttons after load
@@ -61,7 +60,7 @@ function initApp() {
   });
 }
 
-// === 3. Component Loader === //
+// === 3. Dynamic Component Loader === //
 function loadComponent(containerId, filePath, isModal = false) {
   fetch(filePath)
     .then(res => {
@@ -73,53 +72,82 @@ function loadComponent(containerId, filePath, isModal = false) {
       if (!el) return;
       el.innerHTML = html;
 
+      // Initialize events after loading
       if (isModal && filePath === 'login.html') initLoginEvents();
       if (isModal && filePath === 'cart.html') initCartEvents();
     })
     .catch(err => {
-      console.error('Failed to load:', filePath, err);
+      console.error('Load failed:', filePath, err);
       const el = document.getElementById(containerId);
       if (el && !isModal) {
-        el.innerHTML = `<div class="loading"><p>Error loading ${filePath}</p></div>`;
+        el.innerHTML = `
+          <div class="loading" style="text-align:center;padding:40px;color:#777;">
+            <p>Error loading ${filePath}. Please try again later.</p>
+          </div>`;
       }
     });
 }
 
-// === 4. Login System with Geolocation === //
+// === 4. Login System (Mobile + Geolocation) === //
 function initLoginEvents() {
   const modal = document.getElementById('loginModal');
-  const close = document.getElementById('closeLogin');
-  const btn = document.getElementById('loginBtn');
-  const input = document.getElementById('mobileInput');
+  const closeBtn = document.getElementById('closeLogin');
+  const loginBtn = document.getElementById('loginBtn');
+  const mobileInput = document.getElementById('mobileInput');
+  const successMsg = document.getElementById('loginSuccess');
+  const errorMsg = document.getElementById('loginError');
 
-  // Open login via floating button
-  document.getElementById('floatingLoginBtn')?.addEventListener('click', (e) => {
-    e.preventDefault();
+  // Open login modal
+  window.openLoginModal = () => {
+    mobileInput.value = '';
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
-  });
+  };
 
-  close.onclick = () => {
+  // Close modal
+  closeBtn.onclick = () => {
     modal.classList.remove('active');
     document.body.style.overflow = '';
   };
 
-  window.onclick = (e) => {
+  // Click outside to close
+  modal.onclick = (e) => {
     if (e.target === modal) {
       modal.classList.remove('active');
       document.body.style.overflow = '';
     }
   };
 
-  btn.onclick = () => {
-    const num = input.value.trim();
+  // Escape key closes modal
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Login Button Action
+  loginBtn.onclick = () => {
+    const num = mobileInput.value.trim();
+
     if (!num || !/^\d{10}$/.test(num)) {
-      alert("❌ Please enter a valid 10-digit mobile number.");
+      errorMsg.textContent = "❌ Enter a valid 10-digit number.";
+      errorMsg.style.display = 'block';
       return;
     }
 
-    btn.disabled = true;
-    btn.textContent = "📍 Capturing location...";
+    loginBtn.disabled = true;
+    loginBtn.textContent = "📍 Capturing location...";
+
+    if (!navigator.geolocation) {
+      errorMsg.textContent = "📍 Browser doesn't support location.";
+      errorMsg.style.display = 'block';
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Login Now";
+      return;
+    }
 
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
@@ -131,30 +159,35 @@ function initLoginEvents() {
             lng: longitude,
             lastLogin: Date.now()
           });
+
           localStorage.setItem('currentUser', num);
           localStorage.setItem('userLat', latitude);
           localStorage.setItem('userLng', longitude);
-          alert(`✅ Logged in as ${num}`);
-          modal.classList.remove('active');
-          document.body.style.overflow = '';
+
+          successMsg.style.display = 'block';
+          setTimeout(() => {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            alert(`🎉 Welcome!\nSaved Location: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+          }, 800);
         } catch (err) {
           console.error("Firebase write error:", err);
-          alert("❌ Failed to save data. Try again.");
+          errorMsg.textContent = "❌ Failed to save data.";
+          errorMsg.style.display = 'block';
         } finally {
-          btn.disabled = false;
-          btn.textContent = "Login Now";
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login Now";
         }
       },
       (err) => {
         let msg = "📍 Location access denied.";
-        switch (err.code) {
-          case 1: msg = "📍 Please allow location access."; break;
-          case 2: msg = "📍 Location unavailable."; break;
-          case 3: msg = "📍 Request timed out."; break;
-        }
-        alert(msg);
-        btn.disabled = false;
-        btn.textContent = "Login Now";
+        if (err.code === 1) msg = "📍 Allow location to continue.";
+        else if (err.code === 2) msg = "📍 Location unavailable.";
+        else if (err.code === 3) msg = "📍 Request timed out.";
+        errorMsg.textContent = msg;
+        errorMsg.style.display = 'block';
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login Now";
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
@@ -174,7 +207,7 @@ function updateCartButton() {
 
 function initCartEvents() {
   const modal = document.getElementById('cartModal');
-  const close = document.getElementById('closeCart');
+  const closeBtn = document.getElementById('closeCart');
   const list = document.getElementById('cartItemsList');
   const totalEl = document.getElementById('cartTotal');
   const checkoutBtn = document.getElementById('checkoutBtn');
@@ -185,12 +218,12 @@ function initCartEvents() {
     document.body.style.overflow = 'hidden';
   });
 
-  close.onclick = () => {
+  closeBtn.onclick = () => {
     modal.classList.remove('active');
     document.body.style.overflow = '';
   };
 
-  window.onclick = (e) => {
+  modal.onclick = (e) => {
     if (e.target === modal) {
       modal.classList.remove('active');
       document.body.style.overflow = '';
@@ -199,7 +232,7 @@ function initCartEvents() {
 
   function renderCart() {
     if (cart.length === 0) {
-      list.innerHTML = '<p style="text-align:center;padding:20px;">Your cart is empty.</p>';
+      list.innerHTML = '<p style="text-align:center;padding:20px;color:#777;">Your cart is empty.</p>';
       totalEl.style.display = 'none';
       checkoutBtn.style.display = 'none';
       return;
@@ -251,13 +284,13 @@ function initCartEvents() {
 
   checkoutBtn.onclick = () => {
     const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-    alert(`✅ Order confirmed!\nTotal: ₹${total}\nThank you for dining with MIRDHUNA!`);
+    alert(`✅ Order Confirmed!\nTotal: ₹${total}\nThank you for choosing MIRDHUNA!`);
     cart = [];
     saveCart();
     modal.classList.remove('active');
     document.body.style.overflow = '';
     updateCartButton();
-    list.innerHTML = '<p style="text-align:center;padding:20px;">Your cart is empty.</p>';
+    list.innerHTML = '<p style="text-align:center;padding:20px;color:#777;">Your cart is empty.</p>';
     totalEl.style.display = 'none';
     checkoutBtn.style.display = 'none';
   };
@@ -270,7 +303,7 @@ function saveCart() {
 // === 6. Load Data from Firebase === //
 function loadFirebaseData() {
   if (!window.db) {
-    console.error("Firebase not initialized yet.");
+    console.warn("Firebase not ready yet. Retrying...");
     setTimeout(loadFirebaseData, 500);
     return;
   }
@@ -331,12 +364,12 @@ function loadFirebaseData() {
   });
 }
 
-// Helper to escape quotes in item names
+// Helper to escape quotes in names
 function escapeQuotes(str) {
   return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
 
-// === 7. Add to Cart Function (Global) === //
+// === 7. Add to Cart Function === //
 window.addToCart = (id, name, price, image) => {
   const existing = cart.find(i => i.id === id);
   if (existing) {
@@ -355,11 +388,11 @@ function renderSlides(slides) {
   const nav = document.getElementById('sliderNav');
   if (!slider || !nav) return;
 
-  slider.innerHTML = slides.map(s => `
-    <div class="slide" style="background-image:url('${s.image}')">
+  slider.innerHTML = slides.map(slide => `
+    <div class="slide" style="background-image:url('${slide.image}')">
       <div class="slide-content">
-        <h2>${s.title}</h2>
-        <p>${s.description}</p>
+        <h2>${slide.title}</h2>
+        <p>${slide.description}</p>
       </div>
     </div>
   `).join('');
@@ -388,4 +421,7 @@ function initSlider(count) {
   dots.forEach((dot, i) => dot.addEventListener('click', () => { idx = i; update(); }));
 
   setInterval(() => { idx = (idx + 1) % count; update(); }, 5000);
-    }
+}
+
+// === Start Everything === //
+loadFirebaseSDKs();
