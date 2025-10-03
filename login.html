@@ -1,0 +1,250 @@
+<div class="modal-content">
+  <!-- Close Button -->
+  <span class="modal-close" id="closeLogin">&times;</span>
+
+  <!-- Logo & Title -->
+  <div style="text-align: center; margin-bottom: 20px;">
+    <div class="logo" style="display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Playfair Display',serif;">
+      <i class="fas fa-utensils" style="font-size:2rem;color:#e63946;text-shadow:0 0 8px rgba(249,195,0,0.5);"></i>
+      <h1 class="colorful-mirdhuna" style="font-size:2.1rem;letter-spacing:-1px;">MIRDHUNA</h1>
+    </div>
+    <h2 style="margin:15px 0;font-weight:600;color:#1d3557;">🔐 Secure Login</h2>
+  </div>
+
+  <!-- Welcome Message -->
+  <p style="text-align:center;color:#555;margin-bottom:25px;font-size:1rem;">
+    Enter your mobile number to continue.<br>
+    <small style="color:#777;">Location will be captured automatically.</small>
+  </p>
+
+  <!-- Mobile Input -->
+  <input 
+    type="tel" 
+    id="mobileInput" 
+    placeholder="Enter 10-digit mobile number" 
+    value="" 
+    maxlength="10"
+    style="
+      padding: 14px;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      outline: none;
+      transition: border-color 0.3s;
+    "
+    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+  >
+
+  <!-- Login Button -->
+  <button 
+    id="loginBtn" 
+    style="
+      background: var(--gradient, linear-gradient(90deg, #e63946, #457b9d));
+      color: white;
+      border: none;
+      padding: 14px 35px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    "
+  >
+    Login Now
+  </button>
+
+  <!-- Success Feedback -->
+  <p id="loginSuccess" style="display:none;margin-top:15px;color:#008000;font-weight:500;">✓ Logged in successfully!</p>
+  <p id="loginError" style="display:none;margin-top:15px;color:#d40000;font-weight:500;"></p>
+</div>
+
+<!-- Inline Script for Login Functionality -->
+<script>
+  // Wait for DOM to load before attaching events
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('loginModal');
+    const closeBtn = document.getElementById('closeLogin');
+    const loginBtn = document.getElementById('loginBtn');
+    const mobileInput = document.getElementById('mobileInput');
+    const successMsg = document.getElementById('loginSuccess');
+    const errorMsg = document.getElementById('loginError');
+
+    // Reset form on open
+    window.openLoginModal = () => {
+      mobileInput.value = '';
+      successMsg.style.display = 'none';
+      errorMsg.style.display = 'none';
+      if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    // Close modal
+    if (closeBtn) {
+      closeBtn.onclick = () => {
+        modal?.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+    }
+
+    // Allow closing with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Click outside to close
+    if (modal) {
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      };
+    }
+
+    // Login Button Action
+    if (loginBtn) {
+      loginBtn.onclick = () => {
+        const num = mobileInput.value.trim();
+
+        // Validate mobile number
+        if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
+          errorMsg.textContent = "❌ Please enter a valid 10-digit number.";
+          errorMsg.style.display = 'block';
+          return;
+        }
+
+        // Disable button & show loading state
+        loginBtn.disabled = true;
+        loginBtn.textContent = "📍 Capturing Location...";
+
+        // Try to get geolocation
+        if (!navigator.geolocation) {
+          errorMsg.textContent = "📍 Browser doesn't support location services.";
+          errorMsg.style.display = 'block';
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login Now";
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+
+            try {
+              // Save to Firebase under /users/{mobile}
+              await db.ref(`users/${num}`).set({
+                mobile: num,
+                lat: latitude,
+                lng: longitude,
+                lastLogin: new Date().toISOString(),
+                userAgent: navigator.userAgent
+              });
+
+              // Save locally for session persistence
+              localStorage.setItem('currentUser', num);
+              localStorage.setItem('userLat', latitude);
+              localStorage.setItem('userLng', longitude);
+
+              // Show success
+              successMsg.style.display = 'block';
+              setTimeout(() => {
+                modal?.classList.remove('active');
+                document.body.style.overflow = '';
+                alert(`🎉 Welcome back!\nLocation saved: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+              }, 800);
+
+            } catch (error) {
+              console.error("Firebase write error:", error);
+              errorMsg.textContent = "❌ Failed to save data. Check connection.";
+              errorMsg.style.display = 'block';
+            } finally {
+              loginBtn.disabled = false;
+              loginBtn.textContent = "Login Now";
+            }
+          },
+          (error) => {
+            let msg = "📍 Location access denied.";
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                msg = "📍 Please allow location permission to proceed.";
+                break;
+              case error.POSITION_UNAVAILABLE:
+                msg = "📍 Location info unavailable. Try again.";
+                break;
+              case error.TIMEOUT:
+                msg = "📍 Location request timed out. Retry.";
+                break;
+              default:
+                msg = "📍 Unable to detect location.";
+            }
+            errorMsg.textContent = msg;
+            errorMsg.style.display = 'block';
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Login Now";
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 60000
+          }
+        );
+      };
+    }
+  });
+</script>
+
+<!-- Reuse Your Existing Styles (if not already present) -->
+<style>
+  :root {
+    --primary: #e63946;
+    --secondary: #457b9d;
+    --accent: #a8dadc;
+    --dark: #1d3557;
+    --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+  }
+
+  .colorful-mirdhuna {
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow 5s ease infinite;
+    font-size: 2.3rem;
+    letter-spacing: -1px;
+  }
+
+  @keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.8rem;
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .modal-close:hover {
+    color: var(--primary);
+    transform: rotate(90deg);
+  }
+
+  input:focus {
+    border-color: #e63946;
+    box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.1);
+  }
+</style>
