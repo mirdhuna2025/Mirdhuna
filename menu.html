@@ -1,245 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Admin - Mirdhuna</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 40px;
-            background: #f8f9fa;
-            color: #333;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            color: #1a3a4a;
-        }
-        .form-section {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-        }
-        label {
-            display: block;
-            margin: 15px 0 5px;
-            font-weight: 600;
-        }
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-        button {
-            background: linear-gradient(90deg, #457b9d, #1d3557);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        button:hover {
-            opacity: 0.9;
-            transform: scale(1.02);
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        .item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: #fff;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .actions button {
-            padding: 5px 10px;
-            font-size: 0.9rem;
-            margin-left: 5px;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>🍽️ Admin Panel</h1>
-
-    <!-- CATEGORY FORM -->
-    <div class="form-section">
-        <h2>Add Category</h2>
-        <form id="categoryForm">
-            <label>Name</label>
-            <input type="text" id="catName" required />
-
-            <label>Subtitle (e.g., New)</label>
-            <input type="text" id="catSubtitle" placeholder="Loaded, New, etc." />
-
-            <label>Image URL</label>
-            <input type="url" id="catImageUrl" placeholder="https://example.com/category.jpg" required />
-
-            <button type="submit">Add Category</button>
-        </form>
-    </div>
-
-    <!-- MENU ITEM FORM -->
-    <div class="form-section">
-        <h2>Add Menu Item</h2>
-        <form id="menuForm">
-            <label>Name</label>
-            <input type="text" id="menuItemName" required />
-
-            <label>Description</label>
-            <input type="text" id="menuItemDesc" required />
-
-            <label>Price (₹)</label>
-            <input type="number" id="menuItemPrice" required />
-
-            <label>Veg? <input type="checkbox" id="menuItemVeg" checked /></label>
-
-            <label>External Link? <input type="checkbox" id="menuItemExternal" /></label>
-
-            <label>Image URL</label>
-            <input type="url" id="menuItemUrl" placeholder="https://example.com/dish.jpg" required />
-
-            <button type="submit">Add Menu Item</button>
-        </form>
-    </div>
-
-    <h2>Manage Categories</h2>
-    <ul id="categoriesList"></ul>
-
-    <h2>Manage Menu Items</h2>
-    <ul id="menuItemsList"></ul>
-</div>
-
-<script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
-    import { getDatabase, ref, push, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js';
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - Mirdhuna</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
-        authDomain: "mirdhuna-25542.firebaseapp.com",
-        databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
-        projectId: "mirdhuna-25542",
-        storageBucket: "mirdhuna-25542.firebasestorage.app",
-        messagingSenderId: "575924409876",
-        appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
-        measurementId: "G-YB7LDKHBPV"
+      apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+      authDomain: "mirdhuna-25542.firebaseapp.com",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+      projectId: "mirdhuna-25542",
+      storageBucket: "mirdhuna-25542.firebasestorage.app",
+      messagingSenderId: "575924409876",
+      appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+      measurementId: "G-YB7LDKHBPV"
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase();
+    const db = getDatabase(app);
+    window.firebaseDB = db;
+    window.firebaseRef = ref;
+    window.firebaseSet = set;
+    window.firebaseRemove = remove;
+    window.firebaseOnValue = onValue;
+  </script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #1a3a4a;
+      text-align: center;
+    }
+    .form-group {
+      margin: 20px 0;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    .btn-save {
+      background: #457b9d;
+      color: white;
+    }
+    .btn-delete {
+      background: #e63946;
+      color: white;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    .section {
+      margin: 30px 0;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍽️ Mirdhuna Admin Panel</h1>
+    <p style="text-align:center; color:#666;">Manage categories and menu items</p>
 
-    // Add Category
-    document.getElementById('categoryForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('catName').value;
-        const subtitle = document.getElementById('catSubtitle').value;
-        const imageUrl = document.getElementById('catImageUrl').value;
+    <!-- Categories -->
+    <div class="section">
+      <h2>Manage Categories</h2>
+      <div class="form-group">
+        <label>Category ID (e.g., snacks)</label>
+        <input type="text" id="catId" placeholder="Unique ID (no spaces)">
+      </div>
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" id="catName" placeholder="Category name">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" id="catDesc" placeholder="Short description">
+      </div>
+      <div class="form-group">
+        <label>Image URL</label>
+        <input type="text" id="catImage" placeholder="https://example.com/image.jpg">
+      </div>
+      <button class="btn btn-save" onclick="saveCategory()">✅ Save Category</button>
+      <button class="btn btn-delete" onclick="deleteCategory()">🗑️ Delete Category</button>
+    </div>
 
-        if (!imageUrl.startsWith('http')) {
-            alert("Please enter a valid image URL (starting with http:// or https://)");
-            return;
-        }
+    <!-- Menu Items -->
+    <div class="section">
+      <h2>Manage Menu Items</h2>
+      <div class="form-group">
+        <label>Item ID (e.g., paneer_pakora)</label>
+        <input type="text" id="itemId" placeholder="Unique ID">
+      </div>
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" id="itemName" placeholder="Dish name">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="itemDesc" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Price (₹)</label>
+        <input type="number" id="itemPrice" placeholder="99">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="itemCategory">
+          <option value="">-- Loading categories --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Veg?</label>
+        <select id="itemVeg">
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Image URL</label>
+        <input type="text" id="itemImage" placeholder="https://example.com/dish.jpg">
+      </div>
+      <div class="form-group">
+        <label>Website (Optional)</label>
+        <input type="text" id="itemWebsite" placeholder="https://recipe.com">
+      </div>
+      <button class="btn btn-save" onclick="saveMenuItem()">✅ Save Menu Item</button>
+      <button class="btn btn-delete" onclick="deleteMenuItem()">🗑️ Delete Menu Item</button>
+    </div>
+  </div>
 
-        try {
-            await set(push(ref(db, 'categories')), {
-                name,
-                subtitle,
-                image: imageUrl
-            });
-            alert("Category added!");
-            document.getElementById('categoryForm').reset();
-        } catch (err) {
-            alert("Error: " + err.message);
-        }
-    });
+  <script>
+    function populateCategories() {
+      const select = document.getElementById('itemCategory');
+      select.innerHTML = '<option value="">-- Loading --</option>';
+      const db = window.firebaseDB;
+      const ref = window.firebaseRef;
+      const onValue = window.firebaseOnValue;
 
-    // Add Menu Item
-    document.getElementById('menuForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('menuItemName').value;
-        const desc = document.getElementById('menuItemDesc').value;
-        const price = parseFloat(document.getElementById('menuItemPrice').value);
-        const isVeg = document.getElementById('menuItemVeg').checked;
-        const isExternal = document.getElementById('menuItemExternal').checked;
-        const imageUrl = document.getElementById('menuItemUrl').value;
-
-        if (!imageUrl.startsWith('http')) {
-            alert("Please enter a valid image URL (starting with http:// or https://)");
-            return;
-        }
-
-        try {
-            await set(push(ref(db, 'menu')), {
-                name,
-                description: desc,
-                price,
-                isVeg,
-                external: isExternal,
-                image: imageUrl
-            });
-            alert("Menu item added!");
-            document.getElementById('menuForm').reset();
-        } catch (err) {
-            alert("Error: " + err.message);
-        }
-    });
-
-    // Load and Display Lists
-    function loadList(path, containerId, renderFn) {
-        const container = document.getElementById(containerId);
-        onValue(ref(db, path), (snapshot) => {
-            container.innerHTML = '';
-            snapshot.forEach(child => {
-                const el = document.createElement('li');
-                el.className = 'item';
-                el.innerHTML = renderFn(child.key, child.val());
-                container.appendChild(el);
-            });
+      onValue(ref(db, 'categories'), (snapshot) => {
+        select.innerHTML = '<option value="">-- Select Category --</option>';
+        const data = snapshot.val() || {};
+        Object.keys(data).forEach(key => {
+          const opt = document.createElement('option');
+          opt.value = key;
+          opt.textContent = data[key].name || key;
+          select.appendChild(opt);
         });
+      });
     }
 
-    loadList('categories', 'categoriesList', (id, data) =>
-        `<div><strong>${data.name}</strong> (${data.subtitle})</div>
-         <div class="actions">
-             <button onclick="deleteItem('categories','${id}')">Delete</button>
-         </div>`
-    );
+    function saveCategory() {
+      const id = document.getElementById('catId').value.trim();
+      if (!id) { alert('Enter Category ID'); return; }
+      const data = {
+        name: document.getElementById('catName').value.trim(),
+        description: document.getElementById('catDesc').value.trim(),
+        image: document.getElementById('catImage').value.trim()
+      };
+      window.firebaseSet(window.firebaseRef(window.firebaseDB, 'categories/' + id), data)
+        .then(() => alert('Category saved!'))
+        .catch(err => alert('Error: ' + err.message));
+    }
 
-    loadList('menu', 'menuItemsList', (id, data) =>
-        `<div><strong>${data.name}</strong> - ₹${data.price}</div>
-         <div class="actions">
-             <button onclick="deleteItem('menu','${id}')">Delete</button>
-         </div>`
-    );
+    function deleteCategory() {
+      const id = document.getElementById('catId').value.trim();
+      if (!id || !confirm('Delete this category?')) return;
+      window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'categories/' + id))
+        .then(() => alert('Category deleted!'))
+        .catch(err => alert('Error: ' + err.message));
+    }
 
-    window.deleteItem = async (collection, id) => {
-        if (confirm("Delete this item?")) {
-            await remove(ref(db, `${collection}/${id}`));
-            alert("Deleted.");
-        }
-    };
-</script>
+    function saveMenuItem() {
+      const id = document.getElementById('itemId').value.trim();
+      if (!id) { alert('Enter Item ID'); return; }
+      const cat = document.getElementById('itemCategory').value;
+      if (!cat) { alert('Select a category'); return; }
+      const data = {
+        name: document.getElementById('itemName').value.trim(),
+        description: document.getElementById('itemDesc').value.trim(),
+        price: parseFloat(document.getElementById('itemPrice').value) || 0,
+        category: cat,
+        veg: document.getElementById('itemVeg').value === 'true',
+        image: document.getElementById('itemImage').value.trim(),
+        website: document.getElementById('itemWebsite').value.trim()
+      };
+      window.firebaseSet(window.firebaseRef(window.firebaseDB, 'menu/' + id), data)
+        .then(() => alert('Menu item saved!'))
+        .catch(err => alert('Error: ' + err.message));
+    }
+
+    function deleteMenuItem() {
+      const id = document.getElementById('itemId').value.trim();
+      if (!id || !confirm('Delete this menu item?')) return;
+      window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'menu/' + id))
+        .then(() => alert('Menu item deleted!'))
+        .catch(err => alert('Error: ' + err.message));
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      populateCategories();
+    });
+  </script>
 </body>
 </html>
