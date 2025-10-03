@@ -59,29 +59,6 @@
       background-size: cover;
       background-position: center;
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .slide-content {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-      max-width: 90%;
-      color: white;
-      backdrop-filter: blur(5px);
-    }
-
-    .slide-content h2 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-    }
-
-    .slide-content p {
-      margin-bottom: 15px;
-      font-size: 1rem;
     }
 
     .slider-nav {
@@ -140,14 +117,6 @@
 
     /* Responsive adjustments */
     @media (max-width: 600px) {
-      .slide-content h2 {
-        font-size: 1.5rem;
-      }
-
-      .slide-content p {
-        font-size: 0.9rem;
-      }
-
       .slider-btn {
         width: 36px;
         height: 36px;
@@ -213,15 +182,12 @@
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "firebase/app";
     import { getAnalytics } from "firebase/analytics";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
 
     // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
       apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
       authDomain: "mirdhuna-25542.firebaseapp.com",
-      databaseURL: " https://mirdhuna-25542-default-rtdb.firebaseio.com ",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
       projectId: "mirdhuna-25542",
       storageBucket: "mirdhuna-25542.firebasestorage.app",
       messagingSenderId: "575924409876",
@@ -245,7 +211,7 @@
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
 
-    // Initialize slider
+    // Initialize slider - IMAGE ONLY (no text/content)
     function initSlider() {
       // Clear previous content
       slider.innerHTML = '';
@@ -256,20 +222,12 @@
         return;
       }
 
-      // Create slides
+      // Create slides (image only)
       slides.forEach(slide => {
         const slideEl = document.createElement('div');
         slideEl.className = 'slide';
         slideEl.style.backgroundImage = `url(${slide.image})`;
-        
-        const content = document.createElement('div');
-        content.className = 'slide-content';
-        content.innerHTML = `
-          <h2>${slide.title || ''}</h2>
-          <p>${slide.description || ''}</p>
-        `;
-        
-        slideEl.appendChild(content);
+        // No text, no content — just the image as background
         slider.appendChild(slideEl);
       });
 
@@ -344,7 +302,7 @@
     prevBtn.addEventListener('click', showPrevSlide);
     nextBtn.addEventListener('click', showNextSlide);
 
-    // Font size adjustment
+    // Font size adjustment (optional, kept as per original)
     function adjustFontSize() {
       const width = window.innerWidth;
       document.body.style.fontSize = width < 600 ? "16px" : "18px";
@@ -353,37 +311,42 @@
     window.addEventListener("resize", adjustFontSize);
     window.addEventListener("load", adjustFontSize);
 
-    // Fetch data from Firebase
+    // Fetch data from Firebase Realtime Database
     function fetchSlides() {
-      // Access Realtime Database using compat SDK (since we're in module mode but need RTDB)
-      import('https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js').then(() => {
-        const { getDatabase, ref, onValue } = firebase.database;
+      // Load Firebase Realtime Database compat SDK
+      import('https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js')
+        .then(() => {
+          const { getDatabase, ref, onValue } = firebase.database;
 
-        const db = getDatabase();
-        const slidesRef = ref(db, 'slides');
-        
-        onValue(slidesRef, (snapshot) => {
-          const data = snapshot.val();
+          const db = getDatabase();
+          const slidesRef = ref(db, 'slides');
           
-          if (data) {
-            slides = Object.keys(data).map(key => ({
-              id: key,
-              ...data[key]
-            })).sort((a, b) => (a.order || 0) - (b.order || 0));
+          onValue(slidesRef, (snapshot) => {
+            const data = snapshot.val();
             
-            initSlider();
-            startAutoSlide();
-          } else {
-            slider.innerHTML = '<div class="error">No slides found in database</div>';
-          }
-        }, (error) => {
-          console.error("Firebase error:", error);
-          slider.innerHTML = `<div class="error">Error loading slides: ${error.message}</div>`;
+            if (data) {
+              slides = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+              })).sort((a, b) => (a.order || 0) - (b.order || 0));
+              
+              initSlider();
+              startAutoSlide();
+            } else {
+              slider.innerHTML = '<div class="error">No slides found in database</div>';
+            }
+          }, (error) => {
+            console.error("Firebase error:", error);
+            slider.innerHTML = `<div class="error">Error loading slides: ${error.message}</div>`;
+          });
+        })
+        .catch(err => {
+          console.error("Failed to load Firebase Database SDK:", err);
+          slider.innerHTML = `<div class="error">SDK load error: ${err.message}</div>`;
         });
-      });
     }
 
-    // Initialize
+    // Start fetching slides
     fetchSlides();
   </script>
 </body>
