@@ -92,7 +92,8 @@
     /* CATEGORIES */
     .categories-container {
       position: relative;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
       margin: 0 auto;
       max-width: 100%;
     }
@@ -147,34 +148,6 @@
       color: #777;
       font-size: 0.85rem;
       font-weight: 400;
-    }
-
-    /* Navigation buttons for sliding */
-    .nav-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .nav-button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: var(--transition);
-    }
-
-    .nav-button:hover {
-      background: var(--dark);
-    }
-
-    .nav-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
     }
 
     /* MENU LIST */
@@ -408,7 +381,7 @@
           return;
         }
 
-        // Create the slider structure
+        // Create the categories structure
         let html = `
           <div class="categories-wrapper" id="categoriesWrapper">
             ${categoriesArray.map(cat => `
@@ -421,17 +394,10 @@
               </div>
             `).join('')}
           </div>
-          <div class="nav-buttons">
-            <button class="nav-button" id="prevBtn">← Previous</button>
-            <button class="nav-button" id="nextBtn">Next →</button>
-          </div>
         `;
         
         container.innerHTML = html;
 
-        // Initialize slider
-        initCategorySlider(categoriesArray.length);
-        
         // Add click event listeners
         document.querySelectorAll('.category-card').forEach(card => {
           card.addEventListener('click', () => {
@@ -443,55 +409,6 @@
         container.innerHTML = '<p>Failed to load categories.</p>';
         console.error(error);
       });
-    }
-
-    function initCategorySlider(totalItems) {
-      const wrapper = document.getElementById('categoriesWrapper');
-      const prevBtn = document.getElementById('prevBtn');
-      const nextBtn = document.getElementById('nextBtn');
-      
-      // Calculate how many items fit per row (3 items)
-      const itemsPerRow = 3;
-      const rowsToShow = 2; // Show 2 rows maximum
-      const itemsToShow = itemsPerRow * rowsToShow; // Maximum 6 items visible
-      
-      let currentIndex = 0;
-      
-      // Function to update button states
-      function updateButtonStates() {
-        prevBtn.disabled = currentIndex <= 0;
-        nextBtn.disabled = currentIndex + itemsToShow >= totalItems;
-      }
-      
-      // Function to update slider position
-      function updateSliderPosition() {
-        // Calculate the width of each item as a percentage
-        const itemWidthPercentage = 100 / itemsPerRow;
-        
-        // Calculate transform value based on current index
-        const transformValue = -(currentIndex * itemWidthPercentage) + '%';
-        wrapper.style.transform = `translateX(${transformValue})`;
-        
-        updateButtonStates();
-      }
-      
-      // Event listeners for navigation buttons
-      prevBtn.addEventListener('click', () => {
-        if (currentIndex > 0) {
-          currentIndex -= itemsPerRow;
-          updateSliderPosition();
-        }
-      });
-      
-      nextBtn.addEventListener('click', () => {
-        if (currentIndex + itemsToShow < totalItems) {
-          currentIndex += itemsPerRow;
-          updateSliderPosition();
-        }
-      });
-      
-      // Initial setup
-      updateSliderPosition();
     }
 
     function loadMenuByCategory(categoryKey) {
