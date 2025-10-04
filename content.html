@@ -7,13 +7,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <!-- Firebase SDK -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { initializeApp } from " https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js ";
+    import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js ";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
       authDomain: "mirdhuna-25542.firebaseapp.com",
-      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com ",
       projectId: "mirdhuna-25542",
       storageBucket: "mirdhuna-25542.firebasestorage.app",
       messagingSenderId: "575924409876",
@@ -90,11 +90,19 @@
     }
 
     /* CATEGORIES */
-    .categories {
+    .categories-container {
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
+      max-width: 100%;
+    }
+
+    .categories-wrapper {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
       justify-content: center;
+      transition: transform 0.3s ease;
     }
 
     .category-card {
@@ -138,6 +146,34 @@
       color: #777;
       font-size: 0.85rem;
       font-weight: 400;
+    }
+
+    /* Navigation buttons for sliding */
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .nav-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .nav-button:hover {
+      background: var(--dark);
+    }
+
+    .nav-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     /* MENU LIST */
@@ -296,6 +332,16 @@
     #menuContainer {
       min-height: auto; /* Was 200px — now adapts to content */
     }
+
+    /* Hide scrollbar but still allow scrolling */
+    .categories-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .categories-wrapper {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
 <body>
@@ -307,7 +353,7 @@
         <h2>Popular Categories</h2>
         <p>Discover our most loved food categories</p>
       </div>
-      <div class="categories" id="categoriesContainer" aria-live="polite">
+      <div class="categories-container" id="categoriesContainer" aria-live="polite">
         <div class="loading">
           <div class="spinner"></div>
           <p>Loading categories...</p>
@@ -333,7 +379,7 @@
   </section>
 
   <script type="module">
-    import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js ";
 
     const db = window.firebaseDB;
 
@@ -349,21 +395,38 @@
       const categoriesRef = ref(db, 'categories');
       onValue(categoriesRef, (snapshot) => {
         const data = snapshot.val() || {};
-        let html = '';
-        Object.keys(data).forEach(key => {
-          const cat = data[key];
-          html += `
-            <div class="category-card" data-key="${key}">
-              <div class="category-img" style="background-image: url('${cat.image || ''}')"></div>
-              <div class="category-content">
-                <h3>${cat.name || key}</h3>
-                <p>${cat.description || ''}</p>
-              </div>
-            </div>
-          `;
-        });
-        container.innerHTML = html || '<p>No categories available.</p>';
+        const categoriesArray = Object.keys(data).map(key => ({ key, ...data[key] }));
+        
+        if (categoriesArray.length === 0) {
+          container.innerHTML = '<p>No categories available.</p>';
+          return;
+        }
 
+        // Create the slider structure
+        let html = `
+          <div class="categories-wrapper" id="categoriesWrapper">
+            ${categoriesArray.map(cat => `
+              <div class="category-card" data-key="${cat.key}">
+                <div class="category-img" style="background-image: url('${cat.image || ''}')"></div>
+                <div class="category-content">
+                  <h3>${cat.name || cat.key}</h3>
+                  <p>${cat.description || ''}</p>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="nav-buttons">
+            <button class="nav-button" id="prevBtn">← Previous</button>
+            <button class="nav-button" id="nextBtn">Next →</button>
+          </div>
+        `;
+        
+        container.innerHTML = html;
+
+        // Initialize slider
+        initCategorySlider(categoriesArray.length);
+        
+        // Add click event listeners
         document.querySelectorAll('.category-card').forEach(card => {
           card.addEventListener('click', () => {
             const key = card.getAttribute('data-key');
@@ -374,6 +437,55 @@
         container.innerHTML = '<p>Failed to load categories.</p>';
         console.error(error);
       });
+    }
+
+    function initCategorySlider(totalItems) {
+      const wrapper = document.getElementById('categoriesWrapper');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      
+      // Calculate how many items fit per row (3 items)
+      const itemsPerRow = 3;
+      const rowsToShow = 2; // Show 2 rows maximum
+      const itemsToShow = itemsPerRow * rowsToShow; // Maximum 6 items visible
+      
+      let currentIndex = 0;
+      
+      // Function to update button states
+      function updateButtonStates() {
+        prevBtn.disabled = currentIndex <= 0;
+        nextBtn.disabled = currentIndex + itemsToShow >= totalItems;
+      }
+      
+      // Function to update slider position
+      function updateSliderPosition() {
+        const itemWidth = 100 / itemsPerRow + '%';
+        const itemHeight = 'auto'; // Let it be auto based on content
+        
+        // Calculate transform value
+        const transformValue = -currentIndex * (100 / itemsPerRow) + '%';
+        wrapper.style.transform = `translateX(${transformValue})`;
+        
+        updateButtonStates();
+      }
+      
+      // Event listeners for navigation buttons
+      prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+          currentIndex -= itemsPerRow;
+          updateSliderPosition();
+        }
+      });
+      
+      nextBtn.addEventListener('click', () => {
+        if (currentIndex + itemsToShow < totalItems) {
+          currentIndex += itemsPerRow;
+          updateSliderPosition();
+        }
+      });
+      
+      // Initial setup
+      updateButtonStates();
     }
 
     function loadMenuByCategory(categoryKey) {
@@ -403,7 +515,7 @@
           html += `
             <div class="menu-item">
               <div class="item-image">
-                <img src="${item.image || 'https://via.placeholder.com/120'}" alt="${item.name}">
+                <img src="${item.image || 'https://via.placeholder.com/120 '}" alt="${item.name}">
               </div>
               <div class="item-details">
                 <h3 class="item-title">
