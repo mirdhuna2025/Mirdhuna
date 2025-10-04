@@ -7,13 +7,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <!-- Firebase SDK -->
   <script type="module">
-    import { initializeApp } from " https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js ";
-    import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js ";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
       authDomain: "mirdhuna-25542.firebaseapp.com",
-      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com ",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
       projectId: "mirdhuna-25542",
       storageBucket: "mirdhuna-25542.firebasestorage.app",
       messagingSenderId: "575924409876",
@@ -23,7 +23,7 @@
 
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
-    window.firebaseDB = database; // Expose for inline scripts
+    window.firebaseDB = database;
   </script>
   <style>
     :root {
@@ -47,9 +47,9 @@
       padding: 80px 0;
     }
 
-    /* Reduce padding only for categories section */
+    /* Reduce padding for categories section */
     #categories .section {
-      padding: 20px 0; /* Compact spacing above/below categories */
+      padding: 20px 0;
     }
 
     .container {
@@ -118,6 +118,7 @@
       box-shadow: none;
       cursor: pointer;
       transition: transform 0.2s;
+      margin: 0;
     }
 
     .category-card:hover {
@@ -330,17 +331,22 @@
     /* Remove fixed min-height to allow shrinking */
     #categoriesContainer,
     #menuContainer {
-      min-height: auto; /* Was 200px — now adapts to content */
+      min-height: auto;
     }
 
-    /* Hide scrollbar but still allow scrolling */
-    .categories-wrapper::-webkit-scrollbar {
-      display: none;
+    /* Ensure proper layout for categories */
+    @media (max-width: 768px) {
+      .category-card {
+        width: calc((100% - 20px) / 2);
+        flex: 0 0 calc((100% - 20px) / 2);
+      }
     }
 
-    .categories-wrapper {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    @media (max-width: 480px) {
+      .category-card {
+        width: 100%;
+        flex: 0 0 100%;
+      }
     }
   </style>
 </head>
@@ -379,7 +385,7 @@
   </section>
 
   <script type="module">
-    import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js ";
+    import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const db = window.firebaseDB;
 
@@ -459,11 +465,11 @@
       
       // Function to update slider position
       function updateSliderPosition() {
-        const itemWidth = 100 / itemsPerRow + '%';
-        const itemHeight = 'auto'; // Let it be auto based on content
+        // Calculate the width of each item as a percentage
+        const itemWidthPercentage = 100 / itemsPerRow;
         
-        // Calculate transform value
-        const transformValue = -currentIndex * (100 / itemsPerRow) + '%';
+        // Calculate transform value based on current index
+        const transformValue = -(currentIndex * itemWidthPercentage) + '%';
         wrapper.style.transform = `translateX(${transformValue})`;
         
         updateButtonStates();
@@ -485,7 +491,7 @@
       });
       
       // Initial setup
-      updateButtonStates();
+      updateSliderPosition();
     }
 
     function loadMenuByCategory(categoryKey) {
@@ -515,7 +521,7 @@
           html += `
             <div class="menu-item">
               <div class="item-image">
-                <img src="${item.image || 'https://via.placeholder.com/120 '}" alt="${item.name}">
+                <img src="${item.image || 'https://via.placeholder.com/120'}" alt="${item.name}">
               </div>
               <div class="item-details">
                 <h3 class="item-title">
