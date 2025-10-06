@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIRDHUNA | Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+  <style>
+    :root{ --primary:#e63946; --dark:#1d3557; --gradient:linear-gradient(135deg,#e63946,#457b9d) }
+    *{box-sizing:border-box} body{margin:0;font-family:Poppins,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:#f6f7fb;color:#333}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{width:100%;max-width:420px;background:#fff;border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.12);padding:24px}
+    h1{margin:0 0 6px 0;color:var(--dark)} p{margin:0 0 16px 0;color:#555}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+    input[type="tel"]{border:1px solid #ddd;border-radius:10px;padding:12px 14px;font-size:1rem}
+    .btn{appearance:none;border:0;border-radius:999px;background:var(--gradient);color:#fff;padding:12px 16px;font-weight:700;cursor:pointer;width:100%}
+    .meta{margin-top:12px;color:#666;text-align:center;font-size:.95rem}
+    .notice{display:none;margin-top:12px;padding:10px;border-left:4px solid var(--primary);background:#fff5f5;border-radius:8px;color:#333}
+    .notice.show{display:block}
+    .row{display:flex;gap:10px;justify-content:space-between;margin-top:14px}
+    .row a{color:#fff;text-decoration:none}
+    .ghost{background:#333}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="form" aria-labelledby="login-title">
+      <h1 id="login-title">Login</h1>
+      <p>Enter your 10-digit mobile number. We’ll capture your latitude and longitude—no OTP required.</p>
+      <div class="field">
+        <label for="mobile">Mobile Number</label>
+        <input id="mobile" type="tel" placeholder="e.g. 9876543210" inputmode="numeric" pattern="\\d{10}" aria-describedby="mobile-help" />
+        <small id="mobile-help" style="color:#777">India only, 10 digits.</small>
+      </div>
+      <button id="loginBtn" class="btn" type="button">Login</button>
+      <div id="notice" class="notice" role="status" aria-live="polite"></div>
+      <div class="row">
+        <a class="btn ghost" href="index.html">← Back Home</a>
+        <a class="btn ghost" id="downloadBtn" href="#" role="button">Download Page</a>
+      </div>
+      <div class="meta" id="locMeta"></div>
+    </div>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+</html>
