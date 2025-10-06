@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mirdhuna Food Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#457b9d;
+      --secondary:#e63946;
+      --accent:#ffb700;
+      --dark:#1a3a4a;
+      --bg:#ffffff;
+      --muted:#f7f7f7;
+      --text:#333333;
+      --shadow:0 6px 18px rgba(0,0,0,0.08);
+      --radius:14px;
+      --transition:all .25s ease;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+    header{
+      position:sticky; top:0; z-index:20;
+      background:var(--bg);
+      border-bottom:1px solid #eee;
+    }
+    .container{
+      max-width:1100px; margin:0 auto; padding:0 16px;
+    }
+    .toolbar{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0; gap:12px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      color:var(--dark); text-decoration:none;
+    }
+    .brand h1{ font-size:1.25rem; margin:0; font-weight:700 }
+    .actions{ display:flex; align-items:center; gap:10px }
+    .btn{
+      appearance:none; border:none; cursor:pointer; font-weight:600;
+      padding:10px 14px; border-radius:999px; transition:var(--transition);
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn-primary{ background:var(--primary); color:#fff; box-shadow:var(--shadow) }
+    .btn-primary:hover{ filter:brightness(.95); transform:translateY(-1px) }
+    .btn-muted{ background:#eee; color:#222 }
+    .btn-muted:hover{ background:#e4e4e4 }
+    .badge{
+      background:var(--secondary); color:#fff; font-size:.75rem;
+      padding:2px 8px; border-radius:999px; font-weight:700;
+    }
+
+    main section{ padding:24px 0 }
+    .section-header{ margin:8px 0 16px 0 }
+    .section-header h2{ margin:0; font-size:1.4rem; color:var(--dark) }
+    .section-header p{ margin:6px 0 0 0; color:#666; font-size:.95rem }
+
+    /* Categories */
+    .categories{
+      display:flex; flex-wrap:wrap; gap:10px;
+      padding:8px 0;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid #e5e7eb; background:#fff; color:#111827;
+      padding:8px 12px; border-radius:999px; cursor:pointer;
+      transition:var(--transition);
+    }
+    .chip:focus{ outline:3px solid rgba(69,123,157,.2) }
+    .chip:hover{ transform:translateY(-1px) }
+    .chip img{
+      width:22px; height:22px; border-radius:999px; object-fit:cover;
+    }
+    .chip.active{
+      border-color:var(--primary);
+      box-shadow:0 0 0 3px rgba(69,123,157,.15);
+    }
+
+    /* Menu list */
+    .menu-list{ display:grid; grid-template-columns:1fr; gap:14px }
+    @media (min-width:640px){
+      .menu-list{ grid-template-columns:1fr 1fr }
+    }
+    .menu-item{
+      display:flex; gap:14px; padding:12px; background:#faf9ee;
+      border-radius:var(--radius); box-shadow:var(--shadow);
+      transition:var(--transition);
+    }
+    .menu-item:hover{ transform:translateY(-2px) }
+    .item-image{ flex:0 0 120px; height:120px; border-radius:12px; overflow:hidden; background:#ddd }
+    .item-image img{ width:100%; height:100%; object-fit:cover }
+    .item-body{ flex:1; min-width:0 }
+    .item-title{
+      display:flex; align-items:center; gap:8px;
+      margin:0 0 6px 0; font-weight:700; color:#8B0000; font-size:1.05rem;
+    }
+    .veg{
+      width:16px; height:16px; border-radius:3px;
+      background:#2E8B57; color:#fff; font-size:10px; font-weight:700;
+      display:inline-flex; align-items:center; justify-content:center;
+    }
+    .item-desc{ margin:0 0 8px 0; color:#555; font-size:.95rem; line-height:1.4 }
+    .item-meta{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .price{ font-weight:800; color:#8B0000; font-size:1.1rem }
+    .item-actions{ display:flex; align-items:center; gap:8px; flex-wrap:wrap }
+    .btn-add{
+      background:#8B0000; color:#fff; border:none; padding:8px 12px;
+      border-radius:999px; font-weight:700; cursor:pointer; transition:var(--transition);
+      box-shadow:0 4px 10px rgba(139,0,0,.25);
+    }
+    .btn-add:hover{ transform:scale(1.03); filter:brightness(.97) }
+    .btn-website{ background:#999; color:#fff; border:none; padding:8px 12px; border-radius:999px; cursor:pointer }
+    .empty{ padding:18px; text-align:center; color:#666; background:#f8f8f8; border-radius:10px }
+
+    /* Cart Drawer */
+    .cart-overlay{
+      position:fixed; inset:0; background:rgba(0,0,0,.4);
+      display:none; align-items:stretch; justify-content:flex-end; z-index:40;
+    }
+    .cart-overlay.open{ display:flex }
+    .cart{
+      width:min(92vw, 380px); height:100%; background:#fff; display:flex; flex-direction:column;
+      box-shadow:-8px 0 24px rgba(0,0,0,.2);
+    }
+    .cart-header{
+      display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #eee;
+    }
+    .cart-items{ flex:1; overflow:auto; padding:12px 16px; display:flex; flex-direction:column; gap:12px }
+    .cart-row{ display:flex; align-items:center; gap:10px; justify-content:space-between; border:1px solid #eee; border-radius:10px; padding:8px 10px }
+    .cart-row .name{ font-weight:600; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+    .qty{ display:flex; align-items:center; gap:8px }
+    .qty button{ width:28px; height:28px; border-radius:50%; border:1px solid #ddd; background:#fff; cursor:pointer }
+    .cart-footer{ border-top:1px solid #eee; padding:14px 16px; display:flex; gap:10px; align-items:center; justify-content:space-between }
+    .total{ font-weight:800; color:#111 }
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
+
+    /* Loading */
+    .loading{ display:flex; align-items:center; justify-content:center; padding:28px; color:#666 }
+    .spinner{ width:36px; height:36px; border:4px solid #eee; border-top:4px solid var(--primary); border-radius:50%; animation:spin 1s linear infinite; margin-right:10px }
+    @keyframes spin{ to{ transform:rotate(360deg) } }
+  </style>
+</head>
+<body>
+  <header aria-label="Top bar">
+    <div class="container toolbar">
+      <a class="brand" href="#" aria-label="Mirdhuna Food Menu">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2l3 7h7l-5.5 4.1L19 20l-7-4.5L5 20l2.5-6.9L2 9h7l3-7z" fill="currentColor" style="color:var(--primary)"></path>
+        </svg>
+        <h1>Mirdhuna Food Menu</h1>
+      </a>
+      <div class="actions">
+        <button id="downloadBtn" class="btn btn-muted" type="button">Download HTML</button>
+        <button id="openCartBtn" class="btn btn-primary" type="button" aria-haspopup="dialog" aria-controls="cartPanel">
+          Cart <span id="cartCount" class="badge" aria-label="Items in cart">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="container" aria-labelledby="cat-heading">
+      <div class="section-header">
+        <h2 id="cat-heading">Categories</h2>
+        <p>Tap a category to filter dishes. “All” shows everything.</p>
+      </div>
+      <div id="categories" class="categories" aria-live="polite" aria-busy="false"><button class="chip active" type="button" role="button" aria-pressed="true" data-key="all"><span>All</span></button><button class="chip" type="button" role="button" aria-pressed="false" data-key="1"><img src="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2FSlider%2F1756719398911_banana-milkshake-one.jpg?alt=media&amp;token=a15b03c6-cbe2-41db-a741-00f2fa89f689" alt="" loading="lazy" width="22" height="22"><span>Pizza</span></button><button class="chip" type="button" role="button" aria-pressed="false" data-key="-OZL-Yg5beAygBGWsiip"><img src="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2FSlider%2F1756719398902_oreo-milkshake-www.thereciperebel.com-1200-8-of-29.jpg?alt=media&amp;token=1daa4202-19e5-454d-9410-ce4019475a39" alt="" loading="lazy" width="22" height="22"><span>Pizza </span></button><button class="chip" type="button" role="button" aria-pressed="false" data-key="-OZLKaoPM48Z_kkiDrbC"><img src="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2FSlider%2F1756719398714_veggie-burgers-1-2.jpg?alt=media&amp;token=b6ff9e63-ff35-44e9-9894-3f2788c0b493" alt="" loading="lazy" width="22" height="22"><span>Burger</span></button><button class="chip" type="button" role="button" aria-pressed="false" data-key="-OZNIEJXcDtA1XtDi9KT"><img src="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2FSlider%2F1756719398902_oreo-milkshake-www.thereciperebel.com-1200-8-of-29.jpg?alt=media&amp;token=1daa4202-19e5-454d-9410-ce4019475a39" alt="" loading="lazy" width="22" height="22"><span>Guh</span></button><button class="chip" type="button" role="button" aria-pressed="false" data-key="G"><img src="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2FSlider%2F1756719398877_Scoops-kinds-ice-cream.jpg?alt=media&amp;token=f14b7f09-1694-4248-8110-03e48fb16f70" alt="" loading="lazy" width="22" height="22"><span>Hii</span></button><button class="chip" type="button" role="button" aria-pressed="false" data-key="H"><img src="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2FSlider%2F1756719398877_Scoops-kinds-ice-cream.jpg?alt=media&amp;token=f14b7f09-1694-4248-8110-03e48fb16f70" alt="" loading="lazy" width="22" height="22"><span>Hii</span></button><button class="chip" type="button" role="button" aria-pressed="false" data-key="R"><img src="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2FSlider%2F1756719398877_Scoops-kinds-ice-cream.jpg?alt=media&amp;token=f14b7f09-1694-4248-8110-03e48fb16f70" alt="" loading="lazy" width="22" height="22"><span>Hii</span></button></div>
+    </section>
+
+    <section class="container" aria-labelledby="menu-heading">
+      <div class="section-header">
+        <h2 id="menu-heading">Menu</h2>
+        <p>All dishes are shown by default.</p>
+      </div>
+      <div id="menu" class="menu-list" aria-live="polite" aria-busy="false"><article class="menu-item"><div class="item-image"><img src="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2FSlider%2F1756719398877_Scoops-kinds-ice-cream.jpg?alt=media&amp;token=f14b7f09-1694-4248-8110-03e48fb16f70" alt="Pepperoni Pizza" loading="lazy" width="120" height="120"></div><div class="item-body"><h3 class="item-title"><span class="veg" title="Vegetarian" aria-label="Vegetarian">V</span><span> Pepperoni Pizza</span></h3><p class="item-desc">Hj</p><div class="item-meta"><div class="price">₹99</div><div class="item-actions"><button class="btn-add" type="button">ADD</button></div></div></div></article><article class="menu-item"><div class="item-image"><img src="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2FSlider%2F1756719398877_Scoops-kinds-ice-cream.jpg?alt=media&amp;token=f14b7f09-1694-4248-8110-03e48fb16f70" alt="Pepperoni Pizza" loading="lazy" width="120" height="120"></div><div class="item-body"><h3 class="item-title"><span class="veg" title="Vegetarian" aria-label="Vegetarian">V</span><span> Pepperoni Pizza</span></h3><p class="item-desc">Hj</p><div class="item-meta"><div class="price">₹99</div><div class="item-actions"><button class="btn-add" type="button">ADD</button></div></div></div></article></div>
+    </section>
+  </main>
+
+   Cart Drawer 
+  <div id="cartOverlay" class="cart-overlay" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <aside id="cartPanel" class="cart">
+      <div class="cart-header">
+        <h3 id="cartTitle" style="margin:0">Your Cart</h3>
+        <button id="closeCartBtn" class="btn btn-muted" type="button">Close</button>
+      </div>
+      <div id="cartItems" class="cart-items" aria-live="polite"><div class="empty">Your cart is empty</div></div>
+      <div class="cart-footer">
+        <div class="total">Total: <span id="cartTotal">₹0</span></div>
+        <button id="checkoutBtn" class="btn btn-primary" type="button">Checkout</button>
+      </div>
+    </aside>
+  </div>
+
+   Firebase + App Script 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // Firebase config (from your snippet)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+      authDomain: "mirdhuna-25542.firebaseapp.com",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+      projectId: "mirdhuna-25542",
+      storageBucket: "mirdhuna-25542.firebasestorage.app",
+      messagingSenderId: "575924409876",
+      appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+      measurementId: "G-YB7LDKHBPV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // State
+    const state = {
+      categories: [],     // { key, name, description, image }
+      items: [],          // { id, name, description, image, price, category, veg, website }
+      selectedCategory: 'all',
+      cart: {}            // id -> { id, name, price, qty }
+    };
+
+    // Elements
+    const $categories = document.getElementById('categories');
+    const $menu = document.getElementById('menu');
+    const $cartOverlay = document.getElementById('cartOverlay');
+    const $cartItems = document.getElementById('cartItems');
+    const $cartTotal = document.getElementById('cartTotal');
+    const $cartCount = document.getElementById('cartCount');
+    const $openCartBtn = document.getElementById('openCartBtn');
+    const $closeCartBtn = document.getElementById('closeCartBtn');
+    const $downloadBtn = document.getElementById('downloadBtn');
+    const $checkoutBtn = document.getElementById('checkoutBtn');
+
+    // Utils
+    const escapeHTML = (str='') => String(str)
+      .replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+
+    const parsePrice = (p) => {
+      if (typeof p === 'number') return p;
+      if (!p) return 0;
+      const n = Number(String(p).replace(/[^\d.]/g,''));
+      return isNaN(n) ? 0 : n;
+    };
+
+    const formatINR = (n) => `₹${parsePrice(n).toLocaleString('en-IN')}`;
+
+    // Cart persistence
+    const loadCart = () => {
+      try {
+        const raw = localStorage.getItem('mirdhuna_cart');
+        state.cart = raw ? JSON.parse(raw) : {};
+      } catch {
+        state.cart = {};
+      }
+      updateCartUI();
+    };
+    const saveCart = () => {
+      localStorage.setItem('mirdhuna_cart', JSON.stringify(state.cart));
+      updateCartUI();
+    };
+
+    // Category render
+    function renderCategories() {
+      $categories.setAttribute('aria-busy', 'true');
+      $categories.innerHTML = ''; // clear
+
+      const makeChip = (key, name, image, isActive) => {
+        const btn = document.createElement('button');
+        btn.className = 'chip' + (isActive ? ' active' : '');
+        btn.setAttribute('type','button');
+        btn.setAttribute('role','button');
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        btn.dataset.key = key;
+
+        if (image) {
+          const img = document.createElement('img');
+          img.src = image;
+          img.alt = '';
+          img.loading = 'lazy';
+          img.width = 22;
+          img.height = 22;
+          btn.appendChild(img);
+        }
+
+        const span = document.createElement('span');
+        span.textContent = name;
+        btn.appendChild(span);
+
+        btn.addEventListener('click', () => {
+          state.selectedCategory = key;
+          renderCategories();
+          renderMenu();
+        });
+        btn.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault(); btn.click();
+          }
+        });
+
+        return btn;
+      };
+
+      // "All" first
+      $categories.appendChild(
+        makeChip('all', 'All', null, state.selectedCategory === 'all')
+      );
+
+      // Others
+      state.categories.forEach(cat => {
+        $categories.appendChild(
+          makeChip(cat.key, cat.name || cat.key, cat.image || '', state.selectedCategory === cat.key)
+        );
+      });
+
+      $categories.setAttribute('aria-busy', 'false');
+    }
+
+    // Menu render
+    function renderMenu() {
+      $menu.setAttribute('aria-busy','true');
+      $menu.innerHTML = '';
+
+      const filtered = state.selectedCategory === 'all'
+        ? state.items
+        : state.items.filter(i => i.category === state.selectedCategory);
+
+      if (!filtered.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'No dishes in this category.';
+        $menu.appendChild(empty);
+        $menu.setAttribute('aria-busy','false');
+        return;
+      }
+
+      for (const item of filtered) {
+        const card = document.createElement('article');
+        card.className = 'menu-item';
+
+        const imgWrap = document.createElement('div');
+        imgWrap.className = 'item-image';
+        const img = document.createElement('img');
+        img.src = item.image || 'https://via.placeholder.com/120';
+        img.alt = item.name || 'Dish image';
+        img.loading = 'lazy';
+        img.width = 120; img.height = 120;
+        imgWrap.appendChild(img);
+
+        const body = document.createElement('div');
+        body.className = 'item-body';
+
+        const title = document.createElement('h3');
+        title.className = 'item-title';
+        if (item.veg === true || item.veg === 'true') {
+          const veg = document.createElement('span');
+          veg.className = 'veg';
+          veg.title = 'Vegetarian';
+          veg.setAttribute('aria-label','Vegetarian');
+          veg.textContent = 'V';
+          title.appendChild(veg);
+        }
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = ` ${item.name || ''}`;
+        title.appendChild(nameSpan);
+
+        const desc = document.createElement('p');
+        desc.className = 'item-desc';
+        desc.textContent = item.description || '';
+
+        const meta = document.createElement('div');
+        meta.className = 'item-meta';
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = formatINR(item.price);
+
+        const actions = document.createElement('div');
+        actions.className = 'item-actions';
+
+        const addBtn = document.createElement('button');
+        addBtn.className = 'btn-add';
+        addBtn.type = 'button';
+        addBtn.textContent = 'ADD';
+        addBtn.addEventListener('click', () => addToCart(item));
+
+        actions.appendChild(addBtn);
+
+        if (item.website && /^https?:\/\//i.test(item.website)) {
+          const siteBtn = document.createElement('button');
+          siteBtn.className = 'btn-website';
+          siteBtn.type = 'button';
+          siteBtn.textContent = 'Website';
+          siteBtn.addEventListener('click', () => {
+            window.open(item.website, '_blank', 'noopener,noreferrer');
+          });
+          actions.appendChild(siteBtn);
+        }
+
+        meta.appendChild(price);
+        meta.appendChild(actions);
+
+        body.appendChild(title);
+        body.appendChild(desc);
+        body.appendChild(meta);
+
+        card.appendChild(imgWrap);
+        card.appendChild(body);
+
+        $menu.appendChild(card);
+      }
+
+      $menu.setAttribute('aria-busy','false');
+    }
+
+    // Cart
+    function addToCart(item){
+      const id = item.id;
+      const price = parsePrice(item.price);
+      if (!state.cart[id]) {
+        state.cart[id] = { id, name: item.name || 'Item', price, qty: 0 };
+      }
+      state.cart[id].qty += 1;
+      saveCart();
+    }
+    function inc(id){ if (state.cart[id]) { state.cart[id].qty += 1; saveCart(); } }
+    function dec(id){
+      if (!state.cart[id]) return;
+      state.cart[id].qty -= 1;
+      if (state.cart[id].qty <= 0) delete state.cart[id];
+      saveCart();
+    }
+    function removeItem(id){ if (state.cart[id]) { delete state.cart[id]; saveCart(); } }
+
+    function updateCartUI(){
+      // Count
+      const count = Object.values(state.cart).reduce((s,i)=>s+i.qty,0);
+      $cartCount.textContent = String(count);
+
+      // Items
+      $cartItems.innerHTML = '';
+      const entries = Object.values(state.cart);
+      if (!entries.length){
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'Your cart is empty';
+        $cartItems.appendChild(empty);
+      } else {
+        for (const row of entries){
+          const r = document.createElement('div');
+          r.className = 'cart-row';
+
+          const left = document.createElement('div');
+          left.className = 'name';
+          left.title = row.name;
+          left.textContent = row.name;
+
+          const qty = document.createElement('div');
+          qty.className = 'qty';
+
+          const minus = document.createElement('button'); minus.type='button'; minus.textContent='-';
+          minus.addEventListener('click', ()=>dec(row.id));
+
+          const q = document.createElement('span'); q.textContent = String(row.qty);
+
+          const plus = document.createElement('button'); plus.type='button'; plus.textContent='+';
+          plus.addEventListener('click', ()=>inc(row.id));
+
+          const del = document.createElement('button'); del.type='button'; del.textContent='✕';
+          del.title='Remove';
+          del.addEventListener('click', ()=>removeItem(row.id));
+
+          qty.appendChild(minus); qty.appendChild(q); qty.appendChild(plus);
+
+          const right = document.createElement('div');
+          right.style.display='flex'; right.style.alignItems='center'; right.style.gap='8px';
+          const lineTotal = parsePrice(row.price) * row.qty;
+          const amount = document.createElement('strong'); amount.textContent = formatINR(lineTotal);
+          right.appendChild(amount); right.appendChild(del);
+
+          r.appendChild(left); r.appendChild(qty); r.appendChild(right);
+          $cartItems.appendChild(r);
+        }
+      }
+
+      // Total
+      const total = entries.reduce((s,i)=>s + parsePrice(i.price)*i.qty, 0);
+      $cartTotal.textContent = formatINR(total);
+    }
+
+    // Drawer controls
+    const openCart = () => $cartOverlay.classList.add('open');
+    const closeCart = () => $cartOverlay.classList.remove('open');
+    $openCartBtn.addEventListener('click', openCart);
+    $closeCartBtn.addEventListener('click', closeCart);
+    $cartOverlay.addEventListener('click', (e)=>{ if (e.target === $cartOverlay) closeCart(); });
+
+    // Download current page
+    $downloadBtn.addEventListener('click', () => {
+      try{
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'mirdhuna-food-menu.html';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url), 1000);
+      } catch (err){
+        alert('Unable to download HTML. Please try from a desktop browser.');
+        console.error(err);
+      }
+    });
+
+    // Data subscriptions: always fetch all menu items; filter client-side
+    function start() {
+      // Categories
+      onValue(ref(db, 'categories'), (snap) => {
+        const data = snap.val() || {};
+        state.categories = Object.keys(data).map(key => ({ key, ...data[key] }));
+        renderCategories();
+      }, (err)=> {
+        console.error('[Mirdhuna] Categories error:', err);
+        $categories.innerHTML = '<div class="empty">Failed to load categories.</div>';
+      });
+
+      // Menu
+      onValue(ref(db, 'menu'), (snap) => {
+        const data = snap.val() || {};
+        state.items = Object.keys(data).map(id => ({ id, ...data[id] }));
+        renderMenu();
+      }, (err)=> {
+        console.error('[Mirdhuna] Menu error:', err);
+        $menu.innerHTML = '<div class="empty">Error loading menu.</div>';
+      });
+
+      loadCart();
+    }
+
+    start();
+  </script>
+
+<iframe style="display: none;"></iframe><iframe src="https://s-usc1f-nss-2566.firebaseio.com/.lp?dframe=t&amp;id=2565635&amp;pw=YPOMIo31kX&amp;ns=mirdhuna-25542-default-rtdb" style="display: none;"></iframe></body></html>
