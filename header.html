@@ -1,287 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIRDHUNA | Exquisite Dining</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics-compat.js"></script>
-    <style>
-        :root {
-            --primary: #d40000;
-            --secondary: #f9c300;
-            --accent: #ffd700;
-            --dark: #1b1b1b;
-            --light: #fffaf0;
-            --text: #333;
-            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-            --glow: 0 0 15px rgba(249, 195, 0, 0.4);
-            --radius: 20px;
-            --transition: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
-            color: var(--text);
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(249, 195, 0, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249, 195, 0, 0); }
-        }
-
-        .pulse {
-            animation: pulse 0.8s ease-out;
-            box-shadow: var(--glow);
-        }
-
-        .colorful-mirdhuna {
-            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: rainbow 5s ease infinite;
-            font-size: 2.3rem;
-            letter-spacing: -1px;
-            margin: 0;
-        }
-
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        header {
-            backdrop-filter: blur(12px);
-            background: rgba(255, 255, 255, 0.15);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 16px 0;
-        }
-
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 90%;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-family: 'Playfair Display', serif;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .logo i {
-            font-size: 2.2rem;
-            color: var(--accent);
-            text-shadow: var(--glow);
-        }
-
-        .top-action-bar {
-            background: var(--gradient);
-            padding: 18px 0;
-            box-shadow: var(--shadow);
-        }
-
-        .action-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            width: 90%;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .welcome-message h3 {
-            color: white;
-            font-weight: 600;
-            font-size: 1.2rem;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .user-actions {
-            display: flex;
-            gap: 14px;
-        }
-
-        .user-actions a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 22px;
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: var(--transition);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .user-actions a:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: translateY(-4px) scale(1.08);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-        }
-
-        .user-actions a i {
-            font-size: 1.25rem;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 12px;
-            margin-left: 10px;
-        }
-
-        .social-icons a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 1.1rem;
-            transition: var(--transition);
-        }
-
-        .social-icons a:hover {
-            background: white;
-            transform: translateY(-4px) scale(1.1);
-            color: var(--dark);
-        }
-
-        .social-icons a.call {
-            background: #25d366 !important;
-            color: white;
-        }
-
-        .social-icons a.call:hover {
-            background: #128c7e !important;
-            color: white;
-        }
-
-        .social-icons a.facebook:hover { color: #3b5998; }
-        .social-icons a.instagram:hover { color: #e1306c; }
-        .social-icons a.whatsapp:hover { color: #075e54; }
-        .social-icons a.telegram:hover { color: #0088cc; }
-
-        .modal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(6px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.4s ease;
-        }
-
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 35px;
-            border-radius: var(--radius);
-            width: 90%;
-            max-width: 420px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            transform: translateY(-30px);
-            transition: 0.5s ease;
-        }
-
-        .modal.active .modal-content {
-            transform: translateY(0);
-        }
-
-        .modal h2 {
-            margin-bottom: 16px;
-            color: var(--primary);
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-        }
-
-        .modal p {
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 1rem;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            font-size: 1.5rem;
-            color: #aaa;
-            cursor: pointer;
-        }
-
-        .modal-close:hover {
-            color: var(--primary);
-            transform: rotate(90deg);
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            color: var(--dark);
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            transform: translateX(200%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            border-left: 5px solid var(--primary);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-    </style>
-</head>
-<body>
 <header>
+  <style>
+    :root {
+      --primary: #d40000;
+      --secondary: #f9c300;
+      --accent: #ffd700;
+      --dark: #1b1b1b;
+      --light: #fffaf0;
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      --glow: 0 0 15px rgba(249, 195, 0, 0.4);
+      --radius: 20px;
+      --transition: all 0.3s ease;
+    }
+
+    header {
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.15);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 16px 0;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 90%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .colorful-mirdhuna {
+      background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbow 5s ease infinite;
+      font-size: 2.3rem;
+      letter-spacing: -1px;
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+    }
+    @keyframes rainbow {
+      0% { background-position: 0% 50% }
+      50% { background-position: 100% 50% }
+      100% { background-position: 0% 50% }
+    }
+
+    .logo { display: flex; align-items: center; gap: 14px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .logo i { font-size: 2.2rem; color: var(--accent); text-shadow: var(--glow); }
+
+    .top-action-bar { background: var(--gradient); padding: 18px 0; box-shadow: var(--shadow); }
+    .action-container {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+      width: 90%; max-width: 1400px; margin: 0 auto; padding: 0 20px;
+    }
+    .welcome-message h3 { color: white; font-weight: 600; font-size: 1.2rem; text-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+
+    .user-actions { display: flex; gap: 14px; }
+    .user-actions a {
+      display: flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: 50px;
+      background: rgba(255,255,255,0.25); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.3);
+      color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: var(--transition);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    .user-actions a:hover { background: rgba(255,255,255,0.4); transform: translateY(-4px) scale(1.08); box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+    .user-actions a i { font-size: 1.25rem; }
+
+    .social-icons { display: flex; gap: 12px; margin-left: 10px; }
+    .social-icons a {
+      display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); color: white; font-size: 1.1rem; transition: var(--transition);
+    }
+    .social-icons a:hover { background: white; transform: translateY(-4px) scale(1.1); color: var(--dark); }
+    .social-icons a.call { background: #25d366 !important; color: white; }
+    .social-icons a.call:hover { background: #128c7e !important; color: white; }
+
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(6px);
+      display: flex; justify-content: center; align-items: center; z-index: 2000;
+      opacity: 0; visibility: hidden; transition: 0.4s ease;
+    }
+    .modal.active { opacity: 1; visibility: visible; }
+    .modal-content {
+      background: white; padding: 35px; border-radius: var(--radius); width: 90%; max-width: 420px; text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: translateY(-30px); transition: 0.5s ease;
+    }
+    .modal.active .modal-content { transform: translateY(0); }
+    .modal h2 { margin-bottom: 16px; color: var(--primary); font-family: 'Playfair Display', serif; font-size: 1.8rem; }
+    .modal p { color: #666; margin-bottom: 20px; font-size: 1rem; }
+    .modal-close { position: absolute; top: 16px; right: 16px; font-size: 1.5rem; color: #aaa; cursor: pointer; }
+    .modal-close:hover { color: var(--primary); transform: rotate(90deg); }
+
+    .notification {
+      position: fixed; top: 20px; right: 20px; background: white; color: var(--dark);
+      padding: 15px 25px; border-radius: 10px; box-shadow: var(--shadow);
+      transform: translateX(200%); transition: transform 0.3s ease; z-index: 1000; border-left: 5px solid var(--primary);
+    }
+    .notification.show { transform: translateX(0); }
+  </style>
+
   <div class="header-container">
     <div class="logo">
       <i class="fas fa-utensils"></i>
@@ -296,14 +118,9 @@
       <h3>✨ Welcome to MIRDHUNA – Where Flavor Meets Elegance</h3>
     </div>
     <div class="user-actions">
-      <a href="#" id="loginTrigger">
-        <i class="fas fa-user"></i> Login
-      </a>
-      <a href="#" id="locationTrigger">
-        <i class="fas fa-map-marker-alt"></i> Location
-      </a>
+      <a href="#" id="loginTrigger"><i class="fas fa-user"></i> Login</a>
+      <a href="#" id="locationTrigger"><i class="fas fa-map-marker-alt"></i> Location</a>
     </div>
-
     <div class="social-icons">
       <a href="https://facebook.com/mirdhuna.dining" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
       <a href="https://instagram.com/mirdhuna.dining" class="instagram" target="_blank"><i class="fab fa-instagram"></i></a>
@@ -316,7 +133,7 @@
 
 <div class="notification" id="notification"></div>
 
-<!-- Login Modal -->
+ Login Modal 
 <div class="modal" id="loginModal">
   <div class="modal-content">
     <span class="modal-close" id="closeLogin">&times;</span>
@@ -328,7 +145,7 @@
   </div>
 </div>
 
-<!-- Location Modal -->
+ Location Modal 
 <div class="modal" id="locationModal">
   <div class="modal-content">
     <span class="modal-close" id="closeLocation">&times;</span>
@@ -336,147 +153,3 @@
     <p id="locationText">Detecting your location...</p>
   </div>
 </div>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
-    authDomain: "mirdhuna-25542.firebaseapp.com",
-    databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
-    projectId: "mirdhuna-25542",
-    storageBucket: "mirdhuna-25542.firebasestorage.app",
-    messagingSenderId: "575924409876",
-    appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
-    measurementId: "G-YB7LDKHBPV"
-  };
-
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const analytics = firebase.analytics();
-
-  const loginTrigger = document.getElementById('loginTrigger');
-  const locationTrigger = document.getElementById('locationTrigger');
-  const loginModal = document.getElementById('loginModal');
-  const locationModal = document.getElementById('locationModal');
-  const closeLogin = document.getElementById('closeLogin');
-  const closeLocation = document.getElementById('closeLocation');
-  const loginBtn = document.getElementById('loginBtn');
-  const mobileInput = document.getElementById('mobileInput');
-  const locationText = document.getElementById('locationText');
-  const notification = document.getElementById('notification');
-
-  let currentUser = localStorage.getItem('currentUser');
-
-  // Modal handlers
-  loginTrigger.addEventListener('click', (e) => {
-    e.preventDefault();
-    loginModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  });
-
-  closeLogin.addEventListener('click', () => {
-    loginModal.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-
-  locationTrigger.addEventListener('click', (e) => {
-    e.preventDefault();
-    const lat = localStorage.getItem('userLat');
-    const lng = localStorage.getItem('userLng');
-    if (lat && lng) {
-      locationText.innerHTML = `<strong>📍 Detected:</strong><br>Lat: ${lat}<br>Lng: ${lng}`;
-    } else {
-      locationText.textContent = "📍 Location not detected. Please enable location access.";
-    }
-    locationModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  });
-
-  closeLocation.addEventListener('click', () => {
-    locationModal.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-
-  [loginModal, locationModal].forEach(modal => {
-    modal.addEventListener('click', e => {
-      if (e.target === modal) {
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    });
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      loginModal.classList.remove('active');
-      locationModal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-
-  // ✅ Login with mobile + geolocation → Firebase
-  loginBtn.addEventListener('click', () => {
-    const num = mobileInput.value.trim();
-
-    if (!num || num.length !== 10 || !/^\d{10}$/.test(num)) {
-      showNotification("❌ Please enter a valid 10-digit mobile number.");
-      return;
-    }
-
-    loginBtn.textContent = "🔍 Detecting Location...";
-    loginBtn.disabled = true;
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        const locationStr = `Lat: ${latitude.toFixed(6)}, Lng: ${longitude.toFixed(6)}`;
-
-        try {
-          await db.ref(`users/${num}`).set({
-            mobile: num,
-            location: locationStr,
-            lastLogin: firebase.database.ServerValue.TIMESTAMP
-          });
-
-          await db.ref('userActivity').push({
-            mobile: num,
-            location: locationStr,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-          });
-
-          currentUser = num;
-          localStorage.setItem('currentUser', num);
-          localStorage.setItem('userLat', latitude);
-          localStorage.setItem('userLng', longitude);
-
-          showNotification(`✅ Welcome! Logged in as ${num}`);
-          loginModal.classList.remove('active');
-          document.body.style.overflow = '';
-        } catch (error) {
-          console.error("Firebase error:", error);
-          showNotification("❌ Failed to save data. Try again.");
-        } finally {
-          loginBtn.textContent = "Login Now";
-          loginBtn.disabled = false;
-        }
-      },
-      (error) => {
-        let msg = "❌ Location access denied.";
-        if (error.code === 1) msg = "❌ Please allow location to continue.";
-        else if (error.code === 2) msg = "❌ Location unavailable.";
-        else if (error.code === 3) msg = "❌ Location request timed out.";
-        showNotification(msg);
-        loginBtn.textContent = "Login Now";
-        loginBtn.disabled = false;
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-    );
-  });
-
-  function showNotification(message) {
-    notification.textContent = message;
-    notification.classList.add('show');
-    setTimeout(() => notification.classList.remove('show'), 3000);
-  }
-</script>
-</body>
-</html>
