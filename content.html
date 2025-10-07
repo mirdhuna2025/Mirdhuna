@@ -3,157 +3,144 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mirdhuna - Categories & Menu</title>
+  <title>Mirdhuna - Menu</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    :root{
+    :root {
       --primary: #b91c1c;
-      --shadow: 0 6px 18px rgba(0,0,0,0.12);
+      --shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: Arial, Helvetica, sans-serif;
-      background:#f6f6f6;
-      color:#222;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f6f6;
+      color: #222;
     }
-    .section{padding:36px 0}
-    .container{width:94%;max-width:1100px;margin:0 auto}
-    h2{text-align:center;margin:0 0 18px}
+    .section { padding: 36px 0; }
+    .container { width: 94%; max-width: 1100px; margin: 0 auto; }
+    h2 { text-align: center; margin-bottom: 18px; }
 
     /* ========== CATEGORY SLIDER ========== */
-    .category-slider{
-      position:relative;
-      /* allow chevrons to sit outside the visible area */
-      overflow:visible;
-      padding:6px 0;
-      margin:0 6px;
+    .category-slider {
+      position: relative;
+      overflow: visible;
+      padding: 10px 0;
+    }
+    .categories-grid {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      gap: 4px; /* tighter spacing */
+      padding: 10px 50px; /* leave space for buttons */
+    }
+    .categories-grid::-webkit-scrollbar { display: none; }
+
+    .category-card {
+      flex: 0 0 auto;
+      width: 100px;
+      text-align: center;
+      cursor: pointer;
+      scroll-snap-align: start;
+      user-select: none;
+    }
+    .category-img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #ddd;
+      margin: 0 auto 4px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .category-card.active .category-img {
+      border-color: var(--primary);
+      transform: scale(1.08);
+    }
+    .category-content {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #333;
+      white-space: nowrap;
     }
 
-    /* fewer gaps so items are closer (closure) */
-    .categories-grid{
-      display:flex;
-      gap:8px;                     /* smaller gap so more items fit */
-      overflow-x:auto;
-      scroll-behavior:smooth;
-      scrollbar-width:none;
-      padding:8px 56px;           /* give room for chevrons (so images are not clipped) */
-      scroll-snap-type:x mandatory;
+    /* Smaller chevron buttons */
+    .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      z-index: 5;
     }
-    .categories-grid::-webkit-scrollbar{display:none}
+    .nav-btn.left { left: -20px; }
+    .nav-btn.right { right: -20px; }
 
-    .category-card{
-      flex:0 0 auto;
-      width:120px;                /* make card wide enough for larger image */
-      text-align:center;
-      cursor:pointer;
-      scroll-snap-align:start;
-      user-select:none;
-      padding:2px 4px;
+    /* ========== MENU CARDS ========== */
+    .menu-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr;
     }
-
-    /* BIGGER circular image */
-    .category-img{
-      width:110px;                /* bigger image as requested */
-      height:110px;
-      border-radius:50%;
-      background-size:cover;
-      background-position:center;
-      border:2px solid #ddd;
-      margin:0 auto 6px;
-      transition: transform .22s ease, border-color .22s ease;
-      display:block;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    .menu-item {
+      display: flex;
+      align-items: center;
+      background: #fffbe6;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
-
-    /* small text under image */
-    .category-content{
-      font-size:0.78rem;          /* smaller text */
-      font-weight:600;
-      color:#333;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    .item-img {
+      width: 140px;
+      height: 120px;
+      background-size: cover;
+      background-position: center;
+      flex-shrink: 0;
+      margin: 10px;
+      border-radius: 12px;
     }
-
-    /* active styling */
-    .category-card.active .category-img{
-      border-color:var(--primary);
-      transform:scale(1.06);
+    .item-content {
+      flex: 1;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-
-    /* nav buttons pushed further outward */
-    .nav-btn{
-      position:absolute;
-      top:50%;
-      transform:translateY(-50%);
-      width:44px;
-      height:44px;
-      border-radius:50%;
-      border:none;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:var(--primary);
-      color:#fff;
-      font-size:18px;
-      box-shadow:var(--shadow);
-      cursor:pointer;
-      z-index:20;
-    }
-    /* push outside more so slider images are not clipped on small screens */
-    .nav-btn.left{ left:-56px; }   /* more outward */
-    .nav-btn.right{ right:-56px; }
-
-    /* smaller devices: slightly less outward but still outside slider area */
-    @media (max-width:600px){
-      .nav-btn{ width:40px;height:40px;font-size:16px }
-      .nav-btn.left{ left:-30px; }
-      .nav-btn.right{ right:-30px; }
-      .category-card{ width:100px }
-      .category-img{ width:90px;height:90px }
-      .categories-grid{ padding:8px 44px }
-      .category-content{ font-size:0.72rem }
+    .item-content h3 { margin: 0; color: #7a0f0f; font-size: 1.2rem; }
+    .item-desc { color: #555; font-size: 0.95rem; margin: 0; }
+    .item-price { font-weight: 700; color: #7a0f0f; font-size: 1.05rem; }
+    .add-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 8px 14px;
+      margin-right: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(185, 28, 28, 0.18);
     }
 
-    /* ========== MENU CARDS (keeps original visual layout you provided) ========== */
-    .menu-grid{ display:grid; gap:16px; grid-template-columns:1fr; margin-top:10px }
-    .menu-item{
-      display:flex;
-      align-items:center;
-      background:#fffbe6;
-      border-radius:14px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .item-img{
-      width:140px;
-      height:120px;
-      background-size:cover;
-      background-position:center;
-      flex-shrink:0;
-      margin:10px;
-      border-radius:12px;
-    }
-    .item-content{ flex:1; padding:12px; display:flex; flex-direction:column; gap:6px; }
-    .item-content h3{ margin:0; color:#7a0f0f; font-size:1.3rem }
-    .item-desc{ margin:0; color:#555; font-size:0.95rem }
-    .item-price{ font-weight:700; color:#7a0f0f; font-size:1.05rem }
-    .add-btn{
-      background:var(--primary);
-      color:#fff;
-      border:none;
-      border-radius:28px;
-      padding:10px 14px;
-      margin-right:14px;
-      display:flex; align-items:center; gap:8px;
-      cursor:pointer; font-weight:700;
-      box-shadow: 0 6px 18px rgba(185,28,28,0.18);
-    }
-
-    @media (max-width:700px){
-      .item-img{ width:120px; height:98px }
-      .item-content h3{ font-size:1.05rem }
+    @media (max-width: 600px) {
+      .nav-btn.left { left: -10px; }
+      .nav-btn.right { right: -10px; }
+      .category-img { width: 80px; height: 80px; }
+      .category-card { width: 90px; }
     }
   </style>
 </head>
@@ -162,44 +149,35 @@
     <section class="section" id="categories">
       <div class="container">
         <h2>Categories</h2>
-
-        <div class="category-slider" aria-label="category slider">
-          <button class="nav-btn left" id="catPrev" aria-label="previous categories"><i class="fas fa-chevron-left"></i></button>
-
+        <div class="category-slider">
+          <button class="nav-btn left" id="catPrev"><i class="fas fa-chevron-left"></i></button>
           <div id="categoriesContainer" class="categories-grid">
-            <!-- example categories - adjust images/labels as needed -->
             <div class="category-card" data-category="Fries">
-              <span class="category-img" style="background-image:url('https://via.placeholder.com/300x300?text=Fries');"></span>
+              <span class="category-img" style="background-image:url('https://via.placeholder.com/200x200?text=Fries');"></span>
               <div class="category-content">Fries</div>
             </div>
-
             <div class="category-card" data-category="Pakora">
-              <span class="category-img" style="background-image:url('https://via.placeholder.com/300x300?text=Pakora');"></span>
+              <span class="category-img" style="background-image:url('https://via.placeholder.com/200x200?text=Pakora');"></span>
               <div class="category-content">Pakora</div>
             </div>
-
             <div class="category-card" data-category="Burger">
-              <span class="category-img" style="background-image:url('https://via.placeholder.com/300x300?text=Burger');"></span>
+              <span class="category-img" style="background-image:url('https://via.placeholder.com/200x200?text=Burger');"></span>
               <div class="category-content">Burger</div>
             </div>
-
             <div class="category-card" data-category="Pizza">
-              <span class="category-img" style="background-image:url('https://via.placeholder.com/300x300?text=Pizza');"></span>
+              <span class="category-img" style="background-image:url('https://via.placeholder.com/200x200?text=Pizza');"></span>
               <div class="category-content">Pizza</div>
             </div>
-
             <div class="category-card" data-category="Drinks">
-              <span class="category-img" style="background-image:url('https://via.placeholder.com/300x300?text=Drinks');"></span>
+              <span class="category-img" style="background-image:url('https://via.placeholder.com/200x200?text=Drinks');"></span>
               <div class="category-content">Drinks</div>
             </div>
-
             <div class="category-card" data-category="Dessert">
-              <span class="category-img" style="background-image:url('https://via.placeholder.com/300x300?text=Dessert');"></span>
+              <span class="category-img" style="background-image:url('https://via.placeholder.com/200x200?text=Dessert');"></span>
               <div class="category-content">Dessert</div>
             </div>
           </div>
-
-          <button class="nav-btn right" id="catNext" aria-label="next categories"><i class="fas fa-chevron-right"></i></button>
+          <button class="nav-btn right" id="catNext"><i class="fas fa-chevron-right"></i></button>
         </div>
       </div>
     </section>
@@ -207,9 +185,7 @@
     <section class="section" id="menu">
       <div class="container">
         <h2>Menu</h2>
-
         <div id="menuContainer" class="menu-grid">
-          <!-- these items must have data-category that matches categories above (case-insensitive) -->
           <div class="menu-item" data-category="Fries">
             <div class="item-img" style="background-image:url('https://via.placeholder.com/400x300?text=French+Fry');"></div>
             <div class="item-content">
@@ -219,7 +195,6 @@
             </div>
             <button class="add-btn"><i class="fas fa-cart-shopping"></i> ADD</button>
           </div>
-
           <div class="menu-item" data-category="Pakora">
             <div class="item-img" style="background-image:url('https://via.placeholder.com/400x300?text=Paneer+Pakora');"></div>
             <div class="item-content">
@@ -229,7 +204,6 @@
             </div>
             <button class="add-btn"><i class="fas fa-cart-shopping"></i> ADD</button>
           </div>
-
           <div class="menu-item" data-category="Pakora">
             <div class="item-img" style="background-image:url('https://via.placeholder.com/400x300?text=Veg+Mix+Pakora');"></div>
             <div class="item-content">
@@ -239,7 +213,6 @@
             </div>
             <button class="add-btn"><i class="fas fa-cart-shopping"></i> ADD</button>
           </div>
-
           <div class="menu-item" data-category="Burger">
             <div class="item-img" style="background-image:url('https://via.placeholder.com/400x300?text=Chicken+Burger');"></div>
             <div class="item-content">
@@ -249,7 +222,6 @@
             </div>
             <button class="add-btn"><i class="fas fa-cart-shopping"></i> ADD</button>
           </div>
-
           <div class="menu-item" data-category="Drinks">
             <div class="item-img" style="background-image:url('https://via.placeholder.com/400x300?text=Cold+Drink');"></div>
             <div class="item-content">
@@ -259,7 +231,6 @@
             </div>
             <button class="add-btn"><i class="fas fa-cart-shopping"></i> ADD</button>
           </div>
-
           <div class="menu-item" data-category="Dessert">
             <div class="item-img" style="background-image:url('https://via.placeholder.com/400x300?text=Gulab+Jamun');"></div>
             <div class="item-content">
@@ -275,58 +246,36 @@
   </main>
 
   <script>
-    (function(){
-      const container = document.getElementById('categoriesContainer');
-      const prevBtn = document.getElementById('catPrev');
-      const nextBtn = document.getElementById('catNext');
+    const container = document.getElementById('categoriesContainer');
+    const prevBtn = document.getElementById('catPrev');
+    const nextBtn = document.getElementById('catNext');
+    const cards = document.querySelectorAll('.category-card');
+    const menuItems = document.querySelectorAll('.menu-item');
 
-      // Improved scrolling amount - uses visible width so click moves a meaningful chunk
-      function scrollCategories(direction){
-        const amount = Math.round(container.clientWidth * 0.55);
-        container.scrollBy({ left: direction * amount, behavior: 'smooth' });
-      }
-      prevBtn.addEventListener('click', ()=> scrollCategories(-1));
-      nextBtn.addEventListener('click', ()=> scrollCategories(1));
+    // Scroll buttons working
+    prevBtn.addEventListener('click', () => {
+      container.scrollBy({ left: -150, behavior: 'smooth' });
+    });
+    nextBtn.addEventListener('click', () => {
+      container.scrollBy({ left: 150, behavior: 'smooth' });
+    });
 
-      // Robust category click handling (works when clicking children)
-      function setupCategoryClicks(){
-        const cards = Array.from(document.querySelectorAll('.category-card'));
-        const menuItems = () => Array.from(document.querySelectorAll('.menu-item'));
-
-        cards.forEach(card => {
-          card.addEventListener('click', () => {
-            // highlight active
-            cards.forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-
-            // filter menu items case-insensitively
-            const cat = (card.dataset.category || '').trim().toLowerCase();
-            menuItems().forEach(mi => {
-              const itemCat = (mi.dataset.category || '').trim().toLowerCase();
-              mi.style.display = (itemCat === cat) ? 'flex' : 'none';
-            });
-          });
+    // Filter functionality
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        cards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        const selected = card.dataset.category.toLowerCase();
+        menuItems.forEach(item => {
+          item.style.display = item.dataset.category.toLowerCase() === selected ? 'flex' : 'none';
         });
-      }
-
-      // Let first category be active on load and show its menu items
-      window.addEventListener('load', () => {
-        setupCategoryClicks();
-        const first = document.querySelector('.category-card[data-category]');
-        if(first){
-          // trigger click programmatically to apply filter and active state
-          first.click();
-          // ensure the clicked card is visible (scroll into view center)
-          setTimeout(()=> first.scrollIntoView({behavior:'smooth',inline:'center'}), 120);
-        }
       });
+    });
 
-      // Accessibility: allow left/right arrow keys to navigate when focus inside slider
-      container.addEventListener('keydown', (e) => {
-        if(e.key === 'ArrowLeft') { scrollCategories(-1); e.preventDefault(); }
-        if(e.key === 'ArrowRight'){ scrollCategories(1); e.preventDefault(); }
-      });
-    })();
+    // Show all initially
+    window.addEventListener('load', () => {
+      cards[0].click();
+    });
   </script>
 </body>
 </html>
