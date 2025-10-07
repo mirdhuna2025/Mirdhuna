@@ -3,14 +3,36 @@
     .section { padding: 40px 0; }
     .section .container > h2 { text-align: center; margin-bottom: 20px; }
 
-    /* Categories */
-    .categories-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;
-    }
-    .category-card { border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); background: #fff; }
-    .category-img { height: 140px; background-size: cover; background-position: center; }
-    .category-content { padding: 14px; }
-    .category-content h3 { margin: 0 0 8px; }
+   .categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.category-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;      /* Remove background */
+  box-shadow: none;      /* Remove shadow */
+  border-radius: 0;      /* Remove card rounding */
+  overflow: visible;     /* No clipping */
+}
+
+.category-img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;             /* Make it a circle */
+  background-size: cover;
+  background-position: center;
+  border: 2px solid #ddd;         /* Optional: thin border around circle */
+}
+
+/* Hide content if not needed */
+.category-content {
+  display: none;
+}
+
 
     /* Offers */
     .offers-grid {
