@@ -1,283 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mirdhuna — Categories (no hardcoded menu items)</title>
-
-  <!-- Font Awesome for chevrons (optional) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mirdhuna Menu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <style>
-    :root{
-      --primary: #b91c1c;
-      --bg: #fff;
-      --muted: #666;
-      --shadow: 0 6px 18px rgba(0,0,0,0.10);
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: #fff;
+      color: #222;
     }
 
-    /* ===== Page / spacing compacted ===== */
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: #f5f5f5;
-      color:#222;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+    .section {
+      padding: 2px 0;
     }
 
-    .container{width:94%; max-width:1100px; margin:0 auto}
-
-    /* reduce white/empty space */
-    .section{ padding:14px 0; }
     .section .container > h2 {
-      text-align:center;
-      margin:6px 0 12px;
-      font-size:1.6rem;
-      letter-spacing:0.2px;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 1.8rem;
     }
 
-    /* ===== Categories slider ===== */
-    .categories-wrapper{
-      position:relative;
-      margin:0 auto;
-      max-width:100%;
+    /* Categories */
+    .categories-wrapper {
+      position: relative;
+      max-width: 100%;
+      overflow: hidden;
+      margin: 0 auto;
     }
 
-    /* tighter, more-closed layout */
-    .categories-grid{
-      display:flex;
-      gap:6px;                      /* tightened gap */
-      overflow-x:auto;
-      scroll-behavior:smooth;
-      padding:8px 64px;            /* keep space so nav buttons don't cover items */
-      scrollbar-width:none;
-      -webkit-overflow-scrolling:touch;
-      align-items:center;
-    }
-    .categories-grid::-webkit-scrollbar{ display:none }
-
-    .category-card{
-      flex:0 0 auto;
-      width:98px;                   /* compact width */
-      text-align:center;
-      cursor:pointer;
-      user-select:none;
-      scroll-snap-align:center;
-      padding:4px 2px;
+    .categories-grid {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 5px 10px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
     }
 
-    .category-img{
-      width:92px;
-      height:92px;
-      border-radius:50%;
-      background-size:cover;
-      background-position:center;
-      border:2px solid #e6e6e6;
-      margin:0 auto 6px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-      transition: transform 0.18s ease, border-color 0.18s ease;
-      display:block;
+    .categories-grid::-webkit-scrollbar {
+      display: none;
     }
 
-    .category-content{
-      font-size:0.76rem;            /* smaller text */
-      font-weight:600;
-      color:#222;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    .category-card {
+      flex: 0 0 auto;
+      text-align: center;
+      scroll-snap-align: center;
     }
 
-    .category-card.active .category-img{
-      border-color:var(--primary);
-      transform:scale(1.06);
+    .category-img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #ddd;
+      margin-bottom: 6px;
     }
 
-    /* small circular chevrons positioned further outward but clickable */
-    .nav-btn{
-      position:absolute;
-      top:50%;
-      transform:translateY(-50%);
-      width:36px;
-      height:36px;
-      border-radius:50%;
-      border:0;
-      background:var(--primary);
-      color:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:var(--shadow);
-      cursor:pointer;
-      z-index:30;
-      outline: none;
-    }
-    .nav-btn.left{ left:-36px; }   /* more outward */
-    .nav-btn.right{ right:-36px; }
-
-    /* mobile adjustments */
-    @media (max-width:600px){
-      .categories-grid{ padding:8px 44px; gap:6px; }
-      .nav-btn.left{ left:-18px; }
-      .nav-btn.right{ right:-18px; }
-      .category-card{ width:86px }
-      .category-img{ width:78px; height:78px; }
-      .category-content{ font-size:0.70rem }
+    .category-content {
+      font-size: 0.85rem;
+      color: #333;
     }
 
-    /* Menu placeholder (empty) — your Firebase should inject items here */
-    #menuContainer{
-      margin-top:14px;
-      padding:6px 6px 20px;
-      min-height:80px; /* optional: keep area visible until Firebase loads */
+    /* Chevron Buttons */
+    .scroll-btn {
+      position: absolute;
+      top: 35%;
+      transform: translateY(-50%);
+      background: #d32f2f;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
 
-    /* subtle focus/keyboard outlines for accessibility */
-    .nav-btn:focus, .category-card:focus { box-shadow: 0 6px 18px rgba(0,0,0,0.12); outline: none; }
+    .scroll-btn.left { left: -12px; }
+    .scroll-btn.right { right: -12px; }
+
+    /* Menu Section */
+    #menu h2 {
+      margin-top: 10px;
+    }
+
+    .menu-grid {
+      display: grid;
+      gap: 12px;
+      padding: 0 10px;
+    }
+
+    .menu-item {
+      display: flex;
+      background: #fff8e1;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .item-img {
+      width: 130px;
+      height: 130px;
+      background-size: cover;
+      background-position: center;
+      flex-shrink: 0;
+    }
+
+    .item-content {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      flex-grow: 1;
+    }
+
+    .item-content h3 {
+      margin: 0;
+      color: #a52a2a;
+      font-size: 1.1rem;
+    }
+
+    .item-price {
+      color: #000;
+      font-weight: 600;
+    }
+
+    .item-desc {
+      font-size: 0.9rem;
+      color: #444;
+    }
+
+    .add-btn {
+      background: #b71c1c;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      align-self: flex-start;
+    }
   </style>
 </head>
 <body>
 
-  <main>
-    <!-- ===== CATEGORIES ===== -->
-    <section class="section" id="categoriesSection">
-      <div class="container">
-        <h2>Categories</h2>
+  <section class="section" id="categories">
+    <div class="container">
+      <h2>Categories</h2>
+      <div class="categories-wrapper">
+        <button class="scroll-btn left"><i class="fas fa-chevron-left"></i></button>
+        <div class="categories-grid" id="categoriesContainer">
+          <div class="category-card" data-category="pizza">
+            <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Pizza');"></div>
+            <div class="category-content">Pizza</div>
+          </div>
+          <div class="category-card" data-category="burger">
+            <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Burger');"></div>
+            <div class="category-content">Burger</div>
+          </div>
+          <div class="category-card" data-category="shake">
+            <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Shake');"></div>
+            <div class="category-content">Shake</div>
+          </div>
+          <div class="category-card" data-category="snack">
+            <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Snack');"></div>
+            <div class="category-content">Snack</div>
+          </div>
+        </div>
+        <button class="scroll-btn right"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
 
-        <div class="categories-wrapper" aria-label="Categories slider">
-          <!-- Left chevron -->
-          <button id="catPrev" class="nav-btn left" aria-label="Previous categories">
-            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
-          </button>
+  <section class="section" id="menu">
+    <div class="container">
+      <h2>Menu</h2>
+      <div class="menu-grid" id="menuContainer">
+        <div class="menu-item" data-category="pizza">
+          <div class="item-img" style="background-image:url('https://via.placeholder.com/150?text=Pepperoni');"></div>
+          <div class="item-content">
+            <h3>Pepperoni Pizza</h3>
+            <div class="item-price">₹99</div>
+            <div class="item-desc">Crispy & cheesy pizza.</div>
+            <button class="add-btn">Add to Cart</button>
+          </div>
+        </div>
 
-          <!-- Categories container — populate from Firebase or server side.
-               Example category element structure (can be created dynamically by your Firebase code):
-               <div class="category-card" data-category="Pakora">
-                 <span class="category-img" style="background-image:url('...')"></span>
-                 <div class="category-content">Pakora</div>
-               </div>
-          -->
-          <div id="categoriesContainer" class="categories-grid" tabindex="0"></div>
+        <div class="menu-item" data-category="burger">
+          <div class="item-img" style="background-image:url('https://via.placeholder.com/150?text=Burger');"></div>
+          <div class="item-content">
+            <h3>Veg Burger</h3>
+            <div class="item-price">₹79</div>
+            <div class="item-desc">Tasty veg burger.</div>
+            <button class="add-btn">Add to Cart</button>
+          </div>
+        </div>
 
-          <!-- Right chevron -->
-          <button id="catNext" class="nav-btn right" aria-label="Next categories">
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-          </button>
+        <div class="menu-item" data-category="shake">
+          <div class="item-img" style="background-image:url('https://via.placeholder.com/150?text=Shake');"></div>
+          <div class="item-content">
+            <h3>Chocolate Shake</h3>
+            <div class="item-price">₹89</div>
+            <div class="item-desc">Rich chocolate shake.</div>
+            <button class="add-btn">Add to Cart</button>
+          </div>
         </div>
       </div>
-    </section>
-
-    <!-- ===== MENU (EMPTY: your Firebase should render here) ===== -->
-    <section class="section" id="menuSection">
-      <div class="container">
-        <h2>Menu</h2>
-        <!-- DO NOT add static menu items here — your Firebase code should render into this container -->
-        <div id="menuContainer" aria-live="polite"></div>
-      </div>
-    </section>
-  </main>
+    </div>
+  </section>
 
   <script>
-    /* ===== Robust, working slider + click delegation + custom event for your Firebase =====
-       - Prev/Next buttons scroll by a meaningful chunk (based on viewport)
-       - Clicks on category-card (or children) toggle active state and dispatch 'category-selected'
-       - Works even if categories are appended later by Firebase (delegation + MutationObserver)
-    */
+    // Scroll Buttons Functionality
+    const container = document.getElementById('categoriesContainer');
+    document.querySelector('.scroll-btn.left').onclick = () => container.scrollBy({ left: -150, behavior: 'smooth' });
+    document.querySelector('.scroll-btn.right').onclick = () => container.scrollBy({ left: 150, behavior: 'smooth' });
 
-    (function(){
-      const container = document.getElementById('categoriesContainer');
-      const prevBtn = document.getElementById('catPrev');
-      const nextBtn = document.getElementById('catNext');
+    // Category Filter Functionality
+    const categoryCards = document.querySelectorAll('.category-card');
+    const menuItems = document.querySelectorAll('.menu-item');
 
-      // Scroll amount: a portion of the visible width so clicks move significant distance
-      function scrollByChunk(direction){
-        const chunk = Math.max(Math.round(container.clientWidth * 0.55), 120);
-        container.scrollBy({ left: direction * chunk, behavior: 'smooth' });
-      }
-
-      prevBtn.addEventListener('click', () => scrollByChunk(-1));
-      nextBtn.addEventListener('click', () => scrollByChunk(1));
-
-      // keyboard support when the container is focused
-      container.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') { e.preventDefault(); scrollByChunk(-1); }
-        if (e.key === 'ArrowRight') { e.preventDefault(); scrollByChunk(1); }
-      });
-
-      // event delegation: handle clicks on category cards (works for dynamically added nodes)
-      container.addEventListener('click', (e) => {
-        const card = e.target.closest('.category-card');
-        if (!card) return;
-
-        // manage active class
-        container.querySelectorAll('.category-card.active').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-
-        // determine category id/name (case as you like)
-        const cat = (card.dataset.category || '').trim() || (card.querySelector('.category-content')?.textContent || '').trim();
-
-        // dispatch a custom event — hook your firebase filtering logic to this event
-        window.dispatchEvent(new CustomEvent('category-selected', { detail: { category: cat } }));
-
-        // ensure clicked card is centered (nice UX)
-        card.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-      });
-
-      // If your Firebase code directly appends category elements,
-      // we make sure the first category becomes active automatically.
-      function setInitialActiveIfNeeded(){
-        const existingActive = container.querySelector('.category-card.active');
-        if (existingActive) return;
-        const first = container.querySelector('.category-card');
-        if (first) {
-          first.classList.add('active');
-          const cat = (first.dataset.category || '').trim() || (first.querySelector('.category-content')?.textContent || '').trim();
-          window.dispatchEvent(new CustomEvent('category-selected', { detail: { category: cat } }));
-        }
-      }
-
-      // Observe when categories are inserted dynamically (Firebase)
-      const mo = new MutationObserver((mutations) => {
-        for (const m of mutations){
-          if (m.addedNodes && m.addedNodes.length){
-            // newly added categories found -> ensure the active / click wiring works and set initial active if none
-            setInitialActiveIfNeeded();
-            break;
-          }
-        }
-      });
-      mo.observe(container, { childList:true, subtree:false });
-
-      // small helper to make demo/test easier: if you want to manually insert sample categories for testing,
-      // uncomment and use the function below (but you can remove it when your Firebase populates items).
-      /*
-      (function demoAddSamples(){
-        const samples = [
-          {c:'Pizza', img:'https://via.placeholder.com/300?text=Pizza'},
-          {c:'Burger', img:'https://via.placeholder.com/300?text=Burger'},
-          {c:'Shake', img:'https://via.placeholder.com/300?text=Shake'},
-          {c:'Pakora', img:'https://via.placeholder.com/300?text=Pakora'},
-          {c:'Dessert', img:'https://via.placeholder.com/300?text=Dessert'},
-          {c:'Drinks', img:'https://via.placeholder.com/300?text=Drinks'}
-        ];
-        samples.forEach(s=>{
-          const d = document.createElement('div');
-          d.className = 'category-card';
-          d.dataset.category = s.c;
-          d.innerHTML = `<span class="category-img" style="background-image:url('${s.img}')"></span><div class="category-content">${s.c}</div>`;
-          container.appendChild(d);
+    categoryCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const selectedCategory = card.dataset.category;
+        menuItems.forEach(item => {
+          item.style.display = (selectedCategory === item.dataset.category) ? 'flex' : 'none';
         });
-      })();
-      */
-
-      // On page load attempt to set active
-      window.addEventListener('load', () => setInitialActiveIfNeeded());
-
-      // If you want to listen for category selections in your Firebase script:
-      // window.addEventListener('category-selected', e => { console.log('selected', e.detail.category); /* filter your menu */ });
-    })();
+      });
+    });
   </script>
 </body>
 </html>
