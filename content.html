@@ -49,6 +49,11 @@
       flex: 0 0 auto;
       text-align: center;
       scroll-snap-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .category-card.active {
+      transform: scale(1.1);
     }
 
     .category-img {
@@ -65,25 +70,6 @@
       font-size: 0.85rem;
       color: #333;
     }
-
-    /* Chevron Buttons */
-    .scroll-btn {
-      position: absolute;
-      top: 35%;
-      transform: translateY(-50%);
-      background: #d32f2f;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      z-index: 10;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    .scroll-btn.left { left: -12px; }
-    .scroll-btn.right { right: -12px; }
 
     /* Menu Section */
     #menu h2 {
@@ -154,9 +140,8 @@
     <div class="container">
       <h2>Categories</h2>
       <div class="categories-wrapper">
-        <button class="scroll-btn left"><i class="fas fa-chevron-left"></i></button>
         <div class="categories-grid" id="categoriesContainer">
-          <div class="category-card" data-category="pizza">
+          <div class="category-card active" data-category="pizza">
             <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Pizza');"></div>
             <div class="category-content">Pizza</div>
           </div>
@@ -173,7 +158,6 @@
             <div class="category-content">Snack</div>
           </div>
         </div>
-        <button class="scroll-btn right"><i class="fas fa-chevron-right"></i></button>
       </div>
     </div>
   </section>
@@ -216,21 +200,65 @@
   </section>
 
   <script>
-    // Scroll Buttons Functionality
+    // Auto-rotate categories
     const container = document.getElementById('categoriesContainer');
-    document.querySelector('.scroll-btn.left').onclick = () => container.scrollBy({ left: -150, behavior: 'smooth' });
-    document.querySelector('.scroll-btn.right').onclick = () => container.scrollBy({ left: 150, behavior: 'smooth' });
-
-    // Category Filter Functionality
     const categoryCards = document.querySelectorAll('.category-card');
-    const menuItems = document.querySelectorAll('.menu-item');
+    let currentIndex = 0;
+    const rotationInterval = 3000; // 3 seconds
 
+    function rotateCategories() {
+      // Remove active class from current
+      categoryCards[currentIndex].classList.remove('active');
+      
+      // Move to next index
+      currentIndex = (currentIndex + 1) % categoryCards.length;
+      
+      // Add active class to next
+      categoryCards[currentIndex].classList.add('active');
+      
+      // Scroll to the active category
+      const card = categoryCards[currentIndex];
+      const containerRect = container.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      
+      // Calculate scroll position to center the card
+      const scrollLeft = card.offsetLeft - (containerRect.width - cardRect.width) / 2;
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
+      
+      // Update menu items based on active category
+      const selectedCategory = categoryCards[currentIndex].dataset.category;
+      const menuItems = document.querySelectorAll('.menu-item');
+      menuItems.forEach(item => {
+        item.style.display = (selectedCategory === item.dataset.category) ? 'flex' : 'none';
+      });
+    }
+
+    // Start auto-rotation
+    let rotationTimer = setInterval(rotateCategories, rotationInterval);
+
+    // Reset timer when user interacts with categories
     categoryCards.forEach(card => {
       card.addEventListener('click', () => {
+        // Clear existing timer
+        clearInterval(rotationTimer);
+        
+        // Set as active
+        categoryCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        currentIndex = Array.from(categoryCards).indexOf(card);
+        
+        // Update menu items
         const selectedCategory = card.dataset.category;
+        const menuItems = document.querySelectorAll('.menu-item');
         menuItems.forEach(item => {
           item.style.display = (selectedCategory === item.dataset.category) ? 'flex' : 'none';
         });
+        
+        // Restart timer after interaction
+        rotationTimer = setInterval(rotateCategories, rotationInterval);
       });
     });
   </script>
