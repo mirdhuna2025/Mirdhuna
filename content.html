@@ -4,34 +4,47 @@
     .section .container > h2 { text-align: center; margin-bottom: 20px; }
 
    .categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  overflow-x: auto;
   gap: 16px;
+  padding: 10px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; /* hide scrollbar Firefox */
+}
+.categories-grid::-webkit-scrollbar {
+  display: none; /* hide scrollbar Chrome/Safari */
 }
 
 .category-card {
+  flex: 0 0 auto;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: none;      /* Remove background */
-  box-shadow: none;      /* Remove shadow */
-  border-radius: 0;      /* Remove card rounding */
-  overflow: visible;     /* No clipping */
+  gap: 10px;
+  scroll-snap-align: start;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
 }
 
 .category-img {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;             /* Make it a circle */
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: 2px solid #ddd;         /* Optional: thin border around circle */
+  border: 2px solid #ddd;
+  flex-shrink: 0;
 }
 
-/* Hide content if not needed */
 .category-content {
-  display: none;
+  display: block; /* show text now */
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap; /* keep text in one line */
 }
+
 
 
     /* Offers */
