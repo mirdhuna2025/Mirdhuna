@@ -1,124 +1,239 @@
-<main>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mirdhuna Menu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
   <style>
+    :root {
+      --primary: #b91c1c;
+      --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      --bg: #fffbea;
+    }
+
+    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+
     .section { padding: 40px 0; }
-    .section .container > h2 { text-align: center; margin-bottom: 20px; }
+    .container { width: 90%; margin: 0 auto; }
 
-   .categories-grid {
-  display: flex;
-  overflow-x: auto;
-  gap: 16px;
-  padding: 10px;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* hide scrollbar Firefox */
-}
-.categories-grid::-webkit-scrollbar {
-  display: none; /* hide scrollbar Chrome/Safari */
-}
+    h2 { text-align: center; margin-bottom: 20px; }
 
-.category-card {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  scroll-snap-align: start;
-  background: none;
-  box-shadow: none;
-  border-radius: 0;
-  overflow: visible;
-}
-
-.category-img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-size: cover;
-  background-position: center;
-  border: 2px solid #ddd;
-  flex-shrink: 0;
-}
-
-.category-content {
-  display: block; /* show text now */
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-  white-space: nowrap; /* keep text in one line */
-}
-
-
-
-    /* Offers */
-    .offers-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+    /* CATEGORY SECTION */
+    .category-slider {
+      position: relative;
+      overflow: hidden;
+      padding: 10px 40px;
     }
-    .offer-card { border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); background: #fff; display: flex; flex-direction: column; }
-    .offer-img { height: 160px; background-size: cover; background-position: center; position: relative; }
-    .offer-badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 0.85rem; }
-    .offer-content { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-    .offer-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .offer-timer { color: #666; font-size: 0.9rem; }
-    .price { font-weight: 700; color: var(--dark); }
 
-    /* Menu */
+    .categories-grid {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+    .categories-grid::-webkit-scrollbar { display: none; }
+
+    .category-card {
+      flex: 0 0 auto;
+      text-align: center;
+      cursor: pointer;
+      scroll-snap-align: start;
+    }
+
+    .category-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #ddd;
+      margin-bottom: 8px;
+      transition: transform 0.3s;
+    }
+
+    .category-card:hover .category-img {
+      transform: scale(1.1);
+      border-color: var(--primary);
+    }
+
+    .category-content {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .nav-btn {
+      position: absolute;
+      top: 45%;
+      transform: translateY(-50%);
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      font-size: 20px;
+      border-radius: 50%;
+      padding: 10px;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-btn.left { left: 5px; }
+    .nav-btn.right { right: 5px; }
+
+    /* MENU SECTION */
     .menu-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
     }
-    .menu-item { border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); background: #fff; display: flex; flex-direction: column; }
-    .item-img { height: 170px; background-size: cover; background-position: center; position: relative; }
-    .item-badge { position: absolute; top: 10px; left: 10px; background: var(--secondary); color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 0.85rem; }
-    .item-content { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-    .item-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .item-desc { color: #555; }
 
-    .rating { color: #f59e0b; display: flex; align-items: center; gap: 6px; }
-    .rating i { color: #f59e0b; }
-
-    .item-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-
-    /* Reviews */
-    .reviews-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+    .menu-item {
+      display: flex;
+      align-items: center;
+      background: #fffbe6;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
-    .review-card { border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); background: #fff; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-    .review-header { display: flex; align-items: center; gap: 12px; }
-    .review-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: var(--dark); display: flex; align-items: center; justify-content: center; }
-    .review-info h4 { margin: 0; }
-    .review-rating i { color: #f59e0b; }
+
+    .item-img {
+      width: 140px;
+      height: 120px;
+      background-size: cover;
+      background-position: center;
+      flex-shrink: 0;
+      border-radius: 12px;
+      margin: 10px;
+    }
+
+    .item-content {
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .item-content h3 {
+      color: #7a0f0f;
+      margin: 0;
+    }
+
+    .item-desc { color: #555; font-size: 0.95rem; margin: 4px 0; }
+    .item-price { font-weight: 700; color: #7a0f0f; font-size: 1.1rem; }
+
+    .add-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 14px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    }
   </style>
+</head>
+<body>
 
-  <section class="section" id="categories">
-    <div class="container">
-      <h2>Categories</h2>
-      <div id="categoriesContainer" class="categories-grid">
-        <div class="loading"><div class="spinner"></div><p>Loading categories...</p></div>
-      </div>
-    </div>
-  </section>
+  <main>
+    <section class="section" id="categories">
+      <div class="container">
+        <h2>Categories</h2>
+        <div class="category-slider">
+          <button class="nav-btn left" onclick="scrollCategories(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
 
-  <section class="section" id="offers">
-    <div class="container">
-      <h2>Special Offers</h2>
-      <div id="offersContainer" class="offers-grid">
-        <div class="loading"><div class="spinner"></div><p>Loading offers...</p></div>
-      </div>
-    </div>
-  </section>
+          <div id="categoriesContainer" class="categories-grid">
+            <div class="category-card" onclick="filterMenu('Fries')">
+              <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Fries');"></div>
+              <div class="category-content">Fries</div>
+            </div>
+            <div class="category-card" onclick="filterMenu('Pakora')">
+              <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Pakora');"></div>
+              <div class="category-content">Pakora</div>
+            </div>
+            <div class="category-card" onclick="filterMenu('Burger')">
+              <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Burger');"></div>
+              <div class="category-content">Burger</div>
+            </div>
+            <div class="category-card" onclick="filterMenu('Pizza')">
+              <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Pizza');"></div>
+              <div class="category-content">Pizza</div>
+            </div>
+          </div>
 
-  <section class="section" id="menu">
-    <div class="container">
-      <h2>Menu</h2>
-      <div id="menuContainer" class="menu-grid">
-        <div class="loading"><div class="spinner"></div><p> </p></div>
+          <button class="nav-btn right" onclick="scrollCategories(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section" id="reviews">
-    <div class="container">
-      <h2>Reviews</h2>
-      <div id="reviewsContainer" class="reviews-grid">
-        <div class="loading"><div class="spinner"></div><p>Loading reviews...</p></div>
+    <section class="section" id="menu">
+      <div class="container">
+        <h2>Menu</h2>
+        <div id="menuContainer" class="menu-grid">
+          <div class="menu-item" data-category="Fries">
+            <div class="item-img" style="background-image:url('https://via.placeholder.com/150x100?text=Fries');"></div>
+            <div class="item-content">
+              <h3>French Fry</h3>
+              <p class="item-desc">Crispy fries, yummy!</p>
+              <span class="item-price">₹ 99</span>
+            </div>
+            <button class="add-btn"><i class="fas fa-cart-shopping"></i> ADD</button>
+          </div>
+
+          <div class="menu-item" data-category="Pakora">
+            <div class="item-img" style="background-image:url('https://via.placeholder.com/150x100?text=Paneer+Pakora');"></div>
+            <div class="item-content">
+              <h3>Paneer Pakora</h3>
+              <p class="item-desc">Paneer pakora, yummy snack!</p>
+              <span class="item-price">₹ 139</span>
+            </div>
+            <button class="add-btn"><i class="fas fa-cart-shopping"></i> ADD</button>
+          </div>
+
+          <div class="menu-item" data-category="Pakora">
+            <div class="item-img" style="background-image:url('https://via.placeholder.com/150x100?text=Veg+Pakora');"></div>
+            <div class="item-content">
+              <h3>Veg. Mix Pakora</h3>
+              <p class="item-desc">Mix veg pakora, chatpata!</p>
+              <span class="item-price">₹ 110</span>
+            </div>
+            <button class="add-btn"><i class="fas fa-cart-shopping"></i> ADD</button>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-</main>
+    </section>
+  </main>
+
+  <script>
+    const container = document.getElementById('categoriesContainer');
+
+    function scrollCategories(direction) {
+      container.scrollBy({ left: direction * 200, behavior: 'smooth' });
+    }
+
+    function filterMenu(category) {
+      const items = document.querySelectorAll('.menu-item');
+      items.forEach(item => {
+        if (item.dataset.category === category || category === 'All') {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
