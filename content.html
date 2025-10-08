@@ -39,6 +39,8 @@
       padding: 5px 10px;
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
+      /* Smooth scrolling for auto-rotation */
+      scroll-behavior: smooth;
     }
 
     .categories-grid::-webkit-scrollbar {
@@ -49,11 +51,6 @@
       flex: 0 0 auto;
       text-align: center;
       scroll-snap-align: center;
-      transition: transform 0.3s ease;
-    }
-
-    .category-card.active {
-      transform: scale(1.1);
     }
 
     .category-img {
@@ -141,7 +138,7 @@
       <h2>Categories</h2>
       <div class="categories-wrapper">
         <div class="categories-grid" id="categoriesContainer">
-          <div class="category-card active" data-category="pizza">
+          <div class="category-card" data-category="pizza">
             <div class="category-img" style="background-image:url('https://via.placeholder.com/100?text=Pizza');"></div>
             <div class="category-content">Pizza</div>
           </div>
@@ -200,35 +197,47 @@
   </section>
 
   <script>
-    // Auto-rotate categories
+    // Auto-rotate categories with sliding animation
     const container = document.getElementById('categoriesContainer');
     const categoryCards = document.querySelectorAll('.category-card');
     let currentIndex = 0;
     const rotationInterval = 3000; // 3 seconds
 
-    function rotateCategories() {
-      // Remove active class from current
-      categoryCards[currentIndex].classList.remove('active');
+    function autoSlide() {
+      // Calculate the position to scroll to
+      const cardWidth = categoryCards[0].offsetWidth + 8; // width + gap
+      const containerWidth = container.offsetWidth;
       
       // Move to next index
       currentIndex = (currentIndex + 1) % categoryCards.length;
       
-      // Add active class to next
-      categoryCards[currentIndex].classList.add('active');
+      // Calculate scroll position to show the next card
+      let scrollLeft = currentIndex * cardWidth;
       
-      // Scroll to the active category
-      const card = categoryCards[currentIndex];
-      const containerRect = container.getBoundingClientRect();
-      const cardRect = card.getBoundingClientRect();
+      // If we've reached the end, reset to beginning after a delay
+      if (currentIndex === 0) {
+        // Scroll to the end temporarily to create seamless loop
+        container.scrollTo({
+          left: categoryCards.length * cardWidth,
+          behavior: 'auto'
+        });
+        
+        // Then scroll to beginning without animation
+        setTimeout(() => {
+          container.scrollTo({
+            left: 0,
+            behavior: 'auto'
+          });
+        }, 50);
+      } else {
+        // Normal scroll to the next card
+        container.scrollTo({
+          left: scrollLeft,
+          behavior: 'smooth'
+        });
+      }
       
-      // Calculate scroll position to center the card
-      const scrollLeft = card.offsetLeft - (containerRect.width - cardRect.width) / 2;
-      container.scrollTo({
-        left: scrollLeft,
-        behavior: 'smooth'
-      });
-      
-      // Update menu items based on active category
+      // Update menu items based on current category
       const selectedCategory = categoryCards[currentIndex].dataset.category;
       const menuItems = document.querySelectorAll('.menu-item');
       menuItems.forEach(item => {
@@ -237,18 +246,23 @@
     }
 
     // Start auto-rotation
-    let rotationTimer = setInterval(rotateCategories, rotationInterval);
+    let rotationTimer = setInterval(autoSlide, rotationInterval);
 
-    // Reset timer when user interacts with categories
+    // Handle manual category selection
     categoryCards.forEach(card => {
       card.addEventListener('click', () => {
         // Clear existing timer
         clearInterval(rotationTimer);
         
-        // Set as active
-        categoryCards.forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
+        // Find the clicked card index
         currentIndex = Array.from(categoryCards).indexOf(card);
+        
+        // Scroll to the clicked card
+        const cardWidth = card.offsetWidth + 8;
+        container.scrollTo({
+          left: currentIndex * cardWidth,
+          behavior: 'smooth'
+        });
         
         // Update menu items
         const selectedCategory = card.dataset.category;
@@ -258,7 +272,7 @@
         });
         
         // Restart timer after interaction
-        rotationTimer = setInterval(rotateCategories, rotationInterval);
+        rotationTimer = setInterval(autoSlide, rotationInterval);
       });
     });
   </script>
