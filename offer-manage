@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mirdhuna Offers</title>
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
+      authDomain: "mirdhuna-25542.firebaseapp.com",
+      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
+      projectId: "mirdhuna-25542",
+      storageBucket: "mirdhuna-25542.firebasestorage.app",
+      messagingSenderId: "575924409876",
+      appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+      measurementId: "G-YB7LDKHBPV"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const slider = document.getElementById("slider");
+    const sliderNav = document.getElementById("sliderNav");
+    const prevBtn = document.querySelector(".prev");
+    const nextBtn = document.querySelector(".next");
+    let slides = [];
+    let currentIndex = 0;
+
+    // Load offers from Firebase Realtime Database
+    const offersRef = ref(db, "offers");
+    onValue(offersRef, (snapshot) => {
+      const data = snapshot.val();
+      slider.innerHTML = "";
+      sliderNav.innerHTML = "";
+      slides = [];
+
+      if (data) {
+        Object.keys(data).forEach((key, index) => {
+          const offer = data[key];
+          const slideDiv = document.createElement("div");
+          slideDiv.classList.add("slide");
+          slideDiv.style.backgroundImage = `url(${offer.image})`;
+          slideDiv.innerHTML = `
+            <div class="slide-content">
+              <h2>${offer.title || "Special Offer"}</h2>
+              <p>${offer.description || ""}</p>
+            </div>`;
+          slider.appendChild(slideDiv);
+
+          const dot = document.createElement("div");
+          dot.classList.add("slider-dot");
+          if (index === 0) dot.classList.add("active");
+          dot.addEventListener("click", () => moveToSlide(index));
+          sliderNav.appendChild(dot);
+
+          slides.push(slideDiv);
+        });
+      }
+      updateSlider();
+    });
+
+    function updateSlider() {
+      const offset = -currentIndex * 100;
+      slider.style.transform = `translateX(${offset}%)`;
+      document.querySelectorAll(".slider-dot").forEach((dot, i) => {
+        dot.classList.toggle("active", i === currentIndex);
+      });
+    }
+
+    function moveToSlide(index) {
+      if (index >= 0 && index < slides.length) {
+        currentIndex = index;
+        updateSlider();
+      }
+    }
+
+    prevBtn.addEventListener("click", () => {
+      currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+      updateSlider();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % slides.length;
+      updateSlider();
+    });
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #fafafa;
+    }
+
+    .slider-container {
+      position: relative;
+      height: 30vh;
+      overflow: hidden;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: #333;
+    }
+
+    .slider {
+      display: flex;
+      height: 100%;
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .slide {
+      min-width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .slide-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      background: linear-gradient(90deg, rgba(0,0,0,0.6), transparent);
+      color: #fff;
+    }
+
+    .slide-content h2 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .slide-content p {
+      margin: 0;
+      font-size: 1rem;
+      max-width: 80%;
+    }
+
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-btn:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .prev { left: 14px; }
+    .next { right: 14px; }
+
+    .slider-nav {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+
+    .slider-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .slider-dot.active {
+      background: #fff;
+      transform: scale(1.3);
+    }
+
+    @media (max-width: 600px) {
+      .slide-content h2 { font-size: 1.1rem; }
+      .slide-content p { font-size: 0.9rem; }
+      .slider-btn { width: 30px; height: 30px; font-size: 1rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="slider-section">
+    <div class="slider-container">
+      <div class="slider"
