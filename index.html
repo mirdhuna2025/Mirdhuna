@@ -131,6 +131,23 @@
     * { -webkit-tap-highlight-color: rgba(0,0,0,0.1); }
   </style>
 </head>
+  <!-- 🛒 Floating Checkout UI -->
+<button id="cartBtn"><i class="fas fa-shopping-cart"></i></button>
+
+<div id="checkoutPanel">
+  <div id="checkoutHeader">
+    <h2>Checkout</h2>
+    <button id="closeCheckout" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;">✖</button>
+  </div>
+  <div id="checkoutItems">
+    <p>Your cart is empty.</p>
+  </div>
+  <div id="checkoutFooter">
+    <h3>Total: ₹<span id="cartTotal">0</span></h3>
+    <button id="placeOrderBtn">Place Order</button>
+  </div>
+</div>
+
 <body>
   <!-- Dynamic Content Load -->
   <div id="header-container"></div>
