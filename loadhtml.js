@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadComponent("slides-container", "slides.html"),
     loadComponent("content-container", "content.html"),
     loadComponent("footer-container", "footer.html"),
-    loadComponent("offer-container", "offer.html"),
+    
   ])
     .then(() => {
       // Initialize events after all parts are in place
