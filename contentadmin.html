@@ -35,7 +35,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
   <div class="login-box">
     <h2>🔐 Admin Login</h2>
     <input type="password" id="password-input" placeholder="Enter password" autocomplete="off" />
-    <button onclick="attemptLogin()">Login</button>
+    <button onclick="window.attemptLogin()">Login</button>
     <div id="login-error" class="login-error"></div>
   </div>
 </div>
@@ -95,7 +95,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
   let categories = [];
 
   // --- Login ---
-  function attemptLogin() {
+  window.attemptLogin = function() {
     const input = document.getElementById('password-input').value;
     const errorEl = document.getElementById('login-error');
     if (input === ADMIN_PASSWORD) {
@@ -106,10 +106,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       errorEl.textContent = "❌ Incorrect password";
       setTimeout(() => errorEl.textContent = "", 2000);
     }
-  }
-  document.getElementById('password-input').addEventListener('keypress', e => {
-    if (e.key === 'Enter') attemptLogin();
-  });
+  };
 
   // --- Status ---
   function showStatus(msg, isSuccess) {
@@ -200,7 +197,6 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
   function loadAllData() {
     loadCategoriesForDropdown();
 
-    // Categories
     db.ref('categories').once('value').then(snap => {
       const list = document.getElementById('categoriesList');
       list.innerHTML = '<h3>Current Categories</h3>';
@@ -212,14 +208,13 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         div.innerHTML = `<img class="item-img" src="${item.image}" onerror="this.src='https://via.placeholder.com/60'"/>
           <div>
             <strong>${item.name}</strong><br>
-            <button class="save-btn" onclick="editCategory('${key}', '${item.name.replace(/'/g, "\\'")}', '${item.image.replace(/'/g, "\\'")}')">Edit</button>
-            <button class="delete-btn" onclick="deleteItem('categories','${key}')">Delete</button>
+            <button class="save-btn" onclick="window.editCategory('${key}', '${item.name.replace(/'/g, "\\'")}', '${item.image.replace(/'/g, "\\'")}')">Edit</button>
+            <button class="delete-btn" onclick="window.deleteItem('categories','${key}')">Delete</button>
           </div>`;
         list.appendChild(div);
       });
     });
 
-    // Menu Items
     db.ref('menu').once('value').then(snap => {
       const list = document.getElementById('menuList');
       list.innerHTML = '<h3>Current Menu Items</h3>';
@@ -236,14 +231,13 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         div.innerHTML = `<img class="item-img" src="${item.image}" onerror="this.src='https://via.placeholder.com/60'"/>
           <div>
             <strong>${item.name}</strong> — ${priceInfo} (${item.category}) ${item.offer ? '🔥' : ''}<br>
-            <button class="save-btn" onclick="editMenuItem('${key}', \`${item.name.replace(/`/g, '\\`')}\`, ${item.price}, ${item.mrp || 'null'}, \`${item.image.replace(/`/g, '\\`')}\`, \`${item.category.replace(/`/g, '\\`')}\`, ${item.offer})">Edit</button>
-            <button class="delete-btn" onclick="deleteItem('menu','${key}')">Delete</button>
+            <button class="save-btn" onclick="window.editMenuItem('${key}', \`${item.name.replace(/`/g, '\\`')}\`, ${item.price}, ${item.mrp || 'null'}, \`${item.image.replace(/`/g, '\\`')}\`, \`${item.category.replace(/`/g, '\\`')}\`, ${item.offer})">Edit</button>
+            <button class="delete-btn" onclick="window.deleteItem('menu','${key}')">Delete</button>
           </div>`;
         list.appendChild(div);
       });
     });
 
-    // Offers
     db.ref('offers').once('value').then(snap => {
       const list = document.getElementById('offersList');
       list.innerHTML = '<h3>Current Offers</h3>';
@@ -254,8 +248,8 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         div.className = 'item-preview';
         div.innerHTML = `<div>
           <strong>${item.title}</strong> — ${item.description} ${item.active ? '🟢' : '🔴'}<br>
-          <button class="save-btn" onclick="editOffer('${key}', \`${item.title.replace(/`/g, '\\`')}\`, \`${item.description.replace(/`/g, '\\`')}\`, ${item.active})">Edit</button>
-          <button class="delete-btn" onclick="deleteItem('offers','${key}')">Delete</button>
+          <button class="save-btn" onclick="window.editOffer('${key}', \`${item.title.replace(/`/g, '\\`')}\`, \`${item.description.replace(/`/g, '\\`')}\`, ${item.active})">Edit</button>
+          <button class="delete-btn" onclick="window.deleteItem('offers','${key}')">Delete</button>
         </div>`;
         list.appendChild(div);
       });
@@ -263,7 +257,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
   }
 
   // --- Edit Functions (SAFE: no duplicate listeners) ---
-  function editCategory(key, name, image) {
+  window.editCategory = function(key, name, image) {
     document.getElementById('catName').value = name;
     document.getElementById('catImage').value = image;
     const btn = document.getElementById('addCategoryBtn');
@@ -282,12 +276,11 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         loadAllData();
       });
     };
-    // Remove previous listener if any
     btn.removeEventListener('click', saveFn);
     btn.addEventListener('click', saveFn);
-  }
+  };
 
-  function editMenuItem(key, name, price, mrp, image, category, offer) {
+  window.editMenuItem = function(key, name, price, mrp, image, category, offer) {
     document.getElementById('itemName').value = name;
     document.getElementById('itemPrice').value = price;
     document.getElementById('itemMrp').value = mrp || '';
@@ -319,9 +312,9 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     };
     btn.removeEventListener('click', saveFn);
     btn.addEventListener('click', saveFn);
-  }
+  };
 
-  function editOffer(key, title, desc, active) {
+  window.editOffer = function(key, title, desc, active) {
     document.getElementById('offerTitle').value = title;
     document.getElementById('offerDesc').value = desc;
     document.getElementById('offerActive').checked = active;
@@ -344,17 +337,17 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     };
     btn.removeEventListener('click', saveFn);
     btn.addEventListener('click', saveFn);
-  }
+  };
 
   // --- Delete ---
-  function deleteItem(type, key) {
+  window.deleteItem = function(type, key) {
     if (confirm('Are you sure you want to delete?')) {
       db.ref(type + '/' + key).remove().then(() => {
         showStatus('Deleted!', true);
         loadAllData();
       });
     }
-  }
+  };
 </script>
 </body>
 </html>
