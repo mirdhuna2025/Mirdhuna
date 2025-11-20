@@ -13,13 +13,13 @@ export function getConfig() {
   // Return default config if localStorage fails
   return {
     firebase: {
-      apiKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
-      authDomain: "mirdhuna-25542.firebaseapp.com",
-      databaseURL: "https://mirdhuna-25542-default-rtdb.firebaseio.com",
-      projectId: "mirdhuna-25542",
-      storageBucket: "mirdhuna-25542.appspot.com",
-      messagingSenderId: "575924409876",
-      appId: "1:575924409876:web:6ba1ed88ce941d9c83b901",
+  apiKey: "AIzaSyCiG3Tal0dCpBAV1SLS2Rbs6GYOA4zomQE",
+  authDomain: "mirdhuna-4f652.firebaseapp.com",
+  databaseURL: "https://mirdhuna-4f652-default-rtdb.firebaseio.com",
+  projectId: "mirdhuna-4f652",
+  storageBucket: "mirdhuna-4f652.firebasestorage.app",
+  messagingSenderId: "184403369330",
+  appId: "1:184403369330:web:859bcf3162bc2d2ed7d1eb",
     },
     googleMapsKey: "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ",
     adminPassword: "Sanu.0000",
