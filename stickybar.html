@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mirdhuna – Orders</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      min-height: 100vh;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      bottom: 0px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 450px;
+      background: rgba(15, 15, 15, 0.8);
+      border-radius: 20px;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      z-index: 9999;
+    }
+
+    .bottom-bar button {
+      background: transparent;
+      border: none;
+      color: #00fff2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+
+    /* Login Popup */
+    #mirdhuna-login-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    .mirdhuna-popup-content {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .mirdhuna-brand {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #d40000, #ff4c4c);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    #mirdhuna-mob-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: 16px;
+      box-sizing: border-box;
+      margin: 10px 0 20px;
+      outline: none;
+    }
+
+    .mirdhuna-btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .mirdhuna-popup-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    #mirdhuna-submit-login {
+      background: linear-gradient(135deg, #d40000, #ff4c4c);
+      color: white;
+    }
+
+    #mirdhuna-submit-login:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    #mirdhuna-close-popup {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    /* Orders Popup */
+    #orders-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+    .orders-popup-content {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      position: relative;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ✅ TRACK POPUP — FULLY ENHANCED FOR LIVE TRACKING */
+    #track-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+    .track-popup-content {
+      background: white;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      font-family: 'Poppins', sans-serif;
+    }
+    .track-header {
+      background: #4361ee;
+      color: white;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .track-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    .close-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .track-status-bar {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+      border-bottom: 1px solid #eee;
+    }
+    #track-status {
+      font-weight: 600;
+      color: #2b2d42;
+      font-size: 15px;
+    }
+    .refresh-btn {
+      background: #e9ecef;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .refresh-btn:hover {
+      background: #dee2e6;
+    }
+    #track-map-container {
+      height: 220px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 8px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    #track-map {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    #track-note {
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #495057;
+      background: #f1f3f5;
+      text-align: center;
+    }
+    .track-footer {
+      padding: 10px 16px;
+      text-align: center;
+      font-size: 11px;
+      color: #6c757d;
+      background: #f8f9fa;
+    }
+
+    /* Order Card Styling */
+    .order-card {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .order-card p { margin: 6px 0; }
+    .track-btn {
+      background: #2196F3;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .track-btn:hover { background: #1976D2; }
+
+    #loading, #error {
+      text-align: center;
+      padding: 20px;
+      font-family: 'Poppins', sans-serif;
+    }
+    #error {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Bottom Navigation Bar -->
+  <div class="bottom-bar">
+    <button id="homeBtn"><span>Home</span></button>
+    <button id="ordersBtn"><span>Orders</span></button>
+    <button id="authButton"><span id="authText">Login</span></button>
+    <button id="searchBtn"><span>Search</span></button>
+  </div>
+
+  <!-- Login Popup -->
+  <div id="mirdhuna-login-popup">
+    <div class="mirdhuna-popup-content">
+      <div class="mirdhuna-brand">MIRDHUNA</div>
+      <h3>Enter Mobile Number</h3>
+      <input type="tel" id="mirdhuna-mob-input" placeholder="10-digit mobile number" maxlength="10" />
+      <div class="mirdhuna-btn-group">
+        <button id="mirdhuna-submit-login" class="mirdhuna-popup-btn">Login</button>
+        <button id="mirdhuna-close-popup" class="mirdhuna-popup-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders Popup -->
+  <div id="orders-popup">
+    <div class="orders-popup-content">
+      <span id="close-orders" style="position:absolute; top:8px; right:12px; cursor:pointer; font-size:20px; color:#d40000; font-weight:bold;">✖</span>
+      <h3 style="margin:0 0 16px 0; color:#d40000; text-align:center;">🧾 My Orders</h3>
+      <div id="ordersContainer" style="max-height:60vh; overflow-y:auto;">
+        <p id="loading" style="text-align:center; padding:20px; font-family:'Poppins',sans-serif;">Loading your orders...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ TRACK POPUP — FULLY FUNCTIONAL FOR LIVE MOVING TRACKING -->
+  <div id="track-popup">
+    <div class="track-popup-content">
+      <div class="track-header">
+        <h3>📦 Live Order Tracking</h3>
+        <button id="close-track" class="close-btn">×</button>
+      </div>
+      <div class="track-status-bar">
+        <div id="track-status">🚚 On the way</div>
+        <button id="track-refresh" class="refresh-btn" title="Refresh">↻</button>
+      </div>
+      <div id="track-map-container">
+        <!-- ✅ CORRECT IFRAME — allow + referrerpolicy -->
+        <iframe
+          id="track-map"
+          width="100%"
+          height="100%"
+          frameborder="0"
+          style="border:0"
+          allow="geolocation"
+          referrerpolicy="no-referrer-when-downgrade"
+          loading="lazy">
+        </iframe>
+      </div>
+      <div class="track-note">
+        <span id="track-note">Loading location...</span>
+      </div>
+      <div class="track-footer">
+        <small>📍 Updates every 15 seconds • Powered by Google Maps</small>
+      </div>
+    </div>
+  </div>
+
+  <script src="stickybar.js"></script>
+</body>
+</html>

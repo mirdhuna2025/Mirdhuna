@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mirdhuna Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #d40000;
+      --success: #4CAF50;
+      --info: #2196F3;
+      --whatsapp: #25D366;
+      --warning: #ff9800;
+      --danger: #f44336;
+      --light: #f5f5f5;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--light);
+      color: #333;
+    }
+
+    /* 🔒 Password Screen */
+    #password-screen {
+      position: fixed;
+      inset: 0;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999999;
+      color: white;
+    }
+    #password-screen h2 { margin-bottom: 20px; font-weight: 600; }
+    #password-input {
+      padding: 12px 16px;
+      font-size: 18px;
+      width: 280px;
+      text-align: center;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+    }
+    #unlock-btn {
+      margin-top: 16px;
+      padding: 10px 24px;
+      background: var(--success);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .error-msg {
+      color: #ff6b6b;
+      margin-top: 10px;
+      height: 20px;
+      text-align: center;
+    }
+    .shake { animation: shake 0.5s; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    /* 📊 Dashboard */
+    #dashboard {
+      padding: 20px;
+      transition: filter 0.3s ease;
+    }
+    body.locked #dashboard { filter: blur(6px); }
+
+    h1 {
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .controls input, .controls select, .controls button {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    #ordersContainer {
+      max-width: 950px;
+      margin: 0 auto;
+    }
+
+    .order-card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .order-card p { margin: 6px 0; font-size: 14px; }
+    .order-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .order-id { font-weight: 600; color: var(--primary); }
+
+    .order-images {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+    .order-images img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #eee;
+    }
+
+    .items-list li {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+      font-size: 14px;
+    }
+
+    .total-row {
+      font-weight: 600;
+      margin-top: 10px;
+      color: var(--primary);
+    }
+
+    .actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-print { background: var(--info); color: white; }
+    .btn-update { background: var(--success); color: white; }
+    .btn-edit { background: var(--warning); color: white; }
+    .btn-delete { background: var(--danger); color: white; }
+    .btn-track { background: var(--info); color: white; }
+    .btn-whatsapp { background: var(--whatsapp); color: white; }
+    .btn-export { background: #9c27b0; color: white; }
+    .btn-live { background: linear-gradient(135deg, #ff4c4c, #d40000); color: white; }
+    .btn-assign { background: #673ab7; color: white; }
+
+    select.status-select, .partner-select {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      margin-right: 6px;
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h3 { margin-top: 0; color: var(--primary); }
+    .modal label { display: block; margin-top: 12px; font-weight: 500; }
+    .modal input, .modal select, .modal textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .modal-buttons {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .modal-buttons button { margin-left: 8px; }
+
+    /* ✅ TRACK POPUP — FIXED IFRAME */
+    #track-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .popup-inner {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+    #track-map {
+      width: 100%;
+      height: 350px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    #close-track {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      cursor: pointer;
+      font-size: 24px;
+      color: var(--danger);
+    }
+
+    /* Toast */
+    #admin-toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 24px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      z-index: 99999;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+<body class="locked">
+  <!-- 🔒 Password Screen -->
+  <div id="password-screen">
+    <h2>🔒 Mirdhuna Admin Access</h2>
+    <input type="password" id="password-input" placeholder="Enter password" autocomplete="off" />
+    <button id="unlock-btn">Unlock Dashboard</button>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+
+  <!-- 🖨️ Print Area -->
+  <div id="printReceipt" class="print-receipt" style="display:none;"></div>
+
+  <!-- 🛠️ Modify Modal -->
+  <div id="modifyModal" class="modal">
+    <div class="modal-content">
+      <h3>✏️ Modify Order</h3>
+      <label>Phone Number</label>
+      <input type="text" id="editPhone" />
+      <label>Status</label>
+      <select id="editStatus">
+        <option value="pending">Pending</option>
+        <option value="on the way">On the Way</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <label>Assigned To</label>
+      <select id="editPartner">
+        <option value="">— Unassigned —</option>
+        <option value="Raj">Raj (+91 98765 43210)</option>
+        <option value="Suresh">Suresh (+91 87654 32109)</option>
+        <option value="Amit">Amit (+91 76543 21098)</option>
+        <option value="Priya">Priya (+91 65432 10987)</option>
+        <option value="Vikas">Vikas (+91 54321 09876)</option>
+        <option value="Neha">Neha (+91 43210 98765)</option>
+      </select>
+      <label>Payment Mode</label>
+      <select id="editPayment">
+        <option value="COD">COD</option>
+        <option value="Prepaid">Prepaid</option>
+      </select>
+      <label>Items (JSON)</label>
+      <textarea id="editItems" rows="4" placeholder='[{"name":"Item","qty":1,"price":100}]'></textarea>
+      <label>Total (₹)</label>
+      <input type="number" id="editTotal" step="0.01" />
+      <div class="modal-buttons">
+        <button class="btn btn-delete" id="modalDelete">Delete</button>
+        <button class="btn" onclick="document.getElementById('modifyModal').style.display='none'">Cancel</button>
+        <button class="btn btn-update" id="saveEdit">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ TRACK POPUP — FIXED IFRAME -->
+  <div id="track-popup">
+    <div class="popup-inner">
+      <span id="close-track">✖</span>
+      <h3>🚚 Delivery Tracking</h3>
+      <!-- ✅ CORRECT IFRAME — allow + referrerpolicy -->
+      <iframe
+        id="track-map"
+        width="100%"
+        height="350"
+        frameborder="0"
+        style="border:0"
+        allow="geolocation"
+        referrerpolicy="no-referrer-when-downgrade"
+        loading="lazy">
+      </iframe>
+    </div>
+  </div>
+
+  <!-- ✅ Admin Toast -->
+  <div id="admin-toast"></div>
+
+  <!-- 📊 Dashboard -->
+  <div id="dashboard">
+    <h1>🧾 Mirdhuna Admin Dashboard</h1>
+    <div class="controls">
+      <input type="text" id="searchPhone" placeholder="Search by phone..." />
+      <select id="filterStatus">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="on the way">On the Way</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <input type="date" id="filterDate" />
+      <button class="btn btn-export" id="exportBtn">Export CSV</button>
+    </div>
+    <div id="ordersContainer"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue, update, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getConfig, getAdminPassword, getGoogleMapsKey } from "./config.js";
+
+    const config = getConfig();
+    const firebaseConfig = config.firebase;
+    const CORRECT_PASSWORD = config.adminPassword;
+    const googleMapsKey = config.googleMapsKey;
+
+    const passwordInput = document.getElementById("password-input");
+    const unlockBtn = document.getElementById("unlock-btn");
+    const errorMsg = document.getElementById("error-msg");
+
+    function unlockDashboard() {
+      if (passwordInput.value.trim() === CORRECT_PASSWORD) {
+        document.body.classList.remove("locked");
+        document.getElementById("password-screen").style.display = "none";
+        sessionStorage.setItem("unlocked", "true");
+      } else {
+        errorMsg.textContent = "❌ Incorrect password";
+        passwordInput.classList.add("shake");
+        setTimeout(() => passwordInput.classList.remove("shake"), 500);
+      }
+    }
+
+    unlockBtn.addEventListener("click", unlockDashboard);
+    passwordInput.addEventListener("keypress", e => { if (e.key === "Enter") unlockDashboard(); });
+
+    if (sessionStorage.getItem("unlocked") === "true") {
+      document.body.classList.remove("locked");
+      document.getElementById("password-screen").style.display = "none";
+    }
+
+    // 🔥 Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const ordersContainer = document.getElementById("ordersContainer");
+    const searchInput = document.getElementById("searchPhone");
+    const filterStatus = document.getElementById("filterStatus");
+    const filterDate = document.getElementById("filterDate");
+    const exportBtn = document.getElementById("exportBtn");
+
+    let allOrders = [];
+    let currentEditKey = null;
+
+    onValue(ref(db, "orders"), snapshot => {
+      const data = snapshot.val();
+      allOrders = data ? Object.entries(data).map(([key, order]) => ({ key, ...order })) : [];
+      renderOrders();
+    });
+
+    function getOrderDate(timestamp) {
+      return timestamp ? new Date(timestamp).toISOString().split('T')[0] : '';
+    }
+
+    // ✅ Show admin toast
+    function showAdminToast(message) {
+      const toast = document.getElementById("admin-toast");
+      toast.textContent = message;
+      toast.style.opacity = "1";
+      setTimeout(() => { toast.style.opacity = "0"; }, 2500);
+    }
+
+    // ✅ One-click "Go Live" — updates order + creates tracking node
+    async function goLive(key, order) {
+      let location = null;
+      try {
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000
+          });
+        });
+        location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      } catch (err) {
+        alert("⚠️ Location access needed for live tracking.\nPlease allow location, or manually update lat/lng in Modify.");
+        return;
+      }
+
+      try {
+        const newStatus = "on the way";
+        const updateData = {
+          status: newStatus,
+          lat: location.lat,
+          lng: location.lng
+        };
+
+        // ✅ Update order
+        await update(ref(db, "orders/" + key), updateData);
+
+        // ✅ Create live tracking node for user-side updates
+        await push(ref(db, `tracking/${key}`), {
+          lat: location.lat,
+          lng: location.lng,
+          timestamp: new Date().toISOString(),
+          note: "🚚 Driver has picked up your order!"
+        });
+
+        showAdminToast(`✅ Live tracking started for ${order.phoneNumber}`);
+        renderOrders(); // refresh UI
+      } catch (err) {
+        console.error("Go Live error:", err);
+        alert("❌ Failed to activate live tracking: " + err.message);
+      }
+    }
+
+    function renderOrders() {
+      const phone = searchInput.value.trim().toLowerCase();
+      const status = filterStatus.value;
+      const date = filterDate.value;
+
+      const filtered = allOrders.filter(order => {
+        const matchesPhone = !phone || (order.phoneNumber && order.phoneNumber.toLowerCase().includes(phone));
+        const matchesStatus = !status || order.status === status;
+        const matchesDate = !date || getOrderDate(order.timestamp) === date;
+        return matchesPhone && matchesStatus && matchesDate;
+      });
+
+      ordersContainer.innerHTML = filtered.length === 0
+        ? `<p style='text-align:center; padding:30px;'>No orders found.</p>`
+        : filtered.map(order => {
+            const itemsHtml = (order.items || []).map(i =>
+              `<li><span>${i.name} ×${i.qty}</span> <span>₹${((i.price || 0) * i.qty).toFixed(2)}</span></li>`
+            ).join("") || "<li>No items</li>";
+
+            const images = Array.isArray(order.images) ? order.images : (order.imageUrl ? [order.imageUrl] : []);
+            const imageHtml = images.length > 0
+              ? `<div class="order-images">${images.map(url => `<img src="${url}" alt="Order" loading="lazy">`).join('')}</div>`
+              : '';
+
+            const paymentMode = order.paymentMode || "COD";
+            const assignedPartner = order.assignedTo || '—';
+
+            // ✅ Enhanced WhatsApp message
+            let waMsg = `*Mirdhuna Order*\n\n`;
+            waMsg += `🆔 Order ID: ${order.orderId || order.key.substring(0,8)}\n`;
+            waMsg += `📱 Phone: ${order.phoneNumber || 'N/A'}\n`;
+            waMsg += `💳 Payment: ${paymentMode}\n`;
+            waMsg += `📦 Items: ${(order.items || []).map(i => `${i.name} x${i.qty}`).join(", ") || 'None'}\n`;
+            waMsg += `💰 Total: ₹${(order.total || 0).toFixed(2)}\n`;
+            if (order.lat && order.lng) {
+              waMsg += `\n📍 Live Location: https://maps.google.com/?q=${order.lat},${order.lng}`;
+            }
+            if (order.address) {
+              waMsg += `\n🏠 Address: ${order.address}`;
+            }
+            if (images.length > 0) {
+              waMsg += `\n\n📸 *Tap to view order images:*`;
+              images.forEach(url => {
+                waMsg += `\n${url}`;
+              });
+            }
+            waMsg += `\n\n✅ Ready for delivery!`;
+
+            return `
+              <div class="order-card" data-key="${order.key}">
+                <div class="order-header">
+                  <span class="order-id">Order #${order.orderId || order.key.substring(0,5)}</span>
+                  <span>📱 ${order.phoneNumber || 'N/A'}</span>
+                </div>
+                <p><strong>Placed:</strong> ${order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A'}</p>
+                <p><strong>Payment:</strong> ${paymentMode}</p>
+                <p><strong>Assigned To:</strong> ${assignedPartner}</p>
+                <ul class="items-list">${itemsHtml}</ul>
+                <div class="total-row">Total: ₹${(order.total || 0).toFixed(2)}</div>
+                ${imageHtml}
+                <p><strong>Status:</strong>
+                  <select class="status-select" data-key="${order.key}">
+                    <option value="pending" ${order.status === "pending" ? "selected" : ""}>Pending</option>
+                    <option value="on the way" ${order.status === "on the way" ? "selected" : ""}>On the Way</option>
+                    <option value="delivered" ${order.status === "delivered" ? "selected" : ""}>Delivered</option>
+                    <option value="cancelled" ${order.status === "cancelled" ? "selected" : ""}>Cancelled</option>
+                  </select>
+                  <button class="btn btn-update" data-key="${order.key}">Update</button>
+                </p>
+                <p><strong>Assign to:</strong>
+                  <select class="partner-select" data-key="${order.key}">
+                    <option value="" ${!order.assignedTo ? 'selected' : ''}>— Select —</option>
+                    <option value="Raj" ${order.assignedTo === 'Raj' ? 'selected' : ''}>Raj (+91 98765 43210)</option>
+                    <option value="Suresh" ${order.assignedTo === 'Suresh' ? 'selected' : ''}>Suresh (+91 87654 32109)</option>
+                    <option value="Amit" ${order.assignedTo === 'Amit' ? 'selected' : ''}>Amit (+91 76543 21098)</option>
+                    <option value="Priya" ${order.assignedTo === 'Priya' ? 'selected' : ''}>Priya (+91 65432 10987)</option>
+                    <option value="Vikas" ${order.assignedTo === 'Vikas' ? 'selected' : ''}>Vikas (+91 54321 09876)</option>
+                    <option value="Neha" ${order.assignedTo === 'Neha' ? 'selected' : ''}>Neha (+91 43210 98765)</option>
+                  </select>
+                  <button class="btn btn-assign assign-btn" data-key="${order.key}">Assign</button>
+                </p>
+                <div class="actions">
+                  <button class="btn btn-print" data-order='${JSON.stringify(order)}'>Print</button>
+                  <button class="btn btn-edit" data-key="${order.key}">Modify</button>
+                  <button class="btn btn-whatsapp" data-msg="${encodeURIComponent(waMsg)}" data-raw="${waMsg}">WhatsApp</button>
+                  
+                  ${
+                    order.status === "on the way"
+                      ? `<button class="btn btn-track" data-lat="${order.lat || '28.6139'}" data-lng="${order.lng || '77.2090'}">Track</button>`
+                      : order.assignedTo
+                      ? `<button class="btn btn-live" data-key="${order.key}" data-status="${order.status}">Go Live 🚀</button>`
+                      : `<button class="btn btn-live" disabled title="Assign to partner first">Go Live 🚀</button>`
+                  }
+                  ${
+                    order.assignedTo
+                      ? `<button class="btn btn-whatsapp" 
+                          onclick="generateDeliveryLink('${order.orderId}')">
+                          📲 Share Delivery Link
+                        </button>`
+                      : ''
+                  }
+                </div>
+              </div>
+            `;
+          }).join("");
+    }
+
+    // ✅ Generate delivery link for partner
+    function generateDeliveryLink(orderId) {
+      const baseUrl = window.location.origin;
+      const url = `${baseUrl}/delivery.html`;
+      const msg = `📦 New order #${orderId} assigned!\n\nOpen to start tracking:\n${url}`;
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          alert('✅ Delivery link copied to clipboard!\nSend via WhatsApp.');
+        }).catch(() => {
+          prompt('📋 Copy link:', url);
+        });
+      } else {
+        prompt('📋 Copy link:', url);
+      }
+    }
+
+    [searchInput, filterStatus, filterDate].forEach(el =>
+      el.addEventListener("input", renderOrders)
+    );
+
+    // 🖱️ Delegated Clicks
+    document.addEventListener("click", async (e) => {
+      const key = e.target.dataset.key;
+      const order = allOrders.find(o => o.key === key);
+
+      // 🚀 Go Live
+      if (e.target.classList.contains("btn-live") && order && order.assignedTo) {
+        if (!order) return;
+        if (confirm(`🚀 Start live tracking for ${order.phoneNumber}?\n\nThis will:\n• Set status to "On the Way"\n• Capture your current location\n• Enable real-time tracking`)) {
+          await goLive(key, order);
+        }
+      }
+
+      // 🔄 Update Status
+      if (e.target.classList.contains("btn-update")) {
+        const select = document.querySelector(`select[data-key="${key}"]`);
+        const newStatus = select.value;
+        try {
+          await update(ref(db, "orders/" + key), { status: newStatus });
+          showAdminToast(`✅ Status updated to "${newStatus}"`);
+        } catch (err) {
+          alert("❌ Update failed: " + err.message);
+        }
+      }
+
+      // 🚚 Assign to Partner
+      if (e.target.classList.contains("assign-btn")) {
+        const select = document.querySelector(`.partner-select[data-key="${key}"]`);
+        const partnerId = select.value;
+        if (!partnerId) return alert("❌ Select a delivery partner");
+        
+        try {
+          await update(ref(db, "orders/" + key), { assignedTo: partnerId });
+          showAdminToast(`✅ Assigned to ${partnerId}`);
+          renderOrders();
+        } catch (err) {
+          alert("❌ Assignment failed: " + err.message);
+        }
+      }
+
+      // 📞 WhatsApp
+      if (e.target.classList.contains("btn-whatsapp")) {
+        const raw = e.target.dataset.raw;
+        if (navigator.clipboard) navigator.clipboard.writeText(raw);
+        window.open(`https://wa.me/?text=${e.target.dataset.msg}`, '_blank');
+      }
+
+      // 🖨️ Print
+      if (e.target.classList.contains("btn-print")) {
+        const order = JSON.parse(e.target.dataset.order);
+        const win = window.open('', '', 'width=600,height=800');
+        const items = (order.items || []).map(i =>
+          `${i.name} ×${i.qty}        ₹${((i.price || 0) * i.qty).toFixed(2)}`
+        ).join('<br>');
+        const locationLink = order.lat && order.lng
+          ? `<p><strong>Location:</strong> <a href="https://maps.google.com/?q=${order.lat},${order.lng}" target="_blank">View on Map</a></p>`
+          : '';
+        const address = order.address ? `<p><strong>Address:</strong> ${order.address}</p>` : '';
+        const instructions = order.instructions ? `<p><strong>Instructions:</strong> ${order.instructions}</p>` : '';
+
+        win.document.write(`
+          <html><head><title>Receipt</title>
+          <style>
+            body{font-family:monospace;font-size:14px;padding:15px;line-height:1.5;}
+            h2{text-align:center;margin-bottom:5px;}
+            p{margin:4px 0;}
+            hr{border:1px solid #ccc;margin:10px 0;}
+          </style></head>
+          <body>
+            <h2>Mirdhuna</h2>
+            <p style="text-align:center;font-size:16px;">Order Receipt</p>
+            <p><strong>Order ID:</strong> ${order.orderId || 'N/A'}</p>
+            <p><strong>Phone:</strong> ${order.phoneNumber || 'N/A'}</p>
+            <p><strong>Payment:</strong> ${order.paymentMode || 'COD'}</p>
+            <p><strong>Placed:</strong> ${order.timestamp ? new Date(order.timestamp).toLocaleString() : ''}</p>
+            ${address}
+            ${instructions}
+            ${locationLink}
+            <hr>${items}<hr>
+            <p style="text-align:right;font-weight:bold;">Total: ₹${(order.total || 0).toFixed(2)}</p>
+            <p style="text-align:center;margin-top:20px;">Thank You for Ordering!</p>
+          </body></html>
+        `);
+        win.document.close();
+        win.focus();
+        win.print();
+        win.close();
+      }
+
+      // 🛠️ Modify
+      if (e.target.classList.contains("btn-edit")) {
+        if (!order) return;
+        currentEditKey = key;
+        document.getElementById("editPhone").value = order.phoneNumber || '';
+        document.getElementById("editStatus").value = order.status || 'pending';
+        document.getElementById("editPartner").value = order.assignedTo || '';
+        document.getElementById("editPayment").value = order.paymentMode || 'COD';
+        document.getElementById("editItems").value = JSON.stringify(order.items || [], null, 2);
+        document.getElementById("editTotal").value = order.total || 0;
+        document.getElementById("modifyModal").style.display = "flex";
+      }
+
+      // 🚚 Track — ✅ FIXED (Embed API /place)
+      if (e.target.classList.contains("btn-track")) {
+        const lat = e.target.dataset.lat;
+        const lng = e.target.dataset.lng;
+        const url = `https://www.google.com/maps/embed/v1/place?key=${googleMapsKey}&q=${lat},${lng}`;
+        document.getElementById("track-map").src = url;
+        document.getElementById("track-popup").style.display = "flex";
+      }
+    });
+
+    // 💾 Save Edit
+    document.getElementById("saveEdit").addEventListener("click", async () => {
+      try {
+        const phone = document.getElementById("editPhone").value;
+        const status = document.getElementById("editStatus").value;
+        const assignedTo = document.getElementById("editPartner").value;
+        const paymentMode = document.getElementById("editPayment").value;
+        const total = parseFloat(document.getElementById("editTotal").value) || 0;
+        let items = [];
+        try {
+          items = JSON.parse(document.getElementById("editItems").value);
+        } catch (ex) {
+          alert("⚠️ Invalid items JSON.");
+          return;
+        }
+        await update(ref(db, "orders/" + currentEditKey), { 
+          phoneNumber: phone, 
+          status, 
+          assignedTo, 
+          paymentMode, 
+          total, 
+          items 
+        });
+        showAdminToast("✅ Order updated!");
+        document.getElementById("modifyModal").style.display = "none";
+      } catch (err) {
+        alert("❌ Save failed: " + err.message);
+      }
+    });
+
+    // 🗑️ Delete
+    document.getElementById("modalDelete").addEventListener("click", async () => {
+      if (!confirm("⚠️ Delete permanently?")) return;
+      try {
+        await remove(ref(db, "orders/" + currentEditKey));
+        showAdminToast("🗑️ Deleted order.");
+        document.getElementById("modifyModal").style.display = "none";
+      } catch (err) {
+        alert("❌ Delete failed: " + err.message);
+      }
+    });
+
+    // 📤 Export CSV
+    exportBtn.addEventListener("click", () => {
+      if (allOrders.length === 0) return alert("No orders to export.");
+      let csv = "Order ID,Phone,Date,Status,AssignedTo,Payment,Items,Total,Lat,Lng\n";
+      allOrders.forEach(o => {
+        const items = (o.items || []).map(i => `${i.name}(${i.qty})`).join("; ");
+        csv += `"${o.orderId || o.key}","${o.phoneNumber || ''}","${o.timestamp ? new Date(o.timestamp).toLocaleString() : ''}","${o.status || ''}","${o.assignedTo || ''}","${o.paymentMode || 'COD'}","${items.replace(/"/g,'""')}","${o.total || 0}","${o.lat || ''}","${o.lng || ''}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `mirdhuna_orders_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ❌ Close Popups
+    document.getElementById("close-track").addEventListener("click", () => {
+      document.getElementById("track-popup").style.display = "none";
+    });
+    window.onclick = e => {
+      if (e.target === document.getElementById("modifyModal")) {
+        document.getElementById("modifyModal").style.display = "none";
+      }
+    };
+    window.generateDeliveryLink = generateDeliveryLink;
+  </script>
+</body>
+</html>
