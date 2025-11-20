@@ -101,7 +101,6 @@
     </div>
   </div>
 
-  <!-- Firebase Compat SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
@@ -125,54 +124,54 @@
 
       let editingKey = null;
 
-      // Load slides
-      slidesRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        slidesList.innerHTML = '';
-        if (!data) {
-          slidesList.innerHTML = '<p>📭 No slides yet. Add one below!</p>';
-          return;
-        }
+      function loadSlides() {
+        slidesRef.on('value', (snapshot) => {
+          const data = snapshot.val();
+          slidesList.innerHTML = '';
+          if (!data) {
+            slidesList.innerHTML = '<p>📭 No slides yet. Add one below!</p>';
+            return;
+          }
 
-        Object.entries(data).forEach(([key, slide]) => {
-          const div = document.createElement('div');
-          div.className = 'slide-item';
-          const imgSrc = slide.image || 'https://via.placeholder.com/80x50?text=No+Image';
-          div.innerHTML = `
-            <img src="${imgSrc}" class="slide-thumb" onerror="this.src='https://via.placeholder.com/80x50?text=Err'">
-            <div class="slide-info">
-              <div><strong>Image:</strong> ${slide.image || '—'}</div>
-              <div class="slide-url"><strong>Link:</strong> ${slide.url || '—'}</div>
-            </div>
-            <div class="actions">
-              <button class="edit" data-key="${key}">Edit</button>
-              <button class="delete btn-delete" data-key="${key}">Delete</button>
-            </div>
-          `;
-          slidesList.appendChild(div);
-        });
+          Object.entries(data).forEach(([key, slide]) => {
+            const div = document.createElement('div');
+            div.className = 'slide-item';
+            const imgSrc = slide.image || 'https://via.placeholder.com/80x50?text=No+Image';
+            div.innerHTML = `
+              <img src="${imgSrc}" class="slide-thumb" onerror="this.src='https://via.placeholder.com/80x50?text=Err'">
+              <div class="slide-info">
+                <div><strong>Image:</strong> ${slide.image || '—'}</div>
+                <div class="slide-url"><strong>Link:</strong> ${slide.url || '—'}</div>
+              </div>
+              <div class="actions">
+                <button class="edit" data-key="${key}">Edit</button>
+                <button class="delete btn-delete" data-key="${key}">Delete</button>
+              </div>
+            `;
+            slidesList.appendChild(div);
+          });
 
-        // Rebind events
-        document.querySelectorAll('.edit').forEach(btn => {
-          btn.onclick = (e) => {
-            const key = e.target.dataset.key;
-            const s = data[key];
-            imageInput.value = s.image || '';
-            urlInput.value = s.url || '';
-            editingKey = key;
-            saveBtn.textContent = 'Update Slide';
-            cancelBtn.style.display = 'inline-block';
-          };
-        });
+          document.querySelectorAll('.edit').forEach(btn => {
+            btn.onclick = (e) => {
+              const k = e.target.dataset.key;
+              const s = data[k];
+              imageInput.value = s.image || '';
+              urlInput.value = s.url || '';
+              editingKey = k;
+              saveBtn.textContent = 'Update Slide';
+              cancelBtn.style.display = 'inline-block';
+            };
+          });
 
-        document.querySelectorAll('.delete').forEach(btn => {
-          btn.onclick = (e) => {
-            if (confirm('⚠️ Delete this slide?')) {
-              db.ref('slides/' + e.target.dataset.key).remove();
-            }
-          };
+          document.querySelectorAll('.delete').forEach(btn => {
+            btn.onclick = (e) => {
+              if (confirm('⚠️ Delete this slide?')) {
+                db.ref('slides/' + e.target.dataset.key).remove();
+              }
+            };
+          });
         });
-      });
+      }
 
       saveBtn.onclick = () => {
         const image = imageInput.value.trim();
@@ -198,6 +197,8 @@
         saveBtn.textContent = 'Add Slide';
         cancelBtn.style.display = 'none';
       }
+
+      loadSlides();
     });
   </script>
 </body>
