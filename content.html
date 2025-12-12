@@ -60,6 +60,24 @@
       border-color: #d40000;
     }
 
+    .home-btn {
+      display: block;
+      margin: 10px 0;
+      padding: 8px 16px;
+      background: #d40000;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .home-btn:hover {
+      background: #b00000;
+      transform: translateY(-2px);
+    }
+
     .category-carousel {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -83,13 +101,14 @@
     .category-img {
       width: 80px;
       height: 80px;
-      border-radius: 50%;
+      /* Removed border-radius: 50% — now square */
       object-fit: cover;
       border: 2px solid #eee;
       background: #fff;
-      margin-bottom: 6px;
+      margin-bottom: 0; /* Removed gap for name */
     }
     .category-name {
+      display: none; /* HIDDEN — per request */
       font-size: 12px;
       margin-top: 0;
       font-weight: 500;
@@ -469,6 +488,9 @@
 
   <div id="auth-bar"></div>
   <div class="offer-banner" id="offerBanner"></div>
+
+  <!-- ✅ HOME BUTTON (bold, above categories, below offer) -->
+  <a href="https://mirdhuna.com" class="home-btn">🏠 Home</a>
 
   <h2>Categories</h2>
   <div class="category-carousel" id="categoryCarousel"></div>
