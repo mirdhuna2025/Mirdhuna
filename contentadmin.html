@@ -52,7 +52,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 </div>
 <div style="margin-top:12px;">
   <input type="file" id="bulkCatImages" multiple accept="image/*">
-  <button class="add-btn" onclick="uploadBulkCategoryImages()">Upload Images Only</button>
+  <button class="add-btn" id="bulkUploadBtn">Upload Images Only</button>
   <small style="display:block;margin-top:4px;color:#666;">⚠️ Will add new categories (no name — you can edit later)</small>
 </div>
 <div id="categoriesList"></div>
@@ -98,7 +98,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-  const storage = firebase.storage(); // ✅ Added for image upload
+  const storage = firebase.storage();
   let categories = [];
 
   // --- Login ---
@@ -226,6 +226,9 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       loadAllData();
     });
   });
+
+  // --- ✅ Attach Bulk Upload Button Listener (FIXED) ---
+  document.getElementById('bulkUploadBtn').addEventListener('click', uploadBulkCategoryImages);
 
   // --- Add Offer ---
   document.getElementById('addOfferBtn').addEventListener('click', () => {
