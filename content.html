@@ -19,6 +19,24 @@
       display: none !important;
     }
 
+    .home-btn {
+      display: block;
+      margin: 10px 0;
+      padding: 10px 16px;
+      background: #d40000;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .home-btn:hover {
+      background: #b00000;
+      transform: translateY(-2px);
+    }
+
     #menu-controls {
       display: flex;
       align-items: center;
@@ -26,15 +44,6 @@
       flex-wrap: nowrap;
       gap: 5px;
       margin-bottom: 5px;
-    }
-    #search-input {
-      flex: 1;
-      min-width: 140px;
-      padding: 6px 12px;
-      border: 1px solid #ccc;
-      border-radius: 20px;
-      font-size: 13px;
-      outline: none;
     }
     #sort-select {
       padding: 6px 12px;
@@ -60,24 +69,6 @@
       border-color: #d40000;
     }
 
-    .home-btn {
-      display: block;
-      margin: 10px 0;
-      padding: 8px 16px;
-      background: #d40000;
-      color: white;
-      font-weight: bold;
-      font-size: 16px;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 8px;
-      transition: background 0.2s;
-    }
-    .home-btn:hover {
-      background: #b00000;
-      transform: translateY(-2px);
-    }
-
     .category-carousel {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -88,7 +79,6 @@
     }
     .category-item {
       width: 80px;
-      text-align: center;
       cursor: pointer;
       transition: transform 0.2s;
       display: flex;
@@ -98,23 +88,15 @@
     .category-item:hover {
       transform: scale(1.05);
     }
+    /* ✅ REMOVED ALL BORDERS, BACKGROUNDS, RADIUS — pure transparency */
     .category-img {
       width: 80px;
       height: 80px;
-      /* Removed border-radius: 50% — now square */
       object-fit: cover;
-      border: 2px solid #eee;
-      background: #fff;
-      margin-bottom: 0; /* Removed gap for name */
-    }
-    .category-name {
-      display: none; /* HIDDEN — per request */
-      font-size: 12px;
-      margin-top: 0;
-      font-weight: 500;
-      text-align: center;
-      word-wrap: break-word;
-      max-width: 80px;
+      /* No border, no background, no radius — blends with page bg */
+      border: none;
+      background: transparent;
+      box-shadow: none;
     }
 
     .offer-banner {
@@ -482,6 +464,59 @@
     #checkoutModal input, #checkoutModal textarea, #checkoutModal select {
       width:100%; padding:8px; margin:8px 0; border-radius:6px; border:1px solid #ddd;
     }
+
+    /* ✅ Inline login popup style (matches stickybar.js) */
+    #mirdhuna-login-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+    }
+    #mirdhuna-login-popup .box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 320px;
+    }
+    #mirdhuna-login-popup h3 {
+      margin: 0 0 16px 0;
+      color: #d40000;
+      text-align: center;
+    }
+    #mirdhuna-mob-input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      margin: 8px 0;
+    }
+    #mirdhuna-login-popup button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #mirdhuna-submit-login {
+      background: #d40000;
+      color: white;
+      flex: 1;
+    }
+    #mirdhuna-close-popup {
+      background: #f0f0f0;
+      color: #333;
+      flex: 1;
+    }
+    #mirdhuna-login-popup .btn-group {
+      display: flex;
+      gap: 8px;
+    }
   </style>
 </head>
 <body>
@@ -489,7 +524,7 @@
   <div id="auth-bar"></div>
   <div class="offer-banner" id="offerBanner"></div>
 
-  <!-- ✅ HOME BUTTON (bold, above categories, below offer) -->
+  <!-- ✅ HOME BUTTON -->
   <a href="https://mirdhuna.com" class="home-btn">🏠 Home</a>
 
   <h2>Categories</h2>
@@ -556,6 +591,18 @@
       <div style="display:flex; gap:8px; margin-top:8px;">
         <button id="checkout-place" class="checkout-btn" style="flex:1">Place Order</button>
         <button id="checkout-cancel" class="view-btn" style="flex:1">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Login Popup (inline, no external dependency) -->
+  <div id="mirdhuna-login-popup">
+    <div class="box">
+      <h3>📱 Login / Verify</h3>
+      <input id="mirdhuna-mob-input" type="tel" placeholder="Enter 10-digit mobile number" maxlength="10" />
+      <div class="btn-group">
+        <button id="mirdhuna-submit-login">Login</button>
+        <button id="mirdhuna-close-popup">Cancel</button>
       </div>
     </div>
   </div>
