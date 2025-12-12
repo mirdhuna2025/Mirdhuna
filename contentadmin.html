@@ -50,6 +50,11 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 <input type="url" id="catImage" placeholder="Image URL">
 <button class="add-btn" id="addCategoryBtn">Add Category</button>
 </div>
+<div style="margin-top:12px;">
+  <input type="file" id="bulkCatImages" multiple accept="image/*">
+  <button class="add-btn" onclick="uploadBulkCategoryImages()">Upload Images Only</button>
+  <small style="display:block;margin-top:4px;color:#666;">⚠️ Will add new categories (no name — you can edit later)</small>
+</div>
 <div id="categoriesList"></div>
 </div>
 
@@ -83,6 +88,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script type="module">
   import { getConfig, getAdminPassword } from "./config.js";
 
@@ -92,6 +98,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
+  const storage = firebase.storage(); // ✅ Added for image upload
   let categories = [];
 
   // --- Login ---
@@ -107,6 +114,48 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       setTimeout(() => errorEl.textContent = "", 2000);
     }
   };
+
+  // --- ✅ NEW: Bulk Category Image Upload ---
+  async function uploadBulkCategoryImages() {
+    const fileInput = document.getElementById('bulkCatImages');
+    const files = Array.from(fileInput.files);
+    
+    if (files.length === 0) {
+      return showStatus('⚠️ Please select at least one image.', false);
+    }
+
+    showStatus(`📤 Uploading ${files.length} image(s)...`, true);
+
+    const uploadPromises = files.map(async (file, idx) => {
+      const timestamp = Date.now();
+      const randomStr = Math.random().toString(36).substring(2, 8);
+      const storagePath = `categories/${timestamp}_${randomStr}_${file.name}`;
+      
+      const uploadTask = storage.ref(storagePath).put(file);
+      
+      try {
+        await uploadTask;
+        const downloadURL = await storage.ref(storagePath).getDownloadURL();
+        
+        return db.ref('categories').push({
+          name: `Untitled Category ${idx + 1}`,
+          image: downloadURL
+        });
+      } catch (err) {
+        console.error('Upload failed for', file.name, err);
+        throw new Error(`Failed to upload ${file.name}`);
+      }
+    });
+
+    try {
+      await Promise.all(uploadPromises);
+      showStatus(`✅ ${files.length} category image(s) uploaded!`, true);
+      fileInput.value = '';
+      loadAllData();
+    } catch (err) {
+      showStatus(`❌ Upload failed: ${err.message}`, false);
+    }
+  }
 
   // --- Status ---
   function showStatus(msg, isSuccess) {
