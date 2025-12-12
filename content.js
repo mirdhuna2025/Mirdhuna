@@ -50,6 +50,12 @@ const checkoutInstructions = document.getElementById("checkout-instructions");
 const checkoutPlace = document.getElementById("checkout-place");
 const checkoutCancel = document.getElementById("checkout-cancel");
 
+// ✅ Login popup elements
+const loginPopup = document.getElementById("mirdhuna-login-popup");
+const mobInput = document.getElementById("mirdhuna-mob-input");
+const submitLoginBtn = document.getElementById("mirdhuna-submit-login");
+const closeLoginBtn = document.getElementById("mirdhuna-close-popup");
+
 let toastEl = document.getElementById("toast");
 
 function safeNumber(v, fallback = 0) {
@@ -103,15 +109,69 @@ window.logout = () => {
   showToast("Logged out");
 };
 
-window.showLoginModal = () => {
-  const loginModal = document.getElementById("loginModal");
-  if (loginModal) {
-    loginModal.style.display = "flex";
-  } else {
-    console.warn("Login modal #loginModal not found.");
-    showToast("Login interface missing.");
+// ✅ NEW: Show login popup (same as stickybar.js)
+function showLoginModal() {
+  if (loginPopup) loginPopup.style.display = "flex";
+}
+
+// ✅ NEW: Close login popup
+function closeLoginPopup() {
+  if (loginPopup) {
+    loginPopup.style.display = "none";
+    if (mobInput) mobInput.value = "";
   }
-};
+}
+
+// ✅ NEW: Handle login (identical to stickybar.js logic)
+async function handleLogin() {
+  const number = mobInput?.value.trim();
+  if (!number || !/^[6-9]\d{9}$/.test(number)) {
+    alert("Please enter a valid 10-digit Indian mobile number (starting with 6–9).");
+    return;
+  }
+
+  if (submitLoginBtn) {
+    submitLoginBtn.disabled = true;
+    submitLoginBtn.textContent = "Logging in...";
+  }
+
+  let location = null;
+  if ("geolocation" in navigator) {
+    try {
+      const pos = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+        });
+      });
+      location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    } catch (err) {
+      console.warn("Geolocation not available:", err);
+    }
+  }
+
+  try {
+    await push(ref(db, "loginHistory"), {
+      mobileNumber: number,
+      timestamp: new Date().toISOString(),
+      location: location || { error: "Geolocation denied or unavailable" },
+    });
+
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("mobileNumber", number);
+    updateAuthUI();
+    closeLoginPopup();
+    showToast("✅ Logged in!");
+  } catch (error) {
+    console.error("Firebase login error:", error);
+    alert("Login failed. Please try again.");
+  } finally {
+    if (submitLoginBtn) {
+      submitLoginBtn.disabled = false;
+      submitLoginBtn.textContent = "Login";
+    }
+  }
+}
 
 function loadCartFromStorage() {
   const raw = JSON.parse(localStorage.getItem("cart")) || [];
@@ -176,12 +236,16 @@ function renderCategories() {
   if (!categoryCarousel) return;
   categoryCarousel.innerHTML = "";
 
-  // ✅ All category — with fallback SVG instead of broken placeholder
-  const fallbackImg = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Crect width=%2280%22 height=%2280%22 fill=%22%23f0f0f0%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2214%22 fill=%22%23999%22%3EALL%3C/text%3E%3C/svg%3E";
+  // ✅ "All" category with clean SVG (no border, no bg)
+  const fallbackSvg = 
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E' +
+    '%3Crect width="80" height="80" fill="none" /%3E' +
+    '%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-size="16" fill="%23999" font-family="sans-serif"%3EALL%3C/text%3E' +
+    '%3C/svg%3E';
 
   const allDiv = document.createElement("div");
   allDiv.className = "category-item";
-  allDiv.innerHTML = `<img class="category-img" src="${fallbackImg}" alt="All"/>`;
+  allDiv.innerHTML = `<img class="category-img" src="${fallbackSvg}" alt="All"/>`;
   allDiv.addEventListener("click", () => {
     selectedCategory = null;
     renderMenu();
@@ -191,10 +255,8 @@ function renderCategories() {
   categories.forEach((cat) => {
     const div = document.createElement("div");
     div.className = "category-item";
-    div.innerHTML = `
-      <img class="category-img" src="${cat.image || fallbackImg}" alt="${cat.name || "Category"}"/>
-      <!-- category name hidden per request -->
-    `;
+    // ✅ src only — no alt text shown, no name, no border
+    div.innerHTML = `<img class="category-img" src="${cat.image || fallbackSvg}" />`;
     div.addEventListener("click", () => {
       selectedCategory = cat.name;
       renderMenu();
@@ -373,16 +435,11 @@ function removeFromCart(id) {
   updateCartUI();
 }
 
-// ✅ FINAL: placeOrder() — 5-digit ID + location + tracking node
+// ✅ placeOrder — now uses popup instead of toast when not logged in
 async function placeOrder() {
   if (!isLoggedIn()) {
-    showToast("Please log in to place an order.");
-    const loginModal = document.getElementById("loginModal");
-    if (loginModal) {
-      loginModal.style.display = "flex";
-    } else {
-      console.error("Login modal #loginModal not found!");
-    }
+    // ✅ SHOW LOGIN POPUP INSTEAD OF TOAST
+    showLoginModal();
     return;
   }
 
@@ -391,7 +448,10 @@ async function placeOrder() {
   if (!address) return showToast("Please enter delivery address");
 
   const phone = localStorage.getItem("mobileNumber");
-  if (!phone) return showToast("Session expired. Please log in again.");
+  if (!phone) {
+    showLoginModal();
+    return;
+  }
 
   const payment = checkoutPayment?.value || "Cash on Delivery";
   const instructions = (checkoutInstructions?.value || "").trim();
@@ -416,14 +476,13 @@ async function placeOrder() {
     orderIdStr = String(Math.floor(Date.now() / 1000) % 100000).padStart(5, "0");
   }
 
-  // ✅ Try to get location — but don’t block save
+  // Geolocation (non-blocking)
   if ("geolocation" in navigator) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const locUpdate = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        console.log("📍 Location captured:", locUpdate);
+        console.log("📍 Location captured for order:", { lat: pos.coords.latitude, lng: pos.coords.longitude });
       },
-      (err) => console.warn("📍 Geolocation denied:", err),
+      (err) => console.warn("📍 Geolocation denied"),
       { enableHighAccuracy: true, timeout: 5000 },
     );
   }
@@ -443,11 +502,11 @@ async function placeOrder() {
     total: Number(total.toFixed(2)),
     timestamp: new Date().toISOString(),
     status: "pending",
-    orderId: orderIdStr, // ✅ 5-digit ID always saved
+    orderId: orderIdStr,
   };
 
   try {
-    const orderRef = push(ref(db, "orders"), order);
+    await push(ref(db, "orders"), order);
     showToast(`✅ Order #${orderIdStr} placed!`);
     cart = [];
     saveCart();
@@ -455,8 +514,8 @@ async function placeOrder() {
     if (cartPopupEl) cartPopupEl.style.display = "none";
     if (checkoutModal) checkoutModal.style.display = "none";
   } catch (err) {
-    console.error("❌ Firebase save failed:", err);
-    showToast("❌ Order failed. Check network.");
+    console.error("❌ Order save failed:", err);
+    showToast("❌ Order failed. Try again.");
   }
 }
 
@@ -470,6 +529,13 @@ checkoutPlace &&
     if (!addr) return showToast("Please enter delivery address");
     placeOrder();
   });
+
+// ✅ LOGIN POPUP EVENT LISTENERS
+closeLoginBtn?.addEventListener("click", closeLoginPopup);
+submitLoginBtn?.addEventListener("click", handleLogin);
+loginPopup?.addEventListener("click", (e) => {
+  if (e.target === loginPopup) closeLoginPopup();
+});
 
 document.addEventListener("click", (e) => {
   const t = e.target;
@@ -522,13 +588,8 @@ document.addEventListener("click", (e) => {
 
   if (t.id === "checkout-btn") {
     if (!isLoggedIn()) {
-      showToast("Please log in to checkout.");
-      const loginModal = document.getElementById("loginModal");
-      if (loginModal) {
-        loginModal.style.display = "flex";
-      } else {
-        console.error("Login modal #loginModal not found!");
-      }
+      // ✅ POPUP INSTEAD OF TOAST
+      showLoginModal();
       return;
     }
     if (checkoutModal) {
@@ -583,7 +644,8 @@ try {
 
 loadShopData();
 
-// Expose only needed globals
+// Expose needed globals
 window.addToCart = addToCart;
 window.placeOrder = placeOrder;
 window.openProductPopup = openProductPopup;
+window.showLoginModal = showLoginModal;
