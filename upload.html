@@ -62,6 +62,14 @@
       padding: 4px 8px;
       font-size: 12px;
     }
+    button.export {
+      background: #7b1fa2;
+      color: white;
+    }
+    button.download {
+      background: #2196f3;
+      color: white;
+    }
     .drop-zone {
       border: 2px dashed #ccc;
       border-radius: 12px;
@@ -125,7 +133,6 @@
       text-align: center;
       padding: 40px;
     }
-    /* Folder List Styles */
     .folder-list {
       display: flex;
       flex-wrap: wrap;
@@ -173,6 +180,20 @@
       background: #1a73e8;
       color: white;
     }
+    /* Toast notification for download status */
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #323232;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
@@ -183,7 +204,6 @@
   <div class="section">
     <strong>Folders:</strong>
     <div class="folder-list" id="folderList">
-      <!-- Folders will be dynamically inserted here -->
       <div class="folder-item folder-root" data-folder="">📁 Root</div>
     </div>
     <div class="folder-controls">
@@ -192,15 +212,23 @@
     </div>
   </div>
 
-  <!-- Upload Section -->
+  <!-- Upload & Export Section -->
   <div class="section drop-zone" id="dropZone">
     <p>📁 Drag & drop images here</p>
     <input type="file" id="fileInput" multiple accept="image/*" style="display:none;" />
     <button class="choose" id="chooseBtn">Choose Files</button>
     <div class="selected-files" id="selectedFiles">No files selected</div>
     <button class="upload" id="uploadBtn">📤 Upload Selected Files</button>
+    <div class="upload-actions">
+      <button id="exportPDF" class="export">📄 Export to PDF</button>
+      <button id="exportExcel" class="export">📊 Export to Excel</button>
+      <button id="downloadAll" class="download">📥 Download All Images</button>
+    </div>
     <progress id="uploadProgress" value="0" max="100"></progress>
   </div>
+
+  <!-- Toast for feedback -->
+  <div id="toast">Preparing download...</div>
 
   <!-- Image List -->
   <h3>🖼 Uploaded Images (<span id="currentFolderDisplay">Root</span>)</h3>
@@ -212,6 +240,13 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Export & Download Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
   <script>
     // Firebase Configuration
@@ -225,12 +260,11 @@
       appId: "1:575924409876:web:6ba1ed88ce941d9c83b901"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const storageRef = firebase.storage().ref();
     const imagesRef = firebase.database().ref("images");
 
-    // DOM Elements
+    // DOM
     const dropZone = document.getElementById("dropZone");
     const fileInput = document.getElementById("fileInput");
     const chooseBtn = document.getElementById("chooseBtn");
@@ -242,9 +276,20 @@
     const currentFolderDisplay = document.getElementById("currentFolderDisplay");
     const selectedFiles = document.getElementById("selectedFiles");
     const folderList = document.getElementById("folderList");
+    const exportPDFBtn = document.getElementById("exportPDF");
+    const exportExcelBtn = document.getElementById("exportExcel");
+    const downloadAllBtn = document.getElementById("downloadAll");
+    const toast = document.getElementById("toast");
 
     let selectedFilesList = [];
     let currentFolder = "";
+
+    // Utilities
+    function showToast(msg, duration = 3000) {
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => toast.style.display = "none", duration);
+    }
 
     // =============== Choose Files ===============
     chooseBtn.onclick = () => fileInput.click();
@@ -261,7 +306,6 @@
         e.stopPropagation();
       }, false);
     });
-
     dropZone.addEventListener("dragover", () => dropZone.classList.add("highlight"));
     dropZone.addEventListener("dragleave", () => dropZone.classList.remove("highlight"));
     dropZone.addEventListener("drop", (e) => {
@@ -276,19 +320,15 @@
       const name = newFolderInput.value.trim();
       if (!name) return alert("Folder name is required");
       if (/[.#$\/\[\]]/.test(name)) return alert("Invalid characters: .#$[]/");
-
-      // Check if folder already exists
       const exists = Array.from(folderList.children).some(el => el.dataset.folder === name);
       if (exists) {
         alert("Folder already exists!");
         return;
       }
-
       addFolderToList(name);
       newFolderInput.value = "";
     });
 
-    // Helper: Add folder to list
     function addFolderToList(folderName) {
       const div = document.createElement("div");
       div.className = "folder-item";
@@ -298,100 +338,66 @@
         <button class="delete-folder" data-folder="${folderName}" title="Delete folder">×</button>
       `;
       folderList.appendChild(div);
-
-      // Add click listener
       div.addEventListener("click", (e) => {
         if (!e.target.classList.contains("delete-folder")) {
           setCurrentFolder(folderName);
         }
       });
-
-      // Delete button event
       div.querySelector(".delete-folder").addEventListener("click", (e) => {
         e.stopPropagation();
         deleteFolder(folderName);
       });
     }
 
-    // =============== Set Current Folder ===============
     function setCurrentFolder(folder) {
       currentFolder = folder;
       currentFolderDisplay.textContent = folder || "Root";
-
-      // Update active class
       document.querySelectorAll(".folder-item").forEach(el => {
         el.classList.toggle("active", el.dataset.folder === folder);
       });
-
       loadImages();
     }
 
-    // =============== Delete Folder ===============
     async function deleteFolder(folderName) {
       if (!confirm(`Delete folder "${folderName}" and all its images? This cannot be undone.`)) return;
-
       try {
         const snapshot = await imagesRef.once("value");
         const data = snapshot.val();
         const toDelete = [];
-
         if (data) {
           Object.values(data).forEach(img => {
-            if (img.folder === folderName) {
-              toDelete.push({
-                id: img.id,
-                path: img.path
-              });
-            }
+            if (img.folder === folderName) toDelete.push({ id: img.id, path: img.path });
           });
         }
-
-        // Delete from storage and database
         for (const item of toDelete) {
-          await storageRef.child(item.path).delete()
-            .catch(err => {
-              if (err.code !== 'storage/object-not-found') console.error("Storage delete error:", err);
-            });
+          await storageRef.child(item.path).delete().catch(err => {
+            if (err.code !== 'storage/object-not-found') console.error("Storage delete error:", err);
+          });
           await imagesRef.orderByChild("id").equalTo(item.id).once("value", snap => {
             snap.forEach(child => child.ref.remove());
           });
         }
-
-        // Remove folder from UI
         document.querySelectorAll(`[data-folder="${folderName}"]`).forEach(el => el.remove());
-
-        if (currentFolder === folderName) {
-          setCurrentFolder("");
-        }
-
+        if (currentFolder === folderName) setCurrentFolder("");
         alert(`✅ Folder "${folderName}" deleted successfully!`);
-        loadFolders(); // Refresh folder list
+        loadFolders();
       } catch (err) {
         alert("❌ Error deleting folder: " + err.message);
       }
     }
 
-    // =============== Upload Files ===============
     uploadBtn.addEventListener("click", () => {
-      if (selectedFilesList.length === 0) {
-        alert("Please select at least one image");
-        return;
-      }
-
+      if (selectedFilesList.length === 0) return alert("Please select at least one image");
       uploadProgress.style.display = "block";
       uploadProgress.value = 0;
-
       const total = selectedFilesList.length;
       let uploaded = 0;
-
       selectedFilesList.forEach(file => {
         const timestamp = new Date().getTime();
         const folderPath = currentFolder ? `${currentFolder}/` : "";
         const filePath = `images/${folderPath}${timestamp}_${file.name}`;
         const fileRef = storageRef.child(filePath);
-
         const task = fileRef.put(file);
-
         task.on("state_changed",
           (snap) => {
             const percent = (snap.bytesTransferred / snap.totalBytes) * 100;
@@ -428,66 +434,42 @@
       });
     });
 
-    // =============== Load Folders ===============
     function loadFolders() {
       imagesRef.once("value", (snapshot) => {
         const data = snapshot.val();
         const folders = new Set();
-
         if (data) {
           Object.values(data).forEach(img => {
             if (img.folder) folders.add(img.folder);
           });
         }
-
-        // Clear all except root
-        while (folderList.children.length > 1) {
-          folderList.removeChild(folderList.lastChild);
-        }
-
-        // Add folders
+        while (folderList.children.length > 1) folderList.removeChild(folderList.lastChild);
         Array.from(folders).sort().forEach(folder => {
           if (!Array.from(folderList.children).some(el => el.dataset.folder === folder)) {
             addFolderToList(folder);
           }
         });
-
-        // Ensure current folder still exists
         if (currentFolder && !Array.from(folderList.children).some(el => el.dataset.folder === currentFolder)) {
           setCurrentFolder("");
         }
       });
     }
 
-    // =============== Load Images ===============
     function loadImages() {
       imageGrid.innerHTML = '<p>Loading images...</p>';
-
       imagesRef.once("value", (snapshot) => {
         const data = snapshot.val();
         imageGrid.innerHTML = "";
-
-        if (!data) {
-          imageGrid.innerHTML = '<p class="empty">No images found</p>';
-          return;
-        }
-
+        if (!data) return imageGrid.innerHTML = '<p class="empty">No images found</p>';
         const items = Object.values(data).filter(img => {
           if (!currentFolder) return !img.folder;
           return img.folder === currentFolder;
         }).sort((a, b) => (b.uploadedAt || 0) - (a.uploadedAt || 0));
-
-        if (items.length === 0) {
-          imageGrid.innerHTML = '<p class="empty">No images in this folder</p>';
-          return;
-        }
-
+        if (items.length === 0) return imageGrid.innerHTML = '<p class="empty">No images in this folder</p>';
         items.forEach(img => {
           const card = document.createElement("div");
           card.className = "image-card";
-
           const folderLabel = img.folder ? `<span class="folder-tag">${img.folder}</span>` : "📁 Root";
-
           card.innerHTML = `
             <img src="${img.url}" alt="${img.name}" onerror="this.src='https://via.placeholder.com/200x150?text=Image+Not+Found';" />
             <div class="image-info">${img.name}</div>
@@ -495,75 +477,35 @@
             <button class="copy" data-url="${img.url}">📋 Copy URL</button>
             <button class="delete" data-id="${img.id}" data-path="${img.path}">🗑 Delete</button>
           `;
-
           imageGrid.appendChild(card);
         });
-
-        // =============== Copy URL (Improved) ===============
         document.querySelectorAll(".copy").forEach(btn => {
-          btn.addEventListener("click", async (e) => { // Make the handler async
+          btn.addEventListener("click", async (e) => {
             const url = e.target.dataset.url;
             try {
-              // Try using the modern clipboard API
               await navigator.clipboard.writeText(url);
               alert("✅ URL copied!");
             } catch (err) {
-              // If it fails, use the prompt fallback
-              // Wrap prompt in try/catch in case it's also restricted
-              try {
-                const fallbackResult = prompt("Copy URL:", url);
-                // Optionally, provide feedback if prompt was cancelled (fallbackResult is null)
-                // if (fallbackResult === null) {
-                //   console.log("Prompt cancelled or failed");
-                // } else {
-                //   alert("Please copy the URL from the prompt.");
-                // }
-                // For simplicity, we can just rely on the prompt itself.
-                 // Alerting here might be confusing if prompt failed, so maybe just log or do nothing.
-                 // Let's just ensure the prompt runs.
-                 if (fallbackResult !== null) { // If user didn't cancel the prompt
-                     // User had the chance to copy, assume they did or cancelled intentionally
-                     // You could alert here, but often the prompt itself is enough feedback.
-                     // alert("Please copy the URL from the prompt.");
-                 }
-              } catch (promptErr) {
-                 console.error("Both copy methods failed:", err, promptErr);
-                 // Last resort: Alert the URL or open in new tab?
-                 alert("Could not copy. Please copy this URL manually: " + url);
-                 // Or maybe: window.open(url, '_blank'); // Opens URL in new tab
-              }
+              const fallback = prompt("Copy URL:", url);
+              if (fallback !== null) alert("Please copy the URL from the prompt.");
             }
           });
         });
-        // =============== End Copy URL ===============
-
-        // Delete image
         document.querySelectorAll(".delete").forEach(btn => {
           btn.addEventListener("click", (e) => {
             const id = e.target.dataset.id;
             const path = e.target.dataset.path;
-
             if (!confirm("Delete this image permanently?")) return;
-
-            storageRef.child(path).delete()
-              .then(() => console.log("✅ Deleted from Storage"))
-              .catch(err => {
-                if (err.code !== 'storage/object-not-found') {
-                  console.error("Storage delete error:", err);
-                }
-              });
-
+            storageRef.child(path).delete().catch(err => {
+              if (err.code !== 'storage/object-not-found') console.error("Storage delete error:", err);
+            });
             imagesRef.orderByChild("id").equalTo(id).once("value", snap => {
               snap.forEach(child => {
-                child.ref.remove()
-                  .then(() => {
-                    alert("✅ Deleted successfully");
-                    loadImages();
-                    loadFolders();
-                  })
-                  .catch(err => {
-                    alert("❌ Failed to delete from database: " + err.message);
-                  });
+                child.ref.remove().then(() => {
+                  alert("✅ Deleted successfully");
+                  loadImages();
+                  loadFolders();
+                }).catch(err => alert("❌ DB delete failed: " + err.message));
               });
             });
           });
@@ -571,9 +513,113 @@
       });
     }
 
+    // =============== Export Utilities ===============
+    function getImageDataForExport(folder = currentFolder) {
+      return new Promise((resolve) => {
+        imagesRef.once("value", (snapshot) => {
+          const data = snapshot.val();
+          if (!data) return resolve([]);
+          const items = Object.values(data).filter(img => {
+            if (folder === null) return true;
+            if (!folder) return !img.folder;
+            return img.folder === folder;
+          }).map(img => ({
+            name: img.name,
+            url: img.url,
+            folder: img.folder || "Root",
+            uploadedAt: img.uploadedAt ? new Date(img.uploadedAt).toLocaleString() : "N/A"
+          }));
+          resolve(items);
+        });
+      });
+    }
+
+    exportPDFBtn.addEventListener("click", async () => {
+      const items = await getImageDataForExport();
+      if (!items.length) return alert("No images to export.");
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text(`ImageRelation Export — Folder: ${currentFolder || 'Root'}`, 14, 20);
+      doc.setFontSize(12);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
+      const tableData = items.map((img, i) => [i + 1, img.name, img.folder, img.url]);
+      doc.autoTable({
+        head: [['#', 'File Name', 'Folder', 'URL']],
+        body: tableData,
+        startY: 40,
+        theme: 'grid',
+        styles: { fontSize: 8 },
+        columnStyles: { 3: { cellWidth: 'auto', minCellWidth: 60 } },
+        didParseCell: (data) => {
+          if (data.column.index === 3) data.cell.styles.overflow = 'linebreak';
+        }
+      });
+      doc.save(`image_urls_${(currentFolder || 'root').toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.pdf`);
+    });
+
+    exportExcelBtn.addEventListener("click", async () => {
+      const items = await getImageDataForExport();
+      if (!items.length) return alert("No images to export.");
+      const wsData = items.map((img, i) => ({
+        "S.No": i + 1,
+        "File Name": img.name,
+        "Folder": img.folder,
+        "URL": img.url,
+        "Uploaded At": img.uploadedAt
+      }));
+      const ws = XLSX.utils.json_to_sheet(wsData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, currentFolder || "Root");
+      XLSX.writeFile(wb, `image_urls_${(currentFolder || 'root').toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.xlsx`);
+    });
+
+    // =============== DOWNLOAD ALL IMAGES (ZIP) ===============
+    downloadAllBtn.addEventListener("click", async () => {
+      const items = await getImageDataForExport();
+      if (items.length === 0) return alert("No images to download.");
+
+      showToast("🚀 Starting download…");
+
+      const zip = new JSZip();
+      const folderName = currentFolder || "root";
+      const folderInZip = zip.folder(folderName);
+
+      let completed = 0;
+      const total = items.length;
+
+      const promises = items.map(async (img) => {
+        try {
+          const response = await fetch(img.url);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const blob = await response.blob();
+          // Sanitize filename: remove path, keep extension, limit length
+          let name = img.name.replace(/\//g, '_').substring(0, 100);
+          if (!name.includes('.')) name += '.jpg'; // fallback ext
+          folderInZip.file(name, blob);
+          completed++;
+          showToast(`📥 Downloading (${completed}/${total})…`);
+        } catch (err) {
+          console.warn("Failed to fetch image:", img.url, err);
+        }
+      });
+
+      try {
+        await Promise.all(promises);
+        showToast("📦 Generating ZIP…");
+        const content = await zip.generateAsync({ type: "blob" });
+        const filename = `images_${folderName.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.zip`;
+        saveAs(content, filename);
+        showToast("✅ Download complete!", 5000);
+      } catch (err) {
+        console.error("ZIP generation failed:", err);
+        alert("❌ Failed to generate ZIP. Check console for details.");
+      }
+    });
+
     // =============== Initialize ===============
     loadFolders();
-    setCurrentFolder(""); // Set to root
+    setCurrentFolder("");
   </script>
 
 </body>
