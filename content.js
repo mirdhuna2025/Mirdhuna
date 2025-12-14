@@ -870,13 +870,9 @@ ordersBtn?.addEventListener("click", () => {
   }
   if (ordersPopup) ordersPopup.style.display = "flex"
   loadOrders()
-})
-
-searchBtnNav?.addEventListener("click", () => {
-  if (searchInput) {
-    searchInput.focus()
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+})  
+searchBtn?.addEventListener("click", () => {
+  window.location.href = "search.html"
 })
 
 authButton?.addEventListener("click", () => {
