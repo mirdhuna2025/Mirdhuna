@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Category - Mirdhuna</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #ffffff;
+      color: #333;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      background: #ffffff;
+      z-index: 100;
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    #back-btn {
+      background: #f1f1f1;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #555;
+      flex-shrink: 0;
+    }
+    #back-btn:hover {
+      background: #e0e0e0;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #d40000;
+      flex: 1;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 16px;
+      border: 2px solid #d40000;
+      border-radius: 24px;
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+
+    #search-input:focus {
+      box-shadow: 0 0 0 3px rgba(212, 0, 0, 0.1);
+    }
+
+    .container {
+      padding: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-state-text {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .empty-state-hint {
+      font-size: 14px;
+      color: #aaa;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    @media (max-width: 520px) {
+      .menu-grid {
+        gap: 12px;
+      }
+    }
+
+    .menu-card {
+      position: relative;
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      cursor: pointer;
+      animation: cardFadeUp 0.42s ease both;
+      border: 2px solid transparent;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.12);
+    }
+
+    .menu-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.45s ease;
+    }
+
+    .menu-card:hover .menu-img {
+      transform: scale(1.08);
+    }
+
+    .menu-info {
+      padding: 12px;
+      position: relative;
+    }
+
+    .menu-name {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #222;
+      text-transform: capitalize;
+      white-space: normal;
+      word-wrap: break-word;
+    }
+
+    .menu-price {
+      color: #d40000;
+      font-weight: 700;
+      font-size: 17px;
+      margin-bottom: 6px;
+    }
+
+    .offer-tag {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: #d40000;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(212,0,0,0.18);
+      z-index: 3;
+    }
+
+    .add-cart-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      background: #4CAF50;
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(76,175,80,0.28);
+      transition: background 0.2s ease, transform 0.2s ease;
+      z-index: 4;
+    }
+
+    .add-cart-btn:hover {
+      background: #43a047;
+      transform: scale(1.04);
+    }
+
+    @keyframes cardFadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(51, 51, 51, 0.92);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      z-index: 9999;
+      font-size: 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      backdrop-filter: blur(4px);
+      max-width: 80%;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    @media (max-width: 520px) {
+      .menu-img { height: 160px; }
+      .menu-card { border-radius: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-top">
+      <button id="back-btn" title="Go back">←</button>
+      <div class="header-title">Category Search</div>
+    </div>
+    <input type="text" id="search-input" placeholder="Search products by name..." autocomplete="off" />
+  </div>
+
+  <div class="container">
+    <div id="results">
+      <div class="empty-state">
+        <div class="empty-state-icon">🔍</div>
+        <div class="empty-state-text">Start Searching</div>
+        <div class="empty-state-hint">Type in the search bar above to find products</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script type="module" src="category.js"></script>
+</body>
+</html>
