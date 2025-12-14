@@ -309,10 +309,8 @@ function renderMenu() {
   if (!menuGrid) return
   menuGrid.innerHTML = ""
 
-  // Filter by category
   let items = selectedCategory ? menuItems.filter((i) => i.category === selectedCategory) : [...menuItems]
 
-  // Filter by search query
   if (searchQuery.trim()) {
     const query = searchQuery.toLowerCase()
     items = items.filter((item) => {
@@ -341,7 +339,7 @@ function renderMenu() {
   else if (sortVal === "offer-first") items.sort((a, b) => (b.offer ? 1 : 0) - (a.offer ? 1 : 0))
 
   if (!items.length) {
-    menuGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#999;">No items found</p>'
+    menuGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#999;">No items found for your search</p>'
     menuGrid.style.gridTemplateColumns = "1fr"
     return
   }
