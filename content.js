@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
 import {
   getDatabase,
   ref,
@@ -19,14 +19,11 @@ let cart = []
 let currentOffer = null
 let selectedCategory = null
 let viewMode = "grid"
-let searchQuery = ""
 
 const authBar = document.getElementById("auth-bar")
 const categoryCarousel = document.getElementById("categoryCarousel")
 const menuGrid = document.getElementById("menuGrid")
 const offerBanner = document.getElementById("offerBanner")
-
-const searchInput = document.getElementById("search-input")
 
 const cartPopupEl = document.getElementById("cart-popup")
 const cartItemsEl = document.getElementById("cartItems")
@@ -58,6 +55,23 @@ const loginPopup = document.getElementById("mirdhuna-login-popup")
 const mobInput = document.getElementById("mirdhuna-mob-input")
 const submitLoginBtn = document.getElementById("mirdhuna-submit-login")
 const closeLoginBtn = document.getElementById("mirdhuna-close-popup")
+
+const searchInput = document.getElementById("search-input")
+const searchResults = document.getElementById("search-results")
+let searchTimer
+
+const homeBtn = document.getElementById("homeBtn")
+const ordersBtn = document.getElementById("ordersBtn")
+const authButton = document.getElementById("authButton")
+const authTextEl = document.getElementById("authText")
+const searchBtnNav = document.getElementById("searchBtn")
+
+const ordersPopup = document.getElementById("orders-popup")
+const closeOrdersBtn = document.getElementById("close-orders")
+const ordersContainer = document.getElementById("ordersContainer")
+
+const trackPopup = document.getElementById("track-popup")
+const closeTrackBtn = document.getElementById("close-track")
 
 let toastEl = document.getElementById("toast")
 
@@ -99,8 +113,10 @@ function updateAuthUI() {
   if (isLoggedIn()) {
     const phone = localStorage.getItem("mobileNumber") || ""
     authBar.innerHTML = `Logged in${phone ? " — " + phone : ""} <button onclick="logout()">Logout</button>`
+    if (authTextEl) authTextEl.textContent = "👤 Logout"
   } else {
     authBar.innerHTML = `Welcome! <button onclick="showLoginModal()">Login to Order</button>`
+    if (authTextEl) authTextEl.textContent = "👤 Login"
   }
   authBar.style.display = "block"
 }
@@ -112,12 +128,10 @@ window.logout = () => {
   showToast("Logged out")
 }
 
-// ✅ NEW: Show login popup (same as stickybar.js)
 function showLoginModal() {
   if (loginPopup) loginPopup.style.display = "flex"
 }
 
-// ✅ NEW: Close login popup
 function closeLoginPopup() {
   if (loginPopup) {
     loginPopup.style.display = "none"
@@ -125,7 +139,6 @@ function closeLoginPopup() {
   }
 }
 
-// ✅ NEW: Handle login (identical to stickybar.js logic)
 async function handleLogin() {
   const number = mobInput?.value.trim()
   if (!number || !/^[6-9]\d{9}$/.test(number)) {
@@ -309,29 +322,7 @@ function renderMenu() {
   if (!menuGrid) return
   menuGrid.innerHTML = ""
 
-  let items = selectedCategory ? menuItems.filter((i) => i.category === selectedCategory) : [...menuItems]
-
-  if (searchQuery.trim()) {
-    const query = searchQuery.toLowerCase()
-    items = items.filter((item) => {
-      const name = (item.name || "").toLowerCase()
-      const desc = (item.description || "").toLowerCase()
-      const category = (item.category || "").toLowerCase()
-      return name.includes(query) || desc.includes(query) || category.includes(query)
-    })
-  } else {
-    menuGrid.innerHTML = `
-      <div class="empty-state" style="grid-column: 1/-1;">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <h3>Start Searching</h3>
-        <p>Type in the search bar above to find products</p>
-      </div>
-    `
-    menuGrid.style.gridTemplateColumns = "1fr"
-    return
-  }
+  const items = selectedCategory ? menuItems.filter((i) => i.category === selectedCategory) : [...menuItems]
 
   const sortVal = sortSelect?.value || "default"
   if (sortVal === "price-low-high") items.sort((a, b) => (a.price || 0) - (b.price || 0))
@@ -339,7 +330,7 @@ function renderMenu() {
   else if (sortVal === "offer-first") items.sort((a, b) => (b.offer ? 1 : 0) - (a.offer ? 1 : 0))
 
   if (!items.length) {
-    menuGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#999;">No items found for your search</p>'
+    menuGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#999;">No items available</p>'
     menuGrid.style.gridTemplateColumns = "1fr"
     return
   }
@@ -555,14 +546,256 @@ checkoutPlace &&
     placeOrder()
   })
 
-// ✅ LOGIN POPUP EVENT LISTENERS
+// LOGIN POPUP EVENT LISTENERS
 closeLoginBtn?.addEventListener("click", closeLoginPopup)
 submitLoginBtn?.addEventListener("click", handleLogin)
 loginPopup?.addEventListener("click", (e) => {
   if (e.target === loginPopup) closeLoginPopup()
 })
 
-document.addEventListener("click", (e) => {
+function performSearch(query) {
+  if (!searchResults) return
+
+  if (!query.trim()) {
+    searchResults.style.display = "none"
+    searchResults.innerHTML = ""
+    return
+  }
+
+  const term = query.toLowerCase()
+  const filtered = menuItems.filter(
+    (item) => (item.name || "").toLowerCase().includes(term) || (item.category || "").toLowerCase().includes(term),
+  )
+
+  if (filtered.length === 0) {
+    searchResults.innerHTML = '<div style="padding:16px;text-align:center;color:#999;">No results found</div>'
+    searchResults.style.display = "block"
+    return
+  }
+
+  searchResults.innerHTML = filtered
+    .slice(0, 10)
+    .map((item) => {
+      const safeName = (item.name || "Unnamed Item").replace(/"/g, "&quot;")
+      const safePrice = safeNumber(item.price, 0).toFixed(2)
+      const mrpDisplay =
+        item.mrp && item.mrp > item.price ? `<del style="color:#999;font-size:13px">₹${item.mrp}</del> ` : ""
+
+      return `
+        <div class="search-result-item" data-id="${item.id}">
+          <img class="search-result-img" src="${item.image || ""}" alt="${safeName}" />
+          <div class="search-result-info">
+            <div class="search-result-name">${safeName}</div>
+            <div class="search-result-price">${mrpDisplay}₹${safePrice}</div>
+          </div>
+        </div>
+      `
+    })
+    .join("")
+
+  searchResults.style.display = "block"
+
+  // Add click handlers
+  searchResults.querySelectorAll(".search-result-item").forEach((el) => {
+    el.addEventListener("click", () => {
+      const itemId = el.dataset.id
+      const item = menuItems.find((i) => i.id === itemId)
+      if (item) {
+        openProductPopup(item)
+        searchResults.style.display = "none"
+        if (searchInput) searchInput.value = ""
+      }
+    })
+  })
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", (e) => {
+    clearTimeout(searchTimer)
+    searchTimer = setTimeout(() => {
+      performSearch(e.target.value)
+    }, 300)
+  })
+
+  searchInput.addEventListener("focus", () => {
+    if (searchInput.value.trim()) {
+      performSearch(searchInput.value)
+    }
+  })
+
+  // Close search results when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.style.display = "none"
+    }
+  })
+}
+
+async function loadOrders() {
+  const userPhone = localStorage.getItem("mobileNumber")
+  if (!userPhone) {
+    if (ordersPopup) ordersPopup.style.display = "none"
+    return
+  }
+
+  if (ordersContainer) {
+    ordersContainer.innerHTML =
+      "<p style=\"text-align:center; padding:20px; font-family:'Poppins',sans-serif;\">Loading your orders...</p>"
+  }
+
+  try {
+    const ordersRef = ref(db, "orders")
+    onValue(
+      ordersRef,
+      (snapshot) => {
+        const data = snapshot.val()
+        if (!data) {
+          if (ordersContainer) {
+            ordersContainer.innerHTML = '<p style="text-align:center;">No orders found.</p>'
+          }
+          return
+        }
+
+        const myOrders = Object.entries(data)
+          .filter(([key, order]) => order.phoneNumber === userPhone)
+          .map(([key, order]) => ({ key, ...order }))
+          .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0))
+
+        if (myOrders.length === 0) {
+          if (ordersContainer) {
+            ordersContainer.innerHTML = '<p style="text-align:center;">You haven\'t placed any orders yet.</p>'
+          }
+          return
+        }
+
+        if (ordersContainer) ordersContainer.innerHTML = ""
+
+        myOrders.forEach((order) => {
+          const status = order.status || "pending"
+          const itemsList = order.items
+            ? order.items
+                .map(
+                  (i) =>
+                    `<div style="display:flex;justify-content:space-between;margin:4px 0;">${i.name} × ${i.qty} <span style="font-weight:600">₹${(i.price * i.qty).toFixed(2)}</span></div>`,
+                )
+                .join("")
+            : "<div>No items</div>"
+
+          const imagesHtml =
+            order.items && order.items.length > 0
+              ? `<div class="order-images">${order.items
+                  .slice(0, 3)
+                  .map((i) => `<img src="${i.image || ""}" alt="${i.name}" loading="lazy">`)
+                  .join("")}</div>`
+              : ""
+
+          const total = order.total || 0
+          const payment = order.paymentMode || "COD"
+          const orderId = order.orderId || "N/A"
+          const placedDate = order.timestamp ? new Date(order.timestamp).toLocaleString() : "—"
+
+          const card = document.createElement("div")
+          card.className = "order-card"
+          card.innerHTML = `
+            <div class="order-header">
+              <span class="order-id">Order #${orderId}</span>
+              <span>📱 ${order.phoneNumber}</span>
+            </div>
+            <div class="order-meta">
+              <p><strong>Placed:</strong> ${placedDate}</p>
+              <p><strong>Payment:</strong> ${payment}</p>
+              <p><strong>Total:</strong> ₹${total.toFixed(2)}</p>
+              <p><strong>Status:</strong> <span class="status-badge ${status.replace(/ /g, ".")}">${status}</span></p>
+            </div>
+            <div class="order-items">
+              ${itemsList}
+            </div>
+            ${imagesHtml}
+            ${
+              status === "on the way"
+                ? `<button class="track-btn" 
+                    data-order-id="${order.key}" 
+                    data-lat="${order.lat || "28.6139"}" 
+                    data-lng="${order.lng || "77.2090"}">
+                    🚚 Track Live
+                  </button>`
+                : ""
+            }
+          `
+          if (ordersContainer) ordersContainer.appendChild(card)
+        })
+      },
+      (error) => {
+        console.error("DB error:", error)
+        if (ordersContainer) {
+          ordersContainer.innerHTML = '<div style="color:red;text-align:center;">Failed to load orders.</div>'
+        }
+      },
+    )
+  } catch (err) {
+    console.error("Init error:", err)
+    if (ordersContainer) {
+      ordersContainer.innerHTML = '<div style="color:red;text-align:center;">Failed to connect.</div>'
+    }
+  }
+}
+
+function renderMapEmbed(lat, lng, zoom = 15) {
+  const mapEl = document.getElementById("track-map")
+  if (!mapEl) return
+
+  const apiKey = "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ"
+  const url = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${lat},${lng}&zoom=${zoom}`
+  mapEl.src = url
+}
+
+document.addEventListener("click", async (e) => {
+  if (e.target.classList && e.target.classList.contains("track-btn")) {
+    const orderId = e.target.dataset.orderId
+    const initialLat = Number.parseFloat(e.target.dataset.lat) || 28.6139
+    const initialLng = Number.parseFloat(e.target.dataset.lng) || 77.209
+
+    const trackStatusEl = document.getElementById("track-status")
+    const trackNoteEl = document.getElementById("track-note")
+
+    if (trackStatusEl && trackNoteEl) {
+      renderMapEmbed(initialLat, initialLng)
+      trackStatusEl.textContent = "🚚 On the way"
+      trackNoteEl.textContent = "Loading location..."
+      if (trackPopup) trackPopup.style.display = "flex"
+
+      // Real-time tracking
+      try {
+        const trackingRef = ref(db, `tracking/${orderId}`)
+        onValue(trackingRef, (snapshot) => {
+          const updates = snapshot.val()
+          if (!updates) return
+
+          let latest
+          if (Array.isArray(updates)) {
+            latest = updates[updates.length - 1]
+          } else if (typeof updates === "object") {
+            const keys = Object.keys(updates).sort()
+            latest = updates[keys[keys.length - 1]]
+          } else {
+            latest = updates
+          }
+
+          if (latest && latest.lat && latest.lng) {
+            renderMapEmbed(latest.lat, latest.lng)
+            const note = latest.note || "Driver is en route"
+            trackNoteEl.textContent = note
+            trackStatusEl.innerHTML = `🕒 ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} — ${note}`
+          }
+        })
+      } catch (err) {
+        console.error("Firebase tracking failed:", err)
+        trackNoteEl.textContent = "⚠️ Real-time tracking unavailable"
+      }
+    }
+    return
+  }
+
   const t = e.target
 
   if (t.classList && t.classList.contains("add-cart-btn")) {
@@ -626,6 +859,50 @@ document.addEventListener("click", (e) => {
   }
 })
 
+homeBtn?.addEventListener("click", () => {
+  window.location.href = "index.html"
+})
+
+ordersBtn?.addEventListener("click", () => {
+  if (!isLoggedIn()) {
+    showLoginModal()
+    return
+  }
+  if (ordersPopup) ordersPopup.style.display = "flex"
+  loadOrders()
+})
+
+searchBtnNav?.addEventListener("click", () => {
+  if (searchInput) {
+    searchInput.focus()
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+})
+
+authButton?.addEventListener("click", () => {
+  if (isLoggedIn()) {
+    window.logout()
+  } else {
+    showLoginModal()
+  }
+})
+
+closeOrdersBtn?.addEventListener("click", () => {
+  if (ordersPopup) ordersPopup.style.display = "none"
+})
+
+ordersPopup?.addEventListener("click", (e) => {
+  if (e.target === ordersPopup) ordersPopup.style.display = "none"
+})
+
+closeTrackBtn?.addEventListener("click", () => {
+  if (trackPopup) trackPopup.style.display = "none"
+})
+
+trackPopup?.addEventListener("click", (e) => {
+  if (e.target === trackPopup) trackPopup.style.display = "none"
+})
+
 function setActiveView(mode) {
   gridViewBtn?.classList.toggle("active", mode === "grid")
   listViewBtn?.classList.toggle("active", mode === "list")
@@ -646,16 +923,6 @@ listViewBtn &&
   })
 
 sortSelect && sortSelect.addEventListener("change", () => renderMenu())
-
-let searchDebounce
-searchInput &&
-  searchInput.addEventListener("input", (e) => {
-    clearTimeout(searchDebounce)
-    searchDebounce = setTimeout(() => {
-      searchQuery = e.target.value
-      renderMenu()
-    }, 300)
-  })
 
 updateAuthUI()
 loadCartFromStorage()
