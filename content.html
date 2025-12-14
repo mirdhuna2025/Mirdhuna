@@ -22,7 +22,7 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 10px;
+      padding: 10px 10px 80px 10px;
     }
 
     h2 {
@@ -54,56 +54,6 @@
       transform: translateY(-2px);
     }
 
-    /* Added search bar styles */
-    .search-container {
-      margin: 16px 0;
-      position: relative;
-    }
-
-    #search-input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 2px solid #ddd;
-      border-radius: 24px;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.3s;
-      box-sizing: border-box;
-    }
-
-    #search-input:focus {
-      border-color: #d40000;
-    }
-
-    #search-input::placeholder {
-      color: #999;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #999;
-    }
-
-    .empty-state svg {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 16px;
-      opacity: 0.3;
-    }
-
-    .empty-state h3 {
-      font-size: 18px;
-      color: #666;
-      margin-bottom: 8px;
-    }
-
-    .empty-state p {
-      font-size: 14px;
-      color: #999;
-    }
-    /* </CHANGE> */
-
     #menu-controls {
       display: flex;
       align-items: center;
@@ -111,6 +61,29 @@
       flex-wrap: nowrap;
       gap: 5px;
       margin-bottom: 5px;
+    }
+    #sort-select {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      font-size: 13px;
+      background: white;
+      cursor: pointer;
+      min-width: 140px;
+    }
+    .view-btn {
+      padding: 6px 14px;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+      cursor: pointer;
+      border-radius: 20px;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .view-btn.active {
+      background: #d40000;
+      color: white;
+      border-color: #d40000;
     }
 
     .category-carousel {
@@ -561,6 +534,354 @@
       display: flex;
       gap: 8px;
     }
+
+    /* Sticky Bottom Navigation Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(15, 15, 15, 0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 999;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+
+    .bottom-bar button {
+      background: transparent;
+      border: none;
+      color: #00fff2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      padding: 4px 12px;
+      gap: 2px;
+    }
+
+    .bottom-bar button:hover {
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .bottom-bar button span:last-child {
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* Orders Popup */
+    #orders-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    .orders-popup-content {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      position: relative;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
+
+    .order-card {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .order-meta {
+      margin: 8px 0;
+      font-size: 13px;
+    }
+
+    .order-meta p {
+      margin: 4px 0;
+    }
+
+    .order-items {
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    .order-images {
+      display: flex;
+      gap: 4px;
+      margin: 8px 0;
+      flex-wrap: wrap;
+    }
+
+    .order-images img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #eee;
+    }
+
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .status-badge.pending { background: #ffe082; color: #5d4037; }
+    .status-badge.confirmed { background: #81d4fa; color: #01579b; }
+    .status-badge.on.the.way { background: #a5d6a7; color: #1b5e20; }
+    .status-badge.delivered { background: #c8e6c9; color: #2e7d32; }
+    .status-badge.cancelled { background: #ffcdd2; color: #c62828; }
+
+    .track-btn {
+      background: #2196F3;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .track-btn:hover {
+      background: #1976D2;
+    }
+
+    .order-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-print, .btn-whatsapp {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+
+    .btn-print {
+      background: #2196F3;
+      color: white;
+    }
+
+    .btn-print:hover {
+      background: #1976D2;
+    }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+    }
+
+    .btn-whatsapp:hover {
+      background: #128C7E;
+    }
+
+    /* Track Popup */
+    #track-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    .track-popup-content {
+      background: white;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .track-header {
+      background: #4361ee;
+      color: white;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .track-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .track-status-bar {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+      border-bottom: 1px solid #eee;
+    }
+
+    #track-status {
+      font-weight: 600;
+      color: #2b2d42;
+      font-size: 15px;
+    }
+
+    .refresh-btn {
+      background: #e9ecef;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .refresh-btn:hover {
+      background: #dee2e6;
+    }
+
+    #track-map-container {
+      height: 220px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 8px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    #track-map {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .track-note {
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #495057;
+      background: #f1f3f5;
+      text-align: center;
+    }
+
+    .track-footer {
+      padding: 10px 16px;
+      text-align: center;
+      font-size: 11px;
+      color: #6c757d;
+      background: #f8f9fa;
+    }
+
+    /* Search Bar Styles */
+    #search-input:focus {
+      border-color: #d40000;
+      box-shadow: 0 0 0 3px rgba(212,0,0,0.1);
+    }
+
+    #search-results {
+      display: none;
+      position: absolute;
+      background: white;
+      width: calc(100% - 20px);
+      max-height: 400px;
+      overflow-y: auto;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      margin-top: 4px;
+      z-index: 1000;
+    }
+
+    .search-result-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.2s;
+      align-items: center;
+    }
+
+    .search-result-item:hover {
+      background: #f8f8f8;
+    }
+
+    .search-result-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #f5f5f5;
+    }
+
+    .search-result-info {
+      flex: 1;
+    }
+
+    .search-result-name {
+      font-weight: 600;
+      color: #222;
+      font-size: 14px;
+    }
+
+    .search-result-price {
+      color: #d40000;
+      font-weight: 700;
+      font-size: 15px;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -570,16 +891,20 @@
 
   <a href="https://mirdhuna.com" class="home-btn">🏠 Home</a>
 
-  <!-- Added search bar -->
-  <div class="search-container">
-    <input 
-      type="text" 
-      id="search-input" 
-      placeholder="🔍 Search products..." 
-      autocomplete="off"
-    />
+  <!-- Added search bar below home button -->
+  <div id="search-container" style="margin: 10px 0; position: relative;">
+    <input type="text" id="search-input" placeholder="🔍 Search menu or category..." style="
+      width: 100%;
+      padding: 10px 16px;
+      border: 2px solid #ddd;
+      border-radius: 24px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    " autocomplete="off" />
+    <div id="search-results"></div>
   </div>
-  <!-- </CHANGE> -->
 
   <h2>Categories</h2>
   <div class="category-carousel" id="categoryCarousel"></div>
@@ -657,6 +982,57 @@
       <div class="btn-group">
         <button id="mirdhuna-submit-login">Login</button>
         <button id="mirdhuna-close-popup">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Added sticky bottom navigation bar -->
+  <div class="bottom-bar">
+    <button id="homeBtn"><span>🏠</span><span style="font-size:11px">Home</span></button>
+    <button id="ordersBtn"><span>🧾</span><span style="font-size:11px">Orders</span></button>
+    <button id="authButton"><span id="authText" style="font-size:11px">👤 Login</span></button>
+    <button id="searchBtn"><span>🔍</span><span style="font-size:11px">Search</span></button>
+  </div>
+
+  <!-- Added orders popup from stickybar -->
+  <div id="orders-popup">
+    <div class="orders-popup-content">
+      <span id="close-orders" style="position:absolute; top:8px; right:12px; cursor:pointer; font-size:20px; color:#d40000; font-weight:bold;">✖</span>
+      <h3 style="margin:0 0 16px 0; color:#d40000; text-align:center;">🧾 My Orders</h3>
+      <div id="ordersContainer" style="max-height:60vh; overflow-y:auto;">
+        <p id="orders-loading" style="text-align:center; padding:20px; font-family:'Poppins',sans-serif;">Loading your orders...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Added track popup from stickybar -->
+  <div id="track-popup">
+    <div class="track-popup-content">
+      <div class="track-header">
+        <h3>📦 Live Order Tracking</h3>
+        <button id="close-track" class="close-btn">×</button>
+      </div>
+      <div class="track-status-bar">
+        <div id="track-status">🚚 On the way</div>
+        <button id="track-refresh" class="refresh-btn" title="Refresh">↻</button>
+      </div>
+      <div id="track-map-container">
+        <iframe
+          id="track-map"
+          width="100%"
+          height="100%"
+          frameborder="0"
+          style="border:0"
+          allow="geolocation"
+          referrerpolicy="no-referrer-when-downgrade"
+          loading="lazy">
+        </iframe>
+      </div>
+      <div class="track-note">
+        <span id="track-note">Loading location...</span>
+      </div>
+      <div class="track-footer">
+        <small>📍 Updates every 15 seconds • Powered by Google Maps</small>
       </div>
     </div>
   </div>
