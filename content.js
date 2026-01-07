@@ -833,7 +833,9 @@ document.addEventListener("click", async (e) => {
   }
 
   if (t.id === "cart-toggle-btn") {
-    if (cartPopupEl) cartPopupEl.style.display = cartPopupEl.style.display === "block" ? "none" : "block"
+    if (cartPopupEl) {
+      cartPopupEl.style.display = cartPopupEl.style.display === "block" ? "none" : "block"
+    }
     return
   }
 
@@ -955,3 +957,9 @@ if (cartPopupEl) {
   cartPopupEl.style.right = "0"
   cartPopupEl.style.zIndex = "9999"
 }
+
+cartToggleBtn?.addEventListener("click", () => {
+  if (cartPopupEl) {
+    cartPopupEl.style.display = cartPopupEl.style.display === "block" ? "none" : "block"
+  }
+})
