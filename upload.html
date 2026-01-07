@@ -484,7 +484,7 @@
             const url = e.target.dataset.url;
             try {
               await navigator.clipboard.writeText(url);
-              alert("✅ URL copied!");
+              
             } catch (err) {
               const fallback = prompt("Copy URL:", url);
               if (fallback !== null) alert("Please copy the URL from the prompt.");
@@ -502,7 +502,7 @@
             imagesRef.orderByChild("id").equalTo(id).once("value", snap => {
               snap.forEach(child => {
                 child.ref.remove().then(() => {
-                  alert("✅ Deleted successfully");
+                
                   loadImages();
                   loadFolders();
                 }).catch(err => alert("❌ DB delete failed: " + err.message));
