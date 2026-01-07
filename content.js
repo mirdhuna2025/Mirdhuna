@@ -1,4 +1,4 @@
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
 import {
   getDatabase,
   ref,
@@ -253,9 +253,9 @@ function renderCategories() {
   categoryCarousel.innerHTML = ""
 
   // ✅ "All" category with clean SVG (no border, no bg)
-  
-    const fallbackImage = 
-  "https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2Fvegetable%2F1767800661946_Gemini_Generated_Image_p65h3pp65h3pp65h.png?alt=media&token=1c25f8f1-45ba-499e-899a-eb7be29fec4e";
+
+  const fallbackImage =
+    "https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2Fvegetable%2F1767800661946_Gemini_Generated_Image_p65h3pp65h3pp65h.png?alt=media&token=1c25f8f1-45ba-499e-899a-eb7be29fec4e"
 
   const allDiv = document.createElement("div")
   allDiv.className = "category-item"
@@ -868,8 +868,8 @@ ordersBtn?.addEventListener("click", () => {
   }
   if (ordersPopup) ordersPopup.style.display = "flex"
   loadOrders()
-})  
-searchBtn?.addEventListener("click", () => {
+})
+searchBtnNav?.addEventListener("click", () => {
   window.location.href = "search.html"
 })
 
@@ -945,3 +945,13 @@ window.addToCart = addToCart
 window.placeOrder = placeOrder
 window.openProductPopup = openProductPopup
 window.showLoginModal = showLoginModal
+
+// Adjusted CSS: changed bottom from 120px to 80px to account for bottom-bar height
+// This keeps the cart popup above the bottom navigation
+if (cartPopupEl) {
+  cartPopupEl.style.position = "fixed"
+  cartPopupEl.style.bottom = "80px"
+  cartPopupEl.style.left = "0"
+  cartPopupEl.style.right = "0"
+  cartPopupEl.style.zIndex = "9999"
+}
