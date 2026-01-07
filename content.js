@@ -255,7 +255,7 @@ function renderCategories() {
   // ✅ "All" category with clean SVG (no border, no bg)
 
   const fallbackImage =
-    "https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2Fvegetable%2F1767816302974_Gemini_Generated_Image_bstqjvbstqjvbstq.png?alt=media&token=5f9b25e0-f984-4597-9bb2-8aad8adcc1a9"
+    "https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2Fvegetable%2F1767816457376_Gemini_Generated_Image_lzr3dulzr3dulzr3.png?alt=media&token=c5cf7a9d-d500-4a39-afff-f59c17dc6816"
 
   const allDiv = document.createElement("div")
   allDiv.className = "category-item"
