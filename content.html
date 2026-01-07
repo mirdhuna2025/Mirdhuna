@@ -275,7 +275,7 @@
     #cart-popup {
       display: none;
       position: fixed;
-      bottom: 120px;
+      bottom: 80px;
       right: 20px !important;
       width: 360px;
       max-width: 90vw;
@@ -378,29 +378,6 @@
     }
     .checkout-btn:hover {
       background: #b00000;
-    }
-
-    #cart-toggle-btn {
-      position: fixed;
-      bottom: 50px;
-      right: 24px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      width: 65px;
-      height: 65px;
-      border-radius: 50%;
-      font-size: 26px;
-      cursor: pointer;
-      z-index: 999;
-      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.2s;
-    }
-    #cart-toggle-btn:hover {
-      transform: scale(1.08);
     }
 
     .cart-badge {
@@ -938,7 +915,6 @@
     </div>
   </div>
 
-  <button id="cart-toggle-btn">🛒</button>
   <div id="toast"></div>
 
   <div id="productPopup">
@@ -989,10 +965,11 @@
 
   <!-- Added sticky bottom navigation bar -->
   <div class="bottom-bar">
-    <button id="homeBtn"><span>🏠</span><span        style="font-size:11px">Home</span></button>
-    <button id="ordersBtn"><span>🧾</span><span      style="font-size:11px">Orders</span></button>
-    <button id="authButton"><span> 👤</span><span    style="font-size:11px"    id="authText"   >Login</span></button>
-    <button id="searchBtn"><span>🔍</span><span      style="font-size:11px">Search</span></button>
+    <button id="homeBtn"><span>🏠</span><span style="font-size:11px">Home</span></button>
+    <button id="ordersBtn"><span>🧾</span><span style="font-size:11px">Orders</span></button>
+    <button id="authButton"><span> 👤</span><span style="font-size:11px" id="authText">Login</span></button>
+    <button id="searchBtn"><span>🔍</span><span style="font-size:11px">Search</span></button>
+    <button id="cart-toggle-btn"><span>🛒</span><span style="font-size:11px">Cart</span></button>
   </div>
 
   <!-- Added orders popup from stickybar -->
