@@ -113,10 +113,10 @@ function updateAuthUI() {
   if (isLoggedIn()) {
     const phone = localStorage.getItem("mobileNumber") || ""
     authBar.innerHTML = `Logged in${phone ? " — " + phone : ""} <button onclick="logout()">Logout</button>`
-    if (authTextEl) authTextEl.textContent = "👤 Logout"
+    if (authTextEl) authTextEl.textContent = "Logout"
   } else {
     authBar.innerHTML = `Welcome! <button onclick="showLoginModal()">Login to Order</button>`
-    if (authTextEl) authTextEl.textContent = "👤 Login"
+    if (authTextEl) authTextEl.textContent = "Login"
   }
   authBar.style.display = "block"
 }
