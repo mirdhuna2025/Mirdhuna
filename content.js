@@ -254,7 +254,7 @@ function renderCategories() {
 
   // ✅ "All" category with clean SVG (no border, no bg)
   const fallbackSvg =
-    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E' +
+    'data:image/svg+xml,%3Csvg xmlns="https://firebasestorage.googleapis.com/v0/b/mirdhuna-25542.firebasestorage.app/o/images%2Fvegetable%2F1767800661946_Gemini_Generated_Image_p65h3pp65h3pp65h.png?alt=media&token=1c25f8f1-45ba-499e-899a-eb7be29fec4e" width="80" height="80" viewBox="0 0 80 80"%3E' +
     '%3Crect width="80" height="80" fill="none" /%3E' +
     '%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-size="16" fill="%23999" font-family="sans-serif"%3EALL%3C/text%3E' +
     "%3C/svg%3E"
