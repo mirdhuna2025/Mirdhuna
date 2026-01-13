@@ -581,7 +581,7 @@ function performSearch(query) {
 
       return `
         <div class="search-result-item" data-id="${item.id}">
-          <img class="search-result-img" src="${item.image || ""}" alt="${safeName}" />
+          <img class="search-result-img" loading="lazy" src="${item.image || ""}" alt="${safeName}" />
           <div class="search-result-info">
             <div class="search-result-name">${safeName}</div>
             <div class="search-result-price">${mrpDisplay}₹${safePrice}</div>
