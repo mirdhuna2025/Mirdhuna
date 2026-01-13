@@ -402,7 +402,7 @@ function updateCartUI() {
     const div = document.createElement("div")
     div.className = "cart-item"
     div.innerHTML = `
-      <img class="cart-img" src="${it.image || fallbackImg}" />
+      <img class="cart-img" loading="lazy"  src="${it.image || fallbackImg}" />
       <div class="cart-info">
         <div>${it.name}</div>
         <div>₹${price} × 
