@@ -53,7 +53,6 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 <button class="add-btn" id="addCategoryBtn">Add Category</button>
 </div>
 
-<!-- ✅ REPLACED: Bulk Image Upload → Bulk URL Input -->
 <div class="bulk-url-section">
   <label for="bulkUrls">📥 Bulk Category Images (One URL per line or comma-separated)</label>
   <textarea id="bulkUrls" rows="4" placeholder="https://example.com/cat1.jpg&#10;https://example.com/cat2.jpg&#10;..."></textarea>
@@ -96,7 +95,6 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<!-- ✅ No Firebase Storage needed anymore -->
 <script type="module">
   import { getConfig, getAdminPassword } from "./config.js";
 
@@ -107,6 +105,12 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   let categories = [];
+
+  // --- Edit state tracker ---
+  let editMode = {
+    type: null, // 'category', 'menu', or 'offer'
+    key: null
+  };
 
   // --- Login ---
   window.attemptLogin = function() {
@@ -130,11 +134,10 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       return showStatus('⚠️ Please enter at least one image URL.', false);
     }
 
-    // Split by newline or comma, then clean
     let urls = text
       .split(/[\n,]+/)
       .map(u => u.trim())
-      .filter(u => u && /^https?:\/\//i.test(u)); // keep only non-empty, valid HTTP(S) URLs
+      .filter(u => u && /^https?:\/\//i.test(u));
 
     if (urls.length === 0) {
       return showStatus('⚠️ No valid image URLs found.', false);
@@ -194,7 +197,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     document.getElementById('addMenuItemBtn').textContent = 'Add Menu Item';
   }
 
-  // --- Add Menu Item ---
+  // --- Permanent Menu Item Handler ---
   document.getElementById('addMenuItemBtn').addEventListener('click', function () {
     const name = document.getElementById('itemName').value.trim();
     const price = parseFloat(document.getElementById('itemPrice').value);
@@ -207,46 +210,93 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       return showStatus('Name, price, image, and category required.', false);
     }
 
-    const newItem = { id: name.toLowerCase().replace(/\s+/g, '-'), name, price, image, category, offer };
-    if (mrp && mrp > price) newItem.mrp = mrp;
+    const updateData = { name, price, image, category, offer };
+    if (mrp && mrp > price) updateData.mrp = mrp;
 
-    db.ref('menu').push(newItem).then(() => {
-      showStatus('Menu item added!', true);
-      resetMenuItemForm();
-      loadAllData();
-    });
+    if (editMode.type === 'menu' && editMode.key) {
+      db.ref('menu/' + editMode.key).update(updateData).then(() => {
+        showStatus('Menu item updated!', true);
+        resetMenuItemForm();
+        editMode = { type: null, key: null };
+        loadAllData();
+      }).catch(err => {
+        showStatus(`❌ Update failed: ${err.message}`, false);
+      });
+    } else {
+      updateData.id = name.toLowerCase().replace(/\s+/g, '-');
+      db.ref('menu').push(updateData).then(() => {
+        showStatus('Menu item added!', true);
+        resetMenuItemForm();
+        loadAllData();
+      }).catch(err => {
+        showStatus(`❌ Add failed: ${err.message}`, false);
+      });
+    }
   });
 
-  // --- Add Category ---
+  // --- Permanent Category Handler ---
   document.getElementById('addCategoryBtn').addEventListener('click', () => {
     const name = document.getElementById('catName').value.trim();
     const image = document.getElementById('catImage').value.trim();
     if (!name || !image) return showStatus('Name and image required.', false);
-    db.ref('categories').push({ name, image }).then(() => {
-      showStatus('Category added!', true);
-      document.getElementById('catName').value = '';
-      document.getElementById('catImage').value = '';
-      loadAllData();
-    });
+
+    if (editMode.type === 'category' && editMode.key) {
+      db.ref('categories/' + editMode.key).update({ name, image }).then(() => {
+        showStatus('Category updated!', true);
+        document.getElementById('catName').value = '';
+        document.getElementById('catImage').value = '';
+        document.getElementById('addCategoryBtn').textContent = 'Add Category';
+        editMode = { type: null, key: null };
+        loadAllData();
+      }).catch(err => {
+        showStatus(`❌ Update failed: ${err.message}`, false);
+      });
+    } else {
+      db.ref('categories').push({ name, image }).then(() => {
+        showStatus('Category added!', true);
+        document.getElementById('catName').value = '';
+        document.getElementById('catImage').value = '';
+        loadAllData();
+      }).catch(err => {
+        showStatus(`❌ Add failed: ${err.message}`, false);
+      });
+    }
   });
 
-  // --- ✅ Attach Bulk URL Button Listener ---
-  document.getElementById('bulkUrlUploadBtn').addEventListener('click', createCategoriesFromUrls);
-
-  // --- Add Offer ---
+  // --- Permanent Offer Handler ---
   document.getElementById('addOfferBtn').addEventListener('click', () => {
     const title = document.getElementById('offerTitle').value.trim();
     const desc = document.getElementById('offerDesc').value.trim();
     const active = document.getElementById('offerActive').checked;
     if (!title || !desc) return showStatus('Title and description required.', false);
-    db.ref('offers').push({ title, description: desc, active }).then(() => {
-      showStatus('Offer added!', true);
-      document.getElementById('offerTitle').value = '';
-      document.getElementById('offerDesc').value = '';
-      document.getElementById('offerActive').checked = true;
-      loadAllData();
-    });
+
+    if (editMode.type === 'offer' && editMode.key) {
+      db.ref('offers/' + editMode.key).update({ title, description: desc, active }).then(() => {
+        showStatus('Offer updated!', true);
+        document.getElementById('offerTitle').value = '';
+        document.getElementById('offerDesc').value = '';
+        document.getElementById('offerActive').checked = true;
+        document.getElementById('addOfferBtn').textContent = 'Add Offer';
+        editMode = { type: null, key: null };
+        loadAllData();
+      }).catch(err => {
+        showStatus(`❌ Update failed: ${err.message}`, false);
+      });
+    } else {
+      db.ref('offers').push({ title, description: desc, active }).then(() => {
+        showStatus('Offer added!', true);
+        document.getElementById('offerTitle').value = '';
+        document.getElementById('offerDesc').value = '';
+        document.getElementById('offerActive').checked = true;
+        loadAllData();
+      }).catch(err => {
+        showStatus(`❌ Add failed: ${err.message}`, false);
+      });
+    }
   });
+
+  // --- Attach Bulk URL Button Listener ---
+  document.getElementById('bulkUrlUploadBtn').addEventListener('click', createCategoriesFromUrls);
 
   // --- Load All Data ---
   function loadAllData() {
@@ -311,28 +361,12 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     });
   }
 
-  // --- Edit Functions (SAFE: no duplicate listeners) ---
+  // --- Edit Functions (now only set state) ---
   window.editCategory = function(key, name, image) {
     document.getElementById('catName').value = name;
     document.getElementById('catImage').value = image;
-    const btn = document.getElementById('addCategoryBtn');
-    const originalText = btn.textContent;
-    btn.textContent = 'Save Category';
-    const saveFn = () => {
-      db.ref('categories/' + key).update({
-        name: document.getElementById('catName').value.trim(),
-        image: document.getElementById('catImage').value.trim()
-      }).then(() => {
-        showStatus('Category updated!', true);
-        document.getElementById('catName').value = '';
-        document.getElementById('catImage').value = '';
-        btn.textContent = 'Add Category';
-        btn.removeEventListener('click', saveFn);
-        loadAllData();
-      });
-    };
-    btn.removeEventListener('click', saveFn);
-    btn.addEventListener('click', saveFn);
+    document.getElementById('addCategoryBtn').textContent = 'Save Category';
+    editMode = { type: 'category', key };
   };
 
   window.editMenuItem = function(key, name, price, mrp, image, category, offer) {
@@ -342,56 +376,16 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     document.getElementById('itemImage').value = image;
     document.getElementById('itemCategory').value = category;
     document.getElementById('itemOffer').checked = offer;
-    const btn = document.getElementById('addMenuItemBtn');
-    btn.textContent = 'Save Menu Item';
-    const saveFn = () => {
-      const updatedMrp = parseFloat(document.getElementById('itemMrp').value) || null;
-      const updateData = {
-        name: document.getElementById('itemName').value.trim(),
-        price: parseFloat(document.getElementById('itemPrice').value),
-        image: document.getElementById('itemImage').value.trim(),
-        category: document.getElementById('itemCategory').value,
-        offer: document.getElementById('itemOffer').checked
-      };
-      if (updatedMrp && updatedMrp > updateData.price) {
-        updateData.mrp = updatedMrp;
-      } else {
-        updateData.mrp = null;
-      }
-      db.ref('menu/' + key).update(updateData).then(() => {
-        showStatus('Menu item updated!', true);
-        resetMenuItemForm();
-        btn.removeEventListener('click', saveFn);
-        loadAllData();
-      });
-    };
-    btn.removeEventListener('click', saveFn);
-    btn.addEventListener('click', saveFn);
+    document.getElementById('addMenuItemBtn').textContent = 'Save Menu Item';
+    editMode = { type: 'menu', key };
   };
 
   window.editOffer = function(key, title, desc, active) {
     document.getElementById('offerTitle').value = title;
     document.getElementById('offerDesc').value = desc;
     document.getElementById('offerActive').checked = active;
-    const btn = document.getElementById('addOfferBtn');
-    btn.textContent = 'Save Offer';
-    const saveFn = () => {
-      db.ref('offers/' + key).update({
-        title: document.getElementById('offerTitle').value.trim(),
-        description: document.getElementById('offerDesc').value.trim(),
-        active: document.getElementById('offerActive').checked
-      }).then(() => {
-        showStatus('Offer updated!', true);
-        document.getElementById('offerTitle').value = '';
-        document.getElementById('offerDesc').value = '';
-        document.getElementById('offerActive').checked = true;
-        btn.textContent = 'Add Offer';
-        btn.removeEventListener('click', saveFn);
-        loadAllData();
-      });
-    };
-    btn.removeEventListener('click', saveFn);
-    btn.addEventListener('click', saveFn);
+    document.getElementById('addOfferBtn').textContent = 'Save Offer';
+    editMode = { type: 'offer', key };
   };
 
   // --- Delete ---
@@ -400,6 +394,8 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       db.ref(type + '/' + key).remove().then(() => {
         showStatus('Deleted!', true);
         loadAllData();
+      }).catch(err => {
+        showStatus(`❌ Delete failed: ${err.message}`, false);
       });
     }
   };
