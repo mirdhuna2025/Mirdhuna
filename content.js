@@ -259,7 +259,7 @@ function renderCategories() {
 
   const allDiv = document.createElement("div")
   allDiv.className = "category-item"
-  allDiv.innerHTML = `<img class="category-img" src="${fallbackImage}" alt="All"/>`
+  allDiv.innerHTML = `<img class="category-img" loading="lazy" src="${fallbackImage}" alt="All"/>`
   allDiv.addEventListener("click", () => {
     selectedCategory = null
     renderMenu()
@@ -270,7 +270,7 @@ function renderCategories() {
     const div = document.createElement("div")
     div.className = "category-item"
     // ✅ src only — no alt text shown, no name, no border
-    div.innerHTML = `<img class="category-img" src="${cat.image || fallbackImage}" />`
+    div.innerHTML = `<img class="category-img" loading="lazy" src="${cat.image || fallbackImage}" />`
     div.addEventListener("click", () => {
       selectedCategory = cat.name
       renderMenu()
