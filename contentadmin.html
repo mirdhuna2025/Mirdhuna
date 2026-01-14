@@ -79,15 +79,15 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 <button class="add-btn" id="addMenuItemBtn">Add Menu Item</button>
 </div>
 
-<!-- NEW: IMPORT/EXPORT MENU -->
+<!-- IMPORT/EXPORT MENU -->
 <div class="bulk-url-section">
-  <button class="save-btn" id="exportMenuBtn">📤 Export Menu to Excel (.xlsx)</button>
+  <button class="save-btn" id="exportMenuBtn">📤 Export Menu Template (Excel)</button>
   <br><br>
-  <label for="importMenuFile">📥 Import Menu from Excel (.xlsx or .csv)</label>
+  <label for="importMenuFile">📥 Import Menu from Excel (.xlsx/.csv)</label>
   <input type="file" id="importMenuFile" accept=".xlsx,.xls,.csv" class="file-input">
   <small style="display:block;margin-top:4px;color:#666;">
-    💡 Excel file must have columns: Name, Price, MRP, Image URL, Category, Offer<br>
-    "Category" will be validated against existing categories.
+    💡 File must have columns: Name, Price, MRP, Image URL, Category, Offer<br>
+    "Category" must match existing categories.
   </small>
 </div>
 
@@ -108,9 +108,10 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 <div id="status"></div>
 </div>
 
-<!-- Firebase -->
+<!-- ✅ CORRECTED FIREBASE CDN URLs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 <!-- SheetJS for Excel -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -181,44 +182,52 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     });
   }
 
-  // --- ✅ EXPORT MENU TO EXCEL (.xlsx) WITH DROPDOWN ---
+  // --- ✅ EXPORT MENU TO EXCEL WITH DROPDOWNS (100 ROWS) ---
   async function exportMenuToExcel() {
     const categoriesSnap = await db.ref('categories').once('value');
-    const validCategories = categoriesSnap.val() ? Object.values(categoriesSnap.val()).map(c => c.name) : [];
-    
-    const menuSnap = await db.ref('menu').once('value');
-    const menuItems = menuSnap.val() ? Object.values(menuSnap.val()) : [];
+    const validCategories = categoriesSnap.val() 
+      ? Object.values(categoriesSnap.val()).map(c => c.name) 
+      : ['Uncategorized'];
 
-    // Prepare data
-    const data = menuItems.map(item => ({
-      Name: item.name || '',
-      Price: item.price || '',
-      MRP: item.mrp || '',
-      'Image URL': item.image || '',
-      Category: item.category || '',
-      Offer: item.offer ? 'true' : 'false'
-    }));
+    if (validCategories.length === 0) validCategories.push('Uncategorized');
 
-    // Create worksheet
-    const ws = XLSX.utils.json_to_sheet(data.length ? data : [{
-      Name: '', Price: '', MRP: '', 'Image URL': '', Category: '', Offer: ''
-    }]);
+    const headers = ['Name', 'Price', 'MRP', 'Image URL', 'Category', 'Offer'];
+    const rows = [headers];
 
-    // Add dropdown validation if categories exist
-    if (validCategories.length > 0) {
-      const range = { s: { r: 1, c: 4 }, e: { r: data.length || 1, c: 4 } }; // Column E (Category)
-      ws['!datavalidations'] = [{
-        sqref: XLSX.utils.encode_range(range),
-        validator: { type: 'list', formula1: `"${validCategories.join(',')}"` }
-      }];
+    // Add 100 empty rows for user input
+    for (let i = 0; i < 100; i++) {
+      rows.push(['', '', '', '', '', '']);
     }
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    // Apply dropdowns: Category (col E = index 4), Offer (col F = index 5)
+    const catRange = { s: { r: 1, c: 4 }, e: { r: 100, c: 4 } };   // E2:E101
+    const offerRange = { s: { r: 1, c: 5 }, e: { r: 100, c: 5 } }; // F2:F101
+
+    ws['!dataValidations'] = {
+      dv: [
+        {
+          type: 'list',
+          allowBlank: true,
+          formula1: `"${validCategories.join(',')}"`
+          sqref: XLSX.utils.encode_range(catRange)
+        },
+        {
+          type: 'list',
+          allowBlank: true,
+          formula1: '"true,false"',
+          sqref: XLSX.utils.encode_range(offerRange)
+        }
+      ]
+    };
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "MenuItems");
     XLSX.writeFile(wb, "menu_template.xlsx");
   }
 
-  // --- ✅ IMPORT MENU FROM FILE ---
+  // --- IMPORT MENU FROM FILE ---
   async function importMenuFromFile(file) {
     if (!file) return showStatus('⚠️ No file selected.', false);
 
@@ -241,7 +250,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
         if (jsonData.length < 2) {
-          return showStatus('⚠️ File is empty or has no data rows.', false);
+          return showStatus('⚠️ File has no data rows.', false);
         }
 
         const headers = jsonData[0].map(h => h?.toString().trim());
@@ -346,7 +355,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     document.getElementById('addMenuItemBtn').textContent = 'Add Menu Item';
   }
 
-  // --- Handlers (unchanged logic) ---
+  // --- Menu Item Handler ---
   document.getElementById('addMenuItemBtn').addEventListener('click', function () {
     const name = document.getElementById('itemName').value.trim();
     const price = parseFloat(document.getElementById('itemPrice').value);
@@ -379,6 +388,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     }
   });
 
+  // --- Category Handler ---
   document.getElementById('addCategoryBtn').addEventListener('click', () => {
     const name = document.getElementById('catName').value.trim();
     const image = document.getElementById('catImage').value.trim();
@@ -403,6 +413,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     }
   });
 
+  // --- Offer Handler ---
   document.getElementById('addOfferBtn').addEventListener('click', () => {
     const title = document.getElementById('offerTitle').value.trim();
     const desc = document.getElementById('offerDesc').value.trim();
@@ -448,20 +459,20 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     }
   });
 
-  // --- NEW BUTTONS ---
+  // --- Button Listeners ---
   document.getElementById('exportCategoriesBtn').addEventListener('click', exportCategoriesToCSV);
   document.getElementById('exportMenuBtn').addEventListener('click', exportMenuToExcel);
   document.getElementById('importMenuFile').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) importMenuFromFile(file);
-    e.target.value = ''; // allow re-upload same file
+    e.target.value = ''; // allow re-upload
   });
 
   // --- Load All Data ---
   function loadAllData() {
     loadCategoriesForDropdown();
 
-    // Categories List
+    // Categories
     db.ref('categories').once('value').then(snap => {
       const list = document.getElementById('categoriesList');
       list.innerHTML = '<h3>Current Categories</h3>';
@@ -480,7 +491,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       });
     });
 
-    // Menu List
+    // Menu
     db.ref('menu').once('value').then(snap => {
       const list = document.getElementById('menuList');
       list.innerHTML = '<h3>Current Menu Items</h3>';
@@ -504,7 +515,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       });
     });
 
-    // Offers List
+    // Offers
     db.ref('offers').once('value').then(snap => {
       const list = document.getElementById('offersList');
       list.innerHTML = '<h3>Current Offers</h3>';
