@@ -29,6 +29,7 @@ button {padding:8px 14px;margin:4px 4px 4px 0;border:none;border-radius:4px;curs
 label {display:inline-block;margin-right:10px;margin-top:6px;}
 .bulk-url-section {margin-top:12px;}
 .bulk-url-section label {display:block;margin-bottom:4px;font-weight:bold;}
+.file-input { margin-top: 8px; }
 </style>
 </head>
 <body class="protected">
@@ -51,7 +52,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 <input type="text" id="catName" placeholder="Category Name">
 <input type="url" id="catImage" placeholder="Image URL">
 <button class="add-btn" id="addCategoryBtn">Add Category</button>
-<button class="save-btn" id="exportCategoriesBtn" style="margin-left:10px;">📥 Export Categories to CSV</button>
+<button class="save-btn" id="exportCategoriesBtn" style="margin-left:10px;">📥 Export Categories (CSV)</button>
 </div>
 
 <div class="bulk-url-section">
@@ -59,7 +60,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
   <textarea id="bulkUrls" rows="4" placeholder="https://example.com/cat1.jpg&#10;https://example.com/cat2.jpg&#10;..."></textarea>
   <button class="add-btn" id="bulkUrlUploadBtn">Create Categories from URLs</button>
   <small style="display:block;margin-top:4px;color:#666;">
-    💡 Tip: Copy-paste from Excel column — URLs only. Blank or invalid lines ignored.
+    💡 Tip: Copy-paste from Excel column — URLs only.
   </small>
 </div>
 
@@ -78,13 +79,15 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 <button class="add-btn" id="addMenuItemBtn">Add Menu Item</button>
 </div>
 
+<!-- NEW: IMPORT/EXPORT MENU -->
 <div class="bulk-url-section">
-  <label for="bulkMenuData">📥 Bulk Menu Items (Paste from Excel)</label>
-  <textarea id="bulkMenuData" rows="6" placeholder="Name	Price	MRP	Image URL	Category	Offer (true/false)&#10;Burger	120	150	https://example.com/burger.jpg	Burgers	true&#10;Pizza	200	250	https://example.com/pizza.jpg	Pizzas	false"></textarea>
-  <button class="add-btn" id="bulkMenuUploadBtn">Add Menu Items from Data</button>
+  <button class="save-btn" id="exportMenuBtn">📤 Export Menu to Excel (.xlsx)</button>
+  <br><br>
+  <label for="importMenuFile">📥 Import Menu from Excel (.xlsx or .csv)</label>
+  <input type="file" id="importMenuFile" accept=".xlsx,.xls,.csv" class="file-input">
   <small style="display:block;margin-top:4px;color:#666;">
-    💡 Paste columns: Name, Price, MRP (optional), Image URL, Category, Offer (true/false).<br>
-    Use tabs or commas. Category must match existing categories exactly.
+    💡 Excel file must have columns: Name, Price, MRP, Image URL, Category, Offer<br>
+    "Category" will be validated against existing categories.
   </small>
 </div>
 
@@ -105,8 +108,12 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 <div id="status"></div>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstaticcom/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<!-- SheetJS for Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 <script type="module">
   import { getConfig, getAdminPassword } from "./config.js";
 
@@ -118,11 +125,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
   const db = firebase.database();
   let categories = [];
 
-  // --- Edit state tracker ---
-  let editMode = {
-    type: null, // 'category', 'menu', or 'offer'
-    key: null
-  };
+  let editMode = { type: null, key: null };
 
   // --- Login ---
   window.attemptLogin = function() {
@@ -137,168 +140,6 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       setTimeout(() => errorEl.textContent = "", 2000);
     }
   };
-
-  // --- ✅ NEW: Bulk Category from URLs ---
-  async function createCategoriesFromUrls() {
-    const textarea = document.getElementById('bulkUrls');
-    let text = textarea.value.trim();
-    if (!text) {
-      return showStatus('⚠️ Please enter at least one image URL.', false);
-    }
-
-    let urls = text
-      .split(/[\n,]+/)
-      .map(u => u.trim())
-      .filter(u => u && /^https?:\/\//i.test(u));
-
-    if (urls.length === 0) {
-      return showStatus('⚠️ No valid image URLs found.', false);
-    }
-
-    showStatus(`📤 Creating ${urls.length} category(ies) from URLs...`, true);
-
-    const pushPromises = urls.map((url, idx) => {
-      return db.ref('categories').push({
-        name: `Untitled Category ${idx + 1}`,
-        image: url
-      });
-    });
-
-    try {
-      await Promise.all(pushPromises);
-      showStatus(`✅ ${urls.length} category(ies) created!`, true);
-      textarea.value = '';
-      loadAllData();
-    } catch (err) {
-      console.error('Bulk URL creation failed:', err);
-      showStatus(`❌ Failed: ${err.message || 'Database error'}`, false);
-    }
-  }
-
-  // --- ✅ EXPORT CATEGORIES TO CSV ---
-  function exportCategoriesToCSV() {
-    db.ref('categories').once('value').then(snap => {
-      const data = snap.val();
-      if (!data) {
-        showStatus('No categories to export.', false);
-        return;
-      }
-
-      const categories = Object.values(data);
-      let csv = 'Category Name,Image URL\n';
-      csv += categories.map(cat => `"${cat.name.replace(/"/g, '""')}","${cat.image}"`).join('\n');
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'categories_template.csv';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }).catch(err => {
-      showStatus(`❌ Export failed: ${err.message}`, false);
-    });
-  }
-
-  // --- ✅ BULK MENU UPLOAD ---
-  async function createMenuItemsFromData() {
-    const textarea = document.getElementById('bulkMenuData');
-    const text = textarea.value.trim();
-    if (!text) return showStatus('⚠️ No data provided.', false);
-
-    // Fetch current categories for validation
-    const categoriesSnap = await db.ref('categories').once('value');
-    const validCategories = new Set(
-      categoriesSnap.val() ? Object.values(categoriesSnap.val()).map(c => c.name) : []
-    );
-
-    if (validCategories.size === 0) {
-      return showStatus('❌ No categories exist! Create categories first.', false);
-    }
-
-    const lines = text.split('\n').map(line => line.trim()).filter(line => line);
-    if (lines.length <= 1) return showStatus('⚠️ Only header detected. Add data rows.', false);
-
-    const dataLines = lines.slice(1); // skip header
-    const items = [];
-    const errors = [];
-
-    for (let i = 0; i < dataLines.length; i++) {
-      const line = dataLines[i];
-      const parts = line.split(/\t|,/).map(p => p.trim());
-
-      if (parts.length < 5) {
-        errors.push(`Row ${i + 2}: Missing fields (need at least 5 columns)`);
-        continue;
-      }
-
-      const [name, priceStr, mrpStr, imageUrl, category, offerStr] = parts;
-
-      if (!name || !priceStr || !imageUrl || !category) {
-        errors.push(`Row ${i + 2}: Missing required field`);
-        continue;
-      }
-
-      const price = parseFloat(priceStr);
-      const mrp = mrpStr ? (mrpStr.toLowerCase() === '' || mrpStr.toLowerCase() === 'null' ? null : parseFloat(mrpStr)) : null;
-      const offer = offerStr?.toLowerCase() === 'true';
-
-      if (isNaN(price)) {
-        errors.push(`Row ${i + 2}: Invalid price`);
-        continue;
-      }
-
-      if (mrp !== null && (isNaN(mrp) || mrp <= 0)) {
-        errors.push(`Row ${i + 2}: Invalid MRP`);
-        continue;
-      }
-
-      if (!validCategories.has(category)) {
-        errors.push(`Row ${i + 2}: Category "${category}" not found.`);
-        continue;
-      }
-
-      if (!/^https?:\/\//i.test(imageUrl)) {
-        errors.push(`Row ${i + 2}: Invalid image URL`);
-        continue;
-      }
-
-      items.push({
-        name,
-        price,
-        ...(mrp !== null && mrp > price ? { mrp } : {}),
-        image: imageUrl,
-        category,
-        offer,
-        id: name.toLowerCase().replace(/\s+/g, '-')
-      });
-    }
-
-    if (items.length === 0) {
-      return showStatus(`❌ No valid items. Check console for errors.`, false);
-    }
-
-    showStatus(`📤 Uploading ${items.length} menu item(s)...`, true);
-
-    try {
-      const pushPromises = items.map(item => db.ref('menu').push(item));
-      await Promise.all(pushPromises);
-
-      let msg = `✅ ${items.length} menu item(s) added!`;
-      if (errors.length > 0) {
-        msg += `\n⚠️ ${errors.length} row(s) skipped.`;
-        console.warn('Bulk menu upload errors:', errors);
-      }
-      showStatus(msg, true);
-      textarea.value = '';
-      loadAllData();
-    } catch (err) {
-      console.error('Bulk menu upload failed:', err);
-      showStatus(`❌ Upload failed: ${err.message || 'Database error'}`, false);
-    }
-  }
 
   // --- Status ---
   function showStatus(msg, isSuccess) {
@@ -323,7 +164,178 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     });
   }
 
-  // --- Reset Form & Button ---
+  // --- EXPORT CATEGORIES (CSV) ---
+  function exportCategoriesToCSV() {
+    db.ref('categories').once('value').then(snap => {
+      const data = snap.val();
+      if (!data) return showStatus('No categories.', false);
+      let csv = 'Category Name,Image URL\n';
+      csv += Object.values(data).map(cat => `"${cat.name.replace(/"/g, '""')}","${cat.image}"`).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'categories.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // --- ✅ EXPORT MENU TO EXCEL (.xlsx) WITH DROPDOWN ---
+  async function exportMenuToExcel() {
+    const categoriesSnap = await db.ref('categories').once('value');
+    const validCategories = categoriesSnap.val() ? Object.values(categoriesSnap.val()).map(c => c.name) : [];
+    
+    const menuSnap = await db.ref('menu').once('value');
+    const menuItems = menuSnap.val() ? Object.values(menuSnap.val()) : [];
+
+    // Prepare data
+    const data = menuItems.map(item => ({
+      Name: item.name || '',
+      Price: item.price || '',
+      MRP: item.mrp || '',
+      'Image URL': item.image || '',
+      Category: item.category || '',
+      Offer: item.offer ? 'true' : 'false'
+    }));
+
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(data.length ? data : [{
+      Name: '', Price: '', MRP: '', 'Image URL': '', Category: '', Offer: ''
+    }]);
+
+    // Add dropdown validation if categories exist
+    if (validCategories.length > 0) {
+      const range = { s: { r: 1, c: 4 }, e: { r: data.length || 1, c: 4 } }; // Column E (Category)
+      ws['!datavalidations'] = [{
+        sqref: XLSX.utils.encode_range(range),
+        validator: { type: 'list', formula1: `"${validCategories.join(',')}"` }
+      }];
+    }
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "MenuItems");
+    XLSX.writeFile(wb, "menu_template.xlsx");
+  }
+
+  // --- ✅ IMPORT MENU FROM FILE ---
+  async function importMenuFromFile(file) {
+    if (!file) return showStatus('⚠️ No file selected.', false);
+
+    const categoriesSnap = await db.ref('categories').once('value');
+    const validCategories = new Set(
+      categoriesSnap.val() ? Object.values(categoriesSnap.val()).map(c => c.name) : []
+    );
+
+    if (validCategories.size === 0) {
+      return showStatus('❌ No categories exist! Create categories first.', false);
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        if (jsonData.length < 2) {
+          return showStatus('⚠️ File is empty or has no data rows.', false);
+        }
+
+        const headers = jsonData[0].map(h => h?.toString().trim());
+        const required = ['Name', 'Price', 'Image URL', 'Category'];
+        const missing = required.filter(r => !headers.includes(r));
+        if (missing.length) {
+          return showStatus(`❌ Missing columns: ${missing.join(', ')}`, false);
+        }
+
+        const nameIdx = headers.indexOf('Name');
+        const priceIdx = headers.indexOf('Price');
+        const mrpIdx = headers.indexOf('MRP');
+        const imgIdx = headers.indexOf('Image URL');
+        const catIdx = headers.indexOf('Category');
+        const offerIdx = headers.indexOf('Offer');
+
+        const items = [];
+        const errors = [];
+
+        for (let i = 1; i < jsonData.length; i++) {
+          const row = jsonData[i];
+          if (!row || row.length === 0) continue;
+
+          const name = (row[nameIdx] || '').toString().trim();
+          const priceStr = (row[priceIdx] || '').toString().trim();
+          const mrpStr = (row[mrpIdx] !== undefined ? row[mrpIdx] : '').toString().trim();
+          const imageUrl = (row[imgIdx] || '').toString().trim();
+          const category = (row[catIdx] || '').toString().trim();
+          const offerStr = (row[offerIdx] !== undefined ? row[offerIdx] : '').toString().trim();
+
+          if (!name || !priceStr || !imageUrl || !category) {
+            errors.push(`Row ${i + 1}: Missing required field`);
+            continue;
+          }
+
+          const price = parseFloat(priceStr);
+          const mrp = mrpStr ? (mrpStr.toLowerCase() === '' || mrpStr.toLowerCase() === 'null' ? null : parseFloat(mrpStr)) : null;
+          const offer = offerStr?.toLowerCase() === 'true';
+
+          if (isNaN(price)) {
+            errors.push(`Row ${i + 1}: Invalid price`);
+            continue;
+          }
+
+          if (mrp !== null && (isNaN(mrp) || mrp <= 0)) {
+            errors.push(`Row ${i + 1}: Invalid MRP`);
+            continue;
+          }
+
+          if (!validCategories.has(category)) {
+            errors.push(`Row ${i + 1}: Invalid category "${category}"`);
+            continue;
+          }
+
+          if (!/^https?:\/\//i.test(imageUrl)) {
+            errors.push(`Row ${i + 1}: Invalid image URL`);
+            continue;
+          }
+
+          items.push({
+            name,
+            price,
+            ...(mrp !== null && mrp > price ? { mrp } : {}),
+            image: imageUrl,
+            category,
+            offer,
+            id: name.toLowerCase().replace(/\s+/g, '-')
+          });
+        }
+
+        if (items.length === 0) {
+          return showStatus(`❌ No valid items. Check console.`, false);
+        }
+
+        showStatus(`📤 Uploading ${items.length} menu item(s)...`, true);
+        const pushPromises = items.map(item => db.ref('menu').push(item));
+        await Promise.all(pushPromises);
+
+        let msg = `✅ ${items.length} menu item(s) imported!`;
+        if (errors.length) {
+          msg += `\n⚠️ ${errors.length} skipped.`;
+          console.warn('Import errors:', errors);
+        }
+        showStatus(msg, true);
+        loadAllData();
+      } catch (err) {
+        console.error('Import error:', err);
+        showStatus(`❌ Import failed: ${err.message || 'Invalid file'}`, false);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // --- Reset Form ---
   function resetMenuItemForm() {
     document.getElementById('itemName').value = '';
     document.getElementById('itemPrice').value = '';
@@ -334,7 +346,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     document.getElementById('addMenuItemBtn').textContent = 'Add Menu Item';
   }
 
-  // --- Permanent Menu Item Handler ---
+  // --- Handlers (unchanged logic) ---
   document.getElementById('addMenuItemBtn').addEventListener('click', function () {
     const name = document.getElementById('itemName').value.trim();
     const price = parseFloat(document.getElementById('itemPrice').value);
@@ -356,22 +368,17 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         resetMenuItemForm();
         editMode = { type: null, key: null };
         loadAllData();
-      }).catch(err => {
-        showStatus(`❌ Update failed: ${err.message}`, false);
-      });
+      }).catch(err => showStatus(`❌ Update failed: ${err.message}`, false));
     } else {
       updateData.id = name.toLowerCase().replace(/\s+/g, '-');
       db.ref('menu').push(updateData).then(() => {
         showStatus('Menu item added!', true);
         resetMenuItemForm();
         loadAllData();
-      }).catch(err => {
-        showStatus(`❌ Add failed: ${err.message}`, false);
-      });
+      }).catch(err => showStatus(`❌ Add failed: ${err.message}`, false));
     }
   });
 
-  // --- Permanent Category Handler ---
   document.getElementById('addCategoryBtn').addEventListener('click', () => {
     const name = document.getElementById('catName').value.trim();
     const image = document.getElementById('catImage').value.trim();
@@ -385,22 +392,17 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         document.getElementById('addCategoryBtn').textContent = 'Add Category';
         editMode = { type: null, key: null };
         loadAllData();
-      }).catch(err => {
-        showStatus(`❌ Update failed: ${err.message}`, false);
-      });
+      }).catch(err => showStatus(`❌ Update failed: ${err.message}`, false));
     } else {
       db.ref('categories').push({ name, image }).then(() => {
         showStatus('Category added!', true);
         document.getElementById('catName').value = '';
         document.getElementById('catImage').value = '';
         loadAllData();
-      }).catch(err => {
-        showStatus(`❌ Add failed: ${err.message}`, false);
-      });
+      }).catch(err => showStatus(`❌ Add failed: ${err.message}`, false));
     }
   });
 
-  // --- Permanent Offer Handler ---
   document.getElementById('addOfferBtn').addEventListener('click', () => {
     const title = document.getElementById('offerTitle').value.trim();
     const desc = document.getElementById('offerDesc').value.trim();
@@ -416,9 +418,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         document.getElementById('addOfferBtn').textContent = 'Add Offer';
         editMode = { type: null, key: null };
         loadAllData();
-      }).catch(err => {
-        showStatus(`❌ Update failed: ${err.message}`, false);
-      });
+      }).catch(err => showStatus(`❌ Update failed: ${err.message}`, false));
     } else {
       db.ref('offers').push({ title, description: desc, active }).then(() => {
         showStatus('Offer added!', true);
@@ -426,21 +426,42 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         document.getElementById('offerDesc').value = '';
         document.getElementById('offerActive').checked = true;
         loadAllData();
-      }).catch(err => {
-        showStatus(`❌ Add failed: ${err.message}`, false);
-      });
+      }).catch(err => showStatus(`❌ Add failed: ${err.message}`, false));
     }
   });
 
-  // --- Attach Listeners ---
-  document.getElementById('bulkUrlUploadBtn').addEventListener('click', createCategoriesFromUrls);
-  document.getElementById('bulkMenuUploadBtn').addEventListener('click', createMenuItemsFromData);
+  // --- Bulk Category from URLs ---
+  document.getElementById('bulkUrlUploadBtn').addEventListener('click', async () => {
+    const textarea = document.getElementById('bulkUrls');
+    let text = textarea.value.trim();
+    if (!text) return showStatus('⚠️ Enter image URLs.', false);
+    let urls = text.split(/[\n,]+/).map(u => u.trim()).filter(u => u && /^https?:\/\//i.test(u));
+    if (urls.length === 0) return showStatus('⚠️ No valid URLs.', false);
+    showStatus(`📤 Creating ${urls.length} categories...`, true);
+    try {
+      await Promise.all(urls.map((url, idx) => db.ref('categories').push({ name: `Untitled ${idx + 1}`, image: url })));
+      showStatus(`✅ ${urls.length} categories created!`, true);
+      textarea.value = '';
+      loadAllData();
+    } catch (err) {
+      showStatus(`❌ Failed: ${err.message}`, false);
+    }
+  });
+
+  // --- NEW BUTTONS ---
   document.getElementById('exportCategoriesBtn').addEventListener('click', exportCategoriesToCSV);
+  document.getElementById('exportMenuBtn').addEventListener('click', exportMenuToExcel);
+  document.getElementById('importMenuFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) importMenuFromFile(file);
+    e.target.value = ''; // allow re-upload same file
+  });
 
   // --- Load All Data ---
   function loadAllData() {
     loadCategoriesForDropdown();
 
+    // Categories List
     db.ref('categories').once('value').then(snap => {
       const list = document.getElementById('categoriesList');
       list.innerHTML = '<h3>Current Categories</h3>';
@@ -459,6 +480,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       });
     });
 
+    // Menu List
     db.ref('menu').once('value').then(snap => {
       const list = document.getElementById('menuList');
       list.innerHTML = '<h3>Current Menu Items</h3>';
@@ -482,6 +504,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
       });
     });
 
+    // Offers List
     db.ref('offers').once('value').then(snap => {
       const list = document.getElementById('offersList');
       list.innerHTML = '<h3>Current Offers</h3>';
@@ -527,15 +550,12 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
     editMode = { type: 'offer', key };
   };
 
-  // --- Delete ---
   window.deleteItem = function(type, key) {
-    if (confirm('Are you sure you want to delete?')) {
+    if (confirm('Delete?')) {
       db.ref(type + '/' + key).remove().then(() => {
         showStatus('Deleted!', true);
         loadAllData();
-      }).catch(err => {
-        showStatus(`❌ Delete failed: ${err.message}`, false);
-      });
+      }).catch(err => showStatus(`❌ Delete failed: ${err.message}`, false));
     }
   };
 </script>
