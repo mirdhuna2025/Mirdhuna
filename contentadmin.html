@@ -210,7 +210,7 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
         {
           type: 'list',
           allowBlank: true,
-          formula1: ' "${validCategories.join(',')}" '
+         formula1: `"${validCategories.join(',')}"`
           sqref: XLSX.utils.encode_range(catRange)
         },
         {
