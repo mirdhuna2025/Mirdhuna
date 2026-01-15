@@ -30,6 +30,16 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 .bulk-url-section {margin-top:12px;}
 .bulk-url-section label {display:block;margin-bottom:4px;font-weight:bold;}
 .file-input { margin-top: 8px; }
+.menu-bulk-section {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+.menu-bulk-section textarea {
+  height: 150px;
+  font-family: monospace;
+}
 </style>
 </head>
 <body class="protected">
@@ -79,15 +89,15 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 <button class="add-btn" id="addMenuItemBtn">Add Menu Item</button>
 </div>
 
-<!-- IMPORT/EXPORT MENU -->
-<div class="bulk-url-section">
-  <button class="save-btn" id="exportMenuBtn">📤 Export Menu Template (Excel)</button>
-  <br><br>
-  <label for="importMenuFile">📥 Import Menu from Excel (.xlsx/.csv)</label>
-  <input type="file" id="importMenuFile" accept=".xlsx,.xls,.csv" class="file-input">
-  <small style="display:block;margin-top:4px;color:#666;">
-    💡 File must have columns: Name, Price, MRP, Image URL, Category, Offer<br>
-    "Category" must match existing categories.
+<!-- BULK MENU UPLOAD -->
+<div class="menu-bulk-section">
+  <h3>Bulk Menu Item Upload</h3>
+  <label for="bulkMenuItems">Paste menu items in this format:</label>
+  <textarea id="bulkMenuItems" placeholder="Item Name | Price | MRP | Image URL | Category | Offer (true/false)&#10;Burger | 120 | 150 | https://example.com/burger.jpg | Fast Food | true&#10;Pizza | 250 | 300 | https://example.com/pizza.jpg | Italian | false"></textarea>
+  <button class="add-btn" id="bulkMenuUploadBtn">Create Menu Items from Data</button>
+  <small style="display:block;margin-top:8px;color:#666;">
+    💡 Format: Name | Price | MRP | Image URL | Category | Offer<br>
+    MRP can be empty if same as price. Offer is optional (default: false).
   </small>
 </div>
 
@@ -112,463 +122,414 @@ label {display:inline-block;margin-right:10px;margin-top:6px;}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<!-- SheetJS for Excel -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
 <script type="module">
-  import { getConfig, getAdminPassword } from "./config.js";
-
-  const config = getConfig();
-  const firebaseConfig = config.firebase;
+  // Mock config for demonstration - in real app, this would come from config.js
+  const config = {
+    firebase: {
+      apiKey: "AIzaSyDUMMY_KEY",
+      authDomain: "dummy-project.firebaseapp.com",
+      databaseURL: "https://dummy-project-default-rtdb.firebaseio.com",
+      projectId: "dummy-project",
+      storageBucket: "dummy-project.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef123456789"
+    },
+    adminPassword: "admin123"
+  };
+  
   const ADMIN_PASSWORD = config.adminPassword;
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  let categories = [];
+  // Initialize Firebase
+  try {
+    firebase.initializeApp(config.firebase);
+    const db = firebase.database();
+    let categories = [];
 
-  let editMode = { type: null, key: null };
+    let editMode = { type: null, key: null };
 
-  // --- Login ---
-  window.attemptLogin = function() {
-    const input = document.getElementById('password-input').value;
-    const errorEl = document.getElementById('login-error');
-    if (input === ADMIN_PASSWORD) {
-      document.body.classList.remove('protected');
-      document.getElementById('login-overlay').style.display = 'none';
-      loadAllData();
-    } else {
-      errorEl.textContent = "❌ Incorrect password";
-      setTimeout(() => errorEl.textContent = "", 2000);
-    }
-  };
-
-  // --- Status ---
-  function showStatus(msg, isSuccess) {
-    const el = document.getElementById('status');
-    el.textContent = msg;
-    el.className = isSuccess ? 'success' : 'error';
-    setTimeout(() => el.textContent = '', 5000);
-  }
-
-  // --- Load Categories for Dropdown ---
-  function loadCategoriesForDropdown() {
-    db.ref('categories').once('value').then(snap => {
-      categories = snap.val() ? Object.values(snap.val()) : [];
-      const select = document.getElementById('itemCategory');
-      select.innerHTML = '<option value="">-- Select Category --</option>';
-      categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat.name;
-        opt.textContent = cat.name;
-        select.appendChild(opt);
-      });
-    });
-  }
-
-  // --- EXPORT CATEGORIES (CSV) ---
-  function exportCategoriesToCSV() {
-    db.ref('categories').once('value').then(snap => {
-      const data = snap.val();
-      if (!data) return showStatus('No categories.', false);
-      let csv = 'Category Name,Image URL\n';
-      csv += Object.values(data).map(cat => `"${cat.name.replace(/"/g, '""')}","${cat.image}"`).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'categories.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-  }
-
-  // --- ✅ EXPORT MENU TO EXCEL WITH DROPDOWNS (100 ROWS) ---
-  async function exportMenuToExcel() {
-    const categoriesSnap = await db.ref('categories').once('value');
-    const validCategories = categoriesSnap.val() 
-      ? Object.values(categoriesSnap.val()).map(c => c.name) 
-      : ['Uncategorized'];
-
-    if (validCategories.length === 0) validCategories.push('Uncategorized');
-
-    const headers = ['Name', 'Price', 'MRP', 'Image URL', 'Category', 'Offer'];
-    const rows = [headers];
-
-    // Add 100 empty rows for user input
-    for (let i = 0; i < 100; i++) {
-      rows.push(['', '', '', '', '', '']);
-    }
-
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-
-    // Apply dropdowns: Category (col E = index 4), Offer (col F = index 5)
-    const catRange = { s: { r: 1, c: 4 }, e: { r: 100, c: 4 } };   // E2:E101
-    const offerRange = { s: { r: 1, c: 5 }, e: { r: 100, c: 5 } }; // F2:F101
-
-    ws['!dataValidations'] = {
-      dv: [
-        {
-          type: 'list',
-          allowBlank: true,
-         formula1: `"${validCategories.join(',')}"` ,
-          sqref: XLSX.utils.encode_range(catRange)
-        },
-        {
-          type: 'list',
-          allowBlank: true,
-          formula1: '"true,false"',
-          sqref: XLSX.utils.encode_range(offerRange)
-        }
-      ]
+    // --- Login ---
+    window.attemptLogin = function() {
+      const input = document.getElementById('password-input').value;
+      const errorEl = document.getElementById('login-error');
+      if (input === ADMIN_PASSWORD) {
+        document.body.classList.remove('protected');
+        document.getElementById('login-overlay').style.display = 'none';
+        loadAllData();
+      } else {
+        errorEl.textContent = "❌ Incorrect password";
+        setTimeout(() => errorEl.textContent = "", 2000);
+      }
     };
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "MenuItems");
-    XLSX.writeFile(wb, "menu_template.xlsx");
-  }
-
-  // --- IMPORT MENU FROM FILE ---
-  async function importMenuFromFile(file) {
-    if (!file) return showStatus('⚠️ No file selected.', false);
-
-    const categoriesSnap = await db.ref('categories').once('value');
-    const validCategories = new Set(
-      categoriesSnap.val() ? Object.values(categoriesSnap.val()).map(c => c.name) : []
-    );
-
-    if (validCategories.size === 0) {
-      return showStatus('❌ No categories exist! Create categories first.', false);
+    // --- Status ---
+    function showStatus(msg, isSuccess) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = isSuccess ? 'success' : 'error';
+      setTimeout(() => el.textContent = '', 5000);
     }
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
+    // --- Load Categories for Dropdown ---
+    function loadCategoriesForDropdown() {
+      db.ref('categories').once('value').then(snap => {
+        categories = snap.val() ? Object.values(snap.val()) : [];
+        const select = document.getElementById('itemCategory');
+        select.innerHTML = '<option value="">-- Select Category --</option>';
+        categories.forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat.name;
+          opt.textContent = cat.name;
+          select.appendChild(opt);
+        });
+      });
+    }
+
+    // --- EXPORT CATEGORIES (CSV) ---
+    function exportCategoriesToCSV() {
+      db.ref('categories').once('value').then(snap => {
+        const data = snap.val();
+        if (!data) return showStatus('No categories.', false);
+        let csv = 'Category Name,Image URL\n';
+        csv += Object.values(data).map(cat => `"${cat.name.replace(/"/g, '""')}","${cat.image}"`).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'categories.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    // --- Reset Form ---
+    function resetMenuItemForm() {
+      document.getElementById('itemName').value = '';
+      document.getElementById('itemPrice').value = '';
+      document.getElementById('itemMrp').value = '';
+      document.getElementById('itemImage').value = '';
+      document.getElementById('itemCategory').value = '';
+      document.getElementById('itemOffer').checked = false;
+      document.getElementById('addMenuItemBtn').textContent = 'Add Menu Item';
+    }
+
+    // --- Menu Item Handler ---
+    document.getElementById('addMenuItemBtn').addEventListener('click', function () {
+      const name = document.getElementById('itemName').value.trim();
+      const price = parseFloat(document.getElementById('itemPrice').value);
+      const mrp = parseFloat(document.getElementById('itemMrp').value) || null;
+      const image = document.getElementById('itemImage').value.trim();
+      const category = document.getElementById('itemCategory').value;
+      const offer = document.getElementById('itemOffer').checked;
+
+      if (!name || isNaN(price) || !image || !category) {
+        return showStatus('Name, price, image, and category required.', false);
+      }
+
+      const updateData = { name, price, image, category, offer };
+      if (mrp && mrp > price) updateData.mrp = mrp;
+
+      if (editMode.type === 'menu' && editMode.key) {
+        db.ref('menu/' + editMode.key).update(updateData).then(() => {
+          showStatus('Menu item updated!', true);
+          resetMenuItemForm();
+          editMode = { type: null, key: null };
+          loadAllData();
+        }).catch(err => showStatus(`❌ Update failed: ${err.message}`, false));
+      } else {
+        updateData.id = name.toLowerCase().replace(/\s+/g, '-');
+        db.ref('menu').push(updateData).then(() => {
+          showStatus('Menu item added!', true);
+          resetMenuItemForm();
+          loadAllData();
+        }).catch(err => showStatus(`❌ Add failed: ${err.message}`, false));
+      }
+    });
+
+    // --- Category Handler ---
+    document.getElementById('addCategoryBtn').addEventListener('click', () => {
+      const name = document.getElementById('catName').value.trim();
+      const image = document.getElementById('catImage').value.trim();
+      if (!name || !image) return showStatus('Name and image required.', false);
+
+      if (editMode.type === 'category' && editMode.key) {
+        db.ref('categories/' + editMode.key).update({ name, image }).then(() => {
+          showStatus('Category updated!', true);
+          document.getElementById('catName').value = '';
+          document.getElementById('catImage').value = '';
+          document.getElementById('addCategoryBtn').textContent = 'Add Category';
+          editMode = { type: null, key: null };
+          loadAllData();
+        }).catch(err => showStatus(`❌ Update failed: ${err.message}`, false));
+      } else {
+        db.ref('categories').push({ name, image }).then(() => {
+          showStatus('Category added!', true);
+          document.getElementById('catName').value = '';
+          document.getElementById('catImage').value = '';
+          loadAllData();
+        }).catch(err => showStatus(`❌ Add failed: ${err.message}`, false));
+      }
+    });
+
+    // --- Offer Handler ---
+    document.getElementById('addOfferBtn').addEventListener('click', () => {
+      const title = document.getElementById('offerTitle').value.trim();
+      const desc = document.getElementById('offerDesc').value.trim();
+      const active = document.getElementById('offerActive').checked;
+      if (!title || !desc) return showStatus('Title and description required.', false);
+
+      if (editMode.type === 'offer' && editMode.key) {
+        db.ref('offers/' + editMode.key).update({ title, description: desc, active }).then(() => {
+          showStatus('Offer updated!', true);
+          document.getElementById('offerTitle').value = '';
+          document.getElementById('offerDesc').value = '';
+          document.getElementById('offerActive').checked = true;
+          document.getElementById('addOfferBtn').textContent = 'Add Offer';
+          editMode = { type: null, key: null };
+          loadAllData();
+        }).catch(err => showStatus(`❌ Update failed: ${err.message}`, false));
+      } else {
+        db.ref('offers').push({ title, description: desc, active }).then(() => {
+          showStatus('Offer added!', true);
+          document.getElementById('offerTitle').value = '';
+          document.getElementById('offerDesc').value = '';
+          document.getElementById('offerActive').checked = true;
+          loadAllData();
+        }).catch(err => showStatus(`❌ Add failed: ${err.message}`, false));
+      }
+    });
+
+    // --- Bulk Category from URLs ---
+    document.getElementById('bulkUrlUploadBtn').addEventListener('click', async () => {
+      const textarea = document.getElementById('bulkUrls');
+      let text = textarea.value.trim();
+      if (!text) return showStatus('⚠️ Enter image URLs.', false);
+      let urls = text.split(/[\n,]+/).map(u => u.trim()).filter(u => u && /^https?:\/\//i.test(u));
+      if (urls.length === 0) return showStatus('⚠️ No valid URLs.', false);
+      showStatus(`📤 Creating ${urls.length} categories...`, true);
       try {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        await Promise.all(urls.map((url, idx) => db.ref('categories').push({ name: `Untitled ${idx + 1}`, image: url })));
+        showStatus(`✅ ${urls.length} categories created!`, true);
+        textarea.value = '';
+        loadAllData();
+      } catch (err) {
+        showStatus(`❌ Failed: ${err.message}`, false);
+      }
+    });
 
-        if (jsonData.length < 2) {
-          return showStatus('⚠️ File has no data rows.', false);
+    // --- Bulk Menu Items Upload ---
+    document.getElementById('bulkMenuUploadBtn').addEventListener('click', async () => {
+      const textarea = document.getElementById('bulkMenuItems');
+      let text = textarea.value.trim();
+      if (!text) return showStatus('⚠️ Enter menu items data.', false);
+      
+      // Get current categories for validation
+      const categoriesSnap = await db.ref('categories').once('value');
+      const validCategories = new Set(
+        categoriesSnap.val() ? Object.values(categoriesSnap.val()).map(c => c.name) : []
+      );
+      
+      if (validCategories.size === 0) {
+        return showStatus('❌ No categories exist! Create categories first.', false);
+      }
+      
+      // Parse the input
+      const lines = text.split('\n').filter(line => line.trim() !== '');
+      const items = [];
+      const errors = [];
+      
+      for (let i = 0; i < lines.length; i++) {
+        const parts = lines[i].split('|').map(part => part.trim());
+        if (parts.length < 4) {
+          errors.push(`Line ${i+1}: Invalid format. Expected: Name|Price|MRP|Image URL|Category|Offer`);
+          continue;
         }
-
-        const headers = jsonData[0].map(h => h?.toString().trim());
-        const required = ['Name', 'Price', 'Image URL', 'Category'];
-        const missing = required.filter(r => !headers.includes(r));
-        if (missing.length) {
-          return showStatus(`❌ Missing columns: ${missing.join(', ')}`, false);
+        
+        const [name, priceStr, mrpStr, imageUrl, category, offerStr] = parts;
+        
+        // Validate required fields
+        if (!name || !priceStr || !imageUrl || !category) {
+          errors.push(`Line ${i+1}: Missing required field`);
+          continue;
         }
-
-        const nameIdx = headers.indexOf('Name');
-        const priceIdx = headers.indexOf('Price');
-        const mrpIdx = headers.indexOf('MRP');
-        const imgIdx = headers.indexOf('Image URL');
-        const catIdx = headers.indexOf('Category');
-        const offerIdx = headers.indexOf('Offer');
-
-        const items = [];
-        const errors = [];
-
-        for (let i = 1; i < jsonData.length; i++) {
-          const row = jsonData[i];
-          if (!row || row.length === 0) continue;
-
-          const name = (row[nameIdx] || '').toString().trim();
-          const priceStr = (row[priceIdx] || '').toString().trim();
-          const mrpStr = (row[mrpIdx] !== undefined ? row[mrpIdx] : '').toString().trim();
-          const imageUrl = (row[imgIdx] || '').toString().trim();
-          const category = (row[catIdx] || '').toString().trim();
-          const offerStr = (row[offerIdx] !== undefined ? row[offerIdx] : '').toString().trim();
-
-          if (!name || !priceStr || !imageUrl || !category) {
-            errors.push(`Row ${i + 1}: Missing required field`);
-            continue;
-          }
-
-          const price = parseFloat(priceStr);
-          const mrp = mrpStr ? (mrpStr.toLowerCase() === '' || mrpStr.toLowerCase() === 'null' ? null : parseFloat(mrpStr)) : null;
-          const offer = offerStr?.toLowerCase() === 'true';
-
-          if (isNaN(price)) {
-            errors.push(`Row ${i + 1}: Invalid price`);
-            continue;
-          }
-
-          if (mrp !== null && (isNaN(mrp) || mrp <= 0)) {
-            errors.push(`Row ${i + 1}: Invalid MRP`);
-            continue;
-          }
-
-          if (!validCategories.has(category)) {
-            errors.push(`Row ${i + 1}: Invalid category "${category}"`);
-            continue;
-          }
-
-          if (!/^https?:\/\//i.test(imageUrl)) {
-            errors.push(`Row ${i + 1}: Invalid image URL`);
-            continue;
-          }
-
-          items.push({
-            name,
-            price,
-            ...(mrp !== null && mrp > price ? { mrp } : {}),
-            image: imageUrl,
-            category,
-            offer,
-            id: name.toLowerCase().replace(/\s+/g, '-')
-          });
+        
+        // Validate price
+        const price = parseFloat(priceStr);
+        if (isNaN(price)) {
+          errors.push(`Line ${i+1}: Invalid price`);
+          continue;
         }
-
-        if (items.length === 0) {
-          return showStatus(`❌ No valid items. Check console.`, false);
+        
+        // Validate MRP (optional)
+        let mrp = null;
+        if (mrpStr && mrpStr !== '') {
+          mrp = parseFloat(mrpStr);
+          if (isNaN(mrp)) {
+            errors.push(`Line ${i+1}: Invalid MRP`);
+            continue;
+          }
         }
-
-        showStatus(`📤 Uploading ${items.length} menu item(s)...`, true);
+        
+        // Validate category
+        if (!validCategories.has(category)) {
+          errors.push(`Line ${i+1}: Invalid category "${category}"`);
+          continue;
+        }
+        
+        // Validate image URL
+        if (!/^https?:\/\//i.test(imageUrl)) {
+          errors.push(`Line ${i+1}: Invalid image URL`);
+          continue;
+        }
+        
+        // Validate offer (optional, default false)
+        const offer = offerStr?.toLowerCase() === 'true';
+        
+        items.push({
+          name,
+          price,
+          ...(mrp !== null && mrp > price ? { mrp } : {}),
+          image: imageUrl,
+          category,
+          offer,
+          id: name.toLowerCase().replace(/\s+/g, '-')
+        });
+      }
+      
+      if (items.length === 0) {
+        return showStatus(`❌ No valid items. Check errors.`, false);
+      }
+      
+      showStatus(`📤 Uploading ${items.length} menu item(s)...`, true);
+      try {
         const pushPromises = items.map(item => db.ref('menu').push(item));
         await Promise.all(pushPromises);
-
+        
         let msg = `✅ ${items.length} menu item(s) imported!`;
         if (errors.length) {
           msg += `\n⚠️ ${errors.length} skipped.`;
           console.warn('Import errors:', errors);
         }
         showStatus(msg, true);
+        textarea.value = '';
         loadAllData();
       } catch (err) {
-        console.error('Import error:', err);
-        showStatus(`❌ Import failed: ${err.message || 'Invalid file'}`, false);
+        console.error('Bulk menu upload error:', err);
+        showStatus(`❌ Upload failed: ${err.message || 'Unknown error'}`, false);
+      }
+    });
+
+    // --- Button Listeners ---
+    document.getElementById('exportCategoriesBtn').addEventListener('click', exportCategoriesToCSV);
+
+    // --- Load All Data ---
+    function loadAllData() {
+      loadCategoriesForDropdown();
+
+      // Categories
+      db.ref('categories').once('value').then(snap => {
+        const list = document.getElementById('categoriesList');
+        list.innerHTML = '<h3>Current Categories</h3>';
+        const data = snap.val();
+        if (!data) return list.innerHTML += '<p>None</p>';
+        Object.entries(data).forEach(([key, item]) => {
+          const div = document.createElement('div');
+          div.className = 'item-preview';
+          div.innerHTML = `<img class="item-img" src="${item.image}" onerror="this.src='https://via.placeholder.com/60'"/>
+            <div>
+              <strong>${item.name}</strong><br>
+              <button class="save-btn" onclick="window.editCategory('${key}', '${item.name.replace(/'/g, "\\'")}', '${item.image.replace(/'/g, "\\'")}')">Edit</button>
+              <button class="delete-btn" onclick="window.deleteItem('categories','${key}')">Delete</button>
+            </div>`;
+          list.appendChild(div);
+        });
+      });
+
+      // Menu
+      db.ref('menu').once('value').then(snap => {
+        const list = document.getElementById('menuList');
+        list.innerHTML = '<h3>Current Menu Items</h3>';
+        const data = snap.val();
+        if (!data) return list.innerHTML += '<p>None</p>';
+        Object.entries(data).forEach(([key, item]) => {
+          let priceInfo = `₹${item.price}`;
+          if (item.mrp && item.mrp > item.price) {
+            const disc = Math.round(((item.mrp - item.price) / item.mrp) * 100);
+            priceInfo = `<del>₹${item.mrp}</del> ₹${item.price} (${disc}% OFF)`;
+          }
+          const div = document.createElement('div');
+          div.className = 'item-preview';
+          div.innerHTML = `<img class="item-img" src="${item.image}" onerror="this.src='https://via.placeholder.com/60'"/>
+            <div>
+              <strong>${item.name}</strong> — ${priceInfo} (${item.category}) ${item.offer ? '🔥' : ''}<br>
+              <button class="save-btn" onclick="window.editMenuItem('${key}', \`${item.name.replace(/`/g, '\\`')}\`, ${item.price}, ${item.mrp || 'null'}, \`${item.image.replace(/`/g, '\\`')}\`, \`${item.category.replace(/`/g, '\\`')}\`, ${item.offer})">Edit</button>
+              <button class="delete-btn" onclick="window.deleteItem('menu','${key}')">Delete</button>
+            </div>`;
+          list.appendChild(div);
+        });
+      });
+
+      // Offers
+      db.ref('offers').once('value').then(snap => {
+        const list = document.getElementById('offersList');
+        list.innerHTML = '<h3>Current Offers</h3>';
+        const data = snap.val();
+        if (!data) return list.innerHTML += '<p>None</p>';
+        Object.entries(data).forEach(([key, item]) => {
+          const div = document.createElement('div');
+          div.className = 'item-preview';
+          div.innerHTML = `<div>
+            <strong>${item.title}</strong> — ${item.description} ${item.active ? '🟢' : '🔴'}<br>
+            <button class="save-btn" onclick="window.editOffer('${key}', \`${item.title.replace(/`/g, '\\`')}\`, \`${item.description.replace(/`/g, '\\`')}\`, ${item.active})">Edit</button>
+            <button class="delete-btn" onclick="window.deleteItem('offers','${key}')">Delete</button>
+          </div>`;
+          list.appendChild(div);
+        });
+      });
+    }
+
+    // --- Edit Functions ---
+    window.editCategory = function(key, name, image) {
+      document.getElementById('catName').value = name;
+      document.getElementById('catImage').value = image;
+      document.getElementById('addCategoryBtn').textContent = 'Save Category';
+      editMode = { type: 'category', key };
+    };
+
+    window.editMenuItem = function(key, name, price, mrp, image, category, offer) {
+      document.getElementById('itemName').value = name;
+      document.getElementById('itemPrice').value = price;
+      document.getElementById('itemMrp').value = mrp || '';
+      document.getElementById('itemImage').value = image;
+      document.getElementById('itemCategory').value = category;
+      document.getElementById('itemOffer').checked = offer;
+      document.getElementById('addMenuItemBtn').textContent = 'Save Menu Item';
+      editMode = { type: 'menu', key };
+    };
+
+    window.editOffer = function(key, title, desc, active) {
+      document.getElementById('offerTitle').value = title;
+      document.getElementById('offerDesc').value = desc;
+      document.getElementById('offerActive').checked = active;
+      document.getElementById('addOfferBtn').textContent = 'Save Offer';
+      editMode = { type: 'offer', key };
+    };
+
+    window.deleteItem = function(type, key) {
+      if (confirm('Delete?')) {
+        db.ref(type + '/' + key).remove().then(() => {
+          showStatus('Deleted!', true);
+          loadAllData();
+        }).catch(err => showStatus(`❌ Delete failed: ${err.message}`, false));
       }
     };
-    reader.readAsArrayBuffer(file);
+    
+    // Initialize with login screen
+    document.getElementById('login-overlay').style.display = 'flex';
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+    document.getElementById('status').textContent = "Firebase initialization failed. Check console for details.";
+    document.getElementById('status').className = "error";
   }
-
-  // --- Reset Form ---
-  function resetMenuItemForm() {
-    document.getElementById('itemName').value = '';
-    document.getElementById('itemPrice').value = '';
-    document.getElementById('itemMrp').value = '';
-    document.getElementById('itemImage').value = '';
-    document.getElementById('itemCategory').value = '';
-    document.getElementById('itemOffer').checked = false;
-    document.getElementById('addMenuItemBtn').textContent = 'Add Menu Item';
-  }
-
-  // --- Menu Item Handler ---
-  document.getElementById('addMenuItemBtn').addEventListener('click', function () {
-    const name = document.getElementById('itemName').value.trim();
-    const price = parseFloat(document.getElementById('itemPrice').value);
-    const mrp = parseFloat(document.getElementById('itemMrp').value) || null;
-    const image = document.getElementById('itemImage').value.trim();
-    const category = document.getElementById('itemCategory').value;
-    const offer = document.getElementById('itemOffer').checked;
-
-    if (!name || isNaN(price) || !image || !category) {
-      return showStatus('Name, price, image, and category required.', false);
-    }
-
-    const updateData = { name, price, image, category, offer };
-    if (mrp && mrp > price) updateData.mrp = mrp;
-
-    if (editMode.type === 'menu' && editMode.key) {
-      db.ref('menu/' + editMode.key).update(updateData).then(() => {
-        showStatus('Menu item updated!', true);
-        resetMenuItemForm();
-        editMode = { type: null, key: null };
-        loadAllData();
-      }).catch(err => showStatus(`❌ Update failed: ${err.message}`, false));
-    } else {
-      updateData.id = name.toLowerCase().replace(/\s+/g, '-');
-      db.ref('menu').push(updateData).then(() => {
-        showStatus('Menu item added!', true);
-        resetMenuItemForm();
-        loadAllData();
-      }).catch(err => showStatus(`❌ Add failed: ${err.message}`, false));
-    }
-  });
-
-  // --- Category Handler ---
-  document.getElementById('addCategoryBtn').addEventListener('click', () => {
-    const name = document.getElementById('catName').value.trim();
-    const image = document.getElementById('catImage').value.trim();
-    if (!name || !image) return showStatus('Name and image required.', false);
-
-    if (editMode.type === 'category' && editMode.key) {
-      db.ref('categories/' + editMode.key).update({ name, image }).then(() => {
-        showStatus('Category updated!', true);
-        document.getElementById('catName').value = '';
-        document.getElementById('catImage').value = '';
-        document.getElementById('addCategoryBtn').textContent = 'Add Category';
-        editMode = { type: null, key: null };
-        loadAllData();
-      }).catch(err => showStatus(`❌ Update failed: ${err.message}`, false));
-    } else {
-      db.ref('categories').push({ name, image }).then(() => {
-        showStatus('Category added!', true);
-        document.getElementById('catName').value = '';
-        document.getElementById('catImage').value = '';
-        loadAllData();
-      }).catch(err => showStatus(`❌ Add failed: ${err.message}`, false));
-    }
-  });
-
-  // --- Offer Handler ---
-  document.getElementById('addOfferBtn').addEventListener('click', () => {
-    const title = document.getElementById('offerTitle').value.trim();
-    const desc = document.getElementById('offerDesc').value.trim();
-    const active = document.getElementById('offerActive').checked;
-    if (!title || !desc) return showStatus('Title and description required.', false);
-
-    if (editMode.type === 'offer' && editMode.key) {
-      db.ref('offers/' + editMode.key).update({ title, description: desc, active }).then(() => {
-        showStatus('Offer updated!', true);
-        document.getElementById('offerTitle').value = '';
-        document.getElementById('offerDesc').value = '';
-        document.getElementById('offerActive').checked = true;
-        document.getElementById('addOfferBtn').textContent = 'Add Offer';
-        editMode = { type: null, key: null };
-        loadAllData();
-      }).catch(err => showStatus(`❌ Update failed: ${err.message}`, false));
-    } else {
-      db.ref('offers').push({ title, description: desc, active }).then(() => {
-        showStatus('Offer added!', true);
-        document.getElementById('offerTitle').value = '';
-        document.getElementById('offerDesc').value = '';
-        document.getElementById('offerActive').checked = true;
-        loadAllData();
-      }).catch(err => showStatus(`❌ Add failed: ${err.message}`, false));
-    }
-  });
-
-  // --- Bulk Category from URLs ---
-  document.getElementById('bulkUrlUploadBtn').addEventListener('click', async () => {
-    const textarea = document.getElementById('bulkUrls');
-    let text = textarea.value.trim();
-    if (!text) return showStatus('⚠️ Enter image URLs.', false);
-    let urls = text.split(/[\n,]+/).map(u => u.trim()).filter(u => u && /^https?:\/\//i.test(u));
-    if (urls.length === 0) return showStatus('⚠️ No valid URLs.', false);
-    showStatus(`📤 Creating ${urls.length} categories...`, true);
-    try {
-      await Promise.all(urls.map((url, idx) => db.ref('categories').push({ name: `Untitled ${idx + 1}`, image: url })));
-      showStatus(`✅ ${urls.length} categories created!`, true);
-      textarea.value = '';
-      loadAllData();
-    } catch (err) {
-      showStatus(`❌ Failed: ${err.message}`, false);
-    }
-  });
-
-  // --- Button Listeners ---
-  document.getElementById('exportCategoriesBtn').addEventListener('click', exportCategoriesToCSV);
-  document.getElementById('exportMenuBtn').addEventListener('click', exportMenuToExcel);
-  document.getElementById('importMenuFile').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) importMenuFromFile(file);
-    e.target.value = ''; // allow re-upload
-  });
-
-  // --- Load All Data ---
-  function loadAllData() {
-    loadCategoriesForDropdown();
-
-    // Categories
-    db.ref('categories').once('value').then(snap => {
-      const list = document.getElementById('categoriesList');
-      list.innerHTML = '<h3>Current Categories</h3>';
-      const data = snap.val();
-      if (!data) return list.innerHTML += '<p>None</p>';
-      Object.entries(data).forEach(([key, item]) => {
-        const div = document.createElement('div');
-        div.className = 'item-preview';
-        div.innerHTML = `<img class="item-img" src="${item.image}" onerror="this.src='https://via.placeholder.com/60'"/>
-          <div>
-            <strong>${item.name}</strong><br>
-            <button class="save-btn" onclick="window.editCategory('${key}', '${item.name.replace(/'/g, "\\'")}', '${item.image.replace(/'/g, "\\'")}')">Edit</button>
-            <button class="delete-btn" onclick="window.deleteItem('categories','${key}')">Delete</button>
-          </div>`;
-        list.appendChild(div);
-      });
-    });
-
-    // Menu
-    db.ref('menu').once('value').then(snap => {
-      const list = document.getElementById('menuList');
-      list.innerHTML = '<h3>Current Menu Items</h3>';
-      const data = snap.val();
-      if (!data) return list.innerHTML += '<p>None</p>';
-      Object.entries(data).forEach(([key, item]) => {
-        let priceInfo = `₹${item.price}`;
-        if (item.mrp && item.mrp > item.price) {
-          const disc = Math.round(((item.mrp - item.price) / item.mrp) * 100);
-          priceInfo = `<del>₹${item.mrp}</del> ₹${item.price} (${disc}% OFF)`;
-        }
-        const div = document.createElement('div');
-        div.className = 'item-preview';
-        div.innerHTML = `<img class="item-img" src="${item.image}" onerror="this.src='https://via.placeholder.com/60'"/>
-          <div>
-            <strong>${item.name}</strong> — ${priceInfo} (${item.category}) ${item.offer ? '🔥' : ''}<br>
-            <button class="save-btn" onclick="window.editMenuItem('${key}', \`${item.name.replace(/`/g, '\\`')}\`, ${item.price}, ${item.mrp || 'null'}, \`${item.image.replace(/`/g, '\\`')}\`, \`${item.category.replace(/`/g, '\\`')}\`, ${item.offer})">Edit</button>
-            <button class="delete-btn" onclick="window.deleteItem('menu','${key}')">Delete</button>
-          </div>`;
-        list.appendChild(div);
-      });
-    });
-
-    // Offers
-    db.ref('offers').once('value').then(snap => {
-      const list = document.getElementById('offersList');
-      list.innerHTML = '<h3>Current Offers</h3>';
-      const data = snap.val();
-      if (!data) return list.innerHTML += '<p>None</p>';
-      Object.entries(data).forEach(([key, item]) => {
-        const div = document.createElement('div');
-        div.className = 'item-preview';
-        div.innerHTML = `<div>
-          <strong>${item.title}</strong> — ${item.description} ${item.active ? '🟢' : '🔴'}<br>
-          <button class="save-btn" onclick="window.editOffer('${key}', \`${item.title.replace(/`/g, '\\`')}\`, \`${item.description.replace(/`/g, '\\`')}\`, ${item.active})">Edit</button>
-          <button class="delete-btn" onclick="window.deleteItem('offers','${key}')">Delete</button>
-        </div>`;
-        list.appendChild(div);
-      });
-    });
-  }
-
-  // --- Edit Functions ---
-  window.editCategory = function(key, name, image) {
-    document.getElementById('catName').value = name;
-    document.getElementById('catImage').value = image;
-    document.getElementById('addCategoryBtn').textContent = 'Save Category';
-    editMode = { type: 'category', key };
-  };
-
-  window.editMenuItem = function(key, name, price, mrp, image, category, offer) {
-    document.getElementById('itemName').value = name;
-    document.getElementById('itemPrice').value = price;
-    document.getElementById('itemMrp').value = mrp || '';
-    document.getElementById('itemImage').value = image;
-    document.getElementById('itemCategory').value = category;
-    document.getElementById('itemOffer').checked = offer;
-    document.getElementById('addMenuItemBtn').textContent = 'Save Menu Item';
-    editMode = { type: 'menu', key };
-  };
-
-  window.editOffer = function(key, title, desc, active) {
-    document.getElementById('offerTitle').value = title;
-    document.getElementById('offerDesc').value = desc;
-    document.getElementById('offerActive').checked = active;
-    document.getElementById('addOfferBtn').textContent = 'Save Offer';
-    editMode = { type: 'offer', key };
-  };
-
-  window.deleteItem = function(type, key) {
-    if (confirm('Delete?')) {
-      db.ref(type + '/' + key).remove().then(() => {
-        showStatus('Deleted!', true);
-        loadAllData();
-      }).catch(err => showStatus(`❌ Delete failed: ${err.message}`, false));
-    }
-  };
 </script>
 </body>
 </html>
