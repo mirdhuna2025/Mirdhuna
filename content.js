@@ -797,6 +797,8 @@ document.addEventListener("click", async (e) => {
   const t = e.target
 
   if (t.classList && t.classList.contains("add-cart-btn")) {
+    e.preventDefault()
+    e.stopPropagation()
     const id = t.dataset.id
     const name = t.dataset.name
     const price = safeNumber(t.dataset.price, 0)
