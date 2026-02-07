@@ -33,6 +33,8 @@ const cartToggleBtn = document.getElementById("cart-toggle-btn")
 const sortSelect = document.getElementById("sort-select")
 const gridViewBtn = document.getElementById("grid-view")
 const listViewBtn = document.getElementById("list-view")
+const listViewBtn = document.getElementById("small-view")
+
 
 const productPopup = document.getElementById("productPopup")
 const ppImg = document.getElementById("pp-img")
