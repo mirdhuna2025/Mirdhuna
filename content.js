@@ -781,6 +781,32 @@ function renderMapEmbed(lat, lng, zoom = 15) {
   const url = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${lat},${lng}&zoom=${zoom}`
   mapEl.src = url
 }
+function animateAddToCart(imgEl) {
+  if (!imgEl || !cartToggleBtn) return
+
+  const imgRect = imgEl.getBoundingClientRect()
+  const cartRect = cartToggleBtn.getBoundingClientRect()
+
+  const clone = imgEl.cloneNode(true)
+  clone.classList.add("fly-img")
+
+  clone.style.top = imgRect.top + "px"
+  clone.style.left = imgRect.left + "px"
+  clone.style.width = imgRect.width + "px"
+  clone.style.height = imgRect.height + "px"
+
+  document.body.appendChild(clone)
+
+  requestAnimationFrame(() => {
+    const dx = cartRect.left + cartRect.width / 2 - imgRect.left
+    const dy = cartRect.top + cartRect.height / 2 - imgRect.top
+
+    clone.style.transform = `translate(${dx}px, ${dy}px) scale(0.1)`
+    clone.style.opacity = "0"
+  })
+
+  setTimeout(() => clone.remove(), 750)
+}
 
 document.addEventListener("click", async (e) => {
   if (e.target.classList && e.target.classList.contains("track-btn")) {
