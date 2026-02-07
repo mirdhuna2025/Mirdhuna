@@ -259,22 +259,10 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .menu-card.list-view {
-      grid-column: 1 / -1;
-      display: flex;
-      gap: 1px;
-      align-items: center;
-      padding: 1px;
-    }
+    .menu-card.list-view {grid-column: 1 / -1; display: flex; gap: 1px; align-items: center; padding: 1px;}
     .menu-card.list-view .menu-img { width: 140px; height: 120px; border-radius: 12px; object-fit: fit; }
     .menu-card.list-view .menu-info { padding: 2px 0; flex: 1; }
-    .menu-card.list-view .add-cart-btn { 
-      position: relative; 
-      opacity: 1; 
-      transform: none; 
-      width: 110px; left:50px;
-      margin-top: 10px;
-    }
+    .menu-card.list-view .add-cart-btn { position: relative; opacity: 1;  transform: none;  width: 110px; left:50px;  margin-top: 10px; }
 
     @media (max-width: 520px) {
       .menu-img { height: 160px; }
@@ -285,7 +273,7 @@
     .menu-card.small-view .menu-info {display: none;} .menu-card.small-view .offer-tag {display: none;}  display: flex; align-items: center;  }
     .menu-card.small-view .add-cart-btn::after { content: "+"; color: #fff; font-weight: bold;}
     .menu-card.small-view .menu-img { width: 70px; height: 70px; border-radius: 5px; object-fit: center; }
-    .menu-card.small-view .menu-info { padding: 2px 0; flex: 1; }
+    .menu-card.small-view {  gap: 1px; align-items: center; padding: 1px;}  
     }
 
     @media (max-width: 250px) {
