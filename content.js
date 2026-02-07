@@ -321,7 +321,7 @@ card.innerHTML = `
       data-price="${safeNumber(item.price, 0)}"
       data-image="${item.image || ""}"
     >
-      Add to Cart
+      Add 
     </button>
   </div>
 `
