@@ -955,7 +955,7 @@ window.showLoginModal = showLoginModal
 if (cartPopupEl) {
   cartPopupEl.style.position = "fixed"
   cartPopupEl.style.bottom = "80px"
-  cartPopupEl.style.left = "10px"
+  cartPopupEl.style.left = "20px"
   cartPopupEl.style.right = "10px"
   cartPopupEl.style.zIndex = "9999"
 }
