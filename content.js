@@ -307,7 +307,21 @@ function renderMenuItems(items) {
         <button class="add-cart-btn" data-id="${item.id}" data-name="${safeName}" data-price="${safeNumber(item.price, 0)}" data-image="${item.image || ""}">Add to Cart</button>
       </div>
     `
-
+onst card = document.createElement("div")
+    card.className = `menu-card ${viewMode === "small" ? "small-view" : ""}`
+    card.innerHTML = `
+      <img class="menu-img" loading="lazy" src="${item.image || ""}" alt="${safeName}" />
+      <div class="menu-info">
+        <div class="menu-name">${safeName}</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${mrpDisplay}
+          <div class="menu-price">₹${safePrice}</div>
+          ${discountDisplay}
+        </div>
+        ${item.offer ? `<div class="offer-tag">OFFER</div>` : ""}
+        <button class="add-cart-btn" data-id="${item.id}" data-name="${safeName}" data-price="${safeNumber(item.price, 0)}" data-image="${item.image || ""}">Add to Cart</button>
+      </div>
+    `
     const imgEl = card.querySelector(".menu-img")
     imgEl?.addEventListener("click", (e) => openProductPopup(item))
     card.addEventListener("click", (e) => {
