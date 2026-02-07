@@ -292,41 +292,55 @@ function renderMenuItems(items) {
         ? `<div style="color:#d40000;font-size:13px;font-weight:600;margin-top:2px;">${Math.round(((item.mrp - item.price) / item.mrp) * 100)}% OFF</div>`
         : ""
 
-    const card = document.createElement("div")
-    card.className = `menu-card ${viewMode === "list" ? "list-view" : ""}`
-    card.innerHTML = `
-      <img class="menu-img" loading="lazy" src="${item.image || ""}" alt="${safeName}" />
-      <div class="menu-info">
-        <div class="menu-name">${safeName}</div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          ${mrpDisplay}
-          <div class="menu-price">₹${safePrice}</div>
-          ${discountDisplay}
-        </div>
-        ${item.offer ? `<div class="offer-tag">OFFER</div>` : ""}
-        <button class="add-cart-btn" data-id="${item.id}" data-name="${safeName}" data-price="${safeNumber(item.price, 0)}" data-image="${item.image || ""}">Add to Cart</button>
-      </div>
-    `
-   const card = document.createElement("div")
-    card.className = `menu-card ${viewMode === "small" ? "small-view" : ""}`
-    card.innerHTML = `
-      <img class="menu-img" loading="lazy" src="${item.image || ""}" alt="${safeName}" />
-      <div class="menu-info">
-        <div class="menu-name">${safeName}</div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          ${mrpDisplay}
-          <div class="menu-price">₹${safePrice}</div>
-          ${discountDisplay}
-        </div>
-        ${item.offer ? `<div class="offer-tag">OFFER</div>` : ""}
-        <button class="add-cart-btn" data-id="${item.id}" data-name="${safeName}" data-price="${safeNumber(item.price, 0)}" data-image="${item.image || ""}">Add to Cart</button>
-      </div>
-    `
-    const imgEl = card.querySelector(".menu-img")
-    imgEl?.addEventListener("click", (e) => openProductPopup(item))
-    card.addEventListener("click", (e) => {
-      if (!e.target.classList.contains("add-cart-btn") && e.target !== imgEl) openProductPopup(item)
-    })
+  const card = document.createElement("div")
+
+// decide view class once
+const viewClass =
+  viewMode === "list"
+    ? "list-view"
+    : viewMode === "small"
+    ? "small-view"
+    : ""
+
+card.className = `menu-card ${viewClass}`
+
+card.innerHTML = `
+  <img class="menu-img" loading="lazy" src="${item.image || ""}" alt="${safeName}" />
+  <div class="menu-info">
+    <div class="menu-name">${safeName}</div>
+    <div style="display:flex;gap:6px;align-items:center;">
+      ${mrpDisplay}
+      <div class="menu-price">₹${safePrice}</div>
+      ${discountDisplay}
+    </div>
+    ${item.offer ? `<div class="offer-tag">OFFER</div>` : ""}
+    <button
+      class="add-cart-btn"
+      data-id="${item.id}"
+      data-name="${safeName}"
+      data-price="${safeNumber(item.price, 0)}"
+      data-image="${item.image || ""}"
+    >
+      Add to Cart
+    </button>
+  </div>
+`
+
+const imgEl = card.querySelector(".menu-img")
+
+imgEl?.addEventListener("click", () => {
+  openProductPopup(item)
+})
+
+card.addEventListener("click", (e) => {
+  if (
+    !e.target.classList.contains("add-cart-btn") &&
+    e.target !== imgEl
+  ) {
+    openProductPopup(item)
+  }
+})
+
 
     menuGrid.appendChild(card)
   })
