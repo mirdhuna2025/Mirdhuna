@@ -307,7 +307,7 @@ function renderMenuItems(items) {
         <button class="add-cart-btn" data-id="${item.id}" data-name="${safeName}" data-price="${safeNumber(item.price, 0)}" data-image="${item.image || ""}">Add to Cart</button>
       </div>
     `
-onst card = document.createElement("div")
+   const card = document.createElement("div")
     card.className = `menu-card ${viewMode === "small" ? "small-view" : ""}`
     card.innerHTML = `
       <img class="menu-img" loading="lazy" src="${item.image || ""}" alt="${safeName}" />
