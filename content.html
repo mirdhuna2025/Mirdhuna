@@ -234,31 +234,49 @@
       z-index: 3;
     }
 
-    .add-cart-btn {  content: "+"; color: #fff; font-weight: bold;
-      position: relative;
-      bottom: 88px;
-      right: 12px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: none;
-      background: #4CAF50;
-      color: #fff;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      box-shadow: 0 6px 16px rgba(76,175,80,0.28);
-      opacity: 1;
-      transform: translateY(8px);
-      transition: opacity 0.28s ease, transform 0.28s ease, background 0.2s ease;
-      z-index: 4;
-    }
-    .menu-card:hover .add-cart-btn { opacity: 1; transform: translateY(0); }
-    .add-cart-btn:hover { background: #43a047; transform: scale(1.04); }
 
-    @keyframes cardFadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+
+/* ADD TO CART BUTTON */
+.add-cart-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+
+  background: #4CAF50;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(76,175,80,0.28);
+
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease,
+    background 0.2s ease;
+
+  z-index: 5;
+}
+
+/* SHOW ON CARD HOVER */
+.menu-card:hover .add-cart-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* BUTTON HOVER */
+.add-cart-btn:hover {
+  background: #43a047;
+  transform: translateY(0) scale(1.05);
+}
+
 
     .menu-card.list-view {grid-column: 1 / -1; display: flex; gap: 1px; align-items: center; padding: 1px;}
     .menu-card.list-view .menu-img { width: 140px; height: 120px; border-radius: 12px; object-fit: fill; }
