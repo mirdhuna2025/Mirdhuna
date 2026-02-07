@@ -921,6 +921,7 @@ trackPopup?.addEventListener("click", (e) => {
 function setActiveView(mode) {
   gridViewBtn?.classList.toggle("active", mode === "grid")
   listViewBtn?.classList.toggle("active", mode === "list")
+  smallViewBtn?.classList.toggle("active", mode === "small")
 }
 
 gridViewBtn &&
@@ -936,7 +937,12 @@ listViewBtn &&
     setActiveView("list")
     renderMenu()
   })
-
+smallViewBtn &&
+  smallViewBtn.addEventListener("click", () => {
+    viewMode = "small"
+    setActiveView("small")
+    renderMenu()
+  })
 sortSelect && sortSelect.addEventListener("change", () => renderMenu())
 
 updateAuthUI()
