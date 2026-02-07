@@ -830,17 +830,23 @@ document.addEventListener("click", async (e) => {
   }
 
   const t = e.target
+if (t.classList && t.classList.contains("add-cart-btn")) {
+  e.preventDefault()
+  e.stopPropagation()
 
-  if (t.classList && t.classList.contains("add-cart-btn")) {
-    e.preventDefault()
-    e.stopPropagation()
-    const id = t.dataset.id
-    const name = t.dataset.name
-    const price = safeNumber(t.dataset.price, 0)
-    const image = t.dataset.image || ""
-    addToCart(id, name, price, image, 1)
-    return
-  }
+  const card = t.closest(".menu-card")
+  const imgEl = card?.querySelector(".menu-img")
+
+  animateAddToCart(imgEl)
+
+  const id = t.dataset.id
+  const name = t.dataset.name
+  const price = safeNumber(t.dataset.price, 0)
+  const image = t.dataset.image || ""
+
+  addToCart(id, name, price, image, 1)
+  return
+}
 
   if (t && t.id === "pp-add") {
     const id = ppAdd?.dataset.id || `temp-${Date.now()}`
