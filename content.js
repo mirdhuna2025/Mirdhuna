@@ -364,8 +364,9 @@ function renderMenu() {
   }
 
   renderMenuItems(items)
-  menuGrid.style.gridTemplateColumns = viewMode === "list" ? "1fr" : "repeat(2, 1fr)"
+  menuGrid.style.gridTemplateColumns = viewMode === "list" ? "1fr" : "repeat(2, 1fr)" : viewMode === "small"  ? "repeat(4, 1fr)" : 
  
+
 }
 
 let popupCurrentItem = null
