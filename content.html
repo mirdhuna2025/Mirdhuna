@@ -273,7 +273,17 @@
       .menu-card { border-radius: 14px; }
       .add-cart-btn { padding: 7px 12px; font-size: 13px; }
     }
+     .menu-card.grid-view {grid-column: 1 / -1; display: flex; gap: 1px; align-items: center; padding: 1px;}
+    .menu-card.grid-view .menu-img { width: 140px; height: 120px; border-radius: 12px; object-fit: fill; }
+    .menu-card.grid-view .menu-info { padding: 2px 0; flex: 1; }
+    .menu-card.grid-view .add-cart-btn { position: relative; opacity: 1;  transform: none;  width: 110px; left:50px;  margin-top: 90px; }
 
+    @media (max-width: 520px) {
+      .menu-img { height: 160px; }
+      .menu-card { border-radius: 14px; }
+      .add-cart-btn { padding: 7px 12px; font-size: 13px; }
+    }
+    
     .menu-card.small-view .menu-info {display: none;} .menu-card.small-view .offer-tag {display: none;}  display: flex; align-items: center; gap: 1px; padding: 1px !important; }
     .menu-card.small-view .menu-img { width:60px; height:60px; border-radius: 5px; object-fit: fill ; }
     .menu-card.small-view {  gap: 1px; padding: 1px;}  
