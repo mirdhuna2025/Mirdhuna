@@ -18,18 +18,14 @@ const authBar = document.getElementById("auth-bar")
 const categoryCarousel = document.getElementById("categoryCarousel")
 const menuGrid = document.getElementById("menuGrid")
 const offerBanner = document.getElementById("offerBanner")
-
 const cartPopupEl = document.getElementById("cart-popup")
 const cartItemsEl = document.getElementById("cartItems")
 const cartTotalEl = document.getElementById("cartTotal")
 const cartToggleBtn = document.getElementById("cart-toggle-btn")
-
 const sortSelect = document.getElementById("sort-select")
 const gridViewBtn = document.getElementById("grid-view")
 const listViewBtn = document.getElementById("list-view")
 const smallViewBtn = document.getElementById("small-view")
-
-
 const productPopup = document.getElementById("productPopup")
 const ppImg = document.getElementById("pp-img")
 const ppName = document.getElementById("pp-name")
@@ -38,7 +34,6 @@ const ppPrice = document.getElementById("pp-price")
 const ppQty = document.getElementById("pp-qty")
 const ppAdd = document.getElementById("pp-add")
 const ppClose = document.getElementById("pp-close")
-
 const checkoutModal = document.getElementById("checkoutModal")
 const checkoutAddress = document.getElementById("checkout-address")
 const checkoutPayment = document.getElementById("checkout-payment")
@@ -51,24 +46,19 @@ const loginPopup = document.getElementById("mirdhuna-login-popup")
 const mobInput = document.getElementById("mirdhuna-mob-input")
 const submitLoginBtn = document.getElementById("mirdhuna-submit-login")
 const closeLoginBtn = document.getElementById("mirdhuna-close-popup")
-
 const searchInput = document.getElementById("search-input")
 const searchResults = document.getElementById("search-results")
 let searchTimer
-
 const homeBtn = document.getElementById("homeBtn")
 const ordersBtn = document.getElementById("ordersBtn")
 const authButton = document.getElementById("authButton")
 const authTextEl = document.getElementById("authText")
 const searchBtnNav = document.getElementById("searchBtn")
-
 const ordersPopup = document.getElementById("orders-popup")
 const closeOrdersBtn = document.getElementById("close-orders")
 const ordersContainer = document.getElementById("ordersContainer")
-
 const trackPopup = document.getElementById("track-popup")
 const closeTrackBtn = document.getElementById("close-track")
-
 let toastEl = document.getElementById("toast")
 
 // 📍 Shop location (25.246747, 86.976773)
@@ -103,15 +93,7 @@ function getLocationStatusBanner() {
     banner = document.createElement("div")
     banner.id = "location-status-banner"
     banner.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: 12px 16px;
-      text-align: center;
-      font-weight: 500;
-      font-size: 14px;
-      z-index: 9999;
+      position: fixed; top: 0; left: 0; right: 0; padding: 12px 16px; text-align: center; font-weight: 500; font-size: 14px; z-index: 9999;
       transition: all 0.3s ease;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     `
