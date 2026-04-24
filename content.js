@@ -155,6 +155,14 @@ function updateLocationStatus(userLat, userLng) {
     
     if (checkoutPlace) checkoutPlace.disabled = true
   }
+
+  // ✅ MAKE BANNER CLICKABLE (important fix)
+  banner.style.cursor = "pointer"
+  banner.title = "Click to change location"
+
+  banner.onclick = () => {
+    showLocationPicker()
+  }
 }
 
 // Get or create location picker modal
