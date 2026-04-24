@@ -102,6 +102,29 @@ function isWithinServiceArea(userLat, userLng) {
   return distance <= SERVICE_RADIUS_KM
 }
 
+// Close location picker modal
+function closeLocationPickerModal() {
+  const locationPickerModal = document.getElementById("location-picker-modal")
+  if (locationPickerModal) {
+    locationPickerModal.style.display = "none"
+    // Clean up map
+    const mapContainer = document.getElementById("location-picker-map")
+    if (mapContainer && mapContainer._leaflet_map) {
+      mapContainer._leaflet_map.remove()
+      mapContainer._leaflet_map = null
+    }
+  }
+}
+
+// Confirm location selection
+function confirmLocationSelection() {
+  if (window.selectedLocation) {
+    updateLocationStatus(window.selectedLocation.lat, window.selectedLocation.lng)
+    closeLocationPickerModal()
+    showToast("✓ Location updated successfully")
+  }
+}
+
 // Get or create location picker modal
 function getLocationPickerModal() {
   let modal = document.getElementById("location-picker-modal")
@@ -144,10 +167,18 @@ function getLocationPickerModal() {
       justify-content: space-between;
       align-items: center;
     `
-    header.innerHTML = `
-      <span>Select Delivery Location</span>
-      <button id="close-location-picker" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
-    `
+    
+    const closeBtn = document.createElement("button")
+    closeBtn.id = "close-location-picker"
+    closeBtn.textContent = "✕"
+    closeBtn.style.cssText = "background: none; border: none; font-size: 24px; cursor: pointer;"
+    closeBtn.onclick = closeLocationPickerModal
+    
+    const headerText = document.createElement("span")
+    headerText.textContent = "Select Delivery Location"
+    
+    header.appendChild(headerText)
+    header.appendChild(closeBtn)
     
     const mapContainer = document.createElement("div")
     mapContainer.id = "location-picker-map"
@@ -164,15 +195,34 @@ function getLocationPickerModal() {
       gap: 8px;
       justify-content: flex-end;
     `
-    footer.innerHTML = `
-      <button id="cancel-location-picker" style="padding: 8px 16px; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;">Cancel</button>
-      <button id="confirm-location-picker" style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Confirm Location</button>
-    `
+    
+    const cancelBtn = document.createElement("button")
+    cancelBtn.id = "cancel-location-picker"
+    cancelBtn.textContent = "Cancel"
+    cancelBtn.style.cssText = "padding: 8px 16px; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;"
+    cancelBtn.onclick = closeLocationPickerModal
+    
+    const confirmBtn = document.createElement("button")
+    confirmBtn.id = "confirm-location-picker"
+    confirmBtn.textContent = "Confirm Location"
+    confirmBtn.style.cssText = "padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;"
+    confirmBtn.onclick = confirmLocationSelection
+    
+    footer.appendChild(cancelBtn)
+    footer.appendChild(confirmBtn)
     
     content.appendChild(header)
     content.appendChild(mapContainer)
     content.appendChild(footer)
     modal.appendChild(content)
+    
+    // Close modal when clicking outside the content
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeLocationPickerModal()
+      }
+    })
+    
     document.body.appendChild(modal)
   }
   return modal
@@ -1345,53 +1395,7 @@ try {
 
 loadShopData()
 
-// Location picker modal event listeners
-document.addEventListener("DOMContentLoaded", () => {
-  // Close location picker modal
-  const closeLocationPickerBtn = document.getElementById("close-location-picker")
-  const cancelLocationPickerBtn = document.getElementById("cancel-location-picker")
-  const confirmLocationPickerBtn = document.getElementById("confirm-location-picker")
-  const locationPickerModal = document.getElementById("location-picker-modal")
-  
-  function closeLocationPickerModal() {
-    if (locationPickerModal) {
-      locationPickerModal.style.display = "none"
-      // Clean up map
-      const mapContainer = document.getElementById("location-picker-map")
-      if (mapContainer && mapContainer._leaflet_map) {
-        mapContainer._leaflet_map.remove()
-        mapContainer._leaflet_map = null
-      }
-    }
-  }
-  
-  if (closeLocationPickerBtn) {
-    closeLocationPickerBtn.addEventListener("click", closeLocationPickerModal)
-  }
-  
-  if (cancelLocationPickerBtn) {
-    cancelLocationPickerBtn.addEventListener("click", closeLocationPickerModal)
-  }
-  
-  if (confirmLocationPickerBtn) {
-    confirmLocationPickerBtn.addEventListener("click", () => {
-      if (window.selectedLocation) {
-        updateLocationStatus(window.selectedLocation.lat, window.selectedLocation.lng)
-        closeLocationPickerModal()
-        showToast("✓ Location updated successfully")
-      }
-    })
-  }
-  
-  // Close modal when clicking outside the content
-  if (locationPickerModal) {
-    locationPickerModal.addEventListener("click", (e) => {
-      if (e.target === locationPickerModal) {
-        closeLocationPickerModal()
-      }
-    })
-  }
-})
+
 
 // Expose needed globals
 window.addToCart = addToCart
