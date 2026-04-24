@@ -145,6 +145,202 @@ function updateLocationStatus(userLat, userLng) {
   }
 }
 
+// Get or create location picker modal
+function getLocationPickerModal() {
+  let modal = document.getElementById("location-picker-modal")
+  if (!modal) {
+    modal = document.createElement("div")
+    modal.id = "location-picker-modal"
+    modal.style.cssText = `
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    `
+    
+    const content = document.createElement("div")
+    content.style.cssText = `
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    `
+    
+    const header = document.createElement("div")
+    header.style.cssText = `
+      padding: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    `
+    header.innerHTML = `
+      <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Select Your Location</h2>
+      <button id="close-location-picker" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">×</button>
+    `
+    
+    const mapContainer = document.createElement("div")
+    mapContainer.id = "location-map"
+    mapContainer.style.cssText = `
+      flex: 1;
+      min-height: 400px;
+      background: #f3f4f6;
+    `
+    
+    const footer = document.createElement("div")
+    footer.style.cssText = `
+      padding: 16px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    `
+    footer.innerHTML = `
+      <button id="cancel-location-picker" style="padding: 8px 16px; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer; font-weight: 500;">Cancel</button>
+      <button id="confirm-location-picker" style="padding: 8px 16px; border: none; background: #10b981; color: white; border-radius: 6px; cursor: pointer; font-weight: 500;">Confirm Location</button>
+    `
+    
+    content.appendChild(header)
+    content.appendChild(mapContainer)
+    content.appendChild(footer)
+    modal.appendChild(content)
+    document.body.appendChild(modal)
+  }
+  return modal
+}
+
+// Store current selected location
+let selectedLocationCoords = null
+
+// Initialize and show location picker
+async function showLocationPicker() {
+  const modal = getLocationPickerModal()
+  modal.style.display = "flex"
+  
+  // Load Leaflet CSS
+  if (!document.getElementById("leaflet-css")) {
+    const link = document.createElement("link")
+    link.id = "leaflet-css"
+    link.rel = "stylesheet"
+    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    document.head.appendChild(link)
+  }
+  
+  // Load Leaflet JS
+  if (typeof L === "undefined") {
+    await new Promise((resolve) => {
+      const script = document.createElement("script")
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      script.onload = resolve
+      document.head.appendChild(script)
+    })
+  }
+  
+  // Initialize map
+  setTimeout(() => {
+    const mapElement = document.getElementById("location-map")
+    mapElement.innerHTML = "" // Clear previous map
+    
+    const map = L.map("location-map").setView([SHOP_LOCATION.lat, SHOP_LOCATION.lng], 13)
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
+      maxZoom: 19,
+    }).addTo(map)
+    
+    // Add shop location marker
+    L.circleMarker([SHOP_LOCATION.lat, SHOP_LOCATION.lng], {
+      radius: 12,
+      fillColor: "#10b981",
+      color: "#059669",
+      weight: 3,
+      opacity: 1,
+      fillOpacity: 0.8,
+    })
+      .addTo(map)
+      .bindPopup("Our Shop Location")
+    
+    // Draw service radius circle
+    L.circle([SHOP_LOCATION.lat, SHOP_LOCATION.lng], {
+      radius: SERVICE_RADIUS_KM * 1000,
+      color: "#10b981",
+      fillColor: "#dcfce7",
+      weight: 2,
+      opacity: 0.5,
+      fillOpacity: 0.1,
+    }).addTo(map)
+    
+    // Get current user location
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const userLat = pos.coords.latitude
+        const userLng = pos.coords.longitude
+        selectedLocationCoords = { lat: userLat, lng: userLng }
+        map.setView([userLat, userLng], 13)
+        
+        addUserMarker(map, userLat, userLng)
+      })
+    }
+    
+    // Click on map to select location
+    map.on("click", (e) => {
+      selectedLocationCoords = { lat: e.latlng.lat, lng: e.latlng.lng }
+      
+      // Remove previous marker
+      map.eachLayer((layer) => {
+        if (layer instanceof L.Marker && layer !== shopMarker) {
+          map.removeLayer(layer)
+        }
+      })
+      
+      addUserMarker(map, e.latlng.lat, e.latlng.lng)
+    })
+  }, 100)
+}
+
+// Add user marker to map
+function addUserMarker(map, lat, lng) {
+  const marker = L.circleMarker([lat, lng], {
+    radius: 10,
+    fillColor: "#3b82f6",
+    color: "#1e40af",
+    weight: 3,
+    opacity: 1,
+    fillOpacity: 0.8,
+  }).addTo(map)
+  
+  const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, lat, lng).toFixed(1)
+  const inService = isWithinServiceArea(lat, lng)
+  const status = inService ? "✓ In Service Area" : "✗ Out of Service Area"
+  
+  marker.bindPopup(`Your Location<br>${status}<br>${distance} km away`)
+  marker.openPopup()
+}
+
+// Close location picker
+function closeLocationPicker() {
+  const modal = getLocationPickerModal()
+  modal.style.display = "none"
+}
+
+// Confirm selected location
+function confirmLocationSelection() {
+  if (selectedLocationCoords) {
+    updateLocationStatus(selectedLocationCoords.lat, selectedLocationCoords.lng)
+    closeLocationPicker()
+  }
+}
+
 // Check location on page load
 function initializeLocationStatus() {
   if ("geolocation" in navigator) {
@@ -168,6 +364,19 @@ function initializeLocationStatus() {
     banner.style.borderBottom = "2px solid #9ca3af"
     banner.textContent = "📍 Location services not available"
   }
+  
+  // Attach event listeners
+  setTimeout(() => {
+    const closeBtns = document.querySelectorAll("#close-location-picker, #cancel-location-picker")
+    closeBtns.forEach((btn) => btn.addEventListener("click", closeLocationPicker))
+    
+    const confirmBtn = document.getElementById("confirm-location-picker")
+    if (confirmBtn) confirmBtn.addEventListener("click", confirmLocationSelection)
+    
+    const banner = getLocationStatusBanner()
+    banner.style.cursor = "pointer"
+    banner.addEventListener("click", showLocationPicker)
+  }, 100)
 }
 
 function safeNumber(v, fallback = 0) {
