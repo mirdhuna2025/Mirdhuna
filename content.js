@@ -79,7 +79,7 @@ let toastEl = document.getElementById("toast")
 
 // 📍 Shop location (25.246747, 86.976773)
 const SHOP_LOCATION = { lat: 25.246747, lng: 86.976773 }
-const SERVICE_RADIUS_KM = 0.3
+const SERVICE_RADIUS_KM = 5
 
 // Calculate distance between two coordinates using Haversine formula
 function calculateDistance(lat1, lng1, lat2, lng2) {
@@ -102,6 +102,82 @@ function isWithinServiceArea(userLat, userLng) {
   return distance <= SERVICE_RADIUS_KM
 }
 
+// Get or create location picker modal
+function getLocationPickerModal() {
+  let modal = document.getElementById("location-picker-modal")
+  if (!modal) {
+    modal = document.createElement("div")
+    modal.id = "location-picker-modal"
+    modal.style.cssText = `
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    `
+    
+    const content = document.createElement("div")
+    content.style.cssText = `
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      height: 500px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    `
+    
+    const header = document.createElement("div")
+    header.style.cssText = `
+      padding: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    `
+    header.innerHTML = `
+      <span>Select Delivery Location</span>
+      <button id="close-location-picker" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
+    `
+    
+    const mapContainer = document.createElement("div")
+    mapContainer.id = "location-picker-map"
+    mapContainer.style.cssText = `
+      flex: 1;
+      position: relative;
+    `
+    
+    const footer = document.createElement("div")
+    footer.style.cssText = `
+      padding: 12px 16px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    `
+    footer.innerHTML = `
+      <button id="cancel-location-picker" style="padding: 8px 16px; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;">Cancel</button>
+      <button id="confirm-location-picker" style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Confirm Location</button>
+    `
+    
+    content.appendChild(header)
+    content.appendChild(mapContainer)
+    content.appendChild(footer)
+    modal.appendChild(content)
+    document.body.appendChild(modal)
+  }
+  return modal
+}
+
 // Get or create location status banner
 function getLocationStatusBanner() {
   let banner = document.getElementById("location-status-banner")
@@ -114,12 +190,14 @@ function getLocationStatusBanner() {
       left: 0;
       right: 0;
       padding: 12px 16px;
-      text-align: center;
       font-weight: 500;
       font-size: 14px;
       z-index: 9999;
       transition: all 0.3s ease;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     `
     document.body.appendChild(banner)
   }
@@ -132,17 +210,144 @@ function updateLocationStatus(userLat, userLng) {
   const isInService = isWithinServiceArea(userLat, userLng)
   const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, userLat, userLng).toFixed(1)
   
+  // Store current location in global variable
+  window.currentLocation = { lat: userLat, lng: userLng }
+  
+  const statusText = isInService 
+    ? `✓ Service Available - You are ${distance} km from our shop`
+    : `✗ Service Not Available - You are ${distance} km from our shop`
+  
+  const button = document.createElement("button")
+  button.id = "change-location-btn"
+  button.textContent = "Change Location"
+  button.style.cssText = `
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 500;
+  `
+  button.onclick = openLocationPicker
+  
   if (isInService) {
     banner.style.background = "#dcfce7"
     banner.style.color = "#166534"
     banner.style.borderBottom = "2px solid #22c55e"
-    banner.textContent = `✓ Service Available - You are ${distance} km from our shop `
   } else {
     banner.style.background = "#fee2e2"
     banner.style.color = "#991b1b"
     banner.style.borderBottom = "2px solid #ef4444"
-    banner.textContent = `✗ Service Not Available - You are ${distance} km from our shop (We serve within 5 km radius)`
   }
+  
+  // Clear previous content and set new content
+  banner.innerHTML = ""
+  const textSpan = document.createElement("span")
+  textSpan.textContent = statusText
+  banner.appendChild(textSpan)
+  banner.appendChild(button)
+}
+
+// Open location picker modal with Leaflet map
+function openLocationPicker() {
+  // Load Leaflet if not already loaded
+  if (!window.L) {
+    const script = document.createElement("script")
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+    document.head.appendChild(script)
+    
+    const link = document.createElement("link")
+    link.rel = "stylesheet"
+    link.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    document.head.appendChild(link)
+    
+    // Wait for Leaflet to load
+    script.onload = () => {
+      showLocationPickerModal()
+    }
+  } else {
+    showLocationPickerModal()
+  }
+}
+
+// Show the location picker modal and initialize map
+function showLocationPickerModal() {
+  const modal = getLocationPickerModal()
+  modal.style.display = "flex"
+  
+  // Initialize Leaflet map if not already initialized
+  setTimeout(() => {
+    initializeLocationMap()
+  }, 100)
+}
+
+// Initialize Leaflet map in the modal
+function initializeLocationMap() {
+  const mapContainer = document.getElementById("location-picker-map")
+  
+  // Clear any existing map instance
+  if (mapContainer._leaflet_map) {
+    mapContainer._leaflet_map.remove()
+  }
+  
+  if (!window.L) return
+  
+  // Use current location or default to shop location
+  const initialLat = window.currentLocation?.lat || SHOP_LOCATION.lat
+  const initialLng = window.currentLocation?.lng || SHOP_LOCATION.lng
+  
+  // Create map
+  const map = window.L.map(mapContainer, {
+    center: [initialLat, initialLng],
+    zoom: 13,
+  })
+  
+  // Add OpenStreetMap tiles
+  window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+    maxZoom: 19,
+  }).addTo(map)
+  
+  // Add marker for current location
+  const marker = window.L.marker([initialLat, initialLng], {
+    draggable: true,
+  }).addTo(map)
+  
+  marker.bindPopup("Drag me to select a new location, or click on the map")
+  
+  // Click on map to place marker
+  map.on("click", (e) => {
+    const { lat, lng } = e.latlng
+    marker.setLatLng([lat, lng])
+    updateMarkerLocation(lat, lng, marker)
+  })
+  
+  // Drag marker to update location
+  marker.on("dragend", () => {
+    const pos = marker.getLatLng()
+    updateMarkerLocation(pos.lat, pos.lng, marker)
+  })
+  
+  // Store map instance and marker for later access
+  mapContainer._leaflet_map = map
+  window.selectedLocationMarker = marker
+}
+
+// Update marker location info
+function updateMarkerLocation(lat, lng, marker) {
+  const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, lat, lng).toFixed(1)
+  const isInService = isWithinServiceArea(lat, lng)
+  const statusText = isInService 
+    ? `✓ In service area (${distance} km away)`
+    : `✗ Outside service area (${distance} km away)`
+  
+  marker.setPopupContent(statusText)
+  marker.openPopup()
+  
+  // Store selected location
+  window.selectedLocation = { lat, lng }
 }
 
 // Check location on page load
@@ -157,7 +362,9 @@ function initializeLocationStatus() {
         banner.style.background = "#f3f4f6"
         banner.style.color = "#374151"
         banner.style.borderBottom = "2px solid #9ca3af"
-        banner.textContent = "📍 Enable location to check service availability"
+        const text = document.createElement("span")
+        text.textContent = "📍 Enable location to check service availability"
+        banner.appendChild(text)
       },
       { enableHighAccuracy: false, timeout: 8000 }
     )
@@ -166,7 +373,9 @@ function initializeLocationStatus() {
     banner.style.background = "#f3f4f6"
     banner.style.color = "#374151"
     banner.style.borderBottom = "2px solid #9ca3af"
-    banner.textContent = "📍 Location services not available"
+    const text = document.createElement("span")
+    text.textContent = "📍 Location services not available"
+    banner.appendChild(text)
   }
 }
 
@@ -1136,11 +1345,60 @@ try {
 
 loadShopData()
 
+// Location picker modal event listeners
+document.addEventListener("DOMContentLoaded", () => {
+  // Close location picker modal
+  const closeLocationPickerBtn = document.getElementById("close-location-picker")
+  const cancelLocationPickerBtn = document.getElementById("cancel-location-picker")
+  const confirmLocationPickerBtn = document.getElementById("confirm-location-picker")
+  const locationPickerModal = document.getElementById("location-picker-modal")
+  
+  function closeLocationPickerModal() {
+    if (locationPickerModal) {
+      locationPickerModal.style.display = "none"
+      // Clean up map
+      const mapContainer = document.getElementById("location-picker-map")
+      if (mapContainer && mapContainer._leaflet_map) {
+        mapContainer._leaflet_map.remove()
+        mapContainer._leaflet_map = null
+      }
+    }
+  }
+  
+  if (closeLocationPickerBtn) {
+    closeLocationPickerBtn.addEventListener("click", closeLocationPickerModal)
+  }
+  
+  if (cancelLocationPickerBtn) {
+    cancelLocationPickerBtn.addEventListener("click", closeLocationPickerModal)
+  }
+  
+  if (confirmLocationPickerBtn) {
+    confirmLocationPickerBtn.addEventListener("click", () => {
+      if (window.selectedLocation) {
+        updateLocationStatus(window.selectedLocation.lat, window.selectedLocation.lng)
+        closeLocationPickerModal()
+        showToast("✓ Location updated successfully")
+      }
+    })
+  }
+  
+  // Close modal when clicking outside the content
+  if (locationPickerModal) {
+    locationPickerModal.addEventListener("click", (e) => {
+      if (e.target === locationPickerModal) {
+        closeLocationPickerModal()
+      }
+    })
+  }
+})
+
 // Expose needed globals
 window.addToCart = addToCart
 window.placeOrder = placeOrder
 window.openProductPopup = openProductPopup
 window.showLoginModal = showLoginModal
+window.openLocationPicker = openLocationPicker
 
 // Adjusted CSS: changed bottom from 120px to 80px to account for bottom-bar height
 // This keeps the cart popup above the bottom navigation
