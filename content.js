@@ -79,7 +79,7 @@ let toastEl = document.getElementById("toast")
 
 // 📍 Shop location (25.246747, 86.976773)
 const SHOP_LOCATION = { lat: 25.246747, lng: 86.976773 }
-const SERVICE_RADIUS_KM = 5
+const SERVICE_RADIUS_KM = .2
 
 // Calculate distance between two coordinates using Haversine formula
 function calculateDistance(lat1, lng1, lat2, lng2) {
