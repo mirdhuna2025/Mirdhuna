@@ -117,11 +117,106 @@ function closeLocationPickerModal() {
 }
 
 // Confirm location selection
-function confirmLocationSelection() {
+async function confirmLocationSelection() {
   if (window.selectedLocation) {
-    updateLocationStatus(window.selectedLocation.lat, window.selectedLocation.lng)
+    const { lat, lng } = window.selectedLocation
+    
+    // Check if user wants to save the location
+    const saveCheckbox = document.getElementById("save-location-checkbox")
+    if (saveCheckbox && saveCheckbox.checked) {
+      await saveLocationToFirebase(lat, lng, "Delivery Location")
+    }
+    
+    // Update the location status banner
+    updateLocationStatus(lat, lng)
+    
+    // Store in localStorage for persistence
+    localStorage.setItem("userLocation", JSON.stringify({ lat, lng, timestamp: new Date().toISOString() }))
+    
     closeLocationPickerModal()
-    showToast("✓ Location updated successfully")
+    showToast("Location updated successfully")
+  } else {
+    showToast("Please select a location on the map")
+  }
+}
+
+// Fetch location history from Firebase
+async function fetchLocationHistory() {
+  const userPhone = localStorage.getItem("mobileNumber")
+  if (!userPhone) return []
+  
+  try {
+    const loginHistoryRef = ref(db, "loginHistory")
+    const snapshot = await get(loginHistoryRef)
+    
+    if (!snapshot.exists()) return []
+    
+    const data = snapshot.val()
+    const locations = []
+    const seenCoords = new Set()
+    
+    Object.values(data).forEach((entry) => {
+      if (entry.mobileNumber === userPhone && entry.location && entry.location.lat && entry.location.lng) {
+        const coordKey = `${entry.location.lat.toFixed(4)},${entry.location.lng.toFixed(4)}`
+        if (!seenCoords.has(coordKey)) {
+          seenCoords.add(coordKey)
+          locations.push({
+            lat: entry.location.lat,
+            lng: entry.location.lng,
+            timestamp: entry.timestamp,
+            type: "login"
+          })
+        }
+      }
+    })
+    
+    // Also fetch saved locations
+    const savedLocationsRef = ref(db, `savedLocations/${userPhone}`)
+    const savedSnapshot = await get(savedLocationsRef)
+    
+    if (savedSnapshot.exists()) {
+      const savedData = savedSnapshot.val()
+      Object.values(savedData).forEach((loc) => {
+        if (loc.lat && loc.lng) {
+          const coordKey = `${loc.lat.toFixed(4)},${loc.lng.toFixed(4)}`
+          if (!seenCoords.has(coordKey)) {
+            seenCoords.add(coordKey)
+            locations.push({
+              lat: loc.lat,
+              lng: loc.lng,
+              timestamp: loc.timestamp,
+              label: loc.label || "Saved Location",
+              type: "saved"
+            })
+          }
+        }
+      })
+    }
+    
+    // Sort by timestamp (most recent first)
+    locations.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0))
+    
+    return locations.slice(0, 5) // Return max 5 locations
+  } catch (err) {
+    console.error("Error fetching location history:", err)
+    return []
+  }
+}
+
+// Save location to Firebase
+async function saveLocationToFirebase(lat, lng, label = "Saved Location") {
+  const userPhone = localStorage.getItem("mobileNumber")
+  if (!userPhone) return
+  
+  try {
+    await push(ref(db, `savedLocations/${userPhone}`), {
+      lat,
+      lng,
+      label,
+      timestamp: new Date().toISOString()
+    })
+  } catch (err) {
+    console.error("Error saving location:", err)
   }
 }
 
@@ -151,10 +246,11 @@ function getLocationPickerModal() {
       border-radius: 12px;
       width: 90%;
       max-width: 600px;
-      height: 500px;
+      max-height: 90vh;
       display: flex;
       flex-direction: column;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
     `
     
     const header = document.createElement("div")
@@ -180,12 +276,70 @@ function getLocationPickerModal() {
     header.appendChild(headerText)
     header.appendChild(closeBtn)
     
+    // Location history section
+    const historySection = document.createElement("div")
+    historySection.id = "location-history-section"
+    historySection.style.cssText = `
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      max-height: 180px;
+      overflow-y: auto;
+      background: #f9fafb;
+    `
+    
+    const historyTitle = document.createElement("div")
+    historyTitle.style.cssText = `
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    `
+    historyTitle.innerHTML = `<span style="font-size: 16px;">📍</span> Recent Locations`
+    
+    const historyList = document.createElement("div")
+    historyList.id = "location-history-list"
+    historyList.style.cssText = `
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    `
+    
+    historySection.appendChild(historyTitle)
+    historySection.appendChild(historyList)
+    
     const mapContainer = document.createElement("div")
     mapContainer.id = "location-picker-map"
     mapContainer.style.cssText = `
       flex: 1;
+      min-height: 280px;
       position: relative;
     `
+    
+    // Current location button
+    const useCurrentBtn = document.createElement("button")
+    useCurrentBtn.id = "use-current-location-btn"
+    useCurrentBtn.innerHTML = `<span style="font-size: 16px;">📍</span> Use My Current Location`
+    useCurrentBtn.style.cssText = `
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      padding: 8px 12px;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    `
+    useCurrentBtn.onclick = useCurrentLocation
     
     const footer = document.createElement("div")
     footer.style.cssText = `
@@ -193,7 +347,29 @@ function getLocationPickerModal() {
       border-top: 1px solid #e5e7eb;
       display: flex;
       gap: 8px;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    `
+    
+    const saveCheckbox = document.createElement("label")
+    saveCheckbox.style.cssText = `
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #374151;
+      cursor: pointer;
+    `
+    saveCheckbox.innerHTML = `
+      <input type="checkbox" id="save-location-checkbox" style="cursor: pointer;">
+      Save this location
+    `
+    
+    const buttonGroup = document.createElement("div")
+    buttonGroup.style.cssText = `
+      display: flex;
+      gap: 8px;
     `
     
     const cancelBtn = document.createElement("button")
@@ -208,12 +384,20 @@ function getLocationPickerModal() {
     confirmBtn.style.cssText = "padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;"
     confirmBtn.onclick = confirmLocationSelection
     
-    footer.appendChild(cancelBtn)
-    footer.appendChild(confirmBtn)
+    buttonGroup.appendChild(cancelBtn)
+    buttonGroup.appendChild(confirmBtn)
+    
+    footer.appendChild(saveCheckbox)
+    footer.appendChild(buttonGroup)
     
     content.appendChild(header)
+    content.appendChild(historySection)
     content.appendChild(mapContainer)
     content.appendChild(footer)
+    
+    // Add the current location button to map container after it's added to DOM
+    mapContainer.appendChild(useCurrentBtn)
+    
     modal.appendChild(content)
     
     // Close modal when clicking outside the content
@@ -226,6 +410,129 @@ function getLocationPickerModal() {
     document.body.appendChild(modal)
   }
   return modal
+}
+
+// Use current GPS location
+function useCurrentLocation() {
+  if (!("geolocation" in navigator)) {
+    showToast("Geolocation not available")
+    return
+  }
+  
+  showToast("Getting your location...")
+  
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude
+      const lng = pos.coords.longitude
+      
+      // Update map marker
+      if (window.selectedLocationMarker) {
+        window.selectedLocationMarker.setLatLng([lat, lng])
+        updateMarkerLocation(lat, lng, window.selectedLocationMarker)
+      }
+      
+      // Center map on location
+      const mapContainer = document.getElementById("location-picker-map")
+      if (mapContainer && mapContainer._leaflet_map) {
+        mapContainer._leaflet_map.setView([lat, lng], 15)
+      }
+      
+      showToast("Location updated")
+    },
+    (err) => {
+      showToast("Could not get your location")
+      console.error("Geolocation error:", err)
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  )
+}
+
+// Render location history in the modal
+async function renderLocationHistory() {
+  const historyList = document.getElementById("location-history-list")
+  if (!historyList) return
+  
+  historyList.innerHTML = '<div style="color: #6b7280; font-size: 13px;">Loading locations...</div>'
+  
+  const locations = await fetchLocationHistory()
+  
+  if (locations.length === 0) {
+    historyList.innerHTML = '<div style="color: #6b7280; font-size: 13px;">No saved locations yet</div>'
+    return
+  }
+  
+  historyList.innerHTML = ""
+  
+  locations.forEach((loc, index) => {
+    const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, loc.lat, loc.lng).toFixed(1)
+    const isInService = isWithinServiceArea(loc.lat, loc.lng)
+    
+    const item = document.createElement("button")
+    item.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: white;
+      border: 1px solid ${isInService ? "#d1fae5" : "#fecaca"};
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: all 0.2s;
+    `
+    
+    const typeIcon = loc.type === "login" ? "🔐" : "📍"
+    const typeLabel = loc.type === "login" ? "Login Location" : (loc.label || "Saved")
+    const dateStr = loc.timestamp ? new Date(loc.timestamp).toLocaleDateString() : ""
+    
+    item.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div style="font-size: 13px; font-weight: 500; color: #111827;">
+          ${typeIcon} ${typeLabel}
+        </div>
+        <div style="font-size: 11px; color: #6b7280;">
+          ${distance} km away ${dateStr ? "• " + dateStr : ""}
+        </div>
+      </div>
+      <div style="font-size: 12px; font-weight: 500; color: ${isInService ? "#059669" : "#dc2626"};">
+        ${isInService ? "In Service" : "Out of Range"}
+      </div>
+    `
+    
+    item.onmouseover = () => {
+      item.style.borderColor = "#3b82f6"
+      item.style.background = "#eff6ff"
+    }
+    item.onmouseout = () => {
+      item.style.borderColor = isInService ? "#d1fae5" : "#fecaca"
+      item.style.background = "white"
+    }
+    
+    item.onclick = () => {
+      selectHistoryLocation(loc.lat, loc.lng)
+    }
+    
+    historyList.appendChild(item)
+  })
+}
+
+// Select a location from history
+function selectHistoryLocation(lat, lng) {
+  // Update map marker
+  if (window.selectedLocationMarker) {
+    window.selectedLocationMarker.setLatLng([lat, lng])
+    updateMarkerLocation(lat, lng, window.selectedLocationMarker)
+  }
+  
+  // Center map on location
+  const mapContainer = document.getElementById("location-picker-map")
+  if (mapContainer && mapContainer._leaflet_map) {
+    mapContainer._leaflet_map.setView([lat, lng], 15)
+  }
+  
+  showToast("Location selected from history")
 }
 
 // Get or create location status banner
@@ -327,6 +634,9 @@ function showLocationPickerModal() {
   const modal = getLocationPickerModal()
   modal.style.display = "flex"
   
+  // Render location history
+  renderLocationHistory()
+  
   // Initialize Leaflet map if not already initialized
   setTimeout(() => {
     initializeLocationMap()
@@ -402,6 +712,41 @@ function updateMarkerLocation(lat, lng, marker) {
 
 // Check location on page load
 function initializeLocationStatus() {
+  // First check if there's a saved location in localStorage
+  const savedLocation = localStorage.getItem("userLocation")
+  if (savedLocation) {
+    try {
+      const { lat, lng } = JSON.parse(savedLocation)
+      if (lat && lng) {
+        updateLocationStatus(lat, lng)
+        return
+      }
+    } catch (e) {
+      console.warn("Could not parse saved location:", e)
+    }
+  }
+  
+  // Try to fetch last login location from Firebase
+  const userPhone = localStorage.getItem("mobileNumber")
+  if (userPhone) {
+    fetchLocationHistory().then((locations) => {
+      if (locations.length > 0) {
+        const lastLoc = locations[0]
+        updateLocationStatus(lastLoc.lat, lastLoc.lng)
+        return
+      }
+      // Fall back to geolocation
+      requestGeolocation()
+    }).catch(() => {
+      requestGeolocation()
+    })
+  } else {
+    requestGeolocation()
+  }
+}
+
+// Request geolocation from browser
+function requestGeolocation() {
   if ("geolocation" in navigator) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -412,9 +757,27 @@ function initializeLocationStatus() {
         banner.style.background = "#f3f4f6"
         banner.style.color = "#374151"
         banner.style.borderBottom = "2px solid #9ca3af"
+        banner.innerHTML = ""
         const text = document.createElement("span")
-        text.textContent = "📍 Enable location to check service availability"
+        text.textContent = "Enable location to check service availability"
+        
+        const changeBtn = document.createElement("button")
+        changeBtn.textContent = "Set Location"
+        changeBtn.style.cssText = `
+          background: none;
+          border: none;
+          color: inherit;
+          cursor: pointer;
+          text-decoration: underline;
+          padding: 0;
+          font-size: 14px;
+          font-weight: 500;
+          margin-left: 8px;
+        `
+        changeBtn.onclick = openLocationPicker
+        
         banner.appendChild(text)
+        banner.appendChild(changeBtn)
       },
       { enableHighAccuracy: false, timeout: 8000 }
     )
@@ -423,9 +786,27 @@ function initializeLocationStatus() {
     banner.style.background = "#f3f4f6"
     banner.style.color = "#374151"
     banner.style.borderBottom = "2px solid #9ca3af"
+    banner.innerHTML = ""
     const text = document.createElement("span")
-    text.textContent = "📍 Location services not available"
+    text.textContent = "Location services not available"
+    
+    const changeBtn = document.createElement("button")
+    changeBtn.textContent = "Set Location Manually"
+    changeBtn.style.cssText = `
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      font-size: 14px;
+      font-weight: 500;
+      margin-left: 8px;
+    `
+    changeBtn.onclick = openLocationPicker
+    
     banner.appendChild(text)
+    banner.appendChild(changeBtn)
   }
 }
 
@@ -520,18 +901,29 @@ async function handleLogin() {
     }
   }
 
-  try {
-    await push(ref(db, "loginHistory"), {
-      mobileNumber: number,
-      timestamp: new Date().toISOString(),
-      location: location || { error: "Geolocation denied or unavailable" },
-    })
-
-    localStorage.setItem("isLoggedIn", "true")
-    localStorage.setItem("mobileNumber", number)
-    updateAuthUI()
-    closeLoginPopup()
-    showToast("✅ Logged in!")
+try {
+  await push(ref(db, "loginHistory"), {
+  mobileNumber: number,
+  timestamp: new Date().toISOString(),
+  location: location || { error: "Geolocation denied or unavailable" },
+  })
+  
+  localStorage.setItem("isLoggedIn", "true")
+  localStorage.setItem("mobileNumber", number)
+  
+  // Update location status if we have location from login
+  if (location && location.lat && location.lng) {
+    localStorage.setItem("userLocation", JSON.stringify({
+      lat: location.lat,
+      lng: location.lng,
+      timestamp: new Date().toISOString()
+    }))
+    updateLocationStatus(location.lat, location.lng)
+  }
+  
+  updateAuthUI()
+  closeLoginPopup()
+  showToast("Logged in!")
   } catch (error) {
     console.error("Firebase login error:", error)
     alert("Login failed. Please try again.")
