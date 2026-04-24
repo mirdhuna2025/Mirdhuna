@@ -404,18 +404,7 @@ function initializeLocationStatus() {
   }
   
   // Attach event listeners
-  setTimeout(() => {
-    const closeBtns = document.querySelectorAll("#close-location-picker, #cancel-location-picker")
-    closeBtns.forEach((btn) => btn.addEventListener("click", closeLocationPicker))
-    
-    const confirmBtn = document.getElementById("confirm-location-picker")
-    if (confirmBtn) confirmBtn.addEventListener("click", confirmLocationSelection)
-    
-    const banner = getLocationStatusBanner()
-    banner.style.cursor = "pointer"
-    banner.addEventListener("click", showLocationPicker)
-  }, 100)
-}
+ 
 
 function safeNumber(v, fallback = 0) {
   const n = Number(v)
