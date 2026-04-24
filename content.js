@@ -359,6 +359,16 @@ function confirmLocationSelection() {
 }
 // Check location on page load
 function initializeLocationStatus() {
+
+  // ✅ 1. FIRST: check saved location
+  const saved = localStorage.getItem("userLocation")
+  if (saved) {
+    try {
+      const coords = JSON.parse(saved)
+      updateLocationStatus(coords.lat, coords.lng)
+      return // ⛔ stop here, no need to ask GPS again
+    } catch (e) {}
+  }
   if ("geolocation" in navigator) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
