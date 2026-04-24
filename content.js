@@ -130,18 +130,30 @@ function getLocationStatusBanner() {
 function updateLocationStatus(userLat, userLng) {
   const banner = getLocationStatusBanner()
   const isInService = isWithinServiceArea(userLat, userLng)
-  const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, userLat, userLng).toFixed(1)
-  
+  const distance = calculateDistance(
+    SHOP_LOCATION.lat,
+    SHOP_LOCATION.lng,
+    userLat,
+    userLng
+  ).toFixed(1)
+
+  // ✅ Save latest location
+  localStorage.setItem("userLocation", JSON.stringify({ lat: userLat, lng: userLng }))
+
   if (isInService) {
     banner.style.background = "#dcfce7"
     banner.style.color = "#166534"
     banner.style.borderBottom = "2px solid #22c55e"
-    banner.textContent = `✓ Service Available - You are ${distance} km from our shop (Within 5 km radius)`
+    banner.textContent = `✓ Delivery available 🎉 — You are ${distance} km away`
+    
+    if (checkoutPlace) checkoutPlace.disabled = false
   } else {
     banner.style.background = "#fee2e2"
     banner.style.color = "#991b1b"
     banner.style.borderBottom = "2px solid #ef4444"
-    banner.textContent = `✗ Service Not Available - You are ${distance} km from our shop (We serve within 5 km radius)`
+    banner.textContent = `✗ Service not available — You are ${distance} km away`
+    
+    if (checkoutPlace) checkoutPlace.disabled = true
   }
 }
 
