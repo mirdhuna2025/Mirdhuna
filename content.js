@@ -136,7 +136,7 @@ function updateLocationStatus(userLat, userLng) {
     banner.style.background = "#dcfce7"
     banner.style.color = "#166534"
     banner.style.borderBottom = "2px solid #22c55e"
-    banner.textContent = `✓ Service Available - You are ${distance} km from our shop (Within 5 km radius)`
+    banner.textContent = `✓ Service Available - You are ${distance} km from our shop `
   } else {
     banner.style.background = "#fee2e2"
     banner.style.color = "#991b1b"
