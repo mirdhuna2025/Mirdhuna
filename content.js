@@ -861,29 +861,61 @@ async function placeOrder() {
         async (pos) => {
           const userLat = pos.coords.latitude
           const userLng = pos.coords.longitude
-          console.log("📍 User location:", { lat: userLat, lng: userLng })
+          console.log("[v0] User location for order:", { lat: userLat, lng: userLng })
 
           // Check if user is within service area
-          if (!isWithinServiceArea(userLat, userLng)) {
-            showToast("❌ We are unable to service at your area")
+          const isInServiceArea = isWithinServiceArea(userLat, userLng)
+          const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, userLat, userLng).toFixed(1)
+          
+          console.log("[v0] Service area check - In service:", isInServiceArea, "Distance:", distance, "km")
+
+          if (!isInServiceArea) {
+            showToast(`❌ Your location (${distance} km away) is outside our service area. We serve within 5 km radius.`)
             resolve()
             return
           }
 
-          console.log("✅ User is within service area")
+          console.log("[v0] ✅ User is within service area - Proceeding with order")
           await proceedWithOrder(phone, address)
           resolve()
         },
         (err) => {
-          console.warn("📍 Geolocation denied")
-          showToast("❌ Please enable location to place order")
-          resolve()
+          console.warn("[v0] Geolocation error:", err.code)
+          // Check if we have a stored location to use as fallback
+          if (window.currentLocation) {
+            console.log("[v0] Using stored location for order placement")
+            const isInServiceArea = isWithinServiceArea(window.currentLocation.lat, window.currentLocation.lng)
+            if (!isInServiceArea) {
+              const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, window.currentLocation.lat, window.currentLocation.lng).toFixed(1)
+              showToast(`❌ Your location (${distance} km away) is outside our service area.`)
+              resolve()
+              return
+            }
+            // Use stored location
+            proceedWithOrder(phone, address).then(() => resolve())
+          } else {
+            showToast("❌ Please enable location to verify service area for your order")
+            resolve()
+          }
         },
-        { enableHighAccuracy: true, timeout: 10000 },
+        { enableHighAccuracy: false, timeout: 8000 },
       )
     } else {
-      showToast("❌ Geolocation not supported")
-      resolve()
+      // If geolocation not supported, check if we have stored location
+      if (window.currentLocation) {
+        console.log("[v0] Geolocation not supported - Using stored location")
+        const isInServiceArea = isWithinServiceArea(window.currentLocation.lat, window.currentLocation.lng)
+        if (!isInServiceArea) {
+          const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, window.currentLocation.lat, window.currentLocation.lng).toFixed(1)
+          showToast(`❌ Your location (${distance} km away) is outside our service area.`)
+          resolve()
+          return
+        }
+        proceedWithOrder(phone, address).then(() => resolve())
+      } else {
+        showToast("❌ Geolocation not supported. Please enable location services.")
+        resolve()
+      }
     }
   })
 }
