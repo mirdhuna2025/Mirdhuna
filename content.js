@@ -348,11 +348,15 @@ function closeLocationPicker() {
 // Confirm selected location
 function confirmLocationSelection() {
   if (selectedLocationCoords) {
-    updateLocationStatus(selectedLocationCoords.lat, selectedLocationCoords.lng)
+    const { lat, lng } = selectedLocationCoords
+
+    // ✅ Save permanently
+    localStorage.setItem("userLocation", JSON.stringify({ lat, lng }))
+
+    updateLocationStatus(lat, lng)
     closeLocationPicker()
   }
 }
-
 // Check location on page load
 function initializeLocationStatus() {
   if ("geolocation" in navigator) {
