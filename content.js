@@ -102,6 +102,74 @@ function isWithinServiceArea(userLat, userLng) {
   return distance <= SERVICE_RADIUS_KM
 }
 
+// Get or create location status banner
+function getLocationStatusBanner() {
+  let banner = document.getElementById("location-status-banner")
+  if (!banner) {
+    banner = document.createElement("div")
+    banner.id = "location-status-banner"
+    banner.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 16px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 14px;
+      z-index: 9999;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    `
+    document.body.appendChild(banner)
+  }
+  return banner
+}
+
+// Display location status
+function updateLocationStatus(userLat, userLng) {
+  const banner = getLocationStatusBanner()
+  const isInService = isWithinServiceArea(userLat, userLng)
+  const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, userLat, userLng).toFixed(1)
+  
+  if (isInService) {
+    banner.style.background = "#dcfce7"
+    banner.style.color = "#166534"
+    banner.style.borderBottom = "2px solid #22c55e"
+    banner.textContent = `✓ Service Available - You are ${distance} km from our shop (Within 5 km radius)`
+  } else {
+    banner.style.background = "#fee2e2"
+    banner.style.color = "#991b1b"
+    banner.style.borderBottom = "2px solid #ef4444"
+    banner.textContent = `✗ Service Not Available - You are ${distance} km from our shop (We serve within 5 km radius)`
+  }
+}
+
+// Check location on page load
+function initializeLocationStatus() {
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        updateLocationStatus(pos.coords.latitude, pos.coords.longitude)
+      },
+      (err) => {
+        const banner = getLocationStatusBanner()
+        banner.style.background = "#f3f4f6"
+        banner.style.color = "#374151"
+        banner.style.borderBottom = "2px solid #9ca3af"
+        banner.textContent = "📍 Enable location to check service availability"
+      },
+      { enableHighAccuracy: false, timeout: 8000 }
+    )
+  } else {
+    const banner = getLocationStatusBanner()
+    banner.style.background = "#f3f4f6"
+    banner.style.color = "#374151"
+    banner.style.borderBottom = "2px solid #9ca3af"
+    banner.textContent = "📍 Location services not available"
+  }
+}
+
 function safeNumber(v, fallback = 0) {
   const n = Number(v)
   return Number.isFinite(n) ? n : fallback
@@ -1048,6 +1116,7 @@ sortSelect && sortSelect.addEventListener("change", () => renderMenu())
 updateAuthUI()
 loadCartFromStorage()
 updateCartUI()
+initializeLocationStatus()
 
 try {
   const cached = sessionStorage.getItem("menuCache")
