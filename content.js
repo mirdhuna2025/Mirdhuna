@@ -288,7 +288,18 @@ async function showLocationPicker() {
     const mapElement = document.getElementById("location-map")
     mapElement.innerHTML = "" // Clear previous map
     
-    const map = L.map("location-map").setView([SHOP_LOCATION.lat, SHOP_LOCATION.lng], 13)
+   // ✅ destroy old map if exists
+  const mapContainer = document.getElementById("location-map")
+ if (mapContainer._leaflet_id) {
+  mapContainer._leaflet_id = null
+  mapContainer.innerHTML = ""
+}
+
+  // ✅ now create fresh map
+ const map = L.map("location-map").setView(
+  [SHOP_LOCATION.lat, SHOP_LOCATION.lng],
+  13
+  )
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
       maxZoom: 19,
