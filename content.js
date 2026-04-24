@@ -1,12 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
-import {
-  getDatabase,
-  ref,
-  onValue,
-  push,
-  get,
-  set,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
+import {getDatabase,ref,onValue,push,get,set,} 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
 import { getConfig } from "./config.js"
 
 const firebaseConfig = getConfig().firebase
