@@ -77,6 +77,31 @@ const closeTrackBtn = document.getElementById("close-track")
 
 let toastEl = document.getElementById("toast")
 
+// 📍 Shop location (25.246747, 86.976773)
+const SHOP_LOCATION = { lat: 25.246747, lng: 86.976773 }
+const SERVICE_RADIUS_KM = 5
+
+// Calculate distance between two coordinates using Haversine formula
+function calculateDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371 // Earth's radius in kilometers
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLng = ((lng2 - lng1) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}
+
+// Check if user's location is within service area
+function isWithinServiceArea(userLat, userLng) {
+  const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, userLat, userLng)
+  return distance <= SERVICE_RADIUS_KM
+}
+
 function safeNumber(v, fallback = 0) {
   const n = Number(v)
   return Number.isFinite(n) ? n : fallback
@@ -502,6 +527,42 @@ async function placeOrder() {
     return
   }
 
+  // 📍 Location check before order placement
+  return new Promise((resolve) => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const userLat = pos.coords.latitude
+          const userLng = pos.coords.longitude
+          console.log("📍 User location:", { lat: userLat, lng: userLng })
+
+          // Check if user is within service area
+          if (!isWithinServiceArea(userLat, userLng)) {
+            showToast("❌ We are unable to service at your area")
+            resolve()
+            return
+          }
+
+          console.log("✅ User is within service area")
+          await proceedWithOrder(phone, address)
+          resolve()
+        },
+        (err) => {
+          console.warn("📍 Geolocation denied")
+          showToast("❌ Please enable location to place order")
+          resolve()
+        },
+        { enableHighAccuracy: true, timeout: 10000 },
+      )
+    } else {
+      showToast("❌ Geolocation not supported")
+      resolve()
+    }
+  })
+}
+
+// Process order after location validation
+async function proceedWithOrder(phone, address) {
   const payment = checkoutPayment?.value || "Cash on Delivery"
   const instructions = (checkoutInstructions?.value || "").trim()
 
@@ -523,17 +584,6 @@ async function placeOrder() {
   } catch (err) {
     console.warn("⚠️ ID fallback")
     orderIdStr = String(Math.floor(Date.now() / 1000) % 100000).padStart(5, "0")
-  }
-
-  // Geolocation (non-blocking)
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        console.log("📍 Location captured for order:", { lat: pos.coords.latitude, lng: pos.coords.longitude })
-      },
-      (err) => console.warn("📍 Geolocation denied"),
-      { enableHighAccuracy: true, timeout: 5000 },
-    )
   }
 
   const order = {
