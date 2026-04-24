@@ -824,6 +824,13 @@ async function placeOrder() {
   const address = (checkoutAddress?.value || "").trim()
   if (!address) return showToast("Please enter delivery address")
 
+  const saved = JSON.parse(localStorage.getItem("userLocation") || "null")
+
+  if (saved && !isWithinServiceArea(saved.lat, saved.lng)) {
+    showToast("❌ Delivery not available in your area")
+    return
+  }
+
   const phone = localStorage.getItem("mobileNumber")
   if (!phone) {
     showLoginModal()
