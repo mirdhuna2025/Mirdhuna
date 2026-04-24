@@ -958,10 +958,20 @@ checkoutCancel &&
   checkoutCancel.addEventListener("click", () => {
     if (checkoutModal) checkoutModal.style.display = "none"
   })
+
 checkoutPlace &&
   checkoutPlace.addEventListener("click", () => {
     const addr = (checkoutAddress?.value || "").trim()
     if (!addr) return showToast("Please enter delivery address")
+
+    // ✅ CHECK SERVICE AREA HERE
+    const saved = JSON.parse(localStorage.getItem("userLocation") || "null")
+
+    if (saved && !isWithinServiceArea(saved.lat, saved.lng)) {
+      showToast("❌ You are outside delivery area")
+      return
+    }
+
     placeOrder()
   })
 
