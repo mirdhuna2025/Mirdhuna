@@ -402,6 +402,8 @@ function initializeLocationStatus() {
     banner.style.borderBottom = "2px solid #9ca3af"
     banner.textContent = "📍 Location services not available"
   }
+
+}
   
   // Attach event listeners
  
