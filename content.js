@@ -237,19 +237,23 @@ function getLocationPickerModal() {
     modal.appendChild(content)
     document.body.appendChild(modal)
   }
-  header.querySelector("#close-location-picker")
+
+
+// ✅ FIXED EVENT BINDING
+modal.querySelector("#close-location-picker")
   ?.addEventListener("click", closeLocationPicker)
 
-footer.querySelector("#cancel-location-picker")
+modal.querySelector("#cancel-location-picker")
   ?.addEventListener("click", closeLocationPicker)
 
-footer.querySelector("#confirm-location-picker")
+modal.querySelector("#confirm-location-picker")
   ?.addEventListener("click", confirmLocationSelection)
 
 modal.addEventListener("click", (e) => {
   if (e.target === modal) closeLocationPicker()
 })
-  return modal
+
+return modal
 }
 
 // Store current selected location
