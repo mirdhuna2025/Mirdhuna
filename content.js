@@ -639,26 +639,16 @@ function loadShopData() {
   })
 
 
- onValue(ref(db, "serviceArea"), (snapshot) => {
-  const data = snapshot.val()
-  if (data) {
-    SERVICE_AREA = data
-    console.log("✅ Service Area Loaded:", SERVICE_AREA)
-
-    // ✅ FIX: re-check user location AFTER polygon loads
-    const saved = localStorage.getItem("userLocation")
-    if (saved) {
-      const coords = JSON.parse(saved)
-      updateLocationStatus(coords.lat, coords.lng)
-    } else if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        updateLocationStatus(pos.coords.latitude, pos.coords.longitude)
-      })
+  onValue(ref(db, "serviceArea"), (snapshot) => {
+    const data = snapshot.val()
+    if (data) {
+      SERVICE_AREA = data
+      console.log("✅ Service Area Loaded:", SERVICE_AREA)
+    } else {
+      console.warn("⚠️ No service area found")
     }
-  } else {
-    console.warn("⚠️ No service area found")
-  }
-})
+  })
+}
 
 function renderOffer() {
   if (!offerBanner) return
