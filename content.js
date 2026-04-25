@@ -116,6 +116,14 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
 const SERVICE_RADIUS_KM = 0.2 // ✅ set your delivery radius
 const SHOP_LOCATION = { lat: 25.246747, lng: 86.976773 }
 function isUserInServiceArea(userLat, userLng) {
+  const point = { lat: userLat, lng: userLng }
+
+  // ✅ 1. Use polygon if available
+  if (SERVICE_AREA && SERVICE_AREA.length > 0) {
+    return isPointInPolygon(point, SERVICE_AREA)
+  }
+
+  // ✅ 2. Fallback to radius
   const distance = calculateDistance(
     SHOP_LOCATION.lat,
     SHOP_LOCATION.lng,
