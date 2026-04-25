@@ -783,7 +783,7 @@ function renderMenu() {
   viewMode === "list"
     ? "1fr"
     : viewMode === "small"
-    ? "repeat(5, 1fr)"
+    ? "repeat(4, 1fr)"
     : "repeat(2, 1fr)"
 }
 
