@@ -122,12 +122,11 @@ function isUserInServiceArea(userLat, userLng) {
   }
 
   // fallback
-  const distance = calculateDistance(
-    SHOP_LOCATION.lat,
-    SHOP_LOCATION.lng,
-    userLat,
-    userLng
-  )
+const SHOP_LOCATION = {
+  lat: 25.2425,   // your shop latitude
+  lng: 86.9842    // your shop longitude
+}
+
   return distance <= SERVICE_RADIUS_KM
 }
 
