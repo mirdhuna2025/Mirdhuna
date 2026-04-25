@@ -97,7 +97,7 @@ function isPointInPolygon(point, polygon) {
 
 
 // Check if user's location is within service area
-function isWithinServiceArea(userLat, userLng) {
+function isUserInServiceArea(userLat, userLng) {
   const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, userLat, userLng)
   return distance <= SERVICE_RADIUS_KM
 }
@@ -129,7 +129,7 @@ function getLocationStatusBanner() {
 // Display location status
 function updateLocationStatus(userLat, userLng) {
   const banner = getLocationStatusBanner()
-  const isInService = isWithinServiceArea(userLat, userLng)
+  const isInService = isUserInServiceArea(userLat, userLng)
   const distance = calculateDistance(
     SHOP_LOCATION.lat,
     SHOP_LOCATION.lng,
@@ -367,7 +367,7 @@ function addUserMarker(map, lat, lng) {
   }).addTo(map)
   
   const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, lat, lng).toFixed(1)
-  const inService = isWithinServiceArea(lat, lng)
+  const inService = isUserInServiceArea(lat, lng)
   const status = inService ? "✓ In Service Area" : "✗ Out of Service Area"
   
   marker.bindPopup(`Your Location<br>${status}<br>${distance} km away`)
@@ -863,7 +863,7 @@ async function placeOrder() {
 
   const saved = JSON.parse(localStorage.getItem("userLocation") || "null")
 
-  if (saved && !isWithinServiceArea(saved.lat, saved.lng)) {
+  if (saved && !isUserInServiceArea(saved.lat, saved.lng)) {
     showToast("❌ Delivery not available in your area")
     return
   }
@@ -884,7 +884,7 @@ async function placeOrder() {
           console.log("📍 User location:", { lat: userLat, lng: userLng })
 
           // Check if user is within service area
-          if (!isWithinServiceArea(userLat, userLng)) {
+          if (!isUserInServiceArea(userLat, userLng)) {
             showToast("❌ We are unable to service at your area")
             resolve()
             return
@@ -978,7 +978,7 @@ checkoutPlace &&
     // ✅ CHECK SERVICE AREA HERE
     const saved = JSON.parse(localStorage.getItem("userLocation") || "null")
 
-    if (saved && !isWithinServiceArea(saved.lat, saved.lng)) {
+    if (saved && !isUserInServiceArea(saved.lat, saved.lng)) {
       showToast("❌ You are outside delivery area")
       return
     }
