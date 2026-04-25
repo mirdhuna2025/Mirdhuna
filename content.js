@@ -77,24 +77,24 @@ const closeTrackBtn = document.getElementById("close-track")
 
 let toastEl = document.getElementById("toast")
 
-// 📍 Shop location (25.246747, 86.976773)
-const SHOP_LOCATION = { lat: 25.246747, lng: 86.976773 }
-const SERVICE_RADIUS_KM = .4
+let SERVICE_AREA = [] // will come from Firebase
+function isPointInPolygon(point, polygon) {
+  let inside = false
 
-// Calculate distance between two coordinates using Haversine formula
-function calculateDistance(lat1, lng1, lat2, lng2) {
-  const R = 6371 // Earth's radius in kilometers
-  const dLat = ((lat2 - lat1) * Math.PI) / 180
-  const dLng = ((lng2 - lng1) * Math.PI) / 180
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2)
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return R * c
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].lat, yi = polygon[i].lng
+    const xj = polygon[j].lat, yj = polygon[j].lng
+
+    const intersect =
+      yi > point.lng !== yj > point.lng &&
+      point.lat < ((xj - xi) * (point.lng - yi)) / (yj - yi) + xi
+
+    if (intersect) inside = !inside
+  }
+
+  return inside
 }
+
 
 // Check if user's location is within service area
 function isWithinServiceArea(userLat, userLng) {
