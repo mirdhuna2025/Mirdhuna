@@ -113,7 +113,7 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
   return R * c
 }
 // Check if user's location is within service area
-const SERVICE_RADIUS_KM = 5 // ✅ set your delivery radius
+const SERVICE_RADIUS_KM = 0.2 // ✅ set your delivery radius
 const SHOP_LOCATION = { lat: 25.246747, lng: 86.976773 }
 function isUserInServiceArea(userLat, userLng) {
   const distance = calculateDistance(
