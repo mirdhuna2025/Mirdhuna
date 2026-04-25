@@ -592,6 +592,17 @@ function loadShopData() {
     currentOffer = arr.find((o) => o.active) || null
     renderOffer()
   })
+
+
+  onValue(ref(db, "serviceArea"), (snapshot) => {
+    const data = snapshot.val()
+    if (data) {
+      SERVICE_AREA = data
+      console.log("✅ Service Area Loaded:", SERVICE_AREA)
+    } else {
+      console.warn("⚠️ No service area found")
+    }
+  })
 }
 
 function renderOffer() {
