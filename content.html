@@ -215,7 +215,13 @@
       z-index: 3;
     }
 
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
 
+    
 
 /* ADD TO CART BUTTON */
 .add-cart-btn { 
@@ -901,7 +907,7 @@
     </div>
   </div>
 
-  
+  <div class="menu-grid" id="menuGrid"></div>
 
   <div id="cart-popup">
     <div class="cart-header">
