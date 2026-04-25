@@ -335,6 +335,19 @@ async function showLocationPicker() {
       attribution: "© OpenStreetMap contributors",
       maxZoom: 19,
     }).addTo(map)
+if (SERVICE_AREA && SERVICE_AREA.length > 0) {
+  const coords = SERVICE_AREA.map(p => [p.lat, p.lng])
+
+  const polygon = L.polygon(coords, {
+    color: "#16a34a",
+    weight: 2,
+    fillColor: "#22c55e",
+    fillOpacity: 0.25,
+  }).addTo(map)
+
+  map.fitBounds(polygon.getBounds())
+}
+    
     
     // Add shop location marker
     L.circleMarker([SHOP_LOCATION.lat, SHOP_LOCATION.lng], {
