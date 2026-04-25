@@ -368,9 +368,10 @@ async function showLocationPicker() {
       
       // Remove previous marker
       map.eachLayer((layer) => {
-        if (layer instanceof L.Marker && layer !== shopMarker) {
-          map.removeLayer(layer)
-        }
+        if (layer instanceof L.Marker) {
+  map.removeLayer(layer)
+}
+        
       })
       
       addUserMarker(map, e.latlng.lat, e.latlng.lng)
