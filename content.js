@@ -114,7 +114,20 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
 }
 // Check if user's location is within service area
 function isUserInServiceArea(userLat, userLng) {
-  const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, userLat, userLng)
+  if (SERVICE_AREA && SERVICE_AREA.length >= 3) {
+    return isPointInPolygon(
+      { lat: userLat, lng: userLng },
+      SERVICE_AREA
+    )
+  }
+
+  // fallback
+  const distance = calculateDistance(
+    SHOP_LOCATION.lat,
+    SHOP_LOCATION.lng,
+    userLat,
+    userLng
+  )
   return distance <= SERVICE_RADIUS_KM
 }
 
