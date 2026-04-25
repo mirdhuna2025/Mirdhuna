@@ -144,10 +144,10 @@ function getLocationStatusBanner() {
       top: 0;
       left: 0;
       right: 0;
-      padding: 12px 16px;
+      padding: 1px 16px;
       text-align: center;
       font-weight: 500;
-      font-size: 14px;
+      font-size: 17px;
       z-index: 9999;
       transition: all 0.3s ease;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
