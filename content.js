@@ -129,7 +129,7 @@ const SHOP_LOCATION = {
   lng: 86.9842    // your shop longitude
 }
 
-  return distance <= SERVICE_RADIUS_KM
+  return distance <= SERVICE_RADIUS_KM;
 }
 
 // Get or create location status banner
