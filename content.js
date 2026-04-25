@@ -114,13 +114,8 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
 }
 // Check if user's location is within service area
 function isUserInServiceArea(userLat, userLng) {
-  const distance = calculateDistance(
-    SHOP_LOCATION.lat,
-    SHOP_LOCATION.lng,
-    userLat,
-    userLng
-  )
-
+ 
+  const distance = calculateDistance(...)
   return distance <= SERVICE_RADIUS_KM
 }
   // fallback
@@ -129,7 +124,7 @@ const SHOP_LOCATION = {
   lng: 86.9842    // your shop longitude
 }
 
-  return distance <= SERVICE_RADIUS_KM;
+  return distance <= SERVICE_RADIUS_KM
 }
 
 // Get or create location status banner
