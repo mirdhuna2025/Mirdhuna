@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mirdhuna Delivery</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -77,7 +78,6 @@
     .actions .btn { margin-top: 8px; font-size: 14px; padding: 8px; }
     #map { width: 100%; height: 300px; border-radius: 8px; margin-top: 20px; }
   </style>
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
 </head>
 <body class="show-partner">
   <div id="partner-screen">
@@ -171,7 +171,7 @@
           <p><strong>💰</strong> ₹${(o.total || 0).toFixed(2)}</p>
           
           <!-- Customer Map -->
-          <div id="map"></div>
+          <div id="map-${o.key}" class="map"></div>
 
           <div class="actions">
             ${
@@ -192,136 +192,40 @@
           </div>
         </div>
       `).join('');
+      
+      // Initialize the map for each order
+      orders.forEach(o => initMap(o.key, o.lat, o.lng));
     }
 
-    document.addEventListener('click', async (e) => {
-      const key = e.target.dataset.key;
-      const phone = e.target.dataset.phone;
-      if (!key) return;
+    function initMap(orderKey, customerLat, customerLng) {
+      const mapDiv = document.getElementById(`map-${orderKey}`);
+      const map = L.map(mapDiv).setView([customerLat, customerLng], 14);
 
-      if (e.target.classList.contains('start-tracking')) {
-        if (!confirm('🚀 Start live tracking?\nYour location will update every 5 seconds.')) return;
+      // Tile Layer for Leaflet Map
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
 
-        try {
-          const pos = await new Promise((resolve, reject) => {
-            if (!navigator.geolocation) reject(new Error('Geolocation not supported'));
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              enableHighAccuracy: true,
-              timeout: 10000
-            });
-          });
+      // Add a Marker for the customer location
+      const customerMarker = L.marker([customerLat, customerLng]).addTo(map)
+        .bindPopup('Customer Location')
+        .openPopup();
+      
+      // Add a Marker for the delivery person (your location)
+      const deliveryLat = YOUR_LATITUDE;  // Replace with your current location latitude
+      const deliveryLng = YOUR_LONGITUDE; // Replace with your current location longitude
+      const deliveryMarker = L.marker([deliveryLat, deliveryLng]).addTo(map)
+        .bindPopup('Your Location')
+        .openPopup();
 
-          const { latitude: lat, longitude: lng } = pos.coords;
-
-          await update(ref(db, `orders/${key}`), {
-            status: 'on the way',
-            assignedTo: currentPartner,
-            lat: lat,
-            lng: lng
-          });
-
-          await push(ref(db, `tracking/${key}`), {
-            lat, lng,
-            timestamp: new Date().toISOString(),
-            note: `🚚 ${currentPartner} started delivery`
-          });
-
-          startLiveTracking(key);
-
-          alert('✅ Tracking started! Customer will see you move.');
-          loadOrders();
-
-        } catch (err) {
-          console.error('❌ Tracking failed:', err);
-          alert('⚠️ Please allow location access and retry.');
-        }
-      }
-
-      if (e.target.classList.contains('share-location')) {
-        try {
-          const pos = await new Promise((r, x) => 
-            navigator.geolocation.getCurrentPosition(r, x, { timeout: 50000 })
-          );
-          const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-          window.open(`https://wa.me/91${phone}?text=${encodeURIComponent('📍 My live location: ' + url)}`, '_blank');
-        } catch (err) {
-          alert('⚠️ Location access needed to share live location.');
-        }
-      }
-
-      if (e.target.classList.contains('mark-delivered')) {
-        if (!confirm('✅ Mark as delivered?')) return;
-        try {
-          await update(ref(db, `orders/${key}`), { status: 'delivered' });
-          if (trackingInterval) clearInterval(trackingInterval);
-          alert('📦 Order delivered!');
-        } catch (err) {
-          alert('❌ Failed to update status.');
-        }
-      }
-    });
-
-    function startLiveTracking(orderKey) {
-      if (trackingInterval) clearInterval(trackingInterval);
-
-      const sendLocation = async () => {
-        try {
-          const pos = await new Promise((r, x) => 
-            navigator.geolocation.getCurrentPosition(r, x, { enableHighAccuracy: true, timeout: 8000 })
-          );
-          await push(ref(db, `tracking/${orderKey}`), {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            timestamp: new Date().toISOString(),
-            note: `📍 ${currentPartner} en route`
-          });
-          console.log('📍 Location sent:', pos.coords.latitude, pos.coords.longitude);
-        } catch (err) {
-          console.warn('📍 GPS update failed:', err);
-        }
-      };
-
-      sendLocation();
-      trackingInterval = setInterval(sendLocation, 5000);
-    }
-
-    function initMap() {
-      const lat = parseFloat(orderData.lat);
-      const lng = parseFloat(orderData.lng);
-
-      const map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 14,
-        center: { lat: lat, lng: lng }
-      });
-
-      const marker = new google.maps.Marker({
-        position: { lat: lat, lng: lng },
-        map: map,
-        title: "Customer Location"
-      });
-
-      const directionsService = new google.maps.DirectionsService();
-      const directionsRenderer = new google.maps.DirectionsRenderer();
-      directionsRenderer.setMap(map);
-
-      // Directions button click event
-      const directionsButton = document.createElement('button');
-      directionsButton.textContent = 'Get Directions';
-      directionsButton.classList.add('btn', 'btn-info');
-      directionsButton.onclick = () => {
-        const request = {
-          origin: { lat: YOUR_LATITUDE, lng: YOUR_LONGITUDE },  // Replace with your current location
-          destination: { lat: lat, lng: lng },
-          travelMode: google.maps.TravelMode.DRIVING
-        };
-        directionsService.route(request, (result, status) => {
-          if (status === google.maps.DirectionsStatus.OK) {
-            directionsRenderer.setDirections(result);
-          }
-        });
-      };
-
-      document.getElementById('map').appendChild(directionsButton);
+      // Add Directions between customer and delivery person
+      const route = L.Routing.control({
+        waypoints: [
+          L.latLng(deliveryLat, deliveryLng),
+          L.latLng(customerLat, customerLng)
+        ],
+        routeWhileDragging: true
+      }).addTo(map);
     }
 
     window.addEventListener('beforeunload', () => {
@@ -329,5 +233,6 @@
       if (ordersUnsubscribe) ordersUnsubscribe();
     });
   </script>
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.2/dist/leaflet-routing-machine.js"></script>
 </body>
 </html>
