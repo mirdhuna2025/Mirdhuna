@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Draw Service Area</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css"/>
+
+  <style>
+    #map { height: 100vh; }
+    .btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #10b981;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+<div class="btn" onclick="saveArea()">💾 Save Area</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
+import { getConfig } from "./config.js"
+
+const app = initializeApp(getConfig().firebase)
+const db = getDatabase(app)
+
+const map = L.map('map').setView([25.246747, 86.976773], 14)
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map)
+
+const drawnItems = new L.FeatureGroup()
+map.addLayer(drawnItems)
+
+const drawControl = new L.Control.Draw({
+  draw: {
+    polygon: true,
+    rectangle: false,
+    circle: false,
+    marker: false,
+    polyline: false
+  },
+  edit: {
+    featureGroup: drawnItems
+  }
+})
+
+map.addControl(drawControl)
+
+let currentPolygon = null
+
+map.on(L.Draw.Event.CREATED, function (event) {
+  drawnItems.clearLayers()
+  currentPolygon = event.layer
+  drawnItems.addLayer(currentPolygon)
+})
+
+window.saveArea = async function () {
+  if (!currentPolygon) {
+    alert("Draw area first!")
+    return
+  }
+
+  const latlngs = currentPolygon.getLatLngs()[0]
+
+  const coords = latlngs.map(p => ({
+    lat: p.lat,
+    lng: p.lng
+  }))
+
+  await set(ref(db, "serviceArea"), coords)
+
+  alert("✅ Service area saved!")
+}
+</script>
+
+</body>
+</html>
