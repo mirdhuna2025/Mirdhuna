@@ -639,15 +639,20 @@ function loadShopData() {
   })
 
 
-  onValue(ref(db, "serviceArea"), (snapshot) => {
-    const data = snapshot.val()
-    if (data) {
-      SERVICE_AREA = data
-      console.log("✅ Service Area Loaded:", SERVICE_AREA)
-    } else {
-      console.warn("⚠️ No service area found")
-    }
-  })
+ let locationInitialized = false
+
+onValue(ref(db, "serviceArea"), (snapshot) => {
+  const data = snapshot.val()
+  SERVICE_AREA = data || []
+
+  console.log("✅ Service Area Loaded:", SERVICE_AREA)
+
+  // ✅ Run ONLY once after Firebase loads polygon
+  if (!locationInitialized) {
+    locationInitialized = true
+    initializeLocationStatus()
+  }
+})
 }
 
 function renderOffer() {
