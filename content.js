@@ -121,8 +121,6 @@ function isUserInServiceArea(userLat, userLng) {
     userLng
   )
 
-  console.log("Distance:", distance)
-
   return distance <= SERVICE_RADIUS_KM
 }
   // fallback
