@@ -10,7 +10,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-
 <style>
 body { font-family:Poppins; background:#f5f5f5; padding:10px; }
 .header { background:#d40000;color:#fff;padding:12px;border-radius:10px;text-align:center; }
@@ -106,33 +105,40 @@ function initMap(order){
   const customer=L.marker([order.lat,order.lng]).addTo(map);
 
   let riderMarker;
-  let route;
+  let line;
 
   setInterval(()=>{
     if(!currentPos) return;
 
     const {lat,lng}=currentPos;
 
-    // update firebase
+    // 🔥 Update Firebase
     update(ref(db,"orders/"+order.key),{
       riderLat:lat,
       riderLng:lng
     });
 
+    // 🚚 Rider marker
     if(!riderMarker){
       riderMarker=L.marker([lat,lng]).addTo(map);
     }else{
       riderMarker.setLatLng([lat,lng]);
     }
 
-    if(!route){
-      route=L.Routing.control({
-        waypoints:[
-          L.latLng(lat,lng),
-          L.latLng(order.lat,order.lng)
-        ],
-        addWaypoints:false
+    // 📍 Simple route line
+    if(!line){
+      line=L.polyline([
+        [lat,lng],
+        [order.lat,order.lng]
+      ],{
+        color:"blue",
+        weight:4
       }).addTo(map);
+    }else{
+      line.setLatLngs([
+        [lat,lng],
+        [order.lat,order.lng]
+      ]);
     }
 
   },3000);
