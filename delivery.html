@@ -17,7 +17,9 @@ body { font-family:Poppins; background:#f5f5f5; padding:10px; }
 .btn { width:100%;padding:10px;margin-top:8px;border:none;border-radius:6px;font-weight:600; }
 .btn-success{background:#4CAF50;color:#fff;}
 .btn-info{background:#2196F3;color:#fff;}
+.btn-danger{background:#f44336;color:#fff;}
 .map{height:220px;margin-top:10px;border-radius:8px;}
+img{margin-top:6px;}
 </style>
 </head>
 
@@ -82,21 +84,37 @@ function render(orders){
   document.getElementById("orders").innerHTML=
     orders.map(o=>`
     <div class="card">
-      <b>#${o.orderId||""}</b>
-      <p>📱 ${o.phoneNumber||""}</p>
-      <p>📍 ${o.address||""}</p>
+      <b>🧾 Order #${o.orderId || ""}</b>
 
-      <div id="map-${o.key}" class="map"></div>
+      <p>📱 ${o.phoneNumber || ""}</p>
+      <p>📍 ${o.address || ""}</p>
 
-      <button class="btn btn-success" onclick="startDelivery('${o.key}')">🚀 Start</button>
-      <button class="btn btn-info" onclick="share('${o.key}','${o.phoneNumber}')">💬 Share</button>
+      <p>💰 Price: ₹${o.price || 0}</p>
+
+      ${o.image ? `<img src="${o.image}" width="100%">` : ""}
+
+      <p>📦 Status: <b>${o.status || "pending"}</b></p>
+
+      ${o.status !== "delivered" ? `
+        <div id="map-${o.key}" class="map"></div>
+
+        <button class="btn btn-success" onclick="startDelivery('${o.key}')">🚀 Start</button>
+        <button class="btn btn-danger" onclick="markDelivered('${o.key}')">✅ Delivered</button>
+        <button class="btn btn-info" onclick="share('${o.key}','${o.phoneNumber}')">💬 Share</button>
+      ` : `
+        <p style="color:green;font-weight:bold;">✅ Delivered</p>
+      `}
     </div>
     `).join("");
 
-  orders.forEach(o=>initMap(o));
+  orders.forEach(o=>{
+    if(o.status !== "delivered"){
+      initMap(o);
+    }
+  });
 }
 
-// 🗺️ MAP + LIVE TRACK
+// 🗺️ MAP + TRACK
 function initMap(order){
   const map=L.map(`map-${order.key}`).setView([order.lat,order.lng],14);
 
@@ -107,38 +125,33 @@ function initMap(order){
   let riderMarker;
   let line;
 
-  setInterval(()=>{
+  const interval=setInterval(()=>{
     if(!currentPos) return;
+
+    if(order.status==="delivered"){
+      clearInterval(interval);
+      return;
+    }
 
     const {lat,lng}=currentPos;
 
-    // 🔥 Update Firebase
     update(ref(db,"orders/"+order.key),{
       riderLat:lat,
       riderLng:lng
     });
 
-    // 🚚 Rider marker
     if(!riderMarker){
       riderMarker=L.marker([lat,lng]).addTo(map);
     }else{
       riderMarker.setLatLng([lat,lng]);
     }
 
-    // 📍 Simple route line
     if(!line){
-      line=L.polyline([
-        [lat,lng],
-        [order.lat,order.lng]
-      ],{
-        color:"blue",
-        weight:4
+      line=L.polyline([[lat,lng],[order.lat,order.lng]],{
+        color:"blue"
       }).addTo(map);
     }else{
-      line.setLatLngs([
-        [lat,lng],
-        [order.lat,order.lng]
-      ]);
+      line.setLatLngs([[lat,lng],[order.lat,order.lng]]);
     }
 
   },10000);
@@ -149,14 +162,19 @@ window.startDelivery=(key)=>{
   update(ref(db,"orders/"+key),{status:"on the way"});
 };
 
-// 💬 WHATSAPP SHARE
+// ✅ DELIVERED
+window.markDelivered=(key)=>{
+  update(ref(db,"orders/"+key),{status:"delivered"});
+};
+
+// 💬 SHARE
 window.share=(key,phone)=>{
   const link=location.origin+location.pathname+"?track="+key;
   const msg="🚚 Track your order:\n"+link;
   window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(msg));
 };
 
-// 🌐 CUSTOMER TRACK MODE (same page)
+// 🌐 CUSTOMER TRACK MODE
 const url=new URLSearchParams(location.search);
 const trackId=url.get("track");
 
@@ -171,6 +189,11 @@ if(trackId){
   onValue(ref(db,"orders/"+trackId),snap=>{
     const o=snap.val();
     if(!o || !o.riderLat) return;
+
+    if(o.status==="delivered"){
+      alert("Order Delivered ✅");
+      return;
+    }
 
     const pos=[o.riderLat,o.riderLng];
 
