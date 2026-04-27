@@ -1,7 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mirdhuna Delivery</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+
+<!-- ✅ Leaflet FIRST -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+body { font-family:Poppins; background:#f5f5f5; padding:10px; }
+.header { background:#d40000;color:#fff;padding:12px;border-radius:10px;text-align:center; }
+.card { background:#fff;padding:12px;border-radius:10px;margin-top:10px; }
+.btn { width:100%;padding:10px;margin-top:8px;border:none;border-radius:6px;font-weight:600; }
+.btn-success{background:#4CAF50;color:#fff;}
+.btn-info{background:#2196F3;color:#fff;}
+.btn-danger{background:#f44336;color:#fff;}
+.map{height:220px;margin-top:10px;border-radius:8px;}
+img{margin-top:6px;}
+</style>
+</head>
+
+<body>
+
+<div class="header">🚚 Mirdhuna Delivery</div>
+
+<div class="card">
+<select id="partner">
+<option value="">Select Partner</option>
+<option>Raj</option>
+<option>Suresh</option>
+<option>Amit</option>
+<option>Priya</option>
+<option>Vikas</option>
+</select>
+<button class="btn btn-success" onclick="start()">Start</button>
+</div>
+
+<div id="orders"></div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getConfig } from "./config.js";
+
+window.addEventListener("load", ()=>{
 
 const app = initializeApp(getConfig().firebase);
 const db = getDatabase(app);
@@ -153,7 +199,7 @@ function initMap(order){
       line.setLatLngs([[lat,lng],[order.lat,order.lng]]);
     }
 
-    // 📍 Auto follow rider
+    // 📍 Auto follow
     map.panTo([lat,lng]);
 
   },5000);
@@ -207,4 +253,9 @@ if(trackId){
     }
   });
 }
+
+});
 </script>
+
+</body>
+</html>
