@@ -295,20 +295,12 @@ async function showLocationPicker() {
   const modal = getLocationPickerModal()
   modal.style.display = "flex"
   
-  // Load Leaflet CSS
-  if (!document.getElementById("leaflet-css")) {
-    const link = document.createElement("link")
-    link.id = "leaflet-css"
-    link.rel = "stylesheet"
-    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    document.head.appendChild(link)
-  }
-  
-  // Load Leaflet JS
-  if (typeof L === "undefined") {
+  // Load Google Maps API
+  if (typeof google === "undefined" || !google.maps) {
+    const googleMapsApiKey = "YOUR_GOOGLE_API_KEY" // Replace with actual API key
     await new Promise((resolve) => {
       const script = document.createElement("script")
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=geometry`
       script.onload = resolve
       document.head.appendChild(script)
     })
@@ -319,57 +311,74 @@ async function showLocationPicker() {
     const mapElement = document.getElementById("location-map")
     mapElement.innerHTML = "" // Clear previous map
     
-   // ✅ destroy old map if exists
-  const mapContainer = document.getElementById("location-map")
- if (mapContainer._leaflet_id) {
-  mapContainer._leaflet_id = null
-  mapContainer.innerHTML = ""
-}
-
-  // ✅ now create fresh map
- const map = L.map("location-map").setView(
-  [SHOP_LOCATION.lat, SHOP_LOCATION.lng],
-  13
-  )
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
-      maxZoom: 19,
-    }).addTo(map)
-if (SERVICE_AREA && SERVICE_AREA.length > 0) {
-  const coords = SERVICE_AREA.map(p => [p.lat, p.lng])
-
-  const polygon = L.polygon(coords, {
-    color: "#16a34a",
-    weight: 2,
-    fillColor: "#22c55e",
-    fillOpacity: 0.25,
-  }).addTo(map)
-
-  map.fitBounds(polygon.getBounds())
-}
+    // Create Google Maps instance
+    const map = new google.maps.Map(mapElement, {
+      zoom: 13,
+      center: SHOP_LOCATION,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      gestureHandling: 'cooperative'
+    })
     
+    // Add service area polygon if it exists
+    if (SERVICE_AREA && SERVICE_AREA.length > 0) {
+      const paths = SERVICE_AREA.map(p => ({
+        lat: p.lat,
+        lng: p.lng
+      }))
+      
+      const polygon = new google.maps.Polygon({
+        paths: paths,
+        strokeColor: '#16a34a',
+        fillColor: '#22c55e',
+        fillOpacity: 0.25,
+        strokeWeight: 2,
+        map: map
+      })
+      
+      // Fit bounds to polygon
+      const bounds = new google.maps.LatLngBounds()
+      polygon.getPath().forEach(coord => {
+        bounds.extend(coord)
+      })
+      map.fitBounds(bounds)
+    }
     
     // Add shop location marker
-    L.circleMarker([SHOP_LOCATION.lat, SHOP_LOCATION.lng], {
-      radius: 12,
-      fillColor: "#10b981",
-      color: "#059669",
-      weight: 3,
-      opacity: 1,
-      fillOpacity: 0.8,
+    const shopMarker = new google.maps.Marker({
+      position: SHOP_LOCATION,
+      map: map,
+      title: 'Our Shop Location',
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 12,
+        fillColor: '#10b981',
+        fillOpacity: 0.8,
+        strokeColor: '#059669',
+        strokeWeight: 3
+      }
     })
-      .addTo(map)
-      .bindPopup("Our Shop Location")
+    
+    // Info window for shop marker
+    const shopInfoWindow = new google.maps.InfoWindow({
+      content: '<div style="font-weight:600; color:#10b981;">Our Shop Location</div>'
+    })
+    shopMarker.addListener('click', () => {
+      shopInfoWindow.open(map, shopMarker)
+    })
     
     // Draw service radius circle
-    L.circle([SHOP_LOCATION.lat, SHOP_LOCATION.lng], {
+    const serviceCircle = new google.maps.Circle({
+      center: SHOP_LOCATION,
       radius: SERVICE_RADIUS_KM * 1000,
-      color: "#10b981",
-      fillColor: "#dcfce7",
-      weight: 2,
-      opacity: 0.5,
+      strokeColor: '#10b981',
+      fillColor: '#dcfce7',
+      strokeWeight: 2,
+      strokeOpacity: 0.5,
       fillOpacity: 0.1,
-    }).addTo(map)
+      map: map
+    })
+    
+    let userMarker = null
     
     // Get current user location
     if ("geolocation" in navigator) {
@@ -377,46 +386,63 @@ if (SERVICE_AREA && SERVICE_AREA.length > 0) {
         const userLat = pos.coords.latitude
         const userLng = pos.coords.longitude
         selectedLocationCoords = { lat: userLat, lng: userLng }
-        map.setView([userLat, userLng], 13)
+        map.setCenter({ lat: userLat, lng: userLng })
         
         addUserMarker(map, userLat, userLng)
       })
     }
     
     // Click on map to select location
-    map.on("click", (e) => {
-      selectedLocationCoords = { lat: e.latlng.lat, lng: e.latlng.lng }
+    map.addListener('click', (event) => {
+      selectedLocationCoords = { 
+        lat: event.latLng.lat(), 
+        lng: event.latLng.lng() 
+      }
       
       // Remove previous marker
-      map.eachLayer((layer) => {
-        if (layer instanceof L.Marker) {
-  map.removeLayer(layer)
-}
-        
-      })
+      if (userMarker) {
+        userMarker.setMap(null)
+      }
       
-      addUserMarker(map, e.latlng.lat, e.latlng.lng)
+      addUserMarker(map, event.latLng.lat(), event.latLng.lng())
     })
   }, 100)
 }
 
 // Add user marker to map
 function addUserMarker(map, lat, lng) {
-  const marker = L.circleMarker([lat, lng], {
-    radius: 10,
-    fillColor: "#3b82f6",
-    color: "#1e40af",
-    weight: 3,
-    opacity: 1,
-    fillOpacity: 0.8,
-  }).addTo(map)
+  const userMarker = new google.maps.Marker({
+    position: { lat: lat, lng: lng },
+    map: map,
+    title: 'Your Location',
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 10,
+      fillColor: '#3b82f6',
+      fillOpacity: 0.8,
+      strokeColor: '#1e40af',
+      strokeWeight: 3
+    }
+  })
   
   const distance = calculateDistance(SHOP_LOCATION.lat, SHOP_LOCATION.lng, lat, lng).toFixed(1)
   const inService = isUserInServiceArea(lat, lng)
   const status = inService ? "✓ In Service Area" : "✗ Out of Service Area"
   
-  marker.bindPopup(`Your Location<br>${status}<br>${distance} km away`)
-  marker.openPopup()
+  const infoWindow = new google.maps.InfoWindow({
+    content: `<div style="font-size:13px; padding:4px;">
+      <strong>Your Location</strong><br/>
+      ${status}<br/>
+      ${distance} km away
+    </div>`
+  })
+  
+  userMarker.addListener('click', () => {
+    infoWindow.open(map, userMarker)
+  })
+  
+  // Auto-open info window
+  infoWindow.open(map, userMarker)
 }
 
 // Close location picker
