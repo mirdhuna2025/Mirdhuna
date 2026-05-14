@@ -701,10 +701,10 @@ function renderMenuItems(items) {
     const safeName = (item.name || "Unnamed Item").replace(/"/g, "&quot;")
     const safePrice = safeNumber(item.price, 0).toFixed(2)
     const mrpDisplay =
-      item.mrp && item.mrp > item.price ? `<del style="color:#f00101;font-size:14px">₹${item.mrp}</del>` : ""
+      item.mrp && item.mrp > item.price ? `<del style="color:#f00101;font-weight: 600;font-size:20px">₹${item.mrp}</del>` : ""
     const discountDisplay =
       item.mrp && item.mrp > item.price
-        ? `<div style="color:#d40000;font-size:20px;font-weight:600;margin-top:2px;">${Math.round(((item.mrp - item.price) / item.mrp) * 100)}% OFF</div>`
+        ? `<div style="color:#d40000;font-size:16px;font-weight:600;margin-top:2px;">${Math.round(((item.mrp - item.price) / item.mrp) * 100)}% OFF</div>`
         : ""
 
   const card = document.createElement("div")
