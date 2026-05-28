@@ -1230,14 +1230,29 @@ async function loadOrders() {
   }
 }
 
-function renderMapEmbed(lat, lng, zoom = 15) {
-  const mapEl = document.getElementById("track-map")
-  if (!mapEl) return
+let trackingMap
+let trackingMarker
 
-  const apiKey = "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ"
-  const url = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${lat},${lng}&zoom=${zoom}`
-  mapEl.src = url
-}
+function renderTrackingMap(lat, lng) {
+  if (!trackingMap) {
+    trackingMap = L.map("track-map").setView([lat, lng], 15)
+
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        attribution: "© OpenStreetMap contributors",
+      }
+    ).addTo(trackingMap)
+
+    trackingMarker = L.marker([lat, lng]).addTo(trackingMap)
+  } else {
+    trackingMarker.setLatLng([lat, lng])
+    trackingMap.setView([lat, lng], 15)
+  }
+}  
+
+
+
 function animateAddToCart(imgEl) {
   if (!imgEl || !cartToggleBtn) return
 
