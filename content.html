@@ -146,7 +146,31 @@
     }
 
     .menu-price {  color: #375e15; font-weight: 900; font-size: 20px; margin-bottom: 6px; }
+/* Popup Add to Cart Button */
+.popup-cart-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #4CAF50;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
 
+  position: static;   /* removes left/bottom shifting */
+  margin-top: 12px;
+
+  box-shadow: 0 6px 16px rgba(76,175,80,0.28);
+  transition: 0.2s ease;
+}
+
+.popup-cart-btn:hover {
+  background: #43a047;
+  transform: scale(1.02);
+}
+
+    
     .offer-tag {
       position: fixed;
       top: 4px;
@@ -651,7 +675,7 @@
           <input id="pp-qty" type="number" min="1" value="1" style="width:72px;padding:6px;border-radius:6px;border:1px solid #ddd" />
         </div>
         <div class="actions">
-          <button id="pp-add" class="add-cart-btn">Add to Cart</button>
+          <button id="pp-add" class="popup-cart-btn">Add to Cart</button>
           <button id="pp-close" class="view-btn" style="border-radius:12px; right:0px ">Close</button>
         </div>
       </div>
