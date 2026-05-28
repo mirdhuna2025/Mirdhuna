@@ -1230,29 +1230,14 @@ async function loadOrders() {
   }
 }
 
-let trackingMap
-let trackingMarker
+function renderMapEmbed(lat, lng, zoom = 15) {
+  const mapEl = document.getElementById("track-map")
+  if (!mapEl) return
 
-function renderTrackingMap(lat, lng) {
-  if (!trackingMap) {
-    trackingMap = L.map("track-map").setView([lat, lng], 15)
-
-    L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        attribution: "© OpenStreetMap contributors",
-      }
-    ).addTo(trackingMap)
-
-    trackingMarker = L.marker([lat, lng]).addTo(trackingMap)
-  } else {
-    trackingMarker.setLatLng([lat, lng])
-    trackingMap.setView([lat, lng], 15)
-  }
-}  
-
-
-
+  const apiKey = "AIzaSyCPbOZwAZEMiC1LSDSgnSEPmSxQ7-pR2oQ"
+  const url = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${lat},${lng}&zoom=${zoom}`
+  mapEl.src = url
+}
 function animateAddToCart(imgEl) {
   if (!imgEl || !cartToggleBtn) return
 
@@ -1313,7 +1298,7 @@ document.addEventListener("click", async (e) => {
           }
 
           if (latest && latest.lat && latest.lng) {
-            renderTrackingMap(latest.lat, latest.lng)
+            renderMapEmbed(latest.lat, latest.lng)
             const note = latest.note || "Driver is en route"
             trackNoteEl.textContent = note
             trackStatusEl.innerHTML = `🕒 ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} — ${note}`
